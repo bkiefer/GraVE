@@ -19,18 +19,7 @@ public class LOGDefaultLogger {
     // Construct The Default Logger
     private LOGDefaultLogger() {
         // Log The Messages From All Levels
-        sLogger.setLevel(Level.ALL);
-        // Do Not Propagate The Messages
-        sLogger.setUseParentHandlers(false);
-        try {
-            // Install The Console Handler
-            install(new LOGConsoleHandler());
-            // Install The Logfile Handler
-            install(new LOGLogFileHandler(Preferences.sLOGFILE_FILE_NAME, 10485760, 1, true));    // 10 MB Size
-        } catch (Exception exc) {
-            exc.printStackTrace();
-            sLogger.severe(exc.toString());
-        }
+
     }
 
     // Get The Singelton Logger Instance

@@ -1,7 +1,6 @@
 package de.dfki.vsm.util;
 
 //~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.util.tpl.TPLTuple;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -92,7 +91,7 @@ public class TextFormat {
                                 TextAttribute.WEIGHT,
                                 TextAttribute.WEIGHT_BOLD);
                 attributeMap.put(attribute, position);
-                
+
             } else if (c == 'i') {
                 // Highlight with italic posture
                 TPLTuple attribute
@@ -163,11 +162,8 @@ public class TextFormat {
         attributedString.addAttribute(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
         attributedString.addAttribute(TextAttribute.FAMILY, Font.SANS_SERIF);
 
-        if (EditorInstance.getInstance().getSelectedProjectEditor() != null) {
-            attributedString.addAttribute(TextAttribute.SIZE, EditorInstance.getInstance().getSelectedProjectEditor().getEditorProject().getEditorConfig().sWORKSPACEFONTSIZE);
-        } else {
             attributedString.addAttribute(TextAttribute.SIZE, 12);
-        }
+
 
         // Fill the attributed string with attributes
         Iterator it = attributeMap.entrySet().iterator();

@@ -61,6 +61,7 @@ public final class NodeGraphics implements ModelObject {
 
     @Override
     public final void parseXML(final Element element) throws XMLParseError {
+      // was: Point is: Position
         XMLParseAction.processChildNodes(element, "Position", new XMLParseAction() {
             @Override
             public void run(final Element element) {

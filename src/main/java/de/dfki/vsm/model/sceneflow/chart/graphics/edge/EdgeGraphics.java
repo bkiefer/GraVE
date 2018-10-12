@@ -46,7 +46,8 @@ public final class EdgeGraphics implements ModelObject {
 
     @Override
     public final void parseXML(Element element) throws XMLParseError {
-        XMLParseAction.processChildNodes(element, "Connection", new XMLParseAction() {
+      // was Arrow, now: Connection
+        XMLParseAction.processChildNodes(element, "Arrow", new XMLParseAction() {
             @Override
             public void run(Element element) throws XMLParseError {
                 mConnection.parseXML(element);

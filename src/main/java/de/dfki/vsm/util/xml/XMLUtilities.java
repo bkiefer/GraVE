@@ -184,7 +184,7 @@ public final class XMLUtilities {
         }
     }
 
-    // Write a writeable object to a stream 
+    // Write a writeable object to a stream
     public final static boolean writeToXMLStream(final XMLWriteable writeable, final OutputStream stream) {
         // Open the stream with an indent writer
         final IOSIndentWriter writer = new IOSIndentWriter(stream);
@@ -210,7 +210,7 @@ public final class XMLUtilities {
         }
     }
 
-    // Write java properties to a file 
+    // Write java properties to a file
     public final static boolean writeToXMLFile(final Properties properties, final File file) {
         try {
             // Open the file with the output stream

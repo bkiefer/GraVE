@@ -62,7 +62,8 @@ public class EdgeArrow implements ModelObject {
 
     @Override
     public final void parseXML(final Element element) throws XMLParseError {
-        XMLParseAction.processChildNodes(element, "ControlPoint", new XMLParseAction() {
+      // was: Point now: ControlPoint
+        XMLParseAction.processChildNodes(element, "Point", new XMLParseAction() {
             @Override
             public void run(final Element element) {
                 final EdgePoint point = new EdgePoint();
