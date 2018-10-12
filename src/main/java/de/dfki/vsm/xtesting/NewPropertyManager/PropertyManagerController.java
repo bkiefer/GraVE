@@ -638,7 +638,6 @@ public class PropertyManagerController implements Initializable, TreeObserver {
             if (contextItem != null) {
                 contextItem.registerObserver(this);
             }
-            agentEntry.setAgentConfig(mProject.getAgentConfig(agent));
         } else if (object instanceof CellEvent) {//We change either the name of the agent or device
             changeItemName((CellEvent) object);
         } else if (object instanceof DeleteContextEventAgent) {
@@ -675,9 +674,6 @@ public class PropertyManagerController implements Initializable, TreeObserver {
             changePluginName((EntryPlugin) entry, oldValue, newValue);
 
         }
-        if (entry instanceof EntryAgent) {
-            changeAgentName((EntryAgent) entry, oldValue, newValue);
-        }
 
         if (entry instanceof EntryRoot) {
             ReNameProject(newValue);
@@ -696,12 +692,4 @@ public class PropertyManagerController implements Initializable, TreeObserver {
         }
     }
 
-    private void changeAgentName(EntryAgent agent, String oldValue, String newValue) {
-        try {
-            projectConfigWrapper.changeAgentName(oldValue, newValue);
-            agent.setAgentConfig(mProject.getAgentConfig(newValue));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
