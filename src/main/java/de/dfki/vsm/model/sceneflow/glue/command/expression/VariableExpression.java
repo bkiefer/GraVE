@@ -19,10 +19,10 @@ public abstract class VariableExpression extends Expression {
     public static VariableExpression parse(final Element element) throws XMLParseError {
         VariableExpression variable;
         final String tag = element.getTagName();
-        if (tag.equals("SimpleVariable")) {
+        if (tag.equals("SimpleVariable") || tag.equals("Variable")) { // is SimpleVariable
             variable = new SimpleVariable();
             variable.parseXML(element);
-        } else if (tag.equals("MemberVariable")) {
+        } else if (tag.equals("MemberVariable") || tag.equals("Member")) { // is: MemberVariable
             variable = new MemberVariable();
             variable.parseXML(element);
         } else if (tag.equals("FieldVariable")) {

@@ -9,6 +9,8 @@ import org.w3c.dom.Element;
  */
 public abstract class Command extends SyntaxObject {
 
+    public static boolean convertToVOnDA = false;
+
     @Override
     public abstract Command getCopy();
 
@@ -18,7 +20,7 @@ public abstract class Command extends SyntaxObject {
         // The name of the XML tag
         final String tag = element.getTagName();
         // Parse the command
-        if (tag.equals("Assignment")) {
+        if (tag.equals("Assign") || tag.equals("Assignment")) { // is: Assignment
             command = new Assignment();
             command.parseXML(element);
         } else {

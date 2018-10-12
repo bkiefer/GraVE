@@ -53,6 +53,12 @@ public final class EdgeGraphics implements ModelObject {
                 mConnection.parseXML(element);
             }
         });
+        XMLParseAction.processChildNodes(element, "Connection", new XMLParseAction() {
+          @Override
+          public void run(Element element) throws XMLParseError {
+              mConnection.parseXML(element);
+          }
+      });
     }
 
     public final int getHashCode() {

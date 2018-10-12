@@ -67,19 +67,7 @@ public class ForkingEdge extends AbstractEdge {
 
         out.println("<FEdge target=\"" + mTargetUnid + "\" start=\"" + start + "\">").push();
 
-        if (mGraphics != null) {
-            mGraphics.writeXML(out);
-        }
-
-        if (!mCmdList.isEmpty()) {
-            out.println("<Commands>").push();
-
-            for (int i = 0; i < mCmdList.size(); i++) {
-                mCmdList.get(i).writeXML(out);
-            }
-
-            out.pop().println("</Commands>");
-        }
+        super.writeXML(out);
 
         out.pop().println("</FEdge>");
     }

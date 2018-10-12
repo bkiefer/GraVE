@@ -23,13 +23,25 @@ public abstract class LiteralExpression extends Expression {
         if (tag.equals("IntLiteral")) {
             literal = new IntLiteral();
             literal.parseXML(element);
+        } else if (tag.equals("Int")) { // is: FloatLiteral
+            literal = new IntLiteral();
+            literal.parseXML(element);
         } else if (tag.equals("FloatLiteral")) {
+            literal = new FloatLiteral();
+            literal.parseXML(element);
+        } else if (tag.equals("Float")) { // is: FloatLiteral
             literal = new FloatLiteral();
             literal.parseXML(element);
         } else if (tag.equals("BoolLiteral")) {
             literal = new BoolLiteral();
             literal.parseXML(element);
+        } else if (tag.equals("Bool")) { // is: BoolLiteral
+            literal = new BoolLiteral();
+            literal.parseXML(element);
         } else if (tag.equals("StringLiteral")) {
+            literal = new StringLiteral();
+            literal.parseXML(element);
+        } else if (tag.equals("String")) { // is: StringLiteral
             literal = new StringLiteral();
             literal.parseXML(element);
         } else if (tag.equals("NullLiteral")) {

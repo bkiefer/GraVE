@@ -5,7 +5,7 @@ import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.EpsilonEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
@@ -32,7 +32,7 @@ public class BasicNode implements ModelObject {
     protected ArrayList<DataTypeDefinition> mTypeDefList = new ArrayList();
     protected ArrayList<VariableDefinition> mVarDefList = new ArrayList();
     protected ArrayList<Command> mCmdList = new ArrayList();
-    protected ArrayList<GuargedEdge> mCEdgeList = new ArrayList();
+    protected ArrayList<GuardedEdge> mCEdgeList = new ArrayList();
     protected ArrayList<RandomEdge> mPEdgeList = new ArrayList();
     protected ArrayList<InterruptEdge> mIEdgeList = new ArrayList();
     protected ArrayList<ForkingEdge> mFEdgeList = new ArrayList();
@@ -360,34 +360,34 @@ public class BasicNode implements ModelObject {
         return copy;
     }
 
-    public void addCEdge(GuargedEdge value) {
+    public void addCEdge(GuardedEdge value) {
         mCEdgeList.add(value);
     }
 
-    public GuargedEdge getCEdgeAt(int index) {
+    public GuardedEdge getCEdgeAt(int index) {
         return mCEdgeList.get(index);
     }
 
-    public void removeCEdge(GuargedEdge value) {
+    public void removeCEdge(GuardedEdge value) {
         mCEdgeList.remove(value);
     }
 
     public void removeAllCEdges() {
-        mCEdgeList = new ArrayList<GuargedEdge>();
+        mCEdgeList = new ArrayList<GuardedEdge>();
     }
 
     public int getSizeOfCEdgeList() {
         return mCEdgeList.size();
     }
 
-    public ArrayList<GuargedEdge> getCEdgeList() {
+    public ArrayList<GuardedEdge> getCEdgeList() {
         return mCEdgeList;
     }
 
-    public ArrayList<GuargedEdge> getCopyOfCEdgeList() {
-        ArrayList<GuargedEdge> copy = new ArrayList<GuargedEdge>();
+    public ArrayList<GuardedEdge> getCopyOfCEdgeList() {
+        ArrayList<GuardedEdge> copy = new ArrayList<GuardedEdge>();
 
-        for (GuargedEdge edge : mCEdgeList) {
+        for (GuardedEdge edge : mCEdgeList) {
             copy.add(edge.getCopy());
         }
 
@@ -481,7 +481,7 @@ public class BasicNode implements ModelObject {
     public ArrayList<AbstractEdge> getEdgeList() {
         ArrayList<AbstractEdge> edgeList = new ArrayList<AbstractEdge>();
 
-        for (GuargedEdge edge : mCEdgeList) {
+        for (GuardedEdge edge : mCEdgeList) {
             edgeList.add(edge);
         }
 
@@ -546,9 +546,7 @@ public class BasicNode implements ModelObject {
         return (BasicNode) CopyTool.copy(this);
     }
 
-    public void writeXML(IOSIndentWriter out) throws XMLWriteError {
-        out.println("<Node id=\"" + mNodeId + "\" name=\"" + mNodeName + "\" history=\"" + mIsHistoryNode + "\">").push();
-
+    protected void writeFieldsXML(IOSIndentWriter out) throws XMLWriteError {
         int i = 0;
 
         out.println("<Define>").push();
@@ -561,7 +559,7 @@ public class BasicNode implements ModelObject {
         out.println("<Declare>").push();
 
         for (i = 0; i < mVarDefList.size(); i++) {
-            mVarDefList.get(i).writeXML(out);            
+            mVarDefList.get(i).writeXML(out);
         }
 
         out.pop().println("</Declare>");
@@ -596,6 +594,12 @@ public class BasicNode implements ModelObject {
         if (mGraphics != null) {
             mGraphics.writeXML(out);
         }
+    }
+
+    public void writeXML(IOSIndentWriter out) throws XMLWriteError {
+        out.println("<Node id=\"" + mNodeId + "\" name=\"" + mNodeName + "\" history=\"" + mIsHistoryNode + "\">").push();
+
+        writeFieldsXML(out);
 
         out.pop().println("</Node>");
     }
@@ -625,7 +629,7 @@ public class BasicNode implements ModelObject {
 
                             def.parseXML(element);
                             mVarDefList.add(def);
-                            
+
                         }
                     });
                 } else if (tag.equals("Commands")) {
@@ -639,7 +643,7 @@ public class BasicNode implements ModelObject {
                     mGraphics = new NodeGraphics();
                     mGraphics.parseXML(element);
                 } else if (tag.equals("CEdge")) {
-                    GuargedEdge edge = new GuargedEdge();
+                    GuardedEdge edge = new GuardedEdge();
 
                     edge.parseXML(element);
                     edge.setSourceNode(node);
@@ -680,7 +684,7 @@ public class BasicNode implements ModelObject {
                     edge.setSourceNode(node);
                     edge.setSourceUnid(node.getId());
                     mDEdge = edge;
-                } else {
+                } else if (this.getClass().equals(BasicNode.class)) {
                     throw new XMLParseError(null,
                             "Cannot parse the element with the tag \"" + tag + "\" into a node child!");
                 }
@@ -730,19 +734,19 @@ public class BasicNode implements ModelObject {
 
         // Add hash of all Conditional Edges
         for (int cntEdge = 0; cntEdge < getSizeOfCEdgeList(); cntEdge++) {
-            hashCode += mCEdgeList.get(cntEdge).hashCode() 
+            hashCode += mCEdgeList.get(cntEdge).hashCode()
                     + mCEdgeList.get(cntEdge).getGraphics().getHashCode()
-                    + mCEdgeList.get(cntEdge).getCondition().hashCode() 
+                    + mCEdgeList.get(cntEdge).getCondition().hashCode()
                     + mCEdgeList.get(cntEdge).getSourceUnid().hashCode()
                     + mCEdgeList.get(cntEdge).getTargetUnid().hashCode();
         }
 
         // Add hash of all Probability Edges
         for (int cntEdge = 0; cntEdge < getSizeOfPEdgeList(); cntEdge++) {
-   
-            hashCode += mPEdgeList.get(cntEdge).hashCode() 
+
+            hashCode += mPEdgeList.get(cntEdge).hashCode()
                     + mPEdgeList.get(cntEdge).getGraphics().getHashCode()
-                    + mPEdgeList.get(cntEdge).getProbability() 
+                    + mPEdgeList.get(cntEdge).getProbability()
                     + mPEdgeList.get(cntEdge).getSourceUnid().hashCode()
                     + mPEdgeList.get(cntEdge).getTargetUnid().hashCode();
         }

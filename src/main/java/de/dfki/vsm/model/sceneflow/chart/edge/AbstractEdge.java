@@ -4,7 +4,10 @@ import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgeGraphics;
+import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.tpl.TPLTuple;
+import de.dfki.vsm.util.xml.XMLWriteError;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -169,4 +172,21 @@ public abstract class AbstractEdge implements ModelObject {
 
     @Override
     public abstract AbstractEdge getCopy();
+
+    public void writeXML(IOSIndentWriter out) throws XMLWriteError {
+      if (mGraphics != null) {
+          mGraphics.writeXML(out);
+      }
+
+      if (!mCmdList.isEmpty()) {
+        out.println("<Commands>").push();
+
+        for (int i = 0; i < mCmdList.size(); i++) {
+            mCmdList.get(i).writeXML(out);
+        }
+
+        out.pop().println("</Commands>");
+      }
+    }
+
 }

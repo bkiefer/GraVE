@@ -7,7 +7,7 @@ import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.EpsilonEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.model.sceneflow.glue.command.definition.VariableDefinition;
@@ -284,64 +284,9 @@ public class SuperNode extends BasicNode {
         return (SuperNode) CopyTool.copy(this);
     }
 
-    @Override
-    public void writeXML(IOSIndentWriter out) throws XMLWriteError {
-        String start = "";
 
-        for (String id : mStartNodeMap.keySet()) {
-            start += id + ";";
-        }
-
-        out.println("<SuperNode id=\"" + mNodeId + "\" name=\"" + mNodeName + "\" comment=\"" + mComment + "\" hideLocalVar=\"" + mHideLocalVarBadge
-                + "\" hideGlobalVar=\"" + mHideGlobalVarBadge + "\" start=\"" + start + "\">").push();
-
-        int i = 0;
-
-        out.println("<Define>").push();
-
-        for (i = 0; i < mTypeDefList.size(); i++) {
-            mTypeDefList.get(i).writeXML(out);
-        }
-
-        out.pop().println("</Define>");
-        out.println("<Declare>").push();
-
-        for (i = 0; i < mVarDefList.size(); i++) {
-            mVarDefList.get(i).writeXML(out);
-        }
-
-        out.pop().println("</Declare>");
-        out.println("<Commands>").push();
-
-        for (i = 0; i < mCmdList.size(); i++) {
-            mCmdList.get(i).writeXML(out);
-        }
-
-        out.pop().println("</Commands>");
-
-        for (i = 0; i < mCEdgeList.size(); i++) {
-            mCEdgeList.get(i).writeXML(out);
-        }
-
-        if (mDEdge != null) {
-            mDEdge.writeXML(out);
-        }
-
-        for (i = 0; i < mPEdgeList.size(); i++) {
-            mPEdgeList.get(i).writeXML(out);
-        }
-
-        for (i = 0; i < mFEdgeList.size(); i++) {
-            mFEdgeList.get(i).writeXML(out);
-        }
-
-        for (i = 0; i < mIEdgeList.size(); i++) {
-            mIEdgeList.get(i).writeXML(out);
-        }
-
-        if (mGraphics != null) {
-            mGraphics.writeXML(out);
-        }
+    protected void writeFieldsXML(IOSIndentWriter out) throws XMLWriteError {
+        super.writeFieldsXML(out);
 
         if (mLocalVariableBadge != null) {
             mLocalVariableBadge.writeXML(out);
@@ -350,6 +295,8 @@ public class SuperNode extends BasicNode {
         if (mGlobalVariableBadge != null) {
             mGlobalVariableBadge.writeXML(out);
         }
+
+        int i = 0;
 
         for (i = 0; i < mCommentList.size(); i++) {
             mCommentList.get(i).writeXML(out);
@@ -362,18 +309,34 @@ public class SuperNode extends BasicNode {
         for (i = 0; i < mSuperNodeList.size(); i++) {
             mSuperNodeList.get(i).writeXML(out);
         }
+    }
+
+    @Override
+    public void writeXML(IOSIndentWriter out) throws XMLWriteError {
+        String start = "";
+
+        for (String id : mStartNodeMap.keySet()) {
+            start += id + ";";
+        }
+
+        out.println("<SuperNode id=\"" + mNodeId + "\" name=\"" + mNodeName + "\" comment=\"" + mComment + "\" hideLocalVar=\"" + mHideLocalVarBadge
+                + "\" hideGlobalVar=\"" + mHideGlobalVarBadge + "\" start=\"" + start + "\">").push();
+
+        writeFieldsXML(out);
 
         out.pop().println("</SuperNode>");
     }
 
     @Override
     public void parseXML(Element element) throws XMLParseError {
-        mNodeId = element.getAttribute("id");
-        mNodeName = element.getAttribute("name");
+        super.parseXML(element);
         mComment = element.getAttribute("comment");
         mHideLocalVarBadge = Boolean.valueOf(element.getAttribute("hideLocalVar"));
         mHideGlobalVarBadge = Boolean.valueOf(element.getAttribute("hideGlobalVar"));
 
+        /**
+         * Construct start node list from the start string
+         */
         String[] arr = element.getAttribute("start").split(";");
 
         for (String str : arr) {
@@ -388,27 +351,7 @@ public class SuperNode extends BasicNode {
             public void run(Element element) throws XMLParseError {
                 java.lang.String tag = element.getTagName();
 
-                if (tag.equals("Define")) {
-                    XMLParseAction.processChildNodes(element, new XMLParseAction() {
-                        public void run(Element element) throws XMLParseError {
-                            mTypeDefList.add(DataTypeDefinition.parse(element));
-                        }
-                    });
-                } else if (tag.equals("Declare")) {
-                    XMLParseAction.processChildNodes(element, new XMLParseAction() {
-                        public void run(Element element) throws XMLParseError {
-                            VariableDefinition def = new VariableDefinition();
-                            def.parseXML(element);
-                            mVarDefList.add(def);
-                        }
-                    });
-                } else if (tag.equals("Commands")) {
-                    XMLParseAction.processChildNodes(element, new XMLParseAction() {
-                        public void run(Element element) throws XMLParseError {
-                            mCmdList.add(Command.parse(element));
-                        }
-                    });
-                } else if (tag.equals("LocalVariableBadge")) {
+                if (tag.equals("LocalVariableBadge")) {
                     VariableBadge varBadge = new VariableBadge("LocalVariableBadge");
 
                     varBadge.parseXML(element);
@@ -443,52 +386,7 @@ public class SuperNode extends BasicNode {
                     node.parseXML(element);
                     node.setParentNode(superNode);
                     mSuperNodeList.add(node);
-                } else if (tag.equals("Graphics")) {
-                    mGraphics = new NodeGraphics();
-                    mGraphics.parseXML(element);
-                } else if (tag.equals("CEdge")) {
-                    GuargedEdge edge = new GuargedEdge();
-
-                    edge.parseXML(element);
-                    edge.setSourceNode(superNode);
-                    edge.setSourceUnid(superNode.getId());
-                    mCEdgeList.add(edge);
-                } else if (tag.equals("PEdge")) {
-                    RandomEdge edge = new RandomEdge();
-
-                    edge.parseXML(element);
-                    edge.setSourceNode(superNode);
-                    edge.setSourceUnid(superNode.getId());
-                    mPEdgeList.add(edge);
-                } else if (tag.equals("FEdge")) {
-                    ForkingEdge edge = new ForkingEdge();
-
-                    edge.parseXML(element);
-                    edge.setSourceNode(superNode);
-                    edge.setSourceUnid(superNode.getId());
-                    mFEdgeList.add(edge);
-                } else if (tag.equals("IEdge")) {
-                    InterruptEdge edge = new InterruptEdge();
-
-                    edge.parseXML(element);
-                    edge.setSourceNode(superNode);
-                    edge.setSourceUnid(superNode.getId());
-                    mIEdgeList.add(edge);
-                } else if (tag.equals("EEdge")) {
-                    EpsilonEdge edge = new EpsilonEdge();
-
-                    edge.parseXML(element);
-                    edge.setSourceNode(superNode);
-                    edge.setSourceUnid(superNode.getId());
-                    mDEdge = edge;
-                } else if (tag.equals("TEdge")) {
-                    TimeoutEdge edge = new TimeoutEdge();
-
-                    edge.parseXML(element);
-                    edge.setSourceNode(superNode);
-                    edge.setSourceUnid(superNode.getId());
-                    mDEdge = edge;
-                } else {
+                } else if (this.getClass().equals(SuperNode.class)) {
                     throw new XMLParseError(null,
                             "Cannot parse the element with the tag \"" + tag
                             + "\" into a supernode child!");
@@ -541,7 +439,7 @@ public class SuperNode extends BasicNode {
 
         // Add hash of all Conditional Edges
         for (int cntEdge = 0; cntEdge < getSizeOfCEdgeList(); cntEdge++) {
-    
+
             hashCode += mCEdgeList.get(cntEdge).hashCode()
                     + mCEdgeList.get(cntEdge).getGraphics().getHashCode()
                     + mCEdgeList.get(cntEdge).getCondition().hashCode()
@@ -569,7 +467,7 @@ public class SuperNode extends BasicNode {
 
         // Add hash of all Interruptive Edges
         for (int cntEdge = 0; cntEdge < getSizeOfIEdgeList(); cntEdge++) {
-            hashCode += mIEdgeList.get(cntEdge).hashCode() 
+            hashCode += mIEdgeList.get(cntEdge).hashCode()
                     + mIEdgeList.get(cntEdge).getGraphics().getHashCode()
                     + mIEdgeList.get(cntEdge).getCondition().hashCode()
                     + mIEdgeList.get(cntEdge).getSourceUnid().hashCode()

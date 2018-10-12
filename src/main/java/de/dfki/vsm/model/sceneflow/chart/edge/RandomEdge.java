@@ -80,19 +80,7 @@ public class RandomEdge extends AbstractEdge {
         out.println("<PEdge target=\"" + mTargetUnid + "\" start=\"" + start + "\" probability=\"" + mProbability
                     + "\">").push();
 
-        if (mGraphics != null) {
-            mGraphics.writeXML(out);
-        }
-
-        if (!mCmdList.isEmpty()) {
-            out.println("<Commands>").push();
-
-            for (int i = 0; i < mCmdList.size(); i++) {
-                mCmdList.get(i).writeXML(out);
-            }
-
-            out.pop().println("</Commands>");
-        }
+        super.writeXML(out);
 
         out.pop().println("</PEdge>");
     }

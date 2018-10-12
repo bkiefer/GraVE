@@ -39,6 +39,9 @@ public abstract class DataTypeDefinition extends Definition {
         } else if (tag.equals("StructTypeDefinition")) {
             def = new StructTypeDefinition();
             def.parseXML(element);
+        } else if (tag.equals("StructType")) {  // is: StructTypeDefinition
+            def = new StructTypeDefinition();
+            def.parseXML(element);
         } else {
             def = null;
         }

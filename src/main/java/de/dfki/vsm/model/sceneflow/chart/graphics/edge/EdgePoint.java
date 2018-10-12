@@ -77,10 +77,17 @@ public final class EdgePoint implements ModelObject {
     @Override
     public final void parseXML(final Element element) {
       // was x-pos, y-pos, control-x-pos, control-y-pos
-      // now xPos, yPos, ctrlXPos, ctrlYPos
+      // is: xPos, yPos, ctrlXPos, ctrlYPos
+      if (! element.getAttribute("xPos").isEmpty()) {
+        mXPpos = Integer.valueOf(element.getAttribute("xPos"));
+        mYPos = Integer.valueOf(element.getAttribute("yPos"));
+        mCtrlXPos = Integer.valueOf(element.getAttribute("ctrlXPos"));
+        mCtrlYPos = Integer.valueOf(element.getAttribute("ctrlYPos"));
+      } else {
         mXPpos = Integer.valueOf(element.getAttribute("x-pos"));
         mYPos = Integer.valueOf(element.getAttribute("y-pos"));
         mCtrlXPos = Integer.valueOf(element.getAttribute("control-x-pos"));
         mCtrlYPos = Integer.valueOf(element.getAttribute("control-y-pos"));
+      }
     }
 }

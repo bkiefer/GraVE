@@ -83,22 +83,10 @@ public class InterruptEdge extends AbstractEdge {
 
         out.println("<IEdge target=\"" + mTargetUnid + "\" start=\"" + start + "\">").push();
 
-        if (mGraphics != null) {
-            mGraphics.writeXML(out);
-        }
+        super.writeXML(out);
 
         if (mCondition != null) {
             mCondition.writeXML(out);
-        }
-
-        if (!mCmdList.isEmpty()) {
-            out.println("<Commands>").push();
-
-            for (int i = 0; i < mCmdList.size(); i++) {
-                mCmdList.get(i).writeXML(out);
-            }
-
-            out.pop().println("</Commands>");
         }
 
         out.pop().println("</IEdge>");

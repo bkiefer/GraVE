@@ -59,7 +59,12 @@ public final class NodePosition implements ModelObject {
     @Override
     public final void parseXML(Element element) {
       // was: x-pos, y-pos now: xPos, yPos
+      if (! element.getAttribute("xPos").isEmpty()) {
+        mXPos = Integer.valueOf(element.getAttribute("xPos"));
+        mYPos = Integer.valueOf(element.getAttribute("yPos"));
+      } else {
         mXPos = Integer.valueOf(element.getAttribute("x-pos"));
         mYPos = Integer.valueOf(element.getAttribute("y-pos"));
+      }
     }
 }

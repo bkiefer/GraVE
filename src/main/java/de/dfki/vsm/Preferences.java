@@ -315,7 +315,7 @@ public final class Preferences {
         return new TreeSet<>(sPROPERTIES.keySet());
     }
 
-    private static synchronized void parseConfigFile() {
+    static synchronized void parseConfigFile() {
         if ((new File(sCONFIG_FILE)).canRead()) {
             try {
                 try (FileInputStream in = new FileInputStream(sCONFIG_FILE)) {

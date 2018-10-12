@@ -35,7 +35,8 @@ public abstract class Expression extends Command {
         // The name of the XML tag
         final String tag = element.getTagName();
         // Parse the expression
-        if (tag.equals("CallingExpression")) {
+        if (tag.equals("UserCommand") // is: CallingExpression
+            || tag.equals("CallingExpression")) {
             exp = new CallingExpression();
             exp.parseXML(element);
         } else if (tag.equals("ConstructExpression")) {
@@ -97,20 +98,27 @@ public abstract class Expression extends Command {
             exp = new ContainsList();
             exp.parseXML(element);
             System.err.println(exp);
-        } else if (tag.equals("StructExpression")) {
+        } else if (tag.equals("StructExpression")
+            || tag.equals("Struct")) { // is: StructExpression
             exp = new StructExpression();
             exp.parseXML(element);
         } else if (tag.equals("ArrayExpression")) {
             exp = new ArrayExpression();
             exp.parseXML(element);
         } else if (tag.equals("IntLiteral")
+                || tag.equals("Int")  // is: IntLiteral
                 || tag.equals("FloatLiteral")
+                || tag.equals("Float") // is: FloatLiteral
                 || tag.equals("BoolLiteral")
+                || tag.equals("Bool")  // is: BoolLiteral
                 || tag.equals("StringLiteral")
+                || tag.equals("String")  // is: StringLiteral
                 || tag.equals("NullLiteral")) {
             exp = LiteralExpression.parse(element);
         } else if (tag.equals("SimpleVariable")
+                || tag.equals("Variable") // is: SimpleVariable
                 || tag.equals("MemberVariable")
+                || tag.equals("Member") // is: MemberVariable
                 || tag.equals("FieldVariable")) {
             exp = VariableExpression.parse(element);
         } else {

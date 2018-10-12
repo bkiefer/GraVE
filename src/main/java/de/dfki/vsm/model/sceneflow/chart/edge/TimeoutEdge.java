@@ -101,19 +101,7 @@ public class TimeoutEdge extends AbstractEdge {
 
         out.println("<TEdge target=\"" + mTargetUnid + "\" start=\"" + start + "\" timeout=\"" + mTimeout + "\">");
 
-        if (mGraphics != null) {
-            mGraphics.writeXML(out);
-        }
-
-        if (!mCmdList.isEmpty()) {
-            out.println("<Commands>").push();
-
-            for (int i = 0; i < mCmdList.size(); i++) {
-                mCmdList.get(i).writeXML(out);
-            }
-
-            out.pop().println("</Commands>");
-        }
+        super.writeXML(out);
 
         out.println("</TEdge>");
     }

@@ -71,5 +71,13 @@ public class EdgeArrow implements ModelObject {
                 mPointList.add(point);
             }
         });
+        XMLParseAction.processChildNodes(element, "ControlPoint", new XMLParseAction() {
+          @Override
+          public void run(final Element element) {
+              final EdgePoint point = new EdgePoint();
+              point.parseXML(element);
+              mPointList.add(point);
+          }
+      });
     }
 }

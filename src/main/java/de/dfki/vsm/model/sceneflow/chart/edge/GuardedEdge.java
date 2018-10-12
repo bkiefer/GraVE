@@ -17,14 +17,14 @@ import java.util.Map;
 /**
  * @author Gregor Mehlmann
  */
-public class GuargedEdge extends AbstractEdge {
+public class GuardedEdge extends AbstractEdge {
 
     protected Expression mCondition = null;
 
-    public GuargedEdge() {
+    public GuardedEdge() {
     }
 
-    public GuargedEdge(String target, String source, BasicNode targetNode, BasicNode sourceNode, EdgeGraphics graphics,
+    public GuardedEdge(String target, String source, BasicNode targetNode, BasicNode sourceNode, EdgeGraphics graphics,
             ArrayList<Command> cmdList, HashMap<TPLTuple<String, BasicNode>, TPLTuple<String, BasicNode>> altStartNodeMap,
             Expression condition) {
         super(target, source, targetNode, sourceNode, graphics, cmdList, altStartNodeMap);
@@ -57,8 +57,8 @@ public class GuargedEdge extends AbstractEdge {
     }
 
     // TODO:
-    public GuargedEdge getCopy() {
-        return new GuargedEdge(mTargetUnid, mSourceUnid, mTargetNode, mSourceNode, mGraphics.getCopy(), getCopyOfCmdList(),
+    public GuardedEdge getCopy() {
+        return new GuardedEdge(mTargetUnid, mSourceUnid, mTargetNode, mSourceNode, mGraphics.getCopy(), getCopyOfCmdList(),
                 getCopyOfAltStartNodeMap(), mCondition.getCopy());
     }
 
@@ -76,22 +76,10 @@ public class GuargedEdge extends AbstractEdge {
 
         out.println("<CEdge target=\"" + mTargetUnid + "\" start=\"" + start + "\">").push();
 
-        if (mGraphics != null) {
-            mGraphics.writeXML(out);
-        }
+        super.writeXML(out);
 
         if (mCondition != null) {
             mCondition.writeXML(out);
-        }
-
-        if (!mCmdList.isEmpty()) {
-            out.println("<Commands>").push();
-
-            for (int i = 0; i < mCmdList.size(); i++) {
-                mCmdList.get(i).writeXML(out);
-            }
-
-            out.pop().println("</Commands>");
         }
 
         out.pop().println("</CEdge>");

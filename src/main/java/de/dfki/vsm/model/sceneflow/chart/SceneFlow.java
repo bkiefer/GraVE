@@ -130,6 +130,40 @@ public final class SceneFlow extends SuperNode {
         return (SceneFlow) CopyTool.copy(this);
     }
 
+    protected void writeFieldsXML(IOSIndentWriter out) throws XMLWriteError {
+      super.writeFieldsXML(out);
+
+      if (!mUserCmdDefMap.isEmpty()) {
+        out.println("<UserCommands>").push();
+
+        Iterator it = mUserCmdDefMap.entrySet().iterator();
+
+        while (it.hasNext()) {
+            Map.Entry pairs = (java.util.Map.Entry) it.next();
+            FunctionDefinition    def   = (FunctionDefinition) pairs.getValue();
+            if(def.isActive())
+            {
+                def.writeXML(out);
+            }
+        }
+
+        out.pop().println("</UserCommands>");
+      }
+
+      out.println("<ClassPath>").push();
+
+      for (int i = 0; i < mClassPathList.size(); i++) {
+          out.println("<ClassPathElement>").push();
+          out.println(mClassPathList.get(i));
+          out.pop().println("</ClassPathElement>");
+      }
+
+      out.pop().println("</ClassPath>");
+      out.print("<InitContext>");
+      out.print(mContextCode);
+      out.println("</InitContext>");
+    }
+
     @Override
     public void writeXML(IOSIndentWriter out) throws XMLWriteError {
         String start = "";
@@ -139,9 +173,9 @@ public final class SceneFlow extends SuperNode {
         }
 
         //out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        out.println("<SceneFlow " 
-                + "id=\"" + mNodeId + "\" " 
-                + "name=\"" + mNodeName + "\" " 
+        out.println("<SceneFlow "
+                + "id=\"" + mNodeId + "\" "
+                + "name=\"" + mNodeName + "\" "
                 + "comment=\"" + mComment + "\" hideLocalVar=\"" + mHideLocalVarBadge + "\" hideGlobalVar=\"" + mHideGlobalVarBadge + "\" "
                 + "modifDate=\"" + Preferences.sDATE_FORMAT.format(new Date()) + "\" " + "start=\""
                 + start + "\" "
@@ -153,185 +187,27 @@ public final class SceneFlow extends SuperNode {
                 + "\" " + "xsi:schemaLocation=\"" + Preferences.getProperty("xmlns") + " "
                 + Preferences.getProperty("xsi_schemeLocation") + "\">").push();
 
-        int i = 0;
+        writeFieldsXML(out);
 
-        out.println("<Define>").push();
-
-        for (i = 0; i < mTypeDefList.size(); i++) {
-            mTypeDefList.get(i).writeXML(out);
-        }
-
-        out.pop().println("</Define>");
-        out.println("<Declare>").push();
-
-        for (i = 0; i < mVarDefList.size(); i++) {
-            mVarDefList.get(i).writeXML(out);
-        }
-
-        out.pop().println("</Declare>");
-        out.println("<Commands>").push();
-
-        for (i = 0; i < mCmdList.size(); i++) {
-            mCmdList.get(i).writeXML(out);
-        }
-
-        out.pop().println("</Commands>");
-
-        for (i = 0; i < mCEdgeList.size(); i++) {
-            mCEdgeList.get(i).writeXML(out);
-        }
-
-        for (i = 0; i < mPEdgeList.size(); i++) {
-            mPEdgeList.get(i).writeXML(out);
-        }
-
-        for (i = 0; i < mIEdgeList.size(); i++) {
-            mIEdgeList.get(i).writeXML(out);
-        }
-
-        if (mDEdge != null) {
-            mDEdge.writeXML(out);
-        }
-
-        if (mLocalVariableBadge != null) {
-            mLocalVariableBadge.writeXML(out);
-        }
-
-        if (mGlobalVariableBadge != null) {
-            mGlobalVariableBadge.writeXML(out);
-        }
-
-        for (i = 0; i < mCommentList.size(); i++) {
-            mCommentList.get(i).writeXML(out);
-        }
-
-        for (i = 0; i < mNodeList.size(); i++) {
-            mNodeList.get(i).writeXML(out);
-        }
-
-        for (i = 0; i < mSuperNodeList.size(); i++) {
-            mSuperNodeList.get(i).writeXML(out);
-        }
-
-        if (!mUserCmdDefMap.isEmpty()) {
-            out.println("<UserCommands>").push();
-
-            Iterator it = mUserCmdDefMap.entrySet().iterator();
-
-            while (it.hasNext()) {
-                Map.Entry pairs = (java.util.Map.Entry) it.next();
-                FunctionDefinition    def   = (FunctionDefinition) pairs.getValue();
-                if(def.isActive())
-                {
-                    def.writeXML(out);
-                }
-            }
-
-            out.pop().println("</UserCommands>");
-        }
-
-        out.println("<ClassPath>").push();
-
-        for (i = 0; i < mClassPathList.size(); i++) {
-            out.println("<ClassPathElement>").push();
-            out.println(mClassPathList.get(i));
-            out.pop().println("</ClassPathElement>");
-        }
-
-        out.pop().println("</ClassPath>");
-        out.print("<InitContext>");
-        out.print(mContextCode);
-        out.println("</InitContext>");
         out.pop().print("</SceneFlow>");
     }
 
     @Override
     public void parseXML(Element element) throws XMLParseError {
-        mNodeId = element.getAttribute("id");
-        mNodeName = element.getAttribute("name");
-        mComment = element.getAttribute("comment");
-
-        String start = element.getAttribute("start");
+        super.parseXML(element);
 
         mContextClass = element.getAttribute("context");
         mPackageName = element.getAttribute("package");
         mXMLSchemeLocation = element.getAttribute("xsi:schemaLocation");
         mXMLNameSpace = element.getAttribute("xmlns");
         mXMLSchemeInstance = element.getAttribute("xmlns:xsi");
-        mHideLocalVarBadge = Boolean.valueOf(element.getAttribute("hideLocalVar"));
-        mHideGlobalVarBadge = Boolean.valueOf(element.getAttribute("hideGlobalVar"));
         mModifDate = element.getAttribute("modifDate");
-
-        /**
-         * Construct start node list from the start string
-         */
-        String[] arr = start.split(";");
-
-        for (String str : arr) {
-            if (!str.isEmpty()  && !str.equals("null")) {
-                mStartNodeMap.put(str, null);
-            }
-        }
-
-        final SceneFlow sceneFlow = this;
 
         XMLParseAction.processChildNodes(element, new XMLParseAction() {
             public void run(Element element) throws XMLParseError {
                 String tag = element.getTagName();
 
-                if (tag.equals("Define")) {
-                    XMLParseAction.processChildNodes(element, new XMLParseAction() {
-                        public void run(Element element) throws XMLParseError {
-                            mTypeDefList.add(DataTypeDefinition.parse(element));
-                        }
-                    });
-                } else if (tag.equals("Declare")) {
-                    XMLParseAction.processChildNodes(element, new XMLParseAction() {
-                        public void run(Element element) throws XMLParseError {
-                            VariableDefinition def = new VariableDefinition();
-
-                            def.parseXML(element);
-                            mVarDefList.add(def);
-                        }
-                    });
-                } else if (tag.equals("LocalVariableBadge")) {
-                    VariableBadge varBadge = new VariableBadge("LocalVariableBadge");
-
-                    varBadge.parseXML(element);
-                    mLocalVariableBadge = varBadge;
-                } else if (tag.equals("GlobalVariableBadge")) {
-                    VariableBadge varBadge = new VariableBadge("GlobalVariableBadge");
-
-                    varBadge.parseXML(element);
-                    mGlobalVariableBadge = varBadge;
-                } else if (tag.equals("VariableBadge")) {
-
-                    // do nothing (left for old project's compatibility)
-                } else if (tag.equals("Comment")) {
-                    CommentBadge comment = new CommentBadge();
-
-                    comment.parseXML(element);
-                    comment.setParentNode(sceneFlow);
-                    mCommentList.add(comment);
-                } else if (tag.equals("Node")) {
-                    BasicNode node = new BasicNode();
-
-                    node.parseXML(element);
-                    node.setParentNode(sceneFlow);
-                    mNodeList.add(node);
-                } else if (tag.equals("SuperNode")) {
-                    SuperNode node = new SuperNode();
-
-                    node.parseXML(element);
-                    node.setParentNode(sceneFlow);
-                    mSuperNodeList.add(node);
-                } else if (tag.equals("Commands")) {
-                    XMLParseAction.processChildNodes(element, new XMLParseAction() {
-                        public void run(Element element) throws XMLParseError {
-                            mCmdList.add(Command.parse(element));
-                        }
-                    });
-                } else if (tag.equals("UserCommands")) {
+                if (tag.equals("UserCommands")) {
                     XMLParseAction.processChildNodes(element, "UserCommand", new XMLParseAction() {
                         public void run(Element element) throws XMLParseError {
                             FunctionDefinition def = new FunctionDefinition();
@@ -349,9 +225,11 @@ public final class SceneFlow extends SuperNode {
                 } else if (tag.equals("InitContext")) {
                     mContextCode = element.getTextContent().trim();
                 } else {
+                  /* TODO: THIS WOULD ONLY WORK IF THE SUPERCLASSES REMOVED
+                   * THE ELEMENTS THEY CAN HANDLE, but it's not reliable anyway
                     throw new XMLParseError(null,
                             "Cannot parse the element with the tag \"" + tag
-                            + "\" into a sceneflow child!");
+                            + "\" into a sceneflow child!");*/
                 }
             }
         });
@@ -385,7 +263,7 @@ public final class SceneFlow extends SuperNode {
                 ? 1
                 : 0);
 
-       
+
         // Add hash of existing user commands
         for (FunctionDefinition fundDef : mUserCmdDefMap.values()) {
             hashCode += fundDef.getName().hashCode() + fundDef.getClassName().hashCode()
@@ -396,7 +274,7 @@ public final class SceneFlow extends SuperNode {
                     }
                     //+ fundDef.getParamList().hashCode();
         }
-       
+
         // Add hash of all nodes on workspace
         for (int cntNode = 0; cntNode < mNodeList.size(); cntNode++) {
             hashCode += getNodeAt(cntNode).getHashCode();
@@ -406,12 +284,12 @@ public final class SceneFlow extends SuperNode {
         for (int cntSNode = 0; cntSNode < mSuperNodeList.size(); cntSNode++) {
             hashCode += getSuperNodeAt(cntSNode).getHashCode();
         }
-        
+
         // Add hash of all commands on workspace
         for (int cntCommand = 0; cntCommand < getSizeOfCmdList(); cntCommand++) {
             hashCode += mCmdList.get(cntCommand).hashCode();
         }
-      
+
          // Add hash of all TypeDef on workspace
         for (int cntType = 0; cntType < getSizeOfTypeDefList(); cntType++) {
             hashCode += mTypeDefList.get(cntType).hashCode() + mTypeDefList.get(cntType).getName().hashCode()
@@ -424,9 +302,9 @@ public final class SceneFlow extends SuperNode {
                     + getVarDefList().get(cntVar).getType().hashCode()
                     + getVarDefList().get(cntVar).toString().hashCode();
         }
-        
+
         // Add hash of all comments on workspace
-        for (int cntComment = 0; cntComment < getCommentList().size(); cntComment++) {          
+        for (int cntComment = 0; cntComment < getCommentList().size(); cntComment++) {
             hashCode += mCommentList.get(cntComment).getGraphics().getRectangle().hashCode();
             hashCode += mCommentList.get(cntComment).getHTMLText().hashCode();
         }
