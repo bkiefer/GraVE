@@ -82,12 +82,12 @@ public final class Preferences {
 	////////////////////////////////////////////////////////////////////////////
     // VERSION INFORMATION
     ////////////////////////////////////////////////////////////////////////////
-    public static final URL sVSM_VERSIONURL                 = SceneMaker3.class.getResource("/res/version.ini");
+    public static final URL sVSM_VERSIONURL                 = MainGrave.class.getResource("/res/version.ini");
 
     ////////////////////////////////////////////////////////////////////////////
     // URL RESOURCES
     ////////////////////////////////////////////////////////////////////////////
-    public static final URL sSTYLESURL                      = SceneMaker3.class.getResource("/res/sty/scripts.xml");
+    public static final URL sSTYLESURL                      = MainGrave.class.getResource("/res/sty/scripts.xml");
     
     ////////////////////////////////////////////////////////////////////////////
     // DIRECTORIES
@@ -158,8 +158,8 @@ public final class Preferences {
     //////////////////////////////////////////////////////////////////////////////
     // FILE RESSOURCES
     //////////////////////////////////////////////////////////////////////////////
-    public static final URL sABOUT_FILE                     = SceneMaker3.class.getResource("/res/doc/about.html");
-    public static final URL sHELP_FILE                      = SceneMaker3.class.getResource("/res/doc/index.html");
+    public static final URL sABOUT_FILE                     = MainGrave.class.getResource("/res/doc/about.html");
+    public static final URL sHELP_FILE                      = MainGrave.class.getResource("/res/doc/index.html");
 
     //////////////////////////////////////////////////////////////////////////////
     // FONT DATA

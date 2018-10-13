@@ -9,7 +9,6 @@ package de.dfki.vsm.editor.util.grid;
 //~--- non-JDK imports --------------------------------------------------------
 
 import org.ujmp.core.Matrix;
-import org.ujmp.core.MatrixFactory;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -61,7 +60,7 @@ public class BezierFit {
     }
 
     private Matrix Y(ArrayList<BezierPoint> points) {
-        Matrix Y = MatrixFactory.fill(0.0, points.size(), 1);
+        Matrix Y = Matrix.Factory.fill(0.0, points.size(), 1);
 
         for (int i = 0; i < points.size(); i++) {
             Y.setAsDouble(points.get(i).getY(), i, 0);
@@ -71,7 +70,7 @@ public class BezierFit {
     }
 
     private Matrix X(ArrayList<BezierPoint> points) {
-        Matrix X = MatrixFactory.fill(0.0, points.size(), 1);
+        Matrix X = Matrix.Factory.fill(0.0, points.size(), 1);
 
         for (int i = 0; i < points.size(); i++) {
             X.setAsDouble(points.get(i).getX(), i, 0);
@@ -82,7 +81,7 @@ public class BezierFit {
 
     private Matrix U(ArrayList<BezierPoint> points) {
         double[] npls = normalizedPathLengths(points);
-        Matrix   U    = MatrixFactory.fill(0.0, npls.length, 4);
+        Matrix   U    = Matrix.Factory.fill(0.0, npls.length, 4);
 
         for (int i = 0; i < npls.length; i++) {
             U.setAsDouble(Math.pow(npls[i], 3), i, 0);
@@ -95,7 +94,7 @@ public class BezierFit {
     }
 
     private Matrix M() {
-        Matrix M = MatrixFactory.fill(0.0, 4, 4);
+        Matrix M = Matrix.Factory.fill(0.0, 4, 4);
 
         M.setAsDouble(-1, 0, 0);
         M.setAsDouble(3, 0, 1);

@@ -4,7 +4,7 @@ package de.dfki.vsm.util.syn;
 
 import de.dfki.vsm.util.log.LOGDefaultLogger;
 
-import java_cup.runtime.Scanner;
+//import java_cup.runtime.Scanner;
 
 //~--- JDK imports ------------------------------------------------------------
 
@@ -18,7 +18,7 @@ import javax.swing.text.Segment;
 /**
  * @author Gregor Mehlmann
  */
-public abstract class SyntaxDocLexxer implements Scanner {
+public abstract class SyntaxDocLexxer  {
 
     // Get The System Logger
     protected final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
@@ -52,7 +52,7 @@ public abstract class SyntaxDocLexxer implements Scanner {
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
-    @Override
+
     public abstract SyntaxDocSymbol next_token() throws Exception;
 
     ////////////////////////////////////////////////////////////////////////////

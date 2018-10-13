@@ -8,7 +8,7 @@ import de.dfki.vsm.util.log.LOGDefaultLogger;
 import de.dfki.vsm.util.xml.XMLParseError;
 import de.dfki.vsm.util.xml.XMLWriteError;
 
-import java_cup.runtime.Symbol;
+// import java_cup.runtime.Symbol;
 
 import org.w3c.dom.Element;
 
@@ -19,7 +19,11 @@ import java.io.ByteArrayOutputStream;
 /**
  * @author Gregor Mehlmann
  */
-public class SyntaxDocSymbol extends Symbol implements ModelObject {
+public class SyntaxDocSymbol
+    //extends Symbol
+    implements ModelObject {
+
+  Object value; // replacement
 
     // The System Logger
     private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
@@ -28,7 +32,7 @@ public class SyntaxDocSymbol extends Symbol implements ModelObject {
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     public SyntaxDocSymbol(final int field, final int lower, final int upper, final SyntaxDocToken token) {
-        super(field, lower, upper, token);
+        //super(field, lower, upper, token);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -63,11 +67,12 @@ public class SyntaxDocSymbol extends Symbol implements ModelObject {
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
-    @Override
+
     public SyntaxDocSymbol getCopy() {
 
         // Recursively Get A Deep Copy
-        return new SyntaxDocSymbol(sym, left, right, (SyntaxDocToken) ((SyntaxDocToken) value).getCopy());
+        //return new SyntaxDocSymbol(sym, left, right, (SyntaxDocToken) ((SyntaxDocToken) value).getCopy());
+      return null;
     }
 
     ////////////////////////////////////////////////////////////////////////////

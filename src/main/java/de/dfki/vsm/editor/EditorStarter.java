@@ -4,7 +4,7 @@ import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 import de.dfki.vsm.editor.dialog.NewProjectDialog;
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.Preferences;
-import de.dfki.vsm.SceneMaker3;
+import de.dfki.vsm.MainGrave;
 import de.dfki.vsm.runtime.project.RunTimeProject;
 import de.dfki.vsm.util.ios.ResourceLoader;
 import de.dfki.vsm.util.log.LOGDefaultLogger;
@@ -552,7 +552,7 @@ public class EditorStarter extends JPanel {
 		// LIST OF SAMPLE PROJECTS
 		// *********************************************************************
 
-		CodeSource src = SceneMaker3.class.getProtectionDomain().getCodeSource();
+		CodeSource src = MainGrave.class.getProtectionDomain().getCodeSource();
 		List<String> listDirs = new ArrayList<String>();
 		String path = "res/prj";
 		if (src != null) {

@@ -9,7 +9,7 @@ import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.log.LOGDefaultLogger;
-import org.fife.ui.autocomplete.AutoCompletion;
+//import org.fife.ui.autocomplete.AutoCompletion;
 
 import java.awt.Color;
 import java.awt.Dimension;

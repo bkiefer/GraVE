@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
 /**
  * @author Gregor Mehlmann
  */
-public final class SceneMaker3 {
+public final class MainGrave {
 
     // The logger instance of SceneMaker3
     private final static LOGDefaultLogger sLogger
