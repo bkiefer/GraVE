@@ -29,8 +29,8 @@ import javax.swing.SwingConstants;
 public class RemoveButton extends JLabel {
     private final Dimension buttonSize = new Dimension(20, 20);
     //Icons
-    private final ImageIcon ICON_REMOVE_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/remove.png");
-    private final ImageIcon ICON_REMOVE_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/remove_blue.png");
+    private final ImageIcon ICON_REMOVE_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/remove.png");
+    private final ImageIcon ICON_REMOVE_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/remove_blue.png");
     
     public RemoveButton() {
         setHorizontalAlignment(SwingConstants.RIGHT);

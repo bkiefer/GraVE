@@ -36,18 +36,18 @@ import javax.swing.UnsupportedLookAndFeelException;
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
- * 
- * Standard VSM configurations 
+ *
+ * Standard VSM configurations
  */
 public final class Preferences {
 
     // The editor properties object
     private static final Properties sPROPERTIES = new Properties();
-    // The global properties file    
+    // The global properties file
     private static final String sCONFIG_FILE
             = System.getProperty("user.home")
             + System.getProperty("file.separator") + ".vsm";
-    
+
     //////////////////////////////////////////////////////////////////////////////
     // SYSTEM PROPERTIES
     //////////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ public final class Preferences {
     public static final String sSYSPROPS_OSYS_ARCH          = System.getProperty("os.arch");
     public static final String sSYSPROPS_OSYS_NAME          = System.getProperty("os.name");
     public static final String sSYSPROPS_OSYS_VERS          = System.getProperty("os.version");
-    
+
     ////////////////////////////////////////////////////////////////////////////
     // LOGFILE BASE CONFIGURATION
     ////////////////////////////////////////////////////////////////////////////
@@ -78,17 +78,17 @@ public final class Preferences {
     // LOGFILE BASE CONFIGURATION
     ////////////////////////////////////////////////////////////////////////////
     public static final String sSOCKFILE_FILE_NAME          = "./log/sock.log";
-	
+
 	////////////////////////////////////////////////////////////////////////////
     // VERSION INFORMATION
     ////////////////////////////////////////////////////////////////////////////
-    public static final URL sVSM_VERSIONURL                 = MainGrave.class.getResource("/res/version.ini");
+    public static final URL sVSM_VERSIONURL                 = MainGrave.class.getResource("version.ini");
 
     ////////////////////////////////////////////////////////////////////////////
     // URL RESOURCES
     ////////////////////////////////////////////////////////////////////////////
-    public static final URL sSTYLESURL                      = MainGrave.class.getResource("/res/sty/scripts.xml");
-    
+    public static final URL sSTYLESURL                      = MainGrave.class.getResource("sty/scripts.xml");
+
     ////////////////////////////////////////////////////////////////////////////
     // DIRECTORIES
     ////////////////////////////////////////////////////////////////////////////
@@ -144,7 +144,7 @@ public final class Preferences {
     public static int       SCREEN_VERTICAL                 = SCREEN_SIZE.height;
     //Components dimensions
     public static Dimension SF_PALETTEITEM_SIZE             = new Dimension(61, 65);
-    
+
     //////////////////////////////////////////////////////////////////////////////
     // RECENT FILES
     //////////////////////////////////////////////////////////////////////////////
@@ -158,8 +158,8 @@ public final class Preferences {
     //////////////////////////////////////////////////////////////////////////////
     // FILE RESSOURCES
     //////////////////////////////////////////////////////////////////////////////
-    public static final URL sABOUT_FILE                     = MainGrave.class.getResource("/res/doc/about.html");
-    public static final URL sHELP_FILE                      = MainGrave.class.getResource("/res/doc/index.html");
+    public static final URL sABOUT_FILE                     = MainGrave.class.getResource("doc/about.html");
+    public static final URL sHELP_FILE                      = MainGrave.class.getResource("doc/index.html");
 
     //////////////////////////////////////////////////////////////////////////////
     // FONT DATA
@@ -170,101 +170,101 @@ public final class Preferences {
     // DATE FORMAT
     //////////////////////////////////////////////////////////////////////////////
     public static final SimpleDateFormat sDATE_FORMAT       = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
-    
-    
+
+
     // public static final int sFONT_SIZE_LIST[] = {6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30};
     //////////////////////////////////////////////////////////////////////////////
     // IMAGE RESSOURCES
     //////////////////////////////////////////////////////////////////////////////
-    public static final ImageIcon ICON_SCENEMAKER_LOGO          = ResourceLoader.loadImageIcon("/res/img/smlogo.png");
-    public static final ImageIcon ICON_SCENEMAKER_DOC           = ResourceLoader.loadImageIcon("/res/img/docicon.png");
-    public static final ImageIcon ICON_SHOW_GRID                = ResourceLoader.loadImageIcon("/res/img/grid.png");
-    public static final ImageIcon ICON_VISUALISATION            = ResourceLoader.loadImageIcon("/res/img/visualisation.png");
+    public static final ImageIcon ICON_SCENEMAKER_LOGO          = ResourceLoader.loadImageIcon("img/smlogo.png");
+    public static final ImageIcon ICON_SCENEMAKER_DOC           = ResourceLoader.loadImageIcon("img/docicon.png");
+    public static final ImageIcon ICON_SHOW_GRID                = ResourceLoader.loadImageIcon("img/grid.png");
+    public static final ImageIcon ICON_VISUALISATION            = ResourceLoader.loadImageIcon("img/visualisation.png");
     //SUPERNODE
-    public static final ImageIcon ICON_SUPERNODE_STANDARD       = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/SUPERNODE_ENTRY.png");
-    public static final ImageIcon ICON_SUPERNODE_ROLLOVER       = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/SUPERNODE_ENTRY_BLUE.png");
-    public static final ImageIcon ICON_SUPERNODE_DRAGGING       = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/SUPERNODE_ENTRY_SMALL.png");
+    public static final ImageIcon ICON_SUPERNODE_STANDARD       = ResourceLoader.loadImageIcon("img/workspace_toolbar/SUPERNODE_ENTRY.png");
+    public static final ImageIcon ICON_SUPERNODE_ROLLOVER       = ResourceLoader.loadImageIcon("img/workspace_toolbar/SUPERNODE_ENTRY_BLUE.png");
+    public static final ImageIcon ICON_SUPERNODE_DRAGGING       = ResourceLoader.loadImageIcon("img/workspace_toolbar/SUPERNODE_ENTRY_SMALL.png");
     //BASIC NODE
-    public static final ImageIcon ICON_BASICNODE_STANDARD       = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/BASICNODE_ENTRY.png");
-    public static final ImageIcon ICON_BASICNODE_ROLLOVER       = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/BASICNODE_ENTRY_BLUE.png");
-    public static final ImageIcon ICON_BASICNODE_DRAGGING       = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/BASICNODE_ENTRY_SMALL.png");
-    //COMMENT 
-    public static final ImageIcon ICON_COMMENT_ENTRY_STANDARD   = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/COMMENT_ENTRY.png");
-    public static final ImageIcon ICON_COMMENT_ENTRY_ROLLOVER   = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/COMMENT_ENTRY_BLUE.png");
-    public static final ImageIcon ICON_COMMENT_ENTRY_DRAGGING   = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/COMMENT_ENTRY_SMALL.png");
+    public static final ImageIcon ICON_BASICNODE_STANDARD       = ResourceLoader.loadImageIcon("img/workspace_toolbar/BASICNODE_ENTRY.png");
+    public static final ImageIcon ICON_BASICNODE_ROLLOVER       = ResourceLoader.loadImageIcon("img/workspace_toolbar/BASICNODE_ENTRY_BLUE.png");
+    public static final ImageIcon ICON_BASICNODE_DRAGGING       = ResourceLoader.loadImageIcon("img/workspace_toolbar/BASICNODE_ENTRY_SMALL.png");
+    //COMMENT
+    public static final ImageIcon ICON_COMMENT_ENTRY_STANDARD   = ResourceLoader.loadImageIcon("img/workspace_toolbar/COMMENT_ENTRY.png");
+    public static final ImageIcon ICON_COMMENT_ENTRY_ROLLOVER   = ResourceLoader.loadImageIcon("img/workspace_toolbar/COMMENT_ENTRY_BLUE.png");
+    public static final ImageIcon ICON_COMMENT_ENTRY_DRAGGING   = ResourceLoader.loadImageIcon("img/workspace_toolbar/COMMENT_ENTRY_SMALL.png");
     //EPSILON EDGE
-    public static final ImageIcon ICON_EEDGE_ENTRY_STANDARD     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/EEDGE_ENTRY.png");
-    public static final ImageIcon ICON_EEDGE_ENTRY_ROLLOVER     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/EEDGE_ENTRY_BLUE.png");
-    public static final ImageIcon ICON_EEDGE_ENTRY_DRAGGING     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/EEDGE_ENTRY_SMALL.png");
+    public static final ImageIcon ICON_EEDGE_ENTRY_STANDARD     = ResourceLoader.loadImageIcon("img/workspace_toolbar/EEDGE_ENTRY.png");
+    public static final ImageIcon ICON_EEDGE_ENTRY_ROLLOVER     = ResourceLoader.loadImageIcon("img/workspace_toolbar/EEDGE_ENTRY_BLUE.png");
+    public static final ImageIcon ICON_EEDGE_ENTRY_DRAGGING     = ResourceLoader.loadImageIcon("img/workspace_toolbar/EEDGE_ENTRY_SMALL.png");
     //TIMEOUT EDGE
-    public static final ImageIcon ICON_TEDGE_ENTRY_STANDARD     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/TEDGE_ENTRY.png");
-    public static final ImageIcon ICON_TEDGE_ENTRY_ROLLOVER     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/TEDGE_ENTRY_BLUE.png");
-    public static final ImageIcon ICON_TEDGE_ENTRY_DRAGGING     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/TEDGE_ENTRY_SMALL.png");
+    public static final ImageIcon ICON_TEDGE_ENTRY_STANDARD     = ResourceLoader.loadImageIcon("img/workspace_toolbar/TEDGE_ENTRY.png");
+    public static final ImageIcon ICON_TEDGE_ENTRY_ROLLOVER     = ResourceLoader.loadImageIcon("img/workspace_toolbar/TEDGE_ENTRY_BLUE.png");
+    public static final ImageIcon ICON_TEDGE_ENTRY_DRAGGING     = ResourceLoader.loadImageIcon("img/workspace_toolbar/TEDGE_ENTRY_SMALL.png");
     //PROBABILISTIC EDGE
-    public static final ImageIcon ICON_PEDGE_ENTRY_STANDARD     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/PEDGE_ENTRY.png");
-    public static final ImageIcon ICON_PEDGE_ENTRY_ROLLOVER     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/PEDGE_ENTRY_BLUE.png");
-    public static final ImageIcon ICON_PEDGE_ENTRY_DRAGGING     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/PEDGE_ENTRY_SMALL.png");
+    public static final ImageIcon ICON_PEDGE_ENTRY_STANDARD     = ResourceLoader.loadImageIcon("img/workspace_toolbar/PEDGE_ENTRY.png");
+    public static final ImageIcon ICON_PEDGE_ENTRY_ROLLOVER     = ResourceLoader.loadImageIcon("img/workspace_toolbar/PEDGE_ENTRY_BLUE.png");
+    public static final ImageIcon ICON_PEDGE_ENTRY_DRAGGING     = ResourceLoader.loadImageIcon("img/workspace_toolbar/PEDGE_ENTRY_SMALL.png");
     //CONDITIONAL EDGE
-    public static final ImageIcon ICON_CEDGE_ENTRY_STANDARD     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/CEDGE_ENTRY.png");
-    public static final ImageIcon ICON_CEDGE_ENTRY_ROLLOVER     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/CEDGE_ENTRY_BLUE.png");
-    public static final ImageIcon ICON_CEDGE_ENTRY_DRAGGING     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/CEDGE_ENTRY_SMALL.png");
+    public static final ImageIcon ICON_CEDGE_ENTRY_STANDARD     = ResourceLoader.loadImageIcon("img/workspace_toolbar/CEDGE_ENTRY.png");
+    public static final ImageIcon ICON_CEDGE_ENTRY_ROLLOVER     = ResourceLoader.loadImageIcon("img/workspace_toolbar/CEDGE_ENTRY_BLUE.png");
+    public static final ImageIcon ICON_CEDGE_ENTRY_DRAGGING     = ResourceLoader.loadImageIcon("img/workspace_toolbar/CEDGE_ENTRY_SMALL.png");
     //INTERRUPTIVE EDGE
-    public static final ImageIcon ICON_IEDGE_ENTRY_STANDARD     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/IEDGE_ENTRY.png");
-    public static final ImageIcon ICON_IEDGE_ENTRY_ROLLOVER     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/IEDGE_ENTRY_BLUE.png");
-    public static final ImageIcon ICON_IEDGE_ENTRY_DRAGGING     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/IEDGE_ENTRY_SMALL.png");
+    public static final ImageIcon ICON_IEDGE_ENTRY_STANDARD     = ResourceLoader.loadImageIcon("img/workspace_toolbar/IEDGE_ENTRY.png");
+    public static final ImageIcon ICON_IEDGE_ENTRY_ROLLOVER     = ResourceLoader.loadImageIcon("img/workspace_toolbar/IEDGE_ENTRY_BLUE.png");
+    public static final ImageIcon ICON_IEDGE_ENTRY_DRAGGING     = ResourceLoader.loadImageIcon("img/workspace_toolbar/IEDGE_ENTRY_SMALL.png");
     //FORK EDGE
-    public static final ImageIcon ICON_FEDGE_ENTRY_STANDARD     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/FEDGE_ENTRY.png");
-    public static final ImageIcon ICON_FEDGE_ENTRY_ROLLOVER     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/FEDGE_ENTRY_BLUE.png");
-    public static final ImageIcon ICON_FEDGE_ENTRY_DRAGGING     = ResourceLoader.loadImageIcon("/res/img/workspace_toolbar/FEDGE_ENTRY_SMALL.png");
+    public static final ImageIcon ICON_FEDGE_ENTRY_STANDARD     = ResourceLoader.loadImageIcon("img/workspace_toolbar/FEDGE_ENTRY.png");
+    public static final ImageIcon ICON_FEDGE_ENTRY_ROLLOVER     = ResourceLoader.loadImageIcon("img/workspace_toolbar/FEDGE_ENTRY_BLUE.png");
+    public static final ImageIcon ICON_FEDGE_ENTRY_DRAGGING     = ResourceLoader.loadImageIcon("img/workspace_toolbar/FEDGE_ENTRY_SMALL.png");
     //
-    public static final ImageIcon ICON_ROOT_FOLDER              = ResourceLoader.loadImageIcon("/res/img/elementtree/ROOT_FOLDER.png");
-    public static final ImageIcon ICON_SCENE_FOLDER             = ResourceLoader.loadImageIcon("/res/img/elementtree/SCENE_FOLDER.png");
-    public static final ImageIcon ICON_BASIC_FOLDER             = ResourceLoader.loadImageIcon("/res/img/elementtree/BASIC_FOLDER.png");
-    public static final ImageIcon ICON_RADIOBUTTON_UNSELECTED   = ResourceLoader.loadImageIcon("/res/img/elementtree/RADIOBUTTON_UNSELECTED.png");
-    public static final ImageIcon ICON_RADIOBUTTON_SELECTED     = ResourceLoader.loadImageIcon("/res/img/elementtree/RADIOBUTTON_SELECTED.png");
-    public static final ImageIcon ICON_FUNCTION_ENTRY           = ResourceLoader.loadImageIcon("/res/img/elementtree/FUNCTION_ENTRY.png");
-    public static final ImageIcon ICON_FUNCTION_ERROR_ENTRY     = ResourceLoader.loadImageIcon("/res/img/elementtree/FUNCTION_ERROR_ENTRY.png");
+    public static final ImageIcon ICON_ROOT_FOLDER              = ResourceLoader.loadImageIcon("img/elementtree/ROOT_FOLDER.png");
+    public static final ImageIcon ICON_SCENE_FOLDER             = ResourceLoader.loadImageIcon("img/elementtree/SCENE_FOLDER.png");
+    public static final ImageIcon ICON_BASIC_FOLDER             = ResourceLoader.loadImageIcon("img/elementtree/BASIC_FOLDER.png");
+    public static final ImageIcon ICON_RADIOBUTTON_UNSELECTED   = ResourceLoader.loadImageIcon("img/elementtree/RADIOBUTTON_UNSELECTED.png");
+    public static final ImageIcon ICON_RADIOBUTTON_SELECTED     = ResourceLoader.loadImageIcon("img/elementtree/RADIOBUTTON_SELECTED.png");
+    public static final ImageIcon ICON_FUNCTION_ENTRY           = ResourceLoader.loadImageIcon("img/elementtree/FUNCTION_ENTRY.png");
+    public static final ImageIcon ICON_FUNCTION_ERROR_ENTRY     = ResourceLoader.loadImageIcon("img/elementtree/FUNCTION_ERROR_ENTRY.png");
     //MORE ICON
-    public static final ImageIcon ICON_MORE_STANDARD            = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/more.png");
-    public static final ImageIcon ICON_MORE_ROLLOVER            = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/more_blue.png");
-    //LESS ICON 
-    public static final ImageIcon ICON_LESS_STANDARD            = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/less.png");
-    public static final ImageIcon ICON_LESS_ROLLOVER            = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/less_blue.png");
+    public static final ImageIcon ICON_MORE_STANDARD            = ResourceLoader.loadImageIcon("img/toolbar_icons/more.png");
+    public static final ImageIcon ICON_MORE_ROLLOVER            = ResourceLoader.loadImageIcon("img/toolbar_icons/more_blue.png");
+    //LESS ICON
+    public static final ImageIcon ICON_LESS_STANDARD            = ResourceLoader.loadImageIcon("img/toolbar_icons/less.png");
+    public static final ImageIcon ICON_LESS_ROLLOVER            = ResourceLoader.loadImageIcon("img/toolbar_icons/less_blue.png");
     //PLUS ICON
-    public static final ImageIcon ICON_PLUS_STANDARD            = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/add.png");
-    public static final ImageIcon ICON_PLUS_ROLLOVER            = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/add_blue.png");
-    public static final ImageIcon ICON_PLUS_DISABLED            = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/add_disabled.png");
+    public static final ImageIcon ICON_PLUS_STANDARD            = ResourceLoader.loadImageIcon("img/toolbar_icons/add.png");
+    public static final ImageIcon ICON_PLUS_ROLLOVER            = ResourceLoader.loadImageIcon("img/toolbar_icons/add_blue.png");
+    public static final ImageIcon ICON_PLUS_DISABLED            = ResourceLoader.loadImageIcon("img/toolbar_icons/add_disabled.png");
     //MINUS ICON
-    public static final ImageIcon ICON_MINUS_STANDARD           = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/remove.png");
-    public static final ImageIcon ICON_MINUS_ROLLOVER           = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/remove_blue.png");
-    public static final ImageIcon ICON_MINUS_DISABLED           = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/remove_disabled.png");
+    public static final ImageIcon ICON_MINUS_STANDARD           = ResourceLoader.loadImageIcon("img/toolbar_icons/remove.png");
+    public static final ImageIcon ICON_MINUS_ROLLOVER           = ResourceLoader.loadImageIcon("img/toolbar_icons/remove_blue.png");
+    public static final ImageIcon ICON_MINUS_DISABLED           = ResourceLoader.loadImageIcon("img/toolbar_icons/remove_disabled.png");
     //EDIT ICON
-    public static final ImageIcon ICON_EDIT_STANDARD            = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/edit.png");
-    public static final ImageIcon ICON_EDIT_ROLLOVER            = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/edit_blue.png");
-    //UP ICON 
-    public static final ImageIcon ICON_UP_STANDARD              = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/up_20.png");
-    public static final ImageIcon ICON_UP_ROLLOVER              = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/up_20_blue.png");
-    public static final ImageIcon ICON_UP_DISABLED              = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/up_20_disabled.png");
+    public static final ImageIcon ICON_EDIT_STANDARD            = ResourceLoader.loadImageIcon("img/toolbar_icons/edit.png");
+    public static final ImageIcon ICON_EDIT_ROLLOVER            = ResourceLoader.loadImageIcon("img/toolbar_icons/edit_blue.png");
+    //UP ICON
+    public static final ImageIcon ICON_UP_STANDARD              = ResourceLoader.loadImageIcon("img/toolbar_icons/up_20.png");
+    public static final ImageIcon ICON_UP_ROLLOVER              = ResourceLoader.loadImageIcon("img/toolbar_icons/up_20_blue.png");
+    public static final ImageIcon ICON_UP_DISABLED              = ResourceLoader.loadImageIcon("img/toolbar_icons/up_20_disabled.png");
     //DOWN ICON
-    public static final ImageIcon ICON_DOWN_STANDARD            = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/down.png");
-    public static final ImageIcon ICON_DOWN_ROLLOVER            = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/down_blue.png");
-    public static final ImageIcon ICON_DOWN_DISABLED            = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/down_disabled.png");
+    public static final ImageIcon ICON_DOWN_STANDARD            = ResourceLoader.loadImageIcon("img/toolbar_icons/down.png");
+    public static final ImageIcon ICON_DOWN_ROLLOVER            = ResourceLoader.loadImageIcon("img/toolbar_icons/down_blue.png");
+    public static final ImageIcon ICON_DOWN_DISABLED            = ResourceLoader.loadImageIcon("img/toolbar_icons/down_disabled.png");
     //CANCEL ICONS
-    public static final ImageIcon ICON_CANCEL_STANDARD          = ResourceLoader.loadImageIcon("/res/img/cancel_icon_gray.png");
-    public static final ImageIcon ICON_CANCEL_ROLLOVER          = ResourceLoader.loadImageIcon("/res/img/cancel_icon_blue.png");
-    public static final ImageIcon ICON_CANCEL_STANDARD_TINY     = ResourceLoader.loadImageIcon("/res/img/cancel_icon_gray_tiny.png");
-    public static final ImageIcon ICON_CANCEL_ROLLOVER_TINY     = ResourceLoader.loadImageIcon("/res/img/cancel_icon_blue_tiny.png");
+    public static final ImageIcon ICON_CANCEL_STANDARD          = ResourceLoader.loadImageIcon("img/cancel_icon_gray.png");
+    public static final ImageIcon ICON_CANCEL_ROLLOVER          = ResourceLoader.loadImageIcon("img/cancel_icon_blue.png");
+    public static final ImageIcon ICON_CANCEL_STANDARD_TINY     = ResourceLoader.loadImageIcon("img/cancel_icon_gray_tiny.png");
+    public static final ImageIcon ICON_CANCEL_ROLLOVER_TINY     = ResourceLoader.loadImageIcon("img/cancel_icon_blue_tiny.png");
     //OK ICONS
-    public static final ImageIcon ICON_OK_STANDARD              = ResourceLoader.loadImageIcon("/res/img/ok_icon_gray.png");
-    public static final ImageIcon ICON_OK_ROLLOVER              = ResourceLoader.loadImageIcon("/res/img/ok_icon_blue.png");
+    public static final ImageIcon ICON_OK_STANDARD              = ResourceLoader.loadImageIcon("img/ok_icon_gray.png");
+    public static final ImageIcon ICON_OK_ROLLOVER              = ResourceLoader.loadImageIcon("img/ok_icon_blue.png");
     //BACK ICONS
-    public static final ImageIcon ICON_PREVIOUS_STANDARD        = ResourceLoader.loadImageIcon("/res/img/back_icon_gray.png");
-    public static final ImageIcon ICON_PREVIOUS_ROLLOVER        = ResourceLoader.loadImageIcon("/res/img/back_icon_blue.png");
+    public static final ImageIcon ICON_PREVIOUS_STANDARD        = ResourceLoader.loadImageIcon("img/back_icon_gray.png");
+    public static final ImageIcon ICON_PREVIOUS_ROLLOVER        = ResourceLoader.loadImageIcon("img/back_icon_blue.png");
     //NEXT ICONS
-    public static final ImageIcon ICON_NEXT_STANDARD            = ResourceLoader.loadImageIcon("/res/img/next_icon_gray.png");
-    public static final ImageIcon ICON_NEXT_ROLLOVER            = ResourceLoader.loadImageIcon("/res/img/next_icon_blue.png");
-    //BACKGROUND WELCOME 
-    public static final Image     BACKGROUND_IMAGE              = ResourceLoader.loadImageIcon("/res/img/icon_big.png").getImage();   // Background for the welcome screen
+    public static final ImageIcon ICON_NEXT_STANDARD            = ResourceLoader.loadImageIcon("img/next_icon_gray.png");
+    public static final ImageIcon ICON_NEXT_ROLLOVER            = ResourceLoader.loadImageIcon("img/next_icon_blue.png");
+    //BACKGROUND WELCOME
+    public static final Image     BACKGROUND_IMAGE              = ResourceLoader.loadImageIcon("img/icon_big.png").getImage();   // Background for the welcome screen
     /**
      *
      */
@@ -278,7 +278,7 @@ public final class Preferences {
        // sSCENEFLOW_SCENE_EDITOR_RATIO = Float.valueOf(sPROPERTIES.getProperty("sceneflow_sceneeditor_ratio"));
         sSHOW_GESTURES = Boolean.valueOf(sPROPERTIES.getProperty("showgestures"));
     }
-    
+
     public static synchronized void save() {
         try {
             try (FileOutputStream fileOutputStream = new FileOutputStream(sCONFIG_FILE)) {
@@ -289,12 +289,12 @@ public final class Preferences {
         }
         init();
     }
-    
+
     public static synchronized void load() {
         parseConfigFile();
         init();
     }
-   
+
     // TODO: This should actually be private
     public static synchronized String getProperty(String key) {
         return sPROPERTIES.getProperty(key);
@@ -466,7 +466,7 @@ public final class Preferences {
                 // Get the application and the method to set the dock icon
                 final Object app = appClass.getMethod("getApplication", new Class[]{}).invoke(null, new Object[]{});
                 final Method setDockIconImage = appClass.getMethod("setDockIconImage", new Class[]{Image.class});
-                // Set the dock icon to the logo of Visual Scene Maker 3  
+                // Set the dock icon to the logo of Visual Scene Maker 3
                 setDockIconImage.invoke(app, new Object[]{Preferences.ICON_SCENEMAKER_DOC.getImage()});
             }
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException exc) {

@@ -274,7 +274,7 @@ public class EditorStarter extends JPanel {
 		JLabel mNewProjMenu = new JLabel("New Project");
 
 		mNewProjMenu.setToolTipText("Create New Project");
-		mNewProjMenu.setIcon(ResourceLoader.loadImageIcon("/res/img/arrow_icon.png"));
+		mNewProjMenu.setIcon(ResourceLoader.loadImageIcon("img/arrow_icon.png"));
 		mNewProjMenu.setMaximumSize(new Dimension(buttonSize));
 		mNewProjMenu.setPreferredSize(new Dimension(buttonSize));
 		mNewProjMenu.setFont(sMENUITEMFONT);
@@ -309,7 +309,7 @@ public class EditorStarter extends JPanel {
 		JLabel mOpenProjectMenu = new JLabel("Open a Project");
 
 		mOpenProjectMenu.setToolTipText("Open an external Project");
-		mOpenProjectMenu.setIcon(ResourceLoader.loadImageIcon("/res/img/arrow_icon.png"));
+		mOpenProjectMenu.setIcon(ResourceLoader.loadImageIcon("img/arrow_icon.png"));
 		mOpenProjectMenu.setMaximumSize(new Dimension(buttonSize));
 		mOpenProjectMenu.setPreferredSize(new Dimension(buttonSize));
 		mOpenProjectMenu.setOpaque(true);
@@ -387,7 +387,7 @@ public class EditorStarter extends JPanel {
 					projectList[i].setMaximumSize(new Dimension(buttonSize));
 					projectList[i].setPreferredSize(new Dimension(buttonSize));
 					projectList[i].setFont(sMENUITEMFONT);
-					projectList[i].setIcon(ResourceLoader.loadImageIcon("/res/img/dociconsmall.png"));
+					projectList[i].setIcon(ResourceLoader.loadImageIcon("img/dociconsmall.png"));
                                         projectList[i].setToolTipText(projectDirName);
 					projectList[i].addMouseListener(new MouseAdapter() {
 						@Override
@@ -497,7 +497,7 @@ public class EditorStarter extends JPanel {
 				newTutorialProj.setOpaque(true);
 				newTutorialProj.setBackground(sMENUITEMBACKBGROUNDCOLOR);
 				newTutorialProj.setForeground(sTEXTCOLOR);
-				newTutorialProj.setIcon(ResourceLoader.loadImageIcon("/res/img/dociconsmall.png"));
+				newTutorialProj.setIcon(ResourceLoader.loadImageIcon("img/dociconsmall.png"));
 				newTutorialProj.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent me) {
@@ -631,7 +631,7 @@ public class EditorStarter extends JPanel {
 			newSampleProj.setOpaque(true);
 			newSampleProj.setBackground(sMENUITEMBACKBGROUNDCOLOR);
 			newSampleProj.setForeground(sTEXTCOLOR);
-			newSampleProj.setIcon(ResourceLoader.loadImageIcon("/res/img/dociconsmall.png"));
+			newSampleProj.setIcon(ResourceLoader.loadImageIcon("img/dociconsmall.png"));
 			newSampleProj.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent me) {
@@ -688,7 +688,7 @@ public class EditorStarter extends JPanel {
 		JLabelURL link = new JLabelURL("Visual SceneMaker Online", "http://scenemaker.dfki.de/");
 
 		link.setToolTipText("Go to the VisualSceneMaker web page");
-		link.setIcon(ResourceLoader.loadImageIcon("/res/img/arrow_icon.png"));
+		link.setIcon(ResourceLoader.loadImageIcon("img/arrow_icon.png"));
 		link.setMaximumSize(new Dimension(buttonSize));
 		link.setPreferredSize(new Dimension(buttonSize));
 		link.setOpaque(true);

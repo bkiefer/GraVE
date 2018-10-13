@@ -107,8 +107,8 @@ public class VarDefDialog extends Dialog {
         mExpLabel = new JLabel("Value:");
         mExpTextField = new HintTextField("Enter Value");
         mExpTextField.setEditable(false);
-        mAddExpButton = new JButton(ResourceLoader.loadImageIcon("/res/img/search_icon.png"));
-        mAddExpButton.setRolloverIcon(ResourceLoader.loadImageIcon("/res/img/search_icon_blue.png"));
+        mAddExpButton = new JButton(ResourceLoader.loadImageIcon("img/search_icon.png"));
+        mAddExpButton.setRolloverIcon(ResourceLoader.loadImageIcon("img/search_icon_blue.png"));
         mAddExpButton.setBorder(null);
         mAddExpButton.setOpaque(false);
         mAddExpButton.setContentAreaFilled(false);

@@ -90,8 +90,8 @@ import java.util.ArrayList;
 //        mScrollPane.setMinimumSize(new Dimension(200, 100));
 //
 //        // Init the button panel
-//        mAddButton = new JButton(ResourceLoader.loadImageIcon("/res/img/toolbar_icons/add.png"));
-//        mAddButton.setRolloverIcon(ResourceLoader.loadImageIcon("/res/img/toolbar_icons/add_blue.png"));
+//        mAddButton = new JButton(ResourceLoader.loadImageIcon(img/toolbar_icons/add.png"));
+//        mAddButton.setRolloverIcon(ResourceLoader.loadImageIcon(img/toolbar_icons/add_blue.png"));
 //        mAddButton.setMaximumSize(new Dimension(22, 22));
 //        mAddButton.setPreferredSize(new Dimension(22, 22));
 //        mAddButton.setMinimumSize(new Dimension(22, 22));
@@ -108,8 +108,8 @@ import java.util.ArrayList;
 //        });
 //
 //        //
-//        mRemoveButton = new JButton(ResourceLoader.loadImageIcon("/res/img/toolbar_icons/remove.png"));
-//        mRemoveButton.setRolloverIcon(ResourceLoader.loadImageIcon("/res/img/toolbar_icons/remove_blue.png"));
+//        mRemoveButton = new JButton(ResourceLoader.loadImageIcon(img/toolbar_icons/remove.png"));
+//        mRemoveButton.setRolloverIcon(ResourceLoader.loadImageIcon(img/toolbar_icons/remove_blue.png"));
 //        mRemoveButton.setMinimumSize(new Dimension(22, 22));
 //        mRemoveButton.setMaximumSize(new Dimension(22, 22));
 //        mRemoveButton.setPreferredSize(new Dimension(22, 22));
@@ -126,8 +126,8 @@ import java.util.ArrayList;
 //        });
 //
 //        //
-//        mEditButton = new JButton(ResourceLoader.loadImageIcon("/res/img/toolbar_icons/edit.png"));
-//        mEditButton.setRolloverIcon(ResourceLoader.loadImageIcon("/res/img/toolbar_icons/edit_blue.png"));
+//        mEditButton = new JButton(ResourceLoader.loadImageIcon(img/toolbar_icons/edit.png"));
+//        mEditButton.setRolloverIcon(ResourceLoader.loadImageIcon(img/toolbar_icons/edit_blue.png"));
 //        mEditButton.setMinimumSize(new Dimension(22, 22));
 //        mEditButton.setMaximumSize(new Dimension(22, 22));
 //        mEditButton.setPreferredSize(new Dimension(22, 22));
@@ -144,8 +144,8 @@ import java.util.ArrayList;
 //        });
 //
 //        //
-//        mUpButton = new JButton(ResourceLoader.loadImageIcon("/res/img/toolbar_icons/up_20.png"));
-//        mUpButton.setRolloverIcon(ResourceLoader.loadImageIcon("/res/img/toolbar_icons/up_20_blue.png"));
+//        mUpButton = new JButton(ResourceLoader.loadImageIcon(img/toolbar_icons/up_20.png"));
+//        mUpButton.setRolloverIcon(ResourceLoader.loadImageIcon(img/toolbar_icons/up_20_blue.png"));
 //        mUpButton.setMinimumSize(new Dimension(20, 20));
 //        mUpButton.setMaximumSize(new Dimension(20, 20));
 //        mUpButton.setPreferredSize(new Dimension(20, 20));
@@ -162,8 +162,8 @@ import java.util.ArrayList;
 //        });
 //
 //        //
-//        mDownButton = new JButton(ResourceLoader.loadImageIcon("/res/img/toolbar_icons/down_20.png"));
-//        mDownButton.setRolloverIcon(ResourceLoader.loadImageIcon("/res/img/toolbar_icons/down_20_blue.png"));
+//        mDownButton = new JButton(ResourceLoader.loadImageIcon(img/toolbar_icons/down_20.png"));
+//        mDownButton.setRolloverIcon(ResourceLoader.loadImageIcon(img/toolbar_icons/down_20_blue.png"));
 //        mDownButton.setMinimumSize(new Dimension(22, 22));
 //        mDownButton.setMaximumSize(new Dimension(22, 22));
 //        mDownButton.setPreferredSize(new Dimension(22, 22));

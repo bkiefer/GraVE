@@ -95,11 +95,11 @@ public class ModifyPEdgeDialog extends Dialog {
     private JLabel errorMsg;
     
     //ICONS
-    private final ImageIcon ICON_NORMALIZE_STANDARD = ResourceLoader.loadImageIcon("/res/img/normalize_gray.png");
-    private final ImageIcon ICON_NORMALIZE_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/normalize_blue.png");
+    private final ImageIcon ICON_NORMALIZE_STANDARD = ResourceLoader.loadImageIcon("img/normalize_gray.png");
+    private final ImageIcon ICON_NORMALIZE_ROLLOVER = ResourceLoader.loadImageIcon("img/normalize_blue.png");
     
-    private final ImageIcon ICON_UNIFORM_STANDARD = ResourceLoader.loadImageIcon("/res/img/uniform_gray.png");
-    private final ImageIcon ICON_UNIFORM_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/uniform_blue.png");
+    private final ImageIcon ICON_UNIFORM_STANDARD = ResourceLoader.loadImageIcon("img/uniform_gray.png");
+    private final ImageIcon ICON_UNIFORM_ROLLOVER = ResourceLoader.loadImageIcon("img/uniform_blue.png");
     
     public ModifyPEdgeDialog(BasicNode sourceNode, BasicNode targetNode) {
         super(EditorInstance.getInstance(), "Create Probability Edge", true);

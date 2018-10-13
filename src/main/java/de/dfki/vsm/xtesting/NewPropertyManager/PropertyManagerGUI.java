@@ -65,7 +65,7 @@ public class PropertyManagerGUI {
     }
 
     private void initFX(JFXPanel jfxPanel) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/res/de/dfki/vsm/xtesting/NewPropertyManager/PropertyManager.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("de/dfki/vsm/xtesting/NewPropertyManager/PropertyManager.fxml"));
         mController = new PropertyManagerController( mProject);
         fxmlLoader.setController(mController);
         Parent root = null;

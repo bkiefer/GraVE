@@ -55,66 +55,66 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
      * ICONS INITIALIZATION
      * *************************************************************************************************************************
      */
-    private final ImageIcon ICON_PLAY_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/play.png");
-    private final ImageIcon ICON_PLAY_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/play_blue.png");
-    private final ImageIcon ICON_PLAY_DISABLED = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/play_disabled.png");
+    private final ImageIcon ICON_PLAY_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/play.png");
+    private final ImageIcon ICON_PLAY_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/play_blue.png");
+    private final ImageIcon ICON_PLAY_DISABLED = ResourceLoader.loadImageIcon("img/toolbar_icons/play_disabled.png");
 
-    private final ImageIcon ICON_STOP_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/stop.png");
-    private final ImageIcon ICON_STOP_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/stop_blue.png");
-    private final ImageIcon ICON_STOP_DISABLED = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/stop_disabled.png");
+    private final ImageIcon ICON_STOP_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/stop.png");
+    private final ImageIcon ICON_STOP_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/stop_blue.png");
+    private final ImageIcon ICON_STOP_DISABLED = ResourceLoader.loadImageIcon("img/toolbar_icons/stop_disabled.png");
 
-    private final ImageIcon ICON_PAUSE_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/pause.png");
-    private final ImageIcon ICON_PAUSE_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/pause_blue.png");
+    private final ImageIcon ICON_PAUSE_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/pause.png");
+    private final ImageIcon ICON_PAUSE_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/pause_blue.png");
 
-    private final ImageIcon ICON_MORE_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/more.png");
-    private final ImageIcon ICON_MORE_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/more_blue.png");
+    private final ImageIcon ICON_MORE_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/more.png");
+    private final ImageIcon ICON_MORE_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/more_blue.png");
 
-    private final ImageIcon ICON_LESS_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/less.png");
-    private final ImageIcon ICON_LESS_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/less_blue.png");
+    private final ImageIcon ICON_LESS_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/less.png");
+    private final ImageIcon ICON_LESS_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/less_blue.png");
 
-    private final ImageIcon ICON_SAVE_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/save_icon.png");
-    private final ImageIcon ICON_SAVE_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/save_icon_blue.png");
-    private final ImageIcon ICON_SAVE_DISABLED = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/save_icon_disable.png");
+    private final ImageIcon ICON_SAVE_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/save_icon.png");
+    private final ImageIcon ICON_SAVE_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/save_icon_blue.png");
+    private final ImageIcon ICON_SAVE_DISABLED = ResourceLoader.loadImageIcon("img/toolbar_icons/save_icon_disable.png");
 
-    private final ImageIcon ICON_UNDO_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/undo_icon.png");
-    private final ImageIcon ICON_UNDO_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/undo_icon_blue.png");
-    private final ImageIcon ICON_UNDO_DISABLED = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/undo_icon_disabled.png");
+    private final ImageIcon ICON_UNDO_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/undo_icon.png");
+    private final ImageIcon ICON_UNDO_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/undo_icon_blue.png");
+    private final ImageIcon ICON_UNDO_DISABLED = ResourceLoader.loadImageIcon("img/toolbar_icons/undo_icon_disabled.png");
 
-    private final ImageIcon ICON_REDO_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/redo_icon.png");
-    private final ImageIcon ICON_REDO_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/redo_icon_blue.png");
-    private final ImageIcon ICON_REDO_DISABLED = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/redo_icon_disabled.png");
+    private final ImageIcon ICON_REDO_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/redo_icon.png");
+    private final ImageIcon ICON_REDO_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/redo_icon_blue.png");
+    private final ImageIcon ICON_REDO_DISABLED = ResourceLoader.loadImageIcon("img/toolbar_icons/redo_icon_disabled.png");
 
-    private final ImageIcon ICON_NORMALIZE_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/normalize_edges_gray.png");
-    private final ImageIcon ICON_NORMALIZE_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/normalize_edges_blue.png");
+    private final ImageIcon ICON_NORMALIZE_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/normalize_edges_gray.png");
+    private final ImageIcon ICON_NORMALIZE_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/normalize_edges_blue.png");
 
-    private final ImageIcon ICON_STRAIGHTEN_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/straighten_gray.png");
-    private final ImageIcon ICON_STRAIGHTEN_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/straighten_blue.png");
+    private final ImageIcon ICON_STRAIGHTEN_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/straighten_gray.png");
+    private final ImageIcon ICON_STRAIGHTEN_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/straighten_blue.png");
 
-    private final ImageIcon ICON_VARS_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/var.png");
-    private final ImageIcon ICON_VARS_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/var_blue.png");
-    private final ImageIcon ICON_VARS_HIDDEN_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/var_hidden.png");
-    private final ImageIcon ICON_VARS_HIDDEN_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/var_hidden_blue.png");
+    private final ImageIcon ICON_VARS_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/var.png");
+    private final ImageIcon ICON_VARS_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/var_blue.png");
+    private final ImageIcon ICON_VARS_HIDDEN_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/var_hidden.png");
+    private final ImageIcon ICON_VARS_HIDDEN_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/var_hidden_blue.png");
 
-    private final ImageIcon ICON_STACK_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/stack_icon.png");
-    private final ImageIcon ICON_STACK_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/stack_icon_blue.png");
+    private final ImageIcon ICON_STACK_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/stack_icon.png");
+    private final ImageIcon ICON_STACK_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/stack_icon_blue.png");
 
-    private final ImageIcon ICON_UP_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/up.png");
-    private final ImageIcon ICON_UP_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/up_blue.png");
+    private final ImageIcon ICON_UP_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/up.png");
+    private final ImageIcon ICON_UP_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/up_blue.png");
 
-    private final ImageIcon ICON_SCREENSHOT_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/screenshot.png");
-    private final ImageIcon ICON_SCREENSHOT_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/screenshot_blue.png");
+    private final ImageIcon ICON_SCREENSHOT_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/screenshot.png");
+    private final ImageIcon ICON_SCREENSHOT_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/screenshot_blue.png");
 
-    private final ImageIcon ICON_ZOOMIN_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/zoomin.png");
-    private final ImageIcon ICON_ZOOMIN_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/zoomin_blue.png");
+    private final ImageIcon ICON_ZOOMIN_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/zoomin.png");
+    private final ImageIcon ICON_ZOOMIN_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/zoomin_blue.png");
 
-    private final ImageIcon ICON_ZOOMOUT_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/zoomout.png");
-    private final ImageIcon ICON_ZOOMOUT_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/zoomout_blue.png");
+    private final ImageIcon ICON_ZOOMOUT_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/zoomout.png");
+    private final ImageIcon ICON_ZOOMOUT_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/zoomout_blue.png");
 
-    private final ImageIcon ICON_SETTINGS_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/settings.png");
-    private final ImageIcon ICON_SETTINGS_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/settings_blue.png");
+    private final ImageIcon ICON_SETTINGS_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/settings.png");
+    private final ImageIcon ICON_SETTINGS_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/settings_blue.png");
 
-   private final ImageIcon ICON_PROJECT_SETTINGS_STANDARD = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/project_config.png");
-    private final ImageIcon ICON_PROJECT_SETTINGS_ROLLOVER = ResourceLoader.loadImageIcon("/res/img/toolbar_icons/project_config_blue.png");
+   private final ImageIcon ICON_PROJECT_SETTINGS_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/project_config.png");
+    private final ImageIcon ICON_PROJECT_SETTINGS_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/project_config_blue.png");
 
     /**
      * ***********************************************************************************************************************

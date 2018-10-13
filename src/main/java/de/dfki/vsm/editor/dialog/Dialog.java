@@ -27,7 +27,7 @@ import javax.swing.WindowConstants;
  */
 public abstract class Dialog extends JDialog {
     protected final JPanel    mMainPanel = new JPanel(null);
-    protected final ImageIcon mIcon      = ResourceLoader.loadImageIcon("/res/img/logo.png");
+    protected final ImageIcon mIcon      = ResourceLoader.loadImageIcon("img/logo.png");
     protected final Font      mFont      = new Font("SansSerif", Font.PLAIN, 11);
 
     //

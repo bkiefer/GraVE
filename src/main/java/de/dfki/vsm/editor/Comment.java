@@ -83,7 +83,7 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
         mDataComment = dataComment;
 
         // resize marker
-        mResizeMarker = ResourceLoader.loadImage("/res/img/new/resize.png");
+        mResizeMarker = ResourceLoader.loadImage("img/new/resize.png");
 
         // font setup
         mFont = new Font("SansSerif", Font.ITALIC,    /* (mWorkSpace != null) ? */

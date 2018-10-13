@@ -194,7 +194,7 @@ public class SceneActionDialog extends JDialog {
         argListPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         argCmdPanel.setLayout(new BoxLayout(argCmdPanel, BoxLayout.Y_AXIS));
 
-        JButton removeButton = new JButton(ResourceLoader.loadImageIcon("/res/img/new/minus.png"));
+        JButton removeButton = new JButton(ResourceLoader.loadImageIcon("img/new/minus.png"));
 
         removeButton.setMinimumSize(new Dimension(20, 20));
         removeButton.setMaximumSize(new Dimension(20, 20));

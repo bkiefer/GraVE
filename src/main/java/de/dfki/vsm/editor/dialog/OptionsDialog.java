@@ -187,8 +187,8 @@ public class OptionsDialog extends JDialog {
         mXSDFileTextField.setMinimumSize(textfieldSize);
         mXSDFileTextField.setPreferredSize(textfieldSize);
         mXSDFileTextField.setEditable(false);
-        mXSDFileButton = new JButton(ResourceLoader.loadImageIcon("/res/img/search_icon.png"));
-        mXSDFileButton.setRolloverIcon(ResourceLoader.loadImageIcon("/res/img/search_icon_blue.png"));
+        mXSDFileButton = new JButton(ResourceLoader.loadImageIcon("img/search_icon.png"));
+        mXSDFileButton.setRolloverIcon(ResourceLoader.loadImageIcon("img/search_icon_blue.png"));
         mXSDFileButton.setOpaque(false);
         mXSDFileButton.setContentAreaFilled(false);
         mXSDFileButton.addActionListener(new ActionListener() {
@@ -551,7 +551,7 @@ public class OptionsDialog extends JDialog {
                         Integer.valueOf(mEditorConfig.getProperty(key)));
             }
 
-        } 
+        }
         // Add specific listeners
         mNodeSizeSpinner.addChangeListener(new ChangeListener() {
             @Override
