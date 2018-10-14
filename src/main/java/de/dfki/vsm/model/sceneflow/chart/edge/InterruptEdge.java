@@ -87,8 +87,9 @@ public class InterruptEdge extends AbstractEdge {
 
         if (mCondition != null) {
           if (Command.convertToVOnDA) {
+            out.print("<![CDATA[");
             out.print(mCondition.getConcreteSyntax());
-            out.println(";");
+            out.println(";]]>");
           } else {
             mCondition.writeXML(out);
           }
