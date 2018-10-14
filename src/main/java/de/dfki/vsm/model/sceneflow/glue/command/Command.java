@@ -40,7 +40,7 @@ public abstract class Command extends SyntaxObject {
 
     public static void writeListXML(IOSIndentWriter out, Collection<? extends Command> l)
         throws XMLWriteError {
-      if (! l.isEmpty() && Command.convertToVOnDA) out.print("<![CDATA[");
+      if (! l.isEmpty() && Command.convertToVOnDA) out.print("<Command><![CDATA[");
       for (Command c : l) {
         if (Command.convertToVOnDA) {
           out.print(c.getConcreteSyntax());
@@ -49,6 +49,6 @@ public abstract class Command extends SyntaxObject {
           c.writeXML(out);
         }
       }
-      if (! l.isEmpty() && Command.convertToVOnDA) out.print("]]>");
+      if (! l.isEmpty() && Command.convertToVOnDA) out.print("]]></Command>");
     }
 }
