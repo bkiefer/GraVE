@@ -1,7 +1,12 @@
 package de.dfki.vsm.model.sceneflow.glue.command;
 
 import de.dfki.vsm.model.sceneflow.glue.SyntaxObject;
+import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseError;
+import de.dfki.vsm.util.xml.XMLWriteError;
+
+import java.util.Collection;
+
 import org.w3c.dom.Element;
 
 /**
@@ -31,5 +36,17 @@ public abstract class Command extends SyntaxObject {
             command = Expression.parse(element);
         }
         return command;
+    }
+
+    public static void writeListXML(IOSIndentWriter out, Collection<? extends Command> l)
+        throws XMLWriteError {
+      for (Command c : l) {
+        if (Command.convertToVOnDA) {
+          out.print(c.getConcreteSyntax());
+          out.println(";");
+        } else {
+          c.writeXML(out);
+        }
+      }
     }
 }

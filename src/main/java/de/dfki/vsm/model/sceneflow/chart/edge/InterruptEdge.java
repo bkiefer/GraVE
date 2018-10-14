@@ -86,7 +86,12 @@ public class InterruptEdge extends AbstractEdge {
         super.writeXML(out);
 
         if (mCondition != null) {
+          if (Command.convertToVOnDA) {
+            out.print(mCondition.getConcreteSyntax());
+            out.println(";");
+          } else {
             mCondition.writeXML(out);
+          }
         }
 
         out.pop().println("</IEdge>");

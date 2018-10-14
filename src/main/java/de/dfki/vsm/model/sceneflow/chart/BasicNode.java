@@ -550,25 +550,15 @@ public class BasicNode implements ModelObject {
         int i = 0;
 
         out.println("<Define>").push();
-
-        for (i = 0; i < mTypeDefList.size(); i++) {
-            mTypeDefList.get(i).writeXML(out);
-        }
-
+        Command.writeListXML(out, mTypeDefList);
         out.pop().println("</Define>");
+
         out.println("<Declare>").push();
-
-        for (i = 0; i < mVarDefList.size(); i++) {
-            mVarDefList.get(i).writeXML(out);
-        }
-
+        Command.writeListXML(out, mVarDefList);
         out.pop().println("</Declare>");
+
         out.println("<Commands>").push();
-
-        for (i = 0; i < mCmdList.size(); i++) {
-            mCmdList.get(i).writeXML(out);
-        }
-
+        Command.writeListXML(out, mCmdList);
         out.pop().println("</Commands>");
 
         for (i = 0; i < mCEdgeList.size(); i++) {

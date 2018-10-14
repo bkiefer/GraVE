@@ -181,9 +181,7 @@ public abstract class AbstractEdge implements ModelObject {
       if (!mCmdList.isEmpty()) {
         out.println("<Commands>").push();
 
-        for (int i = 0; i < mCmdList.size(); i++) {
-            mCmdList.get(i).writeXML(out);
-        }
+        Command.writeListXML(out, mCmdList);
 
         out.pop().println("</Commands>");
       }
