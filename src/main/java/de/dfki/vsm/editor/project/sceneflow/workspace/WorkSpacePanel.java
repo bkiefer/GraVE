@@ -1,106 +1,39 @@
 package de.dfki.vsm.editor.project.sceneflow.workspace;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.CmdBadge;
-import de.dfki.vsm.editor.Comment;
-import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.NodeVariableBadge;
-import de.dfki.vsm.editor.VarBadgeGlobal;
-import de.dfki.vsm.editor.VarBadgeLocal;
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
-import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.editor.action.AddCommandAction;
-import de.dfki.vsm.editor.action.AddVariableAction;
-import de.dfki.vsm.editor.action.ChangeNodeTypeAction;
-import de.dfki.vsm.editor.action.CopyNodesAction;
-import de.dfki.vsm.editor.action.CreateCommentAction;
-import de.dfki.vsm.editor.action.CreateEdgeAction;
-import de.dfki.vsm.editor.action.CreateNodeAction;
-import de.dfki.vsm.editor.action.CutNodesAction;
-import de.dfki.vsm.editor.action.DeflectEdgeAction;
-import de.dfki.vsm.editor.action.EditCommandAction;
-import de.dfki.vsm.editor.action.ModifyEdgeAction;
-import de.dfki.vsm.editor.action.NormalizeEdgeAction;
-import de.dfki.vsm.editor.action.PasteNodesAction;
-import de.dfki.vsm.editor.action.RemoveCommentAction;
-import de.dfki.vsm.editor.action.RemoveEdgeAction;
-import de.dfki.vsm.editor.action.RemoveNodeAction;
-import de.dfki.vsm.editor.action.RemoveNodesAction;
-import de.dfki.vsm.editor.action.ShortestEdgeAction;
-import de.dfki.vsm.editor.action.StraightenEdgeAction;
-import de.dfki.vsm.editor.action.ToggleStartNodeAction;
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
-import de.dfki.vsm.editor.event.ProjectChangedEvent;
-import de.dfki.vsm.editor.event.WorkSpaceSelectedEvent;
-import de.dfki.vsm.editor.util.GridManager;
-import static de.dfki.vsm.Preferences.sCEDGE_COLOR;
-import static de.dfki.vsm.Preferences.sFEDGE_COLOR;
-import static de.dfki.vsm.Preferences.sIEDGE_COLOR;
-import static de.dfki.vsm.Preferences.sPEDGE_COLOR;
-import static de.dfki.vsm.Preferences.sTEDGE_COLOR;
-import de.dfki.vsm.editor.util.SceneFlowLayoutManager;
-import de.dfki.vsm.editor.util.SceneFlowManager;
-import de.dfki.vsm.model.project.EditorConfig;
-import de.dfki.vsm.model.dialogact.DialogAct;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.EpsilonEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
-import de.dfki.vsm.model.sceneflow.glue.command.invocation.PlayDialogAction;
-import de.dfki.vsm.model.sceneflow.glue.command.invocation.PlayScenesActivity;
-import de.dfki.vsm.model.sceneflow.glue.command.expression.CallingExpression;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.FunctionDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.VariableDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.DataTypeDefinition;
-import de.dfki.vsm.model.sceneflow.chart.graphics.node.NodePosition;
-import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
+import static de.dfki.vsm.Preferences.*;
+
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetAdapter;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.dnd.*;
+import java.awt.event.*;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.text.AttributedString;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
-import javax.swing.KeyStroke;
+import java.util.*;
+
+import javax.swing.*;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.*;
+import de.dfki.vsm.editor.action.*;
+import de.dfki.vsm.editor.event.NodeSelectedEvent;
+import de.dfki.vsm.editor.event.ProjectChangedEvent;
+import de.dfki.vsm.editor.event.WorkSpaceSelectedEvent;
+import de.dfki.vsm.editor.project.EditorProject;
+import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
+import de.dfki.vsm.editor.util.GridManager;
+import de.dfki.vsm.editor.util.SceneFlowLayoutManager;
+import de.dfki.vsm.editor.util.SceneFlowManager;
+import de.dfki.vsm.model.dialogact.DialogAct;
+import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.model.sceneflow.chart.SuperNode;
+import de.dfki.vsm.model.sceneflow.chart.edge.*;
+import de.dfki.vsm.util.evt.EventDispatcher;
+import de.dfki.vsm.util.evt.EventListener;
+import de.dfki.vsm.util.evt.EventObject;
+import de.dfki.vsm.util.log.LOGDefaultLogger;
 
 /**
  * @author Gregor Mehlmann
@@ -120,7 +53,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     // Variable display
     private VarBadgeLocal mLocalVarDisplay = null;
     private VarBadgeGlobal mGlobalVarDisplay = null;
-    private NodeVariableBadge mNodeVariableDisplay = null;
+    //private NodeVariableBadge mNodeVariableDisplay = null;
     private boolean mVisibleBadges = true;
 
     // Flags for mouse interaction
@@ -400,47 +333,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
                         // repaint(100);
                         dtde.acceptDrop(mAcceptableActions);
                         dtde.getDropTargetContext().dropComplete(true);
-                    } else if (data instanceof DialogAct) {
-                        for (Node node : mNodeSet) {
-                            if (node.containsPoint(dtde.getLocation().x, dtde.getLocation().y)) {
-                                createPDA(node, ((DialogAct) data).getName());
-                                dtde.acceptDrop(mAcceptableActions);
-                                dtde.getDropTargetContext().dropComplete(true);
-
-                                // c.update();
-                            } else {
-                                mSceneFlowEditor.setMessageLabelText("");
-                            }
-                        }
-
-                        // TODO: reject drop if not on a c!!!
-                    } else if (data instanceof FunctionDefinition) {
-                        for (Node node : mNodeSet) {
-                            if (node.containsPoint(dtde.getLocation().x, dtde.getLocation().y)) {
-                                createFunCall(node, ((FunctionDefinition) data).getName());
-
-                                dtde.acceptDrop(mAcceptableActions);
-                                dtde.getDropTargetContext().dropComplete(true);
-
-                                boolean exist = false;
-                                for (CmdBadge badge : mCmdBadgeList) {
-                                    if (badge.equals(mCmdBadgeMap.get(node))) {
-                                        exist = true;
-                                    }
-                                }
-                                if (!exist) {
-                                    mCmdBadgeList.add(mCmdBadgeMap.get(node));
-                                }
-
-                                mEventCaster.convey(new NodeSelectedEvent(this, node.getDataNode()));
-
-                                // c.update();
-                            } else {
-                                mSceneFlowEditor.setMessageLabelText("");
-                            }
-                        }
-
-                        // TODO: reject drop if not on a c!!!
                     } else {
                         dtde.rejectDrop();
                     }
@@ -506,7 +398,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     /**
      *
      *
-     */
+     *
     public void showNodeVariables(Node node) {
         ArrayList<String> localTypeDefList = new ArrayList<>();
         ArrayList<String> globalTypeDefList = new ArrayList<>();
@@ -563,7 +455,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
         mNodeVariableDisplay = new NodeVariableBadge(node, this, localVarDefList, globalVarDefList, localTypeDefList,
                 globalTypeDefList);
         add(mNodeVariableDisplay, 0);
-    }
+    }*/
 
     /**
      *
@@ -626,7 +518,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     /**
      *
      *
-     */
+     *
     public void createPDA(Node node, String name) {
         PlayDialogAction pdaCmd = new PlayDialogAction();
 
@@ -637,7 +529,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     /**
      *
      *
-     */
+     *
     public void createPSG(Node node, String name) {
         PlayScenesActivity psgCmd = new PlayScenesActivity();
 
@@ -648,7 +540,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     /**
      *
      *
-     */
+     *
     public void createFunCall(Node node, String name) {
         CallingExpression cmd = new CallingExpression();
 
@@ -659,7 +551,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
         node.getDataNode().addCmd(cmd);
 
 //      }
-    }
+    }*/
 
     /**
      * AbstractEdge creation
@@ -1021,7 +913,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
                 pop.add(new JSeparator());
             }
 
-            if (node.getDataNode().getCmdList().size() > 0) {
+            if (node.getDataNode().getCmd() != null) {
                 item = new JMenuItem("Edit Command");
 
                 EditCommandAction editCommandAction = new EditCommandAction(this, mCmdBadgeMap.get(node));
@@ -1030,7 +922,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
                 item.addActionListener(editCommandAction.getActionListener());
                 pop.add(item);
                 pop.add(new JSeparator());
-            } else {
+            /* }  else {
                 item = new JMenuItem("Add Command Execution");
 
                 AddCommandAction addCommandAction = new AddCommandAction(this, node);
@@ -1166,7 +1058,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     /**
      *
      *
-     */
+     *
     public void gobalAddVariableMenu(int eventX, int eventY) {
         JPopupMenu pop = new JPopupMenu();
 
@@ -1187,7 +1079,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
         }
 
         pop.show(this, eventX, eventY);
-    }
+    }*/
 
     /**
      *
@@ -1365,7 +1257,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
         for (Node sourceNode : mNodeSet) {
             Node targetNode = null;
 
-            for (GuargedEdge cedge : sourceNode.getDataNode().getCEdgeList()) {
+            for (GuardedEdge cedge : sourceNode.getDataNode().getCEdgeList()) {
                 targetNode = getNode(cedge.getTargetUnid());
 
                 if (targetNode != null) {
@@ -1707,12 +1599,12 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
         }
 
         // enable global context menu for clipbaord actions
-        if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
-            gobalAddVariableMenu(event.getX(), event.getY());
+//        if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
+//            gobalAddVariableMenu(event.getX(), event.getY());
 //            if (mClipboard.size() > 0) {
 //                gobalContextMenu(event);
 //            }
-        }
+//        }
     }
 
     private void launchWorkSpaceSelectedEvent() {
@@ -1945,6 +1837,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
         deselectAllNodes();
 
         // enable global context menu for clipbaord actions
+        /*
         if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
             gobalAddVariableMenu(event.getX(), event.getY());
 //            if (mClipboard.size() > 0) {
@@ -1952,7 +1845,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 //            }
 
             return;
-        }
+        }*/
 
         // get point as possible point for area selection!
         mAreaSelection.x = event.getX();
@@ -2333,6 +2226,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
             return;
         }
 
+        /*
         if ((event.getModifiersEx() == 128)) {
             for (Node node : mNodeSet) {
                 if (node.containsPoint(event.getX(), event.getY())) {
@@ -2350,7 +2244,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
             remove(mNodeVariableDisplay);
             mNodeVariableDisplay = null;
             repaint(100);
-        }
+        }*/
     }
 
     /**

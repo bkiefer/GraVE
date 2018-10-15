@@ -17,26 +17,26 @@ import java.util.Map;
 /**
  * @author Gregor Mehlmann
  */
-public class GuargedEdge extends AbstractEdge {
+public class GuardedEdge extends AbstractEdge {
 
-    protected Expression mCondition = null;
+    protected Command mCondition = null;
 
-    public GuargedEdge() {
+    public GuardedEdge() {
     }
 
-    public GuargedEdge(String target, String source, BasicNode targetNode, BasicNode sourceNode, EdgeGraphics graphics,
+    public GuardedEdge(String target, String source, BasicNode targetNode, BasicNode sourceNode, EdgeGraphics graphics,
             ArrayList<Command> cmdList, HashMap<TPLTuple<String, BasicNode>, TPLTuple<String, BasicNode>> altStartNodeMap,
-            Expression condition) {
+            Command condition) {
         super(target, source, targetNode, sourceNode, graphics, cmdList, altStartNodeMap);
         mCondition = condition;
     }
 
-    public Expression getCondition() {
+    public Command getCondition() {
         return mCondition;
     }
 
-    public void setCondition(Expression value) {
-        mCondition = value;
+    public void setCondition(Command mOldCondition) {
+        mCondition = mOldCondition;
     }
 
     @Override
@@ -57,8 +57,8 @@ public class GuargedEdge extends AbstractEdge {
     }
 
     // TODO:
-    public GuargedEdge getCopy() {
-        return new GuargedEdge(mTargetUnid, mSourceUnid, mTargetNode, mSourceNode, mGraphics.getCopy(), getCopyOfCmdList(),
+    public GuardedEdge getCopy() {
+        return new GuardedEdge(mTargetUnid, mSourceUnid, mTargetNode, mSourceNode, mGraphics.getCopy(), getCopyOfCmdList(),
                 getCopyOfAltStartNodeMap(), mCondition.getCopy());
     }
 

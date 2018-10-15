@@ -1,60 +1,38 @@
 package de.dfki.vsm.editor.project.sceneflow.attributes;
 
+//~--- JDK imports ------------------------------------------------------------
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.swing.*;
+
 //~--- non-JDK imports --------------------------------------------------------
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
+
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.action.RedoAction;
 import de.dfki.vsm.editor.action.UndoAction;
-import de.dfki.vsm.editor.dialog.CmdDialog;
-import de.dfki.vsm.editor.dialog.FunDefDialog;
-import de.dfki.vsm.editor.dialog.ModifyCEdgeDialog;
-import de.dfki.vsm.editor.dialog.ModifyIEdgeDialog;
-import de.dfki.vsm.editor.dialog.ModifyPEdgeDialog;
-import de.dfki.vsm.editor.dialog.ModifyTEdgeDialog;
-import de.dfki.vsm.editor.dialog.TypeDefDialog;
-import de.dfki.vsm.editor.dialog.VarDefDialog;
+import de.dfki.vsm.editor.dialog.*;
 import de.dfki.vsm.editor.event.CEdgeDialogModifiedEvent;
 import de.dfki.vsm.editor.event.EdgeSelectedEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge.EdgeType;
-import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
 import de.dfki.vsm.model.sceneflow.chart.SceneFlow;
 import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.FunctionDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.VariableDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.DataTypeDefinition;
+import de.dfki.vsm.model.sceneflow.chart.edge.*;
+import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge.EdgeType;
 import de.dfki.vsm.model.sceneflow.glue.GlueParser;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.model.sceneflow.glue.command.Expression;
 import de.dfki.vsm.util.RegularExpressions;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.log.LOGDefaultLogger;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
-import java.util.HashMap;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-
-import static java.awt.Component.RIGHT_ALIGNMENT;
-import java.util.ArrayList;
 
 ///**
 // * @author Gregor Mehlmann
@@ -273,7 +251,7 @@ import java.util.ArrayList;
  *
  * @author Gregor Mehlmann
  *
- *
+ * TODO: THIS HAS TO BE TURNED INTO STH ELSE
  */
 class CmdEditor extends AttributeEditor {
 
@@ -291,9 +269,9 @@ class CmdEditor extends AttributeEditor {
             // Reload the command execution list
             mListModel.clear();
 
-            for (Command cmd : mDataNode.getCmdList()) {
-                mListModel.addElement(cmd);
-            }
+            Command cmd = mDataNode.getCmd();
+            mListModel.addElement(cmd);
+
         } else {
 
             // Do nothing
@@ -305,70 +283,32 @@ class CmdEditor extends AttributeEditor {
         de.dfki.vsm.editor.Node currentNode = EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().getNode(mDataNode.getId());
         if (currentNode != null) {
             EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().deselectAllOtherComponents(currentNode);
-            Command cmd = new CmdDialog(null).run();
-
-            if (cmd != null) {
-                mDataNode.addCmd(cmd);
-                mListModel.addElement(cmd);
-            }
+            new CmdDialog(mDataNode.getCmd()).run();
         }
     }
 
     @Override
     protected void edit() {
-        int index = mList.getSelectedIndex();
-
-        if (index >= 0) {
-            Command oldCmd = mDataNode.getCmdAt(index);
-            Command newCmd = new CmdDialog(oldCmd).run();
-
-            if (newCmd != null) {
-                mDataNode.setCmdAt(newCmd, index);
-                mListModel.set(index, newCmd);
-            }
-        }
+      Command oldCmd = mDataNode.getCmd();
+      Command newCmd = new CmdDialog(oldCmd).run();
     }
 
     @Override
     protected void remove() {
-        int index = mList.getSelectedIndex();
+      // TODO Auto-generated method stub
 
-        if (index != -1) {
-            mDataNode.removeCmdAt(index);
-            mListModel.removeElementAt(index);
-        }
     }
 
     @Override
     protected void up() {
-        int index = mList.getSelectedIndex();
+      // TODO Auto-generated method stub
 
-        if (index >= 1) {
-            Command thisCmd = mDataNode.getCmdAt(index);
-            Command otherCmd = mDataNode.getCmdAt(index - 1);
-
-            mDataNode.setCmdAt(thisCmd, index - 1);
-            mDataNode.setCmdAt(otherCmd, index);
-            mList.setSelectedIndex(index - 1);
-            mListModel.set(index - 1, thisCmd);
-            mListModel.set(index, otherCmd);
-        }
     }
 
     @Override
     protected void down() {
-        int index = mList.getSelectedIndex();
+      // TODO Auto-generated method stub
 
-        if ((index >= 0) && (index < mListModel.size() - 1)) {
-            Command thisCmd = mDataNode.getCmdAt(index);
-            Command otherCmd = mDataNode.getCmdAt(index + 1);
-
-            mDataNode.setCmdAt(thisCmd, index + 1);
-            mDataNode.setCmdAt(otherCmd, index);
-            mList.setSelectedIndex(index + 1);
-            mListModel.set(index + 1, thisCmd);
-            mListModel.set(index, otherCmd);
-        }
     }
 }
 
@@ -381,7 +321,7 @@ class CmdEditor extends AttributeEditor {
  */
 class ConditionEditor extends JPanel implements EventListener {
 
-    private GuargedEdge mDataCEdge;
+    private GuardedEdge mDataCEdge;
     private ModifyCEdgeDialog mCEdgeDialog;
 
     public ConditionEditor() {
@@ -399,7 +339,7 @@ class ConditionEditor extends JPanel implements EventListener {
         if (event instanceof EdgeSelectedEvent) {
             if (event instanceof EdgeSelectedEvent) {
                 if (((EdgeSelectedEvent) event).getEdge().getEdgeType().equals(EdgeType.GuardedEdge)) {
-                    mDataCEdge = (GuargedEdge) ((EdgeSelectedEvent) event).getEdge();
+                    mDataCEdge = (GuardedEdge) ((EdgeSelectedEvent) event).getEdge();
                     createNewDialog();
                     removeAll();
                     mCEdgeDialog.getInputPanel().setMinimumSize(new Dimension(200, 40));
@@ -503,7 +443,7 @@ class EdgeEditor extends JPanel implements EventListener {
                 mTimeOutEditor.setVisible(false);
             }
 
-            if (edge instanceof GuargedEdge) {
+            if (edge instanceof GuardedEdge) {
                 mConditionEditor.setVisible(true);
             } else {
                 mConditionEditor.setVisible(false);
@@ -591,97 +531,7 @@ public class ElementEditor extends JScrollPane implements EventListener {
     }
 }
 
-/**
- *
- *
- * @author Gregor Mehlmann
- *
- *
- */
-class FunDefEditor extends AttributeEditor {
 
-    public FunDefEditor() {
-        super("Edit Function Definitions:");
-    }
-
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof NodeSelectedEvent) {
-
-            // Update the selected node
-            mDataNode = ((NodeSelectedEvent) event).getNode();
-
-            // Reload the function definition map
-            if (mDataNode instanceof SceneFlow) {
-                mListModel.clear();
-
-                for (FunctionDefinition def : ((SceneFlow) mDataNode).getUsrCmdDefMap().values()) {
-                    mListModel.addElement(def);
-                }
-            }
-        } else {
-
-            // Do nothing
-        }
-    }
-
-    @Override
-    protected void add() {
-        FunctionDefinition usrCmdDef = new FunDefDialog(null).run();
-
-        if (usrCmdDef != null) {
-            ((SceneFlow) mDataNode).putUsrCmdDef(usrCmdDef.getName(), usrCmdDef);
-            mListModel.addElement(usrCmdDef);
-        }
-    }
-
-    @Override
-    protected void edit() {
-        int index = mList.getSelectedIndex();
-
-        if (index >= 0) {
-            FunctionDefinition oldUsrCmdDef = (FunctionDefinition) mList.getSelectedValue();
-
-            // Remove the old function definition from the sceneflow
-            ((SceneFlow) mDataNode).removeUsrCmdDef(oldUsrCmdDef.getName());
-
-            // Edit the old function definition
-            FunctionDefinition newUsrCmdDef = new FunDefDialog(oldUsrCmdDef).run();
-
-            if (newUsrCmdDef != null) {
-
-                // Put the new function definition to the sceneflow
-                ((SceneFlow) mDataNode).putUsrCmdDef(newUsrCmdDef.getName(), newUsrCmdDef);
-
-                //
-                mListModel.set(index, newUsrCmdDef);
-            }
-        }
-    }
-
-    @Override
-    protected void remove() {
-        FunctionDefinition oldUsrCmdDef = (FunctionDefinition) mList.getSelectedValue();
-
-        if (oldUsrCmdDef != null) {
-
-            // Remove the old function definition from the sceneflow
-            ((SceneFlow) mDataNode).removeUsrCmdDef(oldUsrCmdDef.getName());
-
-            //
-            mListModel.removeElement(oldUsrCmdDef);
-        }
-    }
-
-    @Override
-
-    protected void up() {
-    }
-
-    @Override
-    protected void down() {
-    }
-}
 
 /**
  *
@@ -843,8 +693,6 @@ class NodeEditor extends JPanel implements EventListener {
 
     private final NameEditor mNameEditor;
     private final StartNodeEditor mStartNodeEditor;
-    private final TypeDefEditor mTypeDefEditor;
-    private final VarDefEditor mVarDefEditor;
 
     // private final FunDefEditor mFunDefEditor;
     private final CmdEditor mCmdEditor;
@@ -854,10 +702,8 @@ class NodeEditor extends JPanel implements EventListener {
         // Init the child editors
         mNameEditor = new NameEditor();
         mStartNodeEditor = new StartNodeEditor();
-        mTypeDefEditor = new TypeDefEditor();
 
         // mFunDefEditor = new FunDefEditor();
-        mVarDefEditor = new VarDefEditor();
         mCmdEditor = new CmdEditor();
 
         // Init components
@@ -866,8 +712,6 @@ class NodeEditor extends JPanel implements EventListener {
         setBorder(BorderFactory.createEmptyBorder());
         add(mNameEditor);
         add(mStartNodeEditor);
-        add(mTypeDefEditor);
-        add(mVarDefEditor);
 
         // add(mFunDefEditor);
         add(mCmdEditor);
@@ -1135,196 +979,4 @@ class TimeOutEditor extends JPanel implements EventListener {
     }
 }
 
-/**
- * @author Gregor Mehlmann
- */
-class TypeDefEditor extends AttributeEditor {
 
-    public TypeDefEditor() {
-        super("Edit Type Definitions:");
-    }
-
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof NodeSelectedEvent) {
-            // Update the selected node
-            mDataNode = ((NodeSelectedEvent) event).getNode();
-            // Reload the type definition list
-            mListModel.clear();
-            for (DataTypeDefinition def : mDataNode.getTypeDefList()) {
-                mListModel.addElement(def);
-            }
-        }
-    }
-
-    @Override
-    protected void add() {
-        final DataTypeDefinition typeDef = new TypeDefDialog(null).run();
-        if (typeDef != null) {
-            mDataNode.addTypeDef(typeDef);
-            mListModel.addElement(typeDef);
-        }
-    }
-
-    @Override
-    protected void edit() {
-        int index = mList.getSelectedIndex();
-
-        if (index >= 0) {
-            DataTypeDefinition oldTypeDef = mDataNode.getTypeDefAt(index);
-            DataTypeDefinition newTypeDef = new TypeDefDialog(oldTypeDef).run();
-
-            //
-            if (newTypeDef != null) {
-                mDataNode.setTypeDefAt(newTypeDef, index);
-                mListModel.set(index, newTypeDef);
-            }
-        }
-    }
-
-    @Override
-    protected void remove() {
-        int index = mList.getSelectedIndex();
-
-        if (index != -1) {
-            mDataNode.removeTypeDefAt(index);
-            mListModel.removeElementAt(index);
-        }
-    }
-
-    @Override
-    protected void up() {
-        int index = mList.getSelectedIndex();
-
-        if (index >= 1) {
-            DataTypeDefinition thisTypeDef = mDataNode.getTypeDefAt(index);
-            DataTypeDefinition otherTypeDef = mDataNode.getTypeDefAt(index - 1);
-
-            mDataNode.setTypeDefAt(thisTypeDef, index - 1);
-            mDataNode.setTypeDefAt(otherTypeDef, index);
-            mList.setSelectedIndex(index - 1);
-            mListModel.set(index - 1, thisTypeDef);
-            mListModel.set(index, otherTypeDef);
-        }
-    }
-
-    @Override
-    protected void down() {
-        int index = mList.getSelectedIndex();
-
-        if ((index >= 0) && (index < mListModel.size() - 1)) {
-            DataTypeDefinition thisTypeDef = mDataNode.getTypeDefAt(index);
-            DataTypeDefinition otherTypeDef = mDataNode.getTypeDefAt(index + 1);
-
-            mDataNode.setTypeDefAt(thisTypeDef, index + 1);
-            mDataNode.setTypeDefAt(otherTypeDef, index);
-            mList.setSelectedIndex(index + 1);
-            mListModel.set(index + 1, thisTypeDef);
-            mListModel.set(index, otherTypeDef);
-        }
-    }
-}
-
-/**
- *
- *
- * @author Gregor Mehlmann
- *
- *
- */
-class VarDefEditor extends AttributeEditor {
-
-    public VarDefEditor() {
-        super("Edit Variable Definitions:");
-    }
-
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof NodeSelectedEvent) {
-
-            // Update the selected node
-            mDataNode = ((NodeSelectedEvent) event).getNode();
-
-            // Reload the variable definition list
-            mListModel.clear();
-
-            for (VariableDefinition def : mDataNode.getVarDefList()) {
-                mListModel.addElement(def);
-            }
-        } else {
-
-            // Do nothing
-        }
-    }
-
-    @Override
-    public void add() {
-
-        // Show the variable definition dialog
-        VariableDefinition varDef = new VarDefDialog(mDataNode, null).run();
-
-        // Add the new variable definition if the creation was successful
-        if (varDef != null) {
-            mDataNode.addVarDef(varDef);
-            mListModel.addElement(varDef);
-        }
-    }
-
-    @Override
-    public void edit() {
-        int index = mList.getSelectedIndex();
-
-        if (index > -1) {
-            VariableDefinition oldVarDef = mDataNode.getVarDefAt(index);
-            VariableDefinition newVarDef = new VarDefDialog(mDataNode, oldVarDef).run();
-
-            // Add the new variable definition if the creation was successful
-            if (newVarDef != null) {
-                mDataNode.setVarDefAt(newVarDef, index);
-                mListModel.set(index, newVarDef);
-            }
-        }
-    }
-
-    @Override
-    public void remove() {
-        int index = mList.getSelectedIndex();
-
-        if (index != -1) {
-            mDataNode.removeVarDefAt(index);
-            mListModel.removeElementAt(index);
-        }
-    }
-
-    @Override
-    public void up() {
-        int index = mList.getSelectedIndex();
-
-        if (index >= 1) {
-            VariableDefinition thisVarDef = mDataNode.getVarDefAt(index);
-            VariableDefinition otherVarDef = mDataNode.getVarDefAt(index - 1);
-
-            mDataNode.setVarDefAt(thisVarDef, index - 1);
-            mDataNode.setVarDefAt(otherVarDef, index);
-            mList.setSelectedIndex(index - 1);
-            mListModel.set(index - 1, thisVarDef);
-            mListModel.set(index, otherVarDef);
-        }
-    }
-
-    @Override
-    public void down() {
-        int index = mList.getSelectedIndex();
-
-        if ((index >= 0) && (index < mListModel.size() - 1)) {
-            VariableDefinition thisVarDef = mDataNode.getVarDefAt(index);
-            VariableDefinition otherVarDef = mDataNode.getVarDefAt(index + 1);
-
-            mDataNode.setVarDefAt(thisVarDef, index + 1);
-            mDataNode.setVarDefAt(otherVarDef, index);
-            mList.setSelectedIndex(index + 1);
-            mListModel.set(index + 1, thisVarDef);
-            mListModel.set(index, otherVarDef);
-        }
-    }
-}

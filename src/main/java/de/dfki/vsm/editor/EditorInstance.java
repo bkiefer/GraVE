@@ -824,13 +824,6 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
         optionsDialog.setVisible(true);
     }
 
-    // Show the monitor dialog
-    public final void showMonitor() {
-        final MonitorDialog monitorDialog = MonitorDialog.getInstance();
-        monitorDialog.resetView();
-        monitorDialog.setVisible(true);
-    }
-
     // Show the help dialog
     public final void showHelp() {
         final AboutDialog aboutDialog = AboutDialog.getInstance();

@@ -2,7 +2,7 @@ package de.dfki.vsm.editor.util;
 
 //~--- non-JDK imports --------------------------------------------------------
 
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
 import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
@@ -79,9 +79,9 @@ public class SceneFlowManager {
                 if (node.hasEdge()) {
                     switch (node.getFlavour()) {
                     case CNODE :
-                        ArrayList<GuargedEdge> ces = node.getCEdgeList();
+                        ArrayList<GuardedEdge> ces = node.getCEdgeList();
 
-                        for (GuargedEdge c : ces) {
+                        for (GuardedEdge c : ces) {
 
                             // collectAltStartNodeIDs(processIDs(c.getStart()), currentNodeIDs, altStartNodeIDs);
                         }

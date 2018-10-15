@@ -1,6 +1,25 @@
 package de.dfki.vsm.editor.project.auxiliary.functions;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Vector;
+
+import javax.swing.*;
+import javax.swing.event.MouseInputAdapter;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
+
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
+
 import de.dfki.vsm.editor.CancelButton;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.OKButton;
@@ -8,44 +27,8 @@ import de.dfki.vsm.editor.RemoveButton;
 import de.dfki.vsm.editor.event.FunctionRemovedEvent;
 import de.dfki.vsm.model.sceneflow.chart.SceneFlow;
 import de.dfki.vsm.model.sceneflow.glue.command.definition.FunctionDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.ArgumentDefinition;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.log.LOGDefaultLogger;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Vector;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.event.MouseInputAdapter;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.PlainDocument;
 
 /**
  *
@@ -120,7 +103,7 @@ public class SingleFunctionContainer extends JPanel {
 
     public SingleFunctionContainer(FunctionDefinition funDef, SceneFlow sceneflow) {
         mFunDef = funDef;
-        mFunDefBackup = funDef.getCopy();
+        mFunDefBackup = (FunctionDefinition)funDef.getCopy();
         mSceneFlow = sceneflow;
         initComponents();
         fillComponents();
@@ -144,18 +127,20 @@ public class SingleFunctionContainer extends JPanel {
         try {
             String newSelectedMethodName = getSelectedMethod().getName().trim();
 
+            /*
             mFunDef.setMethod(newSelectedMethodName);
             getFunDef().setMethod(newSelectedMethodName);
             mFunDef.getParamList().clear();
-
+*/
             Enumeration args = ((DefaultListModel) getArgList().getModel()).elements();
 
             while (args.hasMoreElements()) {
                 String argString = (String) args.nextElement();
-
+/*
                 mFunDef.addParam(new ArgumentDefinition(getNameMap().get(argString),
                         getTypeMap().get(argString)));
-            }
+  */
+                }
         } catch (final Exception exc) {
             mLogger.failure("The function created does not exist in the enviroment: \n" + exc.toString());
         }
@@ -355,7 +340,7 @@ public class SingleFunctionContainer extends JPanel {
 
                 if (!(mFunDef.getName().equals(newFundDefName))) {
                     if (!newFundDefName.equals("")) {
-
+                      /*
                         // look if name is already being used by another command
                         if (mSceneFlow.getUsrCmdDef(newFundDefName) != null) {
                             getNameInput().setForeground(Color.red);
@@ -366,6 +351,7 @@ public class SingleFunctionContainer extends JPanel {
 
                             updateFunDef();
                         }
+                        */
                     }
                 }
             }
@@ -386,16 +372,16 @@ public class SingleFunctionContainer extends JPanel {
                     // updateFunDef(mFunDef, mFunDefDialog);
                     String newSelectedMethodName = getSelectedMethod().getName().trim();
 
-                    mFunDef.setMethod(newSelectedMethodName);
-                    getFunDef().setMethod(newSelectedMethodName);
-                    mFunDef.getParamList().clear();
+                    //mFunDef.setMethod(newSelectedMethodName);
+                    //getFunDef().setMethod(newSelectedMethodName);
+                    //mFunDef.getParamList().clear();
 
                     Enumeration args = ((DefaultListModel) getArgList().getModel()).elements();
 
                     while (args.hasMoreElements()) {
                         String argString = (String) args.nextElement();
 
-                        mFunDef.addParam(new ArgumentDefinition(getNameMap().get(argString), getTypeMap().get(argString)));
+                        //mFunDef.addParam(new ArgumentDefinition(getNameMap().get(argString), getTypeMap().get(argString)));
                     }
 
                     EditorInstance.getInstance().refresh();
@@ -454,18 +440,18 @@ public class SingleFunctionContainer extends JPanel {
 
                         // updateFunDef(mFunDef, mFunDefDialog);
                         String newSelectedMethodName = getSelectedMethod().getName().trim();
-
+                        /*
                         mFunDef.setMethod(newSelectedMethodName);
                         getFunDef().setMethod(newSelectedMethodName);
                         methodComboBoxActionPerformed(evt);
                         mFunDef.getParamList().clear();
-
+*/
                         Enumeration args = ((DefaultListModel) getArgList().getModel()).elements();
 
                         while (args.hasMoreElements()) {
                             String argString = (String) args.nextElement();
 
-                            mFunDef.addParam(new ArgumentDefinition(getNameMap().get(argString), getTypeMap().get(argString)));
+                            //mFunDef.addParam(new ArgumentDefinition(getNameMap().get(argString), getTypeMap().get(argString)));
                         }
 
                         EditorInstance.getInstance().refresh();
@@ -495,6 +481,7 @@ public class SingleFunctionContainer extends JPanel {
             @Override
             public void mouseClicked(MouseEvent evt) {
                 argumentListMouseClicked(evt);
+                /*
                 mFunDef.getParamList().clear();
 
                 Enumeration args = ((DefaultListModel) getArgList().getModel()).elements();
@@ -504,7 +491,7 @@ public class SingleFunctionContainer extends JPanel {
 
                     mFunDef.addParam(new ArgumentDefinition(getNameMap().get(argString),
                             getTypeMap().get(argString)));
-                }
+                }*/
 
                 EditorInstance.getInstance().refresh();
             }
@@ -513,7 +500,7 @@ public class SingleFunctionContainer extends JPanel {
 
     private void fillComponents() {
         mNameTextField.setText(mFunDef.getName());
-
+/*
         mClassNameTextField.setText(mFunDef.getClassName());
 
         // Init the method combo box with the class name of the user command
@@ -522,11 +509,11 @@ public class SingleFunctionContainer extends JPanel {
         initMethodComboBox(mFunDef.getClassName());
 
         String selectedMethod = mFunDef.getMethod() + mFunDef.getParamPrettyPrint();
-
         selectedMethod = selectedMethod.replaceAll("\\s+", "");
 
         mMethodComboBox.setSelectedItem(selectedMethod);
         mSelectedMethod = mMethodMap.get(selectedMethod);
+
 
         // Resize the argument name list to the size of the parameter
         // list of the selected method and fill the argument name list
@@ -536,7 +523,7 @@ public class SingleFunctionContainer extends JPanel {
         for (int i = 0; (i < mFunDef.getSizeOfParamList()) && (i < mArgNameList.size()); i++) {
             mArgNameList.set(i, mFunDef.getParamAt(i).getName());
         }
-
+*/
         updateArgList();
     }
 
@@ -611,10 +598,12 @@ public class SingleFunctionContainer extends JPanel {
 
             resizeArgNameList();
 
+            /*
             // assign the correct argument name
             for (int i = 0; (i < mFunDef.getSizeOfParamList()) && (i < mArgNameList.size()); i++) {
                 mArgNameList.set(i, mFunDef.getParamAt(i).getName());
             }
+            */
 
             updateArgList();
         }
@@ -689,8 +678,9 @@ public class SingleFunctionContainer extends JPanel {
         } else {
             mArgNameList.setSize(mSelectedMethod.getParameterTypes().length);
 
-            // Check if the altered method definition may be the same as a 
-            // previous one. If so, use the previous argument description 
+            // Check if the altered method definition may be the same as a
+            // previous one. If so, use the previous argument description
+            /*
             String previousSelectedMethodStr = (mFunDefBackup.getMethod() + mFunDefBackup.getParamPrettyPrint()).replaceAll("\\s+", "");
             Method previousSelectedMethod = mMethodMap.get(previousSelectedMethodStr);
 
@@ -704,6 +694,7 @@ public class SingleFunctionContainer extends JPanel {
                     }
                 }
             }
+            */
 
             for (int i = 0; i < mArgNameList.size(); i++) {
                 // If the argument has not yet a name then assign a default name
@@ -732,7 +723,7 @@ public class SingleFunctionContainer extends JPanel {
 //            className = newstring;
 //
 //            initMethodComboBox(className);
-//        //} 
+//        //}
 //    }
     public void argumentListMouseClicked(MouseEvent evt) {
         if ((evt.getButton() == MouseEvent.BUTTON1) && (evt.getClickCount() == 2)) {
@@ -750,7 +741,7 @@ public class SingleFunctionContainer extends JPanel {
 
     public void updateFunDef() {
         boolean isClass = true;
-
+        /*
         mFunDef.setName(getNameInput().getText().trim());
         mFunDef.setClassName(getClassNameInput().getText().trim());
 
@@ -776,7 +767,7 @@ public class SingleFunctionContainer extends JPanel {
             }
 
         }
-
+         */
         EditorInstance.getInstance().refresh();
     }
 
@@ -811,7 +802,7 @@ public class SingleFunctionContainer extends JPanel {
     }
 
     private String methodToString() {
-        return mFunDef.getMethod();
+        return "";//mFunDef.getMethod();
 
         /*
          * String name = mFunDef.getMethod() + "(";

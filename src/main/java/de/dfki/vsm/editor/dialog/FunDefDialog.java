@@ -1,50 +1,30 @@
 package de.dfki.vsm.editor.dialog;
 
-//~--- non-JDK imports --------------------------------------------------------
-import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
-import de.dfki.vsm.editor.CancelButton;
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.OKButton;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.FunctionDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.ArgumentDefinition;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-
+import java.awt.event.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
+
+//~--- non-JDK imports --------------------------------------------------------
+import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
+
+import de.dfki.vsm.editor.CancelButton;
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.OKButton;
+import de.dfki.vsm.model.sceneflow.glue.command.definition.FunctionDefinition;
 
 /**
  *
@@ -106,7 +86,8 @@ public class FunDefDialog extends Dialog {
 
     public FunDefDialog(FunctionDefinition funDef) {
         super(EditorInstance.getInstance(), "Function Definition", true);
-
+        mFunDef = funDef;
+        /*
         if (funDef != null) {
 
             // Modify an existing function definition
@@ -116,7 +97,7 @@ public class FunDefDialog extends Dialog {
             // Create a new function definition
             mFunDef = new FunctionDefinition("newCommand", "java.lang.System.out", "println");
             mFunDef.addParam(new ArgumentDefinition("text", "String"));
-        }
+        }*/
 
         initComponents();
         fillComponents();
@@ -252,6 +233,7 @@ public class FunDefDialog extends Dialog {
     private void fillComponents() {
         mNameTextField.setText(mFunDef.getName());
 
+        /*
         mClassNameTextField.setText(mFunDef.getClassName());
 
         // Init the method combo box with the class name of the user command
@@ -271,10 +253,10 @@ public class FunDefDialog extends Dialog {
         resizeArgNameList();
 
         // TODO - Something is wrong with the argument name!
-        
+
         for (int i = 0; (i < mFunDef.getSizeOfParamList()) && (i < mArgNameList.size()); i++) {
             mArgNameList.set(i, mFunDef.getParamAt(i).getName());
-        }
+        }*/
 
         updateArgList();
     }
@@ -572,6 +554,7 @@ public class FunDefDialog extends Dialog {
 
             return;
         }
+        /*
         // Set the name, class name and method name of the user command definition
         mFunDef.setName(mNameTextField.getText().trim());
         mFunDef.setClassName(mClassNameTextField.getText().trim());
@@ -586,7 +569,7 @@ public class FunDefDialog extends Dialog {
             String argString = (String) args.nextElement();
 
             mFunDef.addParam(new ArgumentDefinition(mNameMap.get(argString), mTypeMap.get(argString)));
-        }
+        }*/
         //
         dispose(Button.OK);
     }

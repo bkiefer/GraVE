@@ -11,7 +11,7 @@ import de.dfki.vsm.editor.util.EdgeGraphics;
 import de.dfki.vsm.Preferences;
 import de.dfki.vsm.editor.util.VisualisationTask;
 import de.dfki.vsm.model.project.EditorConfig;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
@@ -295,8 +295,8 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
                     mName = "Conditional";
                     mColor = sCEDGE_COLOR;
 
-                    if (((GuargedEdge) mDataEdge).getCondition() != null) {
-                        mDescription = ((GuargedEdge) mDataEdge).getCondition().getConcreteSyntax();
+                    if (((GuardedEdge) mDataEdge).getCondition() != null) {
+                        mDescription = ((GuardedEdge) mDataEdge).getCondition().getConcreteSyntax();
                     } else {
                         mDescription = "";
                     }
@@ -517,7 +517,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
                 //LogicalCond log = ChartParser.logResult;
                 //Expression log = ChartParser.expResult;
                 if (log != null) {
-                    ((GuargedEdge) mDataEdge).setCondition(log);
+                    ((GuardedEdge) mDataEdge).setCondition(log);
                 } else {
                     EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().setMessageLabelText(
                             "Remember to wrap condition in parenthesis");

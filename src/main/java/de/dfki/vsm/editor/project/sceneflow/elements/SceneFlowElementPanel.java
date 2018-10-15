@@ -121,9 +121,12 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
     public void updateFunctions() {
         mFunctionsEntry.removeAllChildren();
 
-        List<FunctionDefinition> functionDefinitions = new ArrayList<FunctionDefinition>(mSceneFlow.getUsrCmdDefMap().values());
+        List<FunctionDefinition> functionDefinitions = new ArrayList<FunctionDefinition>(
+            //mSceneFlow.getUsrCmdDefMap().values()
+            Collections.emptyList()
+            );
 
-        Collections.sort(functionDefinitions);
+        Collections.sort((List)functionDefinitions);
 
         for (final FunctionDefinition def : functionDefinitions) {
             mFunctionsEntry.add(new TreeEntry(def.getName(), def.isValidClass()
@@ -394,8 +397,8 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
             if (usrCmdDef != null) {
                 FunctionDefinition oldFunDef = (FunctionDefinition) entry.getData();
 
-                mSceneFlow.removeUsrCmdDef(oldFunDef.getName());
-                mSceneFlow.putUsrCmdDef(usrCmdDef.getName(), usrCmdDef);
+                //mSceneFlow.removeUsrCmdDef(oldFunDef.getName());
+                //mSceneFlow.putUsrCmdDef(usrCmdDef.getName(), usrCmdDef);
                 updateFunctions();
 
                 FunctionModifiedEvent ev = new FunctionModifiedEvent(this, usrCmdDef);
@@ -426,7 +429,7 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
             FunctionDefinition usrCmdDef = new FunDefDialog(null).run();
 
             if (usrCmdDef != null) {
-                mSceneFlow.putUsrCmdDef(usrCmdDef.getName(), usrCmdDef);
+                //mSceneFlow.putUsrCmdDef(usrCmdDef.getName(), usrCmdDef);
                 updateFunctions();
                 EditorInstance.getInstance().refresh();
                 launchFunctionCreatedEvent(usrCmdDef);
@@ -443,7 +446,7 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
             if (entry != null) {
                 FunctionDefinition oldFunDef = (FunctionDefinition) entry.getData();
 
-                mSceneFlow.removeUsrCmdDef(oldFunDef.getName());
+                //mSceneFlow.removeUsrCmdDef(oldFunDef.getName());
                 updateFunctions();
 
                 EditorInstance.getInstance().refresh();

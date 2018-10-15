@@ -11,7 +11,6 @@ import de.dfki.vsm.editor.event.FunctionRemovedEvent;
 import de.dfki.vsm.editor.event.FunctionSelectedEvent;
 import de.dfki.vsm.model.sceneflow.chart.SceneFlow;
 import de.dfki.vsm.model.sceneflow.glue.command.definition.FunctionDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.ArgumentDefinition;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
@@ -90,6 +89,7 @@ public class FunctionsEditor extends JPanel implements EventListener
         mFunctionsContainerPanel.removeAll();
         repaint(100);
 
+        /*
         // Iterate through all existing functions in the sceneflow
         for (FunctionDefinition i : mSceneFlow.getUsrCmdDefMap().values())
         {
@@ -103,7 +103,7 @@ public class FunctionsEditor extends JPanel implements EventListener
 
             mFunctionsContainerPanel.add(Box.createRigidArea(new Dimension(1, 5)));
             mFunctionsContainerPanel.add(singleFunctionContainer);
-        }
+        }*/
 
         mFunctionsContainerPanel.add(Box.createRigidArea(new Dimension(5, 5)));
 
@@ -130,10 +130,11 @@ public class FunctionsEditor extends JPanel implements EventListener
             nameCounter++;
             funcName = defaulFuncName + nameCounter;
         }
-        FunctionDefinition usrCmdDef = new FunctionDefinition(funcName, "java.lang.System.out", "println");
-        usrCmdDef.addParam(new ArgumentDefinition("text", "String"));
-        mSceneFlow.putUsrCmdDef(usrCmdDef.getName(), usrCmdDef);
 
+        FunctionDefinition usrCmdDef = null;//new FunctionDefinition(funcName, "java.lang.System.out", "println");
+        /*        usrCmdDef.addParam(new ArgumentDefinition("text", "String"));
+        mSceneFlow.putUsrCmdDef(usrCmdDef.getName(), usrCmdDef);
+*/
         SingleFunctionContainer singleFunctionContainer
             = new SingleFunctionContainer(usrCmdDef, mSceneFlow);
 
@@ -149,7 +150,7 @@ public class FunctionsEditor extends JPanel implements EventListener
 
     public void redoAddFunction(FunctionDefinition usrCmdDef)
     {
-        mSceneFlow.putUsrCmdDef(usrCmdDef.getName(), usrCmdDef);
+        //mSceneFlow.putUsrCmdDef(usrCmdDef.getName(), usrCmdDef);
 
         SingleFunctionContainer singleFunctionContainer
             = new SingleFunctionContainer(usrCmdDef, mSceneFlow);
@@ -163,7 +164,7 @@ public class FunctionsEditor extends JPanel implements EventListener
 
     public void undoDeleteFunction(FunctionDefinition usrCmdDef)
     {
-        mSceneFlow.removeUsrCmdDef(usrCmdDef.getName());
+        //mSceneFlow.removeUsrCmdDef(usrCmdDef.getName());
 
         refreshFunctionsContainerPanel();
         EditorInstance.getInstance().refresh();
@@ -249,12 +250,12 @@ public class FunctionsEditor extends JPanel implements EventListener
             String functionName = ((FunctionRemovedEvent) event).getFunction().getName();
 
             mUndoManager = EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getUndoManager();
-            mUndoManager.addEdit(new Edit(mSceneFlow.getUserCommandDefinitionAt(functionName), false));
+            //mUndoManager.addEdit(new Edit(mSceneFlow.getUserCommandDefinitionAt(functionName), false));
             UndoAction.getInstance().refreshUndoState();
             RedoAction.getInstance().refreshRedoState();
 
 //            mSceneFlow.getUserCommandDefinitionAt(functionName).setActive(false);
-            mSceneFlow.removeUsrCmdDef(functionName);
+            //mSceneFlow.removeUsrCmdDef(functionName);
 
             refreshFunctionsContainerPanel();
             EditorInstance.getInstance().refresh();

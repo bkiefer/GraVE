@@ -1,6 +1,6 @@
 package de.dfki.vsm.model.sceneflow.glue.command;
 
-import de.dfki.vsm.model.sceneflow.glue.command.expression.VariableExpression;
+import de.dfki.vsm.model.sceneflow.glue.command.VariableExpression;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
@@ -72,7 +72,7 @@ public final class Assignment extends Command {
     @Override
     public final Assignment getCopy() {
         return new Assignment(
-                mLeftExpression.getCopy(),
+                (VariableExpression)mLeftExpression.getCopy(),
                 mInitExpression.getCopy());
     }
 
@@ -95,11 +95,11 @@ public final class Assignment extends Command {
                     XMLParseAction.processChildNodes(element, new XMLParseAction() {
                         @Override
                         public final void run(final Element element) throws XMLParseError {
-                            mInitExpression = Expression.parse(element);
+                            mInitExpression = (Expression)Expression.parse(element);
                         }
                     });
                 } else {
-                    mLeftExpression = VariableExpression.parse(element);
+                    mLeftExpression = (VariableExpression)VariableExpression.parse(element);
                 }
             }
         });

@@ -1,17 +1,14 @@
-# Visual Scene Maker Master Version
+# Graphical VOnDA Editor
 
+This is a stripped down fork of the
+[Visual Scene Maker](https://github.com/SceneMaker/VisualSceneMaker) github
+repository. It only contains the graphical editor, with modified functionality
+to be used with the [VOnDA](https://github.com/bkiefer/vonda) automaton
+compiler, to provide similar functionality to Visual Scene Maker and
+[DialogOS](https://github.com/dialogos-project/dialogos) in terms of dialogue
+management based on hierarchical state machines.
 
-######(c) 2003-16. All rights reserved
-------------------------------------------------------------------------------
-Branch of Visual **SceneMaker** reserved for bleeding edge bug fixes and enhancements.
-
-This version is the master version. It includes the latest changes. Always handle with care.
-
-For a stable version check our [RELEASE BRANCH](https://github.com/SceneMaker/VisualSceneMaker/tree/RELEASE)
-------------------------------------------------------------------------------
-
-##### For more information, visit the website 
-##[scenemaker.dfki.de](http://scenemaker.dfki.de)
-------------------------------------------------------------------------------
-
- 
+The editor and compiler are still work in progress. The compiler is not yet
+publicly available. It's the result of the WS17/18 software project at the
+Universität des Saarlandes, implemented by (in alphabetical order) Simon
+Ahrendt, Max Depenbrock and Jana Jungbluth.

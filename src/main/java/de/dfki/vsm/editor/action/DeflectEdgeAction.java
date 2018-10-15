@@ -7,7 +7,7 @@ import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.Node.Flavour;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.EpsilonEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
@@ -71,7 +71,7 @@ public class DeflectEdgeAction extends EdgeAction {
             break;
 
         case CEDGE :
-            mSourceGUINode.getDataNode().addCEdge((GuargedEdge) mDataEdge);
+            mSourceGUINode.getDataNode().addCEdge((GuardedEdge) mDataEdge);
 
             break;
 

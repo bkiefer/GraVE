@@ -1,13 +1,14 @@
 package de.dfki.vsm.editor.action;
 
-import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.editor.dialog.ModifyCEdgeDialog;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
-import de.dfki.vsm.model.sceneflow.glue.command.Expression;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+
+import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.dialog.ModifyCEdgeDialog;
+import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
 
 /**
  * The action that modifies a conditional edge. This action has to remember the
@@ -21,12 +22,12 @@ public class ModifyCEdgeAction extends ModifyEdgeAction {
     /**
      * The old condition of the conditional edge
      */
-    private Expression mOldCondition;
+    private Command mOldCondition;
 
     /**
      * The new condition of the conditional edge
      */
-    private Expression mNewCondition;
+    private Command mNewCondition;
 
     /**
      *
@@ -44,11 +45,11 @@ public class ModifyCEdgeAction extends ModifyEdgeAction {
     public void run() {
 
         // Remember the old condition
-        mOldCondition = ((GuargedEdge) mDataEdge).getCondition();
+        mOldCondition = ((GuardedEdge) mDataEdge).getCondition();
 
         // Show a dialog to modify the condition
-        ModifyCEdgeDialog dialog = new ModifyCEdgeDialog(((GuargedEdge) mDataEdge));
-        GuargedEdge cedge = dialog.run();
+        ModifyCEdgeDialog dialog = new ModifyCEdgeDialog(((GuardedEdge) mDataEdge));
+        GuardedEdge cedge = dialog.run();
 
         // If the condition was successfully modified then
         // remember the new condition and update the undomanager
@@ -64,7 +65,7 @@ public class ModifyCEdgeAction extends ModifyEdgeAction {
 
         @Override
         public void undo() throws CannotUndoException {
-            ((GuargedEdge) mDataEdge).setCondition(mOldCondition);
+            ((GuardedEdge) mDataEdge).setCondition(mOldCondition);
 
             // mGUIEdge.update();
             mGUIEdge.repaint(100);
@@ -72,7 +73,7 @@ public class ModifyCEdgeAction extends ModifyEdgeAction {
 
         @Override
         public void redo() throws CannotRedoException {
-            ((GuargedEdge) mDataEdge).setCondition(mNewCondition);
+            ((GuardedEdge) mDataEdge).setCondition(mNewCondition);
 
             // mGUIEdge.update();
             mGUIEdge.repaint(100);

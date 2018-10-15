@@ -1,21 +1,22 @@
 package de.dfki.vsm.editor.action;
 
-import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.editor.dialog.ModifyIEdgeDialog;
-import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
-import de.dfki.vsm.model.sceneflow.glue.command.Expression;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+
+import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.dialog.ModifyIEdgeDialog;
+import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
 
 /**
  *
  * @author Gregor Mehlmann
  */
 public class ModifyIEdgeAction extends ModifyEdgeAction {
-    private Expression mOldCondition;
-    private Expression mNewCondition;
+    private Command mOldCondition;
+    private Command mNewCondition;
 
     public ModifyIEdgeAction(Edge edge, WorkSpacePanel workSpace) {
         super(edge, workSpace);

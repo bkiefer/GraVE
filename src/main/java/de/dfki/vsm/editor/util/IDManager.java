@@ -6,7 +6,7 @@ package de.dfki.vsm.editor.util;
 
 //~--- non-JDK imports --------------------------------------------------------
 
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
@@ -265,10 +265,10 @@ public class IDManager {
             if (node.hasEdge()) {
                 switch (node.getFlavour()) {
                 case CNODE :
-                    ArrayList<GuargedEdge> cEdgeList        = node.getCEdgeList();
-                    ArrayList<GuargedEdge> invalidCEdgeList = new ArrayList<GuargedEdge>();
+                    ArrayList<GuardedEdge> cEdgeList        = node.getCEdgeList();
+                    ArrayList<GuardedEdge> invalidCEdgeList = new ArrayList<GuardedEdge>();
 
-                    for (GuargedEdge c : cEdgeList) {
+                    for (GuardedEdge c : cEdgeList) {
                         String newID = relationOldNewIDRef.get(c.getTargetUnid());
 
                         if (newID != null) {
@@ -279,7 +279,7 @@ public class IDManager {
                     }
 
                     if (invalidCEdgeList.size() > 0) {
-                        for (GuargedEdge ce : invalidCEdgeList) {
+                        for (GuardedEdge ce : invalidCEdgeList) {
                             cEdgeList.remove(ce);
                         }
                     }

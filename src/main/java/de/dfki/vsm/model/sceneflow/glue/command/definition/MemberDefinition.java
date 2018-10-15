@@ -3,7 +3,7 @@ package de.dfki.vsm.model.sceneflow.glue.command.definition;
 import de.dfki.vsm.model.sceneflow.glue.command.Definition;
 
 @Deprecated
-public class FunctionDefinition extends Definition {
+public class MemberDefinition extends Definition {
 
   @Override
   public Definition getCopy() {
@@ -12,11 +12,7 @@ public class FunctionDefinition extends Definition {
   }
 
   public String getName(){return "";};
-  public String getMethod(){return "";}
-
-  public boolean isValidClass() {
-    // TODO Auto-generated method stub
-    return false;
-  };
-
+  public String getType(){return "";};
+  public void setName(String s){};
+  public void setType(String s){};
 }

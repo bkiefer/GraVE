@@ -1,22 +1,6 @@
 package de.dfki.vsm.editor;
 
-import de.dfki.vsm.editor.event.VariableChangedEvent;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.model.sceneflow.chart.badge.VariableEntry;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.VariableDefinition;
-import de.dfki.vsm.model.sceneflow.chart.graphics.node.NodePosition;
-import de.dfki.vsm.util.TextFormat;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-import de.dfki.vsm.util.tpl.TPLTuple;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -25,9 +9,20 @@ import java.text.AttributedString;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
+
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+
+import de.dfki.vsm.editor.event.VariableChangedEvent;
+import de.dfki.vsm.model.sceneflow.chart.SuperNode;
+import de.dfki.vsm.model.sceneflow.chart.badge.VariableEntry;
+import de.dfki.vsm.model.sceneflow.chart.graphics.node.NodePosition;
+import de.dfki.vsm.util.TextFormat;
+import de.dfki.vsm.util.evt.EventListener;
+import de.dfki.vsm.util.evt.EventObject;
+import de.dfki.vsm.util.log.LOGDefaultLogger;
+import de.dfki.vsm.util.tpl.TPLTuple;
 
 /**
  * @author Gregor Mehlmann
@@ -65,7 +60,7 @@ public class VarBadgeGlobal extends JComponent implements EventListener, ActionL
 
         synchronized (mEntryList) {
             mEntryList.clear();
-
+            /*
             while (parentNode != null) {
                 ArrayList<VariableDefinition> varDefList = parentNode.getVarDefList();
 
@@ -75,11 +70,11 @@ public class VarBadgeGlobal extends JComponent implements EventListener, ActionL
                 }
 
                 parentNode = parentNode.getParentNode();
-            }
+            }*/
         }
 
         // Initialize size and location
-        setSize(new Dimension(1, 1));     
+        setSize(new Dimension(1, 1));
         setLocation(superNode.getGlobalVariableBadge().getPosition().getXPos(),
                 superNode.getGlobalVariableBadge().getPosition().getYPos());
         mIsHidden = hidden;
@@ -260,6 +255,7 @@ public class VarBadgeGlobal extends JComponent implements EventListener, ActionL
             // Recompute the entry list
             SuperNode parentNode = mSuperNode.getParentNode();
 
+            /*
             while (parentNode != null) {
                 for (VariableDefinition varDef : parentNode.getVarDefList()) {
                     String varName = varDef.getName();
@@ -272,7 +268,7 @@ public class VarBadgeGlobal extends JComponent implements EventListener, ActionL
                 }
 
                 parentNode = parentNode.getParentNode();
-            }
+            }*/
         }
     }
 

@@ -5,7 +5,7 @@ package de.dfki.vsm.editor.action;
 import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
@@ -28,7 +28,7 @@ import javax.swing.undo.CannotUndoException;
 public class PasteNodesAction extends EditorAction {
     Set<CreateNodeAction>          mCreateNodeActions = new HashSet<CreateNodeAction>();
     WorkSpacePanel                      mWorkSpace         = null;
-    Hashtable<BasicNode, ArrayList<GuargedEdge>> mNodesCEdges       = new Hashtable<BasicNode, ArrayList<GuargedEdge>>();
+    Hashtable<BasicNode, ArrayList<GuardedEdge>> mNodesCEdges       = new Hashtable<BasicNode, ArrayList<GuardedEdge>>();
     Hashtable<BasicNode, ArrayList<RandomEdge>> mNodesPEdges       = new Hashtable<BasicNode, ArrayList<RandomEdge>>();
     Hashtable<BasicNode, ArrayList<ForkingEdge>> mNodesFEdges       = new Hashtable<BasicNode, ArrayList<ForkingEdge>>();
     Hashtable<BasicNode, ArrayList<InterruptEdge>> mNodesIEdges       = new Hashtable<BasicNode, ArrayList<InterruptEdge>>();
@@ -71,7 +71,7 @@ public class PasteNodesAction extends EditorAction {
             if (node.hasEdge()) {
                 switch (node.getFlavour()) {
                 case CNODE :
-                    ArrayList<GuargedEdge> ces = node.getCEdgeList();
+                    ArrayList<GuardedEdge> ces = node.getCEdgeList();
 
                     mNodesCEdges.put(node, ces);
                     node.removeAllCEdges();
@@ -141,9 +141,9 @@ public class PasteNodesAction extends EditorAction {
 
             // cedge
             if (mNodesCEdges.containsKey(node)) {
-                ArrayList<GuargedEdge> ces = mNodesCEdges.get(node);
+                ArrayList<GuardedEdge> ces = mNodesCEdges.get(node);
 
-                for (GuargedEdge c : ces) {
+                for (GuardedEdge c : ces) {
                     CreateEdgeAction cea = new CreateEdgeAction(mWorkSpace, mWorkSpace.getNode(node.getId()),
                                                mWorkSpace.getNode(c.getTargetUnid()), c,
                                                de.dfki.vsm.editor.Edge.TYPE.CEDGE);

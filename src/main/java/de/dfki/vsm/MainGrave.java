@@ -24,43 +24,17 @@ public final class MainGrave {
             public final void run() {
                 // Check if we have at least one argument
                 if (args.length > 0) {
-                    // Read the first command line argument
-                    final String mode = args[0];
-                    // Check the options from this agument
-                    if (mode.equals("runtime")) {
-                        // In runtime mode we need a project file
-                        if (args.length == 2) {
-                            // Get the project file name agrument
-                            final String name = args[1];
-                            // Create the project configuration
-                            final File file = new File(name);
-                            if (file.exists()) {
-                                runtime(file);
-                            } else {
-                                error(file);
-                            }
-                        } else {
-                            usage();
-                        }
-                    } else if (mode.equalsIgnoreCase("editor")) {
-                        if (args.length == 2) {
-                            // Get the project file name agrument
-                            final String name = args[1];
-                            // Create the project configuration
-                            final File file = new File(name);
-                            if (file.exists()) {
-                                editor(file);
-                            } else {
-                                error(file);
-                            }
-                        } else {
-                            usage();
-                        }
-                    } else {
-                        usage();
-                    }
+                  // Get the project file name agrument
+                  final String name = args[0];
+                  // Create the project configuration
+                  final File file = new File(name);
+                  if (file.exists()) {
+                    editor(file);
+                  } else {
+                    error(file);
+                  }
                 } else {
-                    editor();
+                  usage();
                 }
             }
         });
@@ -162,14 +136,9 @@ public final class MainGrave {
 
     }
 
-    // Start the runtime with some project
-    private static void runtime(final File file) {
-
-    }
-
     // Print usage when usage error happened
     private static void usage() {
-        sLogger.failure("Error: Usage: [runtime|editor] [filename]");
+        sLogger.failure("Error: Usage: [filename]");
     }
 
     // Print error when a file error happened

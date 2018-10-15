@@ -14,7 +14,7 @@ import de.dfki.vsm.editor.util.grid.DockingPoint;
 import de.dfki.vsm.editor.util.grid.GridConstants;
 import de.dfki.vsm.editor.util.grid.GridRectangle;
 import de.dfki.vsm.editor.util.grid.pathfinding.Path;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.EpsilonEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
@@ -83,7 +83,7 @@ public abstract class EdgeAction extends EditorAction {
             break;
 
         case CEDGE :
-            mSourceGUINode.getDataNode().addCEdge((GuargedEdge) mDataEdge);
+            mSourceGUINode.getDataNode().addCEdge((GuardedEdge) mDataEdge);
 
             break;
 
@@ -409,7 +409,7 @@ public abstract class EdgeAction extends EditorAction {
             break;
 
         case CEDGE :
-            mSourceGUINode.getDataNode().removeCEdge((GuargedEdge) mDataEdge);
+            mSourceGUINode.getDataNode().removeCEdge((GuardedEdge) mDataEdge);
             break;
 
         case PEDGE :

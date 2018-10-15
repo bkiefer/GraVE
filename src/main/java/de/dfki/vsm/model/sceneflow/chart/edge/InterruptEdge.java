@@ -25,22 +25,22 @@ import java.util.Map;
  * @author Gregor Mehlmann
  */
 public class InterruptEdge extends AbstractEdge {
-    protected Expression mCondition = null;
+    protected Command mCondition = null;
 
     public InterruptEdge() {}
 
     public InterruptEdge(String target, String source, BasicNode targetNode, BasicNode sourceNode, EdgeGraphics graphics,
                  ArrayList<Command> cmdList, HashMap<TPLTuple<String, BasicNode>, TPLTuple<String, BasicNode>> altStartNodeMap,
-                 Expression condition) {
+                 Command condition) {
         super(target, source, targetNode, sourceNode, graphics, cmdList, altStartNodeMap);
         mCondition = condition;
     }
 
-    public void setCondition(Expression value) {
+    public void setCondition(Command value) {
         mCondition = value;
     }
 
-    public Expression getCondition() {
+    public Command getCondition() {
         return mCondition;
     }
 
@@ -137,7 +137,7 @@ public class InterruptEdge extends AbstractEdge {
                         }
                     });
                 } else {
-                    mCondition = Expression.parse(element);
+                    mCondition = Command.parse(element);
                 }
             }
         });

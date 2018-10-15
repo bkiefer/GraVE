@@ -5,7 +5,7 @@ package de.dfki.vsm.editor.dialog;
 import de.dfki.vsm.editor.CancelButton;
 import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.util.HintTextField;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.datatype.MemberDefinition;
+import de.dfki.vsm.model.sceneflow.glue.command.definition.MemberDefinition;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
@@ -41,14 +41,14 @@ public class MemberDefDialog extends Dialog {
     private Dimension labelSize = new Dimension(75, 30);
     private Dimension textFielSize = new Dimension(175, 30);
     private JLabel errorMsg;
-    
+
     public MemberDefDialog(JDialog parent, MemberDefinition memberDef) {
         super(parent, "Member Definition", true);
 
         if (memberDef != null) {
-            mMemberDef = memberDef.getCopy();
+            mMemberDef = memberDef;//.getCopy();
         } else {
-            mMemberDef = new MemberDefinition("newMember", "Bool");
+            mMemberDef = null;//new MemberDefinition("newMember", "Bool");
         }
 
         initComponents();
@@ -64,19 +64,19 @@ public class MemberDefDialog extends Dialog {
         mTypeComboBox  = new JComboBox(new Object[] { "Bool", "Int", "Float", "String" });
         sanitizeComponent(mNameTextField, textFielSize);
         sanitizeComponent(mTypeComboBox, textFielSize);
-        
+
         //Name box
         Box nameBox = Box.createHorizontalBox();
         nameBox.add(mNameLabel);
         nameBox.add(Box.createHorizontalStrut(10));
-        nameBox.add(mNameTextField);        
-        
+        nameBox.add(mNameTextField);
+
         //Type box
         Box typeBox = Box.createHorizontalBox();
         typeBox.add(mTypeLabel);
         typeBox.add(Box.createHorizontalStrut(10));
-        typeBox.add(mTypeComboBox);        
-        
+        typeBox.add(mTypeComboBox);
+
         mOkButton      = new OKButton();
         mOkButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -99,7 +99,7 @@ public class MemberDefDialog extends Dialog {
         errorMsg = new JLabel("Information Required");
         errorMsg.setForeground(Color.white);
         errorMsg.setMinimumSize(labelSize);
-        
+
         //Key listener need to gain focus on the text field
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 
@@ -136,14 +136,14 @@ public class MemberDefDialog extends Dialog {
     /**
      * Set the correct size of the components
      * @param jb
-     * @param dim 
+     * @param dim
      */
     private void sanitizeComponent(JComponent jb, Dimension dim) {
         jb.setPreferredSize(dim);
         jb.setMinimumSize(dim);
         jb.setMaximumSize(dim);
     }
-    public MemberDefinition run() {
+    public de.dfki.vsm.model.sceneflow.glue.command.definition.MemberDefinition run() {
         setVisible(true);
 
         if (mPressedButton == Button.OK) {

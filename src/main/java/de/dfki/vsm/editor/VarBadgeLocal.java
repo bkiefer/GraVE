@@ -4,7 +4,6 @@ package de.dfki.vsm.editor;
 import de.dfki.vsm.editor.event.VariableChangedEvent;
 import de.dfki.vsm.model.sceneflow.chart.SuperNode;
 import de.dfki.vsm.model.sceneflow.chart.badge.VariableEntry;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.VariableDefinition;
 import de.dfki.vsm.model.sceneflow.chart.graphics.node.NodePosition;
 import de.dfki.vsm.util.TextFormat;
 import de.dfki.vsm.util.evt.EventListener;
@@ -33,6 +32,8 @@ import javax.swing.JPopupMenu;
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
+ *
+ * TODO: Maybe use this to show the code attached to the super node.
  */
 public class VarBadgeLocal extends JComponent implements EventListener, ActionListener, Observer {
 
@@ -55,6 +56,7 @@ public class VarBadgeLocal extends JComponent implements EventListener, ActionLi
     private boolean useCachedImage = false;
     private BufferedImage bufferedImage;
 
+
     public VarBadgeLocal(SuperNode superNode, boolean hidden) {
         mSuperNode = superNode;
 
@@ -62,13 +64,14 @@ public class VarBadgeLocal extends JComponent implements EventListener, ActionLi
         SuperNode parentNode = mSuperNode;
         synchronized (mEntryList) {
             mEntryList.clear();
-
+/*
             ArrayList<VariableDefinition> varDefList = parentNode.getVarDefList();
 
             for (VariableDefinition varDef : varDefList) {
                 mEntryList.add(new VariableEntry(parentNode, false, varDef.getConcreteSyntax(), varDef.getFormattedSyntax(),
                         TextFormat.fillWithAttributes(varDef.getFormattedSyntax()).getSecond()));
             }
+            */
         }
         // Initialize size and location
         setSize(new Dimension(1, 1));
@@ -277,12 +280,13 @@ public class VarBadgeLocal extends JComponent implements EventListener, ActionLi
             useCachedImage = false;
             // Recompute the entry list
             SuperNode parentNode = mSuperNode;
-
+            /*
             for (VariableDefinition varDef : parentNode.getVarDefList()) {
 //          String varName = varDef.getName();
                 mEntryList.add(new VariableEntry(parentNode, false, varDef.getConcreteSyntax(), varDef.getFormattedSyntax(),
                         TextFormat.fillWithAttributes(varDef.getFormattedSyntax()).getSecond()));
             }
+            */
         }
     }
 

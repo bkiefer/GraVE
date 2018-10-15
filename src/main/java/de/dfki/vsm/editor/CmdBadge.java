@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.font.TextLayout;
 import java.text.AttributedString;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Observer;
 import java.util.Timer;
 import javax.swing.AbstractAction;
@@ -62,7 +63,7 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
 
     // The maintained list
     private ArrayList<TPLTuple<String, AttributedString>> mStringList;
-    private final ArrayList<JTextArea> mCmdEditors;
+    private final JTextArea mCmdEditor;
     private final Font mFont;
 
     /**
@@ -76,7 +77,7 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
         mFont = new Font("Monospaced",
                 Font.ITALIC,
                 mEditorConfig.sWORKSPACEFONTSIZE);
-        mCmdEditors = new ArrayList<>();
+        mCmdEditor = new JTextArea();
 
         setSize(new Dimension(1, 1));
         setLocation(0, 0);
@@ -95,7 +96,7 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
 
         if (mEditMode) {
 
-            dimension = new Dimension((int) (10 + getEditorWidth() * mFont.getSize() / 1.5), (int) (30 * (mCmdEditors.size())));
+            dimension = new Dimension((int) (10 + getEditorWidth() * mFont.getSize() / 1.5), (int) (30 * (mCmdEditor.getHeight())));
             // draw background
             graphics.setColor(new Color(155, 155, 155, 100));
 
@@ -161,13 +162,7 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
     }
 
     private int getEditorWidth() {
-        int width = 0;
-        for (JTextArea i : mCmdEditors) {
-            if (i.getText().length() > width) {
-                width = i.getText().length();
-            }
-        }
-        return width;
+      return mCmdEditor.getWidth();
     }
 
     public void setEditMode() {
@@ -176,52 +171,23 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
             addCmdEditor(s.getFirst());
         }
 
-        for (JTextArea editor : mCmdEditors) {
-            add(editor, BorderLayout.CENTER);
-        }
+        add(mCmdEditor, BorderLayout.CENTER);
+
         mDispatcher.convey(new NodeSelectedEvent(this, mNode.getDataNode()));
-        mCmdEditors.get(0).requestFocusInWindow();
+        mCmdEditor.requestFocusInWindow();
     }
 
     /*
      * Resets badge to its default visual behavior
      */
     public synchronized void endEditMode() {
-        ArrayList<Command> copyOfCmdList = new ArrayList<>();
 
         if (mEditMode) {
-            for (int i = 0; i < mStringList.size(); i++) {
-                String text = mCmdEditors.get(i).getText();
+          mNode.getDataNode().getCmd().setContent(mCmdEditor.getText());
 
-                if (!text.equals("")) {
-                    Command command;
-
-                    try {
-                        final Command cmd = GlueParser.run(text);
-                        if (cmd != null) {
-                            command = cmd;
-                        } else {
-                            return;
-                        }
-                    } catch (Exception e) {
-                        mCmdEditors.get(i).setForeground(Color.red);
-                        return;
-                    }
-
-                    copyOfCmdList.add(command);
-                }
-            }
-
-            for (JTextArea editor : mCmdEditors) {
-                remove(editor);
-            }
-
-            mCmdEditors.removeAll(mCmdEditors);
-            mNode.getDataNode().setCmdList(copyOfCmdList);
-            mDispatcher.convey(new ProjectChangedEvent(this));
-            mDispatcher.convey(new NodeSelectedEvent(this, mNode.getDataNode()));
-            mEditMode = false;
-
+          mDispatcher.convey(new ProjectChangedEvent(this));
+          mDispatcher.convey(new NodeSelectedEvent(this, mNode.getDataNode()));
+          mEditMode = false;
         }
 
         repaint(100);
@@ -229,18 +195,17 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
     }
 
     private void addCmdEditor(String text) {
-        JTextArea cmdEditor = new JTextArea();
 
-        cmdEditor.getDocument().addDocumentListener(new DocumentListener() {
+        mCmdEditor.getDocument().addDocumentListener(new DocumentListener() {
 
             @Override
             public void insertUpdate(DocumentEvent e) {
-                cmdEditor.setForeground(Color.black);
+                mCmdEditor.setForeground(Color.black);
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                cmdEditor.setForeground(Color.black);
+                mCmdEditor.setForeground(Color.black);
             }
 
             @Override
@@ -249,16 +214,15 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
             }
         });
 
-        cmdEditor.setFont(mFont);
-        cmdEditor.setText(text);
-        cmdEditor.setOpaque(false);
-        cmdEditor.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        mCmdEditor.setFont(mFont);
+        mCmdEditor.setText(text);
+        mCmdEditor.setOpaque(false);
+        mCmdEditor.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
         KeyStroke keyStroke = KeyStroke.getKeyStroke("ENTER");
-        Object actionKey = cmdEditor.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        Object actionKey = mCmdEditor.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
 
-        cmdEditor.getActionMap().put(actionKey, wrapper);
-        mCmdEditors.add(cmdEditor);
+        mCmdEditor.getActionMap().put(actionKey, wrapper);
     }
 
     public void updateLocation(Point vector) {
@@ -294,8 +258,9 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
      *
      */
     private void update() {
+      /*
         ArrayList<String> strings = new ArrayList<>();
-        ArrayList<Command> nodeCommands = mNode.getDataNode().getCmdList();
+        Command nodeCommands = mNode.getDataNode().getCmd();
 
         if ((nodeCommands != null) && (nodeCommands.size() > 0)) {
             for (Command cmd : nodeCommands) {
@@ -304,10 +269,17 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
         }
 
         // Update the string list
-        mStringList = TextFormat.getPairList(strings);
+*/
+      String content = mNode.getDataNode().getCmd().getContent();
+      if (! content.trim().isEmpty()) {
+        mStringList = TextFormat.getPairList(
+            new ArrayList<String>(){{ add(content); }});
+      } else {
+        mStringList = new ArrayList();;
+      }
+      // Sets visibility of the component to true only if there is something to display
+      setVisible(!mStringList.isEmpty());
 
-        // Sets visibility of the component to true only if there is something to display
-        setVisible(!mStringList.isEmpty());
     }
 
     /*

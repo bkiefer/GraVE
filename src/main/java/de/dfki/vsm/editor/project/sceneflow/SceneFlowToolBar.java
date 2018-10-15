@@ -470,6 +470,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
         sanitizeButton(mStopButton, tinyButtonDim);
         mStopButton.setEnabled(false);
 
+        /*
         JButton b = add(new AbstractAction("ACTION_WINDOW", ICON_STACK_STANDARD) {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -481,6 +482,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
         sanitizeButton(b, tinyButtonDim);
         add(Box.createHorizontalStrut(10));
         add(createSeparator());
+        */
 
         //******************************************************************************************************
         // CONTROL OF NODES
@@ -489,7 +491,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
         add(mPathScrollPane);
 
         //UP TO PARENT NODE
-        b = add(new AbstractAction("ACTION_LEVEL_UP", ICON_UP_STANDARD) {
+        JButton b = add(new AbstractAction("ACTION_LEVEL_UP", ICON_UP_STANDARD) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mSceneFlowEditor.getWorkSpace().decreaseWorkSpaceLevel();

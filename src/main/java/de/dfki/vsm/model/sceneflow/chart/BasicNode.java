@@ -1,24 +1,18 @@
 package de.dfki.vsm.model.sceneflow.chart;
 
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.EpsilonEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
+import java.util.ArrayList;
+
+import org.w3c.dom.Element;
+
 import de.dfki.vsm.model.ModelObject;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.VariableDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.DataTypeDefinition;
+import de.dfki.vsm.model.sceneflow.chart.edge.*;
 import de.dfki.vsm.model.sceneflow.chart.graphics.node.NodeGraphics;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.cpy.CopyTool;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
 import de.dfki.vsm.util.xml.XMLWriteError;
-import java.util.ArrayList;
-import org.w3c.dom.Element;
 
 /**
  * @author Gregor Mehlmann
@@ -29,10 +23,8 @@ public class BasicNode implements ModelObject {
     protected String mNodeName = new String();
     protected String mComment = new String();
     //
-    protected ArrayList<DataTypeDefinition> mTypeDefList = new ArrayList();
-    protected ArrayList<VariableDefinition> mVarDefList = new ArrayList();
-    protected ArrayList<Command> mCmdList = new ArrayList();
-    protected ArrayList<GuargedEdge> mCEdgeList = new ArrayList();
+    protected Command mCmdList = new Command("");
+    protected ArrayList<GuardedEdge> mCEdgeList = new ArrayList();
     protected ArrayList<RandomEdge> mPEdgeList = new ArrayList();
     protected ArrayList<InterruptEdge> mIEdgeList = new ArrayList();
     protected ArrayList<ForkingEdge> mFEdgeList = new ArrayList();
@@ -253,141 +245,37 @@ public class BasicNode implements ModelObject {
         return mParentNode;
     }
 
-    public void addVarDef(VariableDefinition value) {
-        mVarDefList.add(value);
-    }
 
-    public VariableDefinition getVarDefAt(int index) {
-        return mVarDefList.get(index);
-    }
 
-    public void setVarDefAt(VariableDefinition varDef, int index) {
-        mVarDefList.set(index, varDef);
-    }
 
-    public void removeVarDefAt(int index) {
-        mVarDefList.remove(index);
-    }
-
-    public void setVarDefList(ArrayList<VariableDefinition> value) {
-        mVarDefList = value;
-    }
-
-    public ArrayList<VariableDefinition> getVarDefList() {
-        return mVarDefList;
-    }
-
-    public ArrayList<VariableDefinition> getCopyOfVarDefList() {
-        ArrayList<VariableDefinition> copy = new ArrayList<VariableDefinition>();
-        for (VariableDefinition varDef : mVarDefList) {
-            copy.add(varDef.getCopy());
-        }
-        return copy;
-    }
-
-    public void addCmd(Command value) {
-        mCmdList.add(value);
-    }
-
-    public Command getCmdAt(int index) {
-        return mCmdList.get(index);
-    }
-
-    public void setCmdAt(Command cmd, int index) {
-        mCmdList.set(index, cmd);
-    }
-
-    public void removeCmdAt(int index) {
-        mCmdList.remove(index);
-    }
-
-    public void setCmdList(ArrayList<Command> value) {
-        mCmdList = value;
-    }
-
-    public ArrayList<Command> getCmdList() {
-        return mCmdList;
-    }
-
-    public int getSizeOfCmdList() {
-        return mCmdList.size();
-    }
-
-    public ArrayList<Command> getCopyOfCmdList() {
-        ArrayList<Command> copy = new ArrayList<Command>();
-
-        for (Command cmd : mCmdList) {
-            copy.add(cmd.getCopy());
-        }
-
-        return copy;
-    }
-
-    public void addTypeDef(DataTypeDefinition value) {
-        mTypeDefList.add(value);
-    }
-
-    public DataTypeDefinition getTypeDefAt(int index) {
-        return mTypeDefList.get(index);
-    }
-
-    public void setTypeDefAt(DataTypeDefinition typeDef, int index) {
-        mTypeDefList.set(index, typeDef);
-    }
-
-    public void removeTypeDefAt(int index) {
-        mTypeDefList.remove(index);
-    }
-
-    public ArrayList<DataTypeDefinition> getTypeDefList() {
-        return mTypeDefList;
-    }
-
-    public void setTypeDefList(ArrayList<DataTypeDefinition> value) {
-        mTypeDefList = value;
-    }
-
-    public int getSizeOfTypeDefList() {
-        return mTypeDefList.size();
-    }
-
-    public ArrayList<DataTypeDefinition> getCopyOfTypeDefList() {
-        final ArrayList<DataTypeDefinition> copy = new ArrayList();
-        for (final DataTypeDefinition def : mTypeDefList) {
-            copy.add(def.getCopy());
-        }
-
-        return copy;
-    }
-
-    public void addCEdge(GuargedEdge value) {
+    public void addCEdge(GuardedEdge value) {
         mCEdgeList.add(value);
     }
 
-    public GuargedEdge getCEdgeAt(int index) {
+    public GuardedEdge getCEdgeAt(int index) {
         return mCEdgeList.get(index);
     }
 
-    public void removeCEdge(GuargedEdge value) {
+    public void removeCEdge(GuardedEdge value) {
         mCEdgeList.remove(value);
     }
 
     public void removeAllCEdges() {
-        mCEdgeList = new ArrayList<GuargedEdge>();
+        mCEdgeList = new ArrayList<GuardedEdge>();
     }
 
     public int getSizeOfCEdgeList() {
         return mCEdgeList.size();
     }
 
-    public ArrayList<GuargedEdge> getCEdgeList() {
+    public ArrayList<GuardedEdge> getCEdgeList() {
         return mCEdgeList;
     }
 
-    public ArrayList<GuargedEdge> getCopyOfCEdgeList() {
-        ArrayList<GuargedEdge> copy = new ArrayList<GuargedEdge>();
+    public ArrayList<GuardedEdge> getCopyOfCEdgeList() {
+        ArrayList<GuardedEdge> copy = new ArrayList<GuardedEdge>();
 
-        for (GuargedEdge edge : mCEdgeList) {
+        for (GuardedEdge edge : mCEdgeList) {
             copy.add(edge.getCopy());
         }
 
@@ -481,7 +369,7 @@ public class BasicNode implements ModelObject {
     public ArrayList<AbstractEdge> getEdgeList() {
         ArrayList<AbstractEdge> edgeList = new ArrayList<AbstractEdge>();
 
-        for (GuargedEdge edge : mCEdgeList) {
+        for (GuardedEdge edge : mCEdgeList) {
             edgeList.add(edge);
         }
 
@@ -546,30 +434,18 @@ public class BasicNode implements ModelObject {
         return (BasicNode) CopyTool.copy(this);
     }
 
+    public Command getCmd() {
+      return mCmdList;
+    }
+
     public void writeXML(IOSIndentWriter out) throws XMLWriteError {
         out.println("<Node id=\"" + mNodeId + "\" name=\"" + mNodeName + "\" history=\"" + mIsHistoryNode + "\">").push();
 
         int i = 0;
 
-        out.println("<Define>").push();
-
-        for (i = 0; i < mTypeDefList.size(); i++) {
-            mTypeDefList.get(i).writeXML(out);
-        }
-
-        out.pop().println("</Define>");
-        out.println("<Declare>").push();
-
-        for (i = 0; i < mVarDefList.size(); i++) {
-            mVarDefList.get(i).writeXML(out);            
-        }
-
-        out.pop().println("</Declare>");
         out.println("<Commands>").push();
 
-        for (i = 0; i < mCmdList.size(); i++) {
-            mCmdList.get(i).writeXML(out);
-        }
+        mCmdList.writeXML(out);
 
         out.pop().println("</Commands>");
 
@@ -606,40 +482,23 @@ public class BasicNode implements ModelObject {
         mIsHistoryNode = Boolean.valueOf(element.getAttribute("history"));
 
         final BasicNode node = this;
-
+        StringBuilder sb = new StringBuilder();
         XMLParseAction.processChildNodes(element, new XMLParseAction() {
             public void run(Element element) throws XMLParseError {
                 String tag = element.getTagName();
 
-                if (tag.equals("Define")) {
-                    XMLParseAction.processChildNodes(element, new XMLParseAction() {
-                        public void run(Element element) throws XMLParseError {
-                            mTypeDefList.add(DataTypeDefinition.parse(element));
-                        }
-                    });
-                } else if (tag.equals("Declare")) {
-                    XMLParseAction.processChildNodes(element, new XMLParseAction() {
-                        @Override
-                        public void run(Element element) throws XMLParseError {
-                            VariableDefinition def = new VariableDefinition();
-
-                            def.parseXML(element);
-                            mVarDefList.add(def);
-                            
-                        }
-                    });
-                } else if (tag.equals("Commands")) {
-                    XMLParseAction.processChildNodes(element, new XMLParseAction() {
-                        @Override
-                        public void run(Element element) throws XMLParseError {
-                            mCmdList.add(Command.parse(element));
-                        }
-                    });
+                if (tag.equals("Commands")) {
+                  XMLParseAction.processChildNodes(element, new XMLParseAction() {
+                    @Override
+                    public void run(Element element) throws XMLParseError {
+                      sb.append(Command.parse(element).getContent());
+                    }
+                  });
                 } else if (tag.equals("Graphics")) {
                     mGraphics = new NodeGraphics();
                     mGraphics.parseXML(element);
                 } else if (tag.equals("CEdge")) {
-                    GuargedEdge edge = new GuargedEdge();
+                    GuardedEdge edge = new GuardedEdge();
 
                     edge.parseXML(element);
                     edge.setSourceNode(node);
@@ -686,6 +545,7 @@ public class BasicNode implements ModelObject {
                 }
             }
         });
+        mCmdList.setContent(sb.toString());
     }
 
     public int getHashCode() {
@@ -700,26 +560,7 @@ public class BasicNode implements ModelObject {
                 : mGraphics.getPosition().hashCode());
 
         // Add hash of all commands inside BasicNode
-        for (int cntCommand = 0; cntCommand < mCmdList.size(); cntCommand++) {
-            hashCode += mCmdList.get(cntCommand).hashCode();
-        }
-
-        // Add hash of all TypeDef inside BasicNode
-        for (int cntType = 0; cntType < mTypeDefList.size(); cntType++) {
-            hashCode += mTypeDefList.get(cntType).hashCode() + mTypeDefList.get(cntType).getName().hashCode()
-                    + mTypeDefList.get(cntType).toString().hashCode();
-        }
-
-        // Add hash of all Vars inside BasicNode
-        for (int cntVar = 0; cntVar < mVarDefList.size(); cntVar++) {
-            hashCode += ((mVarDefList.get(cntVar).getName() == null)
-                    ? 0
-                    : mVarDefList.get(cntVar).getName().hashCode()) + ((mVarDefList.get(cntVar).getType() == null)
-                    ? 0
-                    : mVarDefList.get(cntVar).getType().hashCode()) + ((mVarDefList.get(cntVar).toString() == null)
-                    ? 0
-                    : mVarDefList.get(cntVar).toString().hashCode());
-        }
+        hashCode += mCmdList.hashCode();
 
         // Epsilon and Time Edges
         for (int cntEdge = 0; cntEdge < getEdgeList().size(); cntEdge++) {
@@ -730,19 +571,19 @@ public class BasicNode implements ModelObject {
 
         // Add hash of all Conditional Edges
         for (int cntEdge = 0; cntEdge < getSizeOfCEdgeList(); cntEdge++) {
-            hashCode += mCEdgeList.get(cntEdge).hashCode() 
+            hashCode += mCEdgeList.get(cntEdge).hashCode()
                     + mCEdgeList.get(cntEdge).getGraphics().getHashCode()
-                    + mCEdgeList.get(cntEdge).getCondition().hashCode() 
+                    + mCEdgeList.get(cntEdge).getCondition().hashCode()
                     + mCEdgeList.get(cntEdge).getSourceUnid().hashCode()
                     + mCEdgeList.get(cntEdge).getTargetUnid().hashCode();
         }
 
         // Add hash of all Probability Edges
         for (int cntEdge = 0; cntEdge < getSizeOfPEdgeList(); cntEdge++) {
-   
-            hashCode += mPEdgeList.get(cntEdge).hashCode() 
+
+            hashCode += mPEdgeList.get(cntEdge).hashCode()
                     + mPEdgeList.get(cntEdge).getGraphics().getHashCode()
-                    + mPEdgeList.get(cntEdge).getProbability() 
+                    + mPEdgeList.get(cntEdge).getProbability()
                     + mPEdgeList.get(cntEdge).getSourceUnid().hashCode()
                     + mPEdgeList.get(cntEdge).getTargetUnid().hashCode();
         }

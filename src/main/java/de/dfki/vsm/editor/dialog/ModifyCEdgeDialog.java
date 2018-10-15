@@ -11,7 +11,7 @@ import de.dfki.vsm.editor.util.HintTextField;
 import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.RemoveButton;
 import de.dfki.vsm.editor.util.AltStartNodeManager;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuargedEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
 import de.dfki.vsm.model.sceneflow.chart.SuperNode;
 import de.dfki.vsm.model.sceneflow.glue.GlueParser;
@@ -46,7 +46,7 @@ import javax.swing.event.DocumentListener;
 public class ModifyCEdgeDialog extends Dialog implements EventListener{
 
     // The edge that we want to modify
-    private final GuargedEdge mCEdge;
+    private final GuardedEdge mCEdge;
 
     // GUI-Components
     private final AltStartNodeManager mAltStartNodeManager;
@@ -73,7 +73,7 @@ public class ModifyCEdgeDialog extends Dialog implements EventListener{
     public ModifyCEdgeDialog(BasicNode sourceNode, BasicNode targetNode) {
         super(EditorInstance.getInstance(), "Create Conditional Edge", true);
         // Set the edge data
-        mCEdge = new GuargedEdge();
+        mCEdge = new GuardedEdge();
         mCEdge.setTargetUnid(targetNode.getId());
         mCEdge.setSourceNode(sourceNode);
         mCEdge.setTargetNode(targetNode);
@@ -83,7 +83,7 @@ public class ModifyCEdgeDialog extends Dialog implements EventListener{
         initComponents();
         initEvents();
     }
-    public ModifyCEdgeDialog(GuargedEdge cedge) {
+    public ModifyCEdgeDialog(GuardedEdge cedge) {
         super(EditorInstance.getInstance(), "Modify Conditional Edge", true);
         mCEdge = cedge;
 
@@ -261,7 +261,7 @@ public class ModifyCEdgeDialog extends Dialog implements EventListener{
         mAltStartNodePanel.add(buttonsBox);
     }
 
-    public GuargedEdge run() {
+    public GuardedEdge run() {
         setVisible(true);
 
         if (mPressedButton == Dialog.Button.OK) {
