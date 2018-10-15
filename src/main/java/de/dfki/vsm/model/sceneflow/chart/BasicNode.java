@@ -546,9 +546,14 @@ public class BasicNode implements ModelObject {
         return (BasicNode) CopyTool.copy(this);
     }
 
-    protected void writeFieldsXML(IOSIndentWriter out) throws XMLWriteError {
-        int i = 0;
-
+    protected void writeCommands(IOSIndentWriter out) throws XMLWriteError {
+      if (Command.convertToVOnDA) {
+        out.println("<Commands>").push();
+        Command.writeListXML(out, mTypeDefList);
+        Command.writeListXML(out, mVarDefList);
+        Command.writeListXML(out, mCmdList);
+        out.pop().println("</Commands>");
+      } else {
         out.println("<Define>").push();
         Command.writeListXML(out, mTypeDefList);
         out.pop().println("</Define>");
@@ -560,6 +565,13 @@ public class BasicNode implements ModelObject {
         out.println("<Commands>").push();
         Command.writeListXML(out, mCmdList);
         out.pop().println("</Commands>");
+      }
+    }
+
+    protected void writeFieldsXML(IOSIndentWriter out) throws XMLWriteError {
+        int i = 0;
+
+        writeCommands(out);
 
         for (i = 0; i < mCEdgeList.size(); i++) {
             mCEdgeList.get(i).writeXML(out);

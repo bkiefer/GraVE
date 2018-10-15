@@ -13,12 +13,11 @@ import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
 import de.dfki.vsm.util.xml.XMLWriteError;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.w3c.dom.Element;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * @author Gregor Mehlmann
@@ -130,23 +129,30 @@ public final class SceneFlow extends SuperNode {
         return (SceneFlow) CopyTool.copy(this);
     }
 
+    protected void writeCommands(IOSIndentWriter out) throws XMLWriteError {
+      if (Command.convertToVOnDA) {
+        out.println("<Commands>").push();
+        Command.writeListXML(out,
+            mUserCmdDefMap.values().stream()
+            .filter((FunctionDefinition f) -> f.isActive())
+            .collect(Collectors.toList()));
+        Command.writeListXML(out, mTypeDefList);
+        Command.writeListXML(out, mVarDefList);
+        Command.writeListXML(out, mCmdList);
+        out.pop().println("</Commands>");
+      } else {
+        super.writeCommands(out);
+      }
+    }
+
     protected void writeFieldsXML(IOSIndentWriter out) throws XMLWriteError {
       super.writeFieldsXML(out);
 
-      if (!mUserCmdDefMap.isEmpty()) {
+      if (! Command.convertToVOnDA && !mUserCmdDefMap.isEmpty()) {
         out.println("<UserCommands>").push();
-
-        Iterator it = mUserCmdDefMap.entrySet().iterator();
-
-        while (it.hasNext()) {
-            Map.Entry pairs = (java.util.Map.Entry) it.next();
-            FunctionDefinition    def   = (FunctionDefinition) pairs.getValue();
-            if(def.isActive())
-            {
-                def.writeXML(out);
-            }
-        }
-
+        Command.writeListXML(out, mUserCmdDefMap.values().stream()
+            .filter((FunctionDefinition f) -> f.isActive())
+            .collect(Collectors.toList()));
         out.pop().println("</UserCommands>");
       }
 

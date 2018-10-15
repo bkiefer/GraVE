@@ -54,7 +54,7 @@ public final class ProjectConfig implements ModelObject {
         stream.println("<Project name=\"" + mProjectName + "\">");
         stream.push();
         // Write the plugin configurations
-        stream.pop().println("</Agents>");
+        stream.pop().println("<Agents/>");
         // Write the player configurations
         stream.pop().print("</Project>").flush();
     }
