@@ -96,13 +96,14 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
 
         if (mEditMode) {
 
-            dimension = new Dimension((int) (10 + getEditorWidth() * mFont.getSize() / 1.5), (int) (30 * (mCmdEditor.getHeight())));
+            dimension = new Dimension(getEditorWidth(), mCmdEditor.getHeight());
             // draw background
             graphics.setColor(new Color(155, 155, 155, 100));
 
         } else {
 
             dimension = computeTextRectSize(graphics);
+            //new Dimension(getEditorWidth(), mCmdEditor.getHeight());
             // draw background
             graphics.setColor(new Color(100, 100, 100, 100));
 
