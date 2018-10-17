@@ -37,6 +37,9 @@ import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.fife.ui.rsyntaxtextarea.*;
+import org.fife.ui.rtextarea.RTextScrollPane;
+
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
@@ -62,9 +65,11 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
     private final Timer mVisuTimer;
 
     // The maintained list
-    private ArrayList<TPLTuple<String, AttributedString>> mStringList;
-    private final JTextArea mCmdEditor;
+    //private final JTextArea mCmdEditor;
     private final Font mFont;
+
+    // the new TextArea
+    RSyntaxTextArea textArea;
 
     /**
      *
@@ -77,11 +82,25 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
         mFont = new Font("Monospaced",
                 Font.ITALIC,
                 mEditorConfig.sWORKSPACEFONTSIZE);
-        mCmdEditor = new JTextArea();
+       // mCmdEditor = new JTextArea();
+        textArea = new RSyntaxTextArea(30, 40);
+        textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        textArea.setCodeFoldingEnabled(true);
+        textArea.setVisible(true);
 
-        setSize(new Dimension(1, 1));
+        Dimension dimension = new Dimension(10, 10);
+        setSize(dimension);
         setLocation(0, 0);
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setLocation(mNode.getLocation().x + (mEditorConfig.sNODEWIDTH / 2)
+            - (dimension.width / 2),
+            mNode.getLocation().y + mEditorConfig.sNODEHEIGHT);
+        setLayout(new BorderLayout());
+        add(textArea, BorderLayout.CENTER);
+
+        KeyStroke keyStroke = KeyStroke.getKeyStroke("ENTER");
+        Object actionKey = textArea.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        textArea.getActionMap().put(actionKey, wrapper);
+        //textArea.requestFocusInWindow();
         update();
     }
 
@@ -89,93 +108,38 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
     public void paintComponent(java.awt.Graphics g) {
         super.paintComponent(g);
 
-
-        Graphics2D graphics = (Graphics2D) g;
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        Dimension dimension;
-
-        if (mEditMode) {
-
-            dimension = new Dimension(getEditorWidth(), mCmdEditor.getHeight());
-            // draw background
-            graphics.setColor(new Color(155, 155, 155, 100));
-
-        } else {
-
-            dimension = computeTextRectSize(graphics);
-            //new Dimension(getEditorWidth(), mCmdEditor.getHeight());
-            // draw background
-            graphics.setColor(new Color(100, 100, 100, 100));
-
-            //
-            // if (mVisualisationTask != null) {
-            // if (mVisualisationTask.getActivityTime() > 20) {
-            // graphics.setColor(new Color(246, 0, 0, 100));
-            // graphics.fillRoundRect(0, 0, dimension.width, dimension.height, 5, 5);
-            // } else {
-            // graphics.setColor(new Color(246, 0, 0, 100 - (100 - 5 * mVisualisationTask.getActivityTime())));
-            // graphics.fillRoundRect(0, 0, dimension.width, dimension.height, 5, 5);
-            // }
-            // }
-            // Draw Type Definitions and Variable Definition
-            int currentDrawingOffset = 0;
-
-            for (TPLTuple<String, AttributedString> pair : mStringList) {
-                AttributedString attributedString = pair.getSecond();
-                TextLayout textLayout = new TextLayout(attributedString.getIterator(),
-                        graphics.getFontRenderContext());
-
-                currentDrawingOffset = currentDrawingOffset + (int) textLayout.getAscent();
-                graphics.drawString(attributedString.getIterator(), 5, 5 + currentDrawingOffset);
-                currentDrawingOffset = currentDrawingOffset + (int) textLayout.getLeading()
-                        + (int) textLayout.getDescent();
-            }
-        }
-
-        setSize(dimension);
+        System.out.println("Paint cmdbadge");
+        Dimension dimension =
+                new Dimension(textArea.getWidth(), textArea.getHeight());
+        //setSize(dimension);
         setLocation(mNode.getLocation().x + (mEditorConfig.sNODEWIDTH / 2) - (dimension.width / 2),
                 mNode.getLocation().y + mEditorConfig.sNODEHEIGHT);
+        Graphics2D graphics = (Graphics2D) g;
         graphics.fillRoundRect(0, 0, dimension.width, dimension.height, 5, 5);
         graphics.setStroke(new BasicStroke(1.5f));
         graphics.setColor(Color.BLACK);
-
-    }
-
-    private Dimension computeTextRectSize(Graphics2D graphics) {
-        int width = 0,
-                height = 0;
-
-        for (int i = 0; i < mStringList.size(); i++) {
-            TextLayout textLayout = new TextLayout(mStringList.get(i).getSecond().getIterator(),
-                    graphics.getFontRenderContext());
-            int advance = (int) textLayout.getVisibleAdvance();
-
-            if (advance > width) {
-                width = advance;
-            }
-
-            int currentAll = (int) (textLayout.getAscent() + textLayout.getDescent() + textLayout.getLeading());
-
-            height = height + currentAll;
+        textArea.setEditable(mEditMode);
+        if (mEditMode) {
+            textArea.setBackground(new Color(155, 155, 155, 100));
+        } else {
+            textArea.setBackground(new Color(100, 100, 100, 100));
         }
-
-        return new Dimension(width + 2 * 5, height + 2 * 5);
-    }
-
-    private int getEditorWidth() {
-      return mCmdEditor.getWidth();
+        //textArea.paint(g);
     }
 
     public void setEditMode() {
         mEditMode = true;
+        return;/*
         for (TPLTuple<String, AttributedString> s : mStringList) {
             addCmdEditor(s.getFirst());
         }
 
-        add(mCmdEditor, BorderLayout.CENTER);
+        ///add(mCmdEditor, BorderLayout.CENTER);
+        add(textArea, BorderLayout.CENTER);
 
         mDispatcher.convey(new NodeSelectedEvent(this, mNode.getDataNode()));
-        mCmdEditor.requestFocusInWindow();
+        //mCmdEditor.requestFocusInWindow();
+        */
     }
 
     /*
@@ -184,7 +148,7 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
     public synchronized void endEditMode() {
 
         if (mEditMode) {
-          mNode.getDataNode().getCmd().setContent(mCmdEditor.getText());
+          mNode.getDataNode().getCmd().setContent(textArea.getText());
 
           mDispatcher.convey(new ProjectChangedEvent(this));
           mDispatcher.convey(new NodeSelectedEvent(this, mNode.getDataNode()));
@@ -194,7 +158,7 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
         repaint(100);
         update();
     }
-
+/*
     private void addCmdEditor(String text) {
 
         mCmdEditor.getDocument().addDocumentListener(new DocumentListener() {
@@ -225,7 +189,7 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
 
         mCmdEditor.getActionMap().put(actionKey, wrapper);
     }
-
+*/
     public void updateLocation(Point vector) {
         Point location = getLocation();
         setLocation(location.x + vector.x, location.y + vector.y);
@@ -245,42 +209,27 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
         // mVisuTimer = null;
     }
 
-    /**
-     *
-     *
-     */
     @Override
     public void update(java.util.Observable obs, Object obj) {
         update();
     }
 
-    /**
-     *
-     *
-     */
     private void update() {
-      /*
-        ArrayList<String> strings = new ArrayList<>();
-        Command nodeCommands = mNode.getDataNode().getCmd();
-
-        if ((nodeCommands != null) && (nodeCommands.size() > 0)) {
-            for (Command cmd : nodeCommands) {
-                strings.add(((Command) cmd).getFormattedSyntax());
-            }
-        }
-
-        // Update the string list
-*/
       String content = mNode.getDataNode().getCmd().getContent();
-      if (! content.trim().isEmpty()) {
-        mStringList = TextFormat.getPairList(
-            new ArrayList<String>(){{ add(content); }});
-      } else {
-        mStringList = new ArrayList();;
-      }
-      // Sets visibility of the component to true only if there is something to display
-      setVisible(!mStringList.isEmpty());
 
+      // Sets visibility of the component to true only if there is something to display
+      setVisible(! content.isEmpty());
+      textArea.setText(content);
+      if (! content.isEmpty()) {
+        Dimension dimension = new Dimension(200,
+            textArea.getLineCount()*textArea.getLineHeight());
+        setSize(dimension);
+        setLocation(mNode.getLocation().x + (mEditorConfig.sNODEWIDTH / 2)
+            - (dimension.width / 2),
+            mNode.getLocation().y + mEditorConfig.sNODEHEIGHT);
+      } else {
+        setSize(new Dimension(textArea.getWidth(), textArea.getHeight()));
+      }
     }
 
     /*
