@@ -33,6 +33,11 @@ public class IOSIndentWriter {
         mIndent = indent;
     }
 
+    public IOSIndentWriter printPlain(final String s) {
+        mStream.print(s);
+        return this;
+    }
+
     public IOSIndentWriter print(final String s) {
 
         // split the string into lines
