@@ -1,11 +1,5 @@
 package de.dfki.vsm.editor;
 
-import de.dfki.vsm.editor.action.RedoAction;
-import de.dfki.vsm.editor.action.UndoAction;
-import de.dfki.vsm.editor.dialog.NewProjectDialog;
-import de.dfki.vsm.editor.dialog.QuitDialog;
-import de.dfki.vsm.Preferences;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,13 +8,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
-import javax.swing.KeyStroke;
+
+import javax.swing.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.action.RedoAction;
+import de.dfki.vsm.editor.action.UndoAction;
+import de.dfki.vsm.editor.dialog.NewProjectDialog;
+import de.dfki.vsm.editor.dialog.QuitDialog;
 
 /**
  * @author Gregor Mehlmann
@@ -28,7 +26,7 @@ import javax.swing.KeyStroke;
 public final class EditorMenuBar extends JMenuBar {
 
   // The singelton logger instance
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(EditorMenuBar.class);;
   // The singelton  editor instance
   private final EditorInstance mEditorInstance;
 

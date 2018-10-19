@@ -1,5 +1,13 @@
 package de.dfki.vsm.xtesting.NewPropertyManager;
 
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+
 import de.dfki.vsm.model.config.ConfigFeature;
 import de.dfki.vsm.model.project.AgentConfig;
 import de.dfki.vsm.model.project.PluginConfig;
@@ -32,14 +40,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
-
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 /**
  * Created by alvaro on 6/2/16.

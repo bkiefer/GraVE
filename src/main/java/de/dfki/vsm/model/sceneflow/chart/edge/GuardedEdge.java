@@ -1,18 +1,19 @@
 package de.dfki.vsm.model.sceneflow.chart.edge;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.w3c.dom.Element;
+
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgeGraphics;
-import de.dfki.vsm.model.sceneflow.glue.command.Expression;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.tpl.TPLTuple;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
 import de.dfki.vsm.util.xml.XMLWriteError;
-import java.util.ArrayList;
-import org.w3c.dom.Element;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * @author Gregor Mehlmann
@@ -128,7 +129,7 @@ public class GuardedEdge extends AbstractEdge {
             }
           });
         } else {
-          mCondition = Expression.parse(element);
+          mCondition = Command.parse(element);
         }
       }
     });

@@ -1,8 +1,9 @@
 package de.dfki.vsm.model.sceneflow.chart.graphics.edge;
 
+import org.w3c.dom.Element;
+
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
-import org.w3c.dom.Element;
 
 /**
  * @author Gregor Mehlmann

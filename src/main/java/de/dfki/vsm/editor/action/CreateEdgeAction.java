@@ -1,23 +1,21 @@
 package de.dfki.vsm.editor.action;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.editor.dialog.ModifyIEdgeDialog;
-import de.dfki.vsm.editor.dialog.ModifyCEdgeDialog;
-import de.dfki.vsm.editor.dialog.ModifyPEdgeDialog;
-import de.dfki.vsm.editor.dialog.ModifyTEdgeDialog;
-import de.dfki.vsm.model.sceneflow.chart.edge.EpsilonEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
-import java.util.Vector;
-
 //~--- JDK imports ------------------------------------------------------------
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.dialog.ModifyCEdgeDialog;
+import de.dfki.vsm.editor.dialog.ModifyIEdgeDialog;
+import de.dfki.vsm.editor.dialog.ModifyPEdgeDialog;
+import de.dfki.vsm.editor.dialog.ModifyTEdgeDialog;
+import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.model.sceneflow.chart.edge.EpsilonEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
 
 /**
  * @author Gregor Mehlmann

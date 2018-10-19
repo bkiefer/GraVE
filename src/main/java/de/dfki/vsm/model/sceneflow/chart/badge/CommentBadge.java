@@ -1,20 +1,19 @@
 package de.dfki.vsm.model.sceneflow.chart.badge;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.model.ModelObject;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.model.sceneflow.glue.SyntaxObject;
-import de.dfki.vsm.model.sceneflow.chart.graphics.comment.CommentGraphics;
-import de.dfki.vsm.util.ios.IOSIndentWriter;
-import de.dfki.vsm.util.xml.XMLParseAction;
-import de.dfki.vsm.util.xml.XMLParseError;
-
-import org.w3c.dom.Element;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Font;
 
 import javax.swing.JEditorPane;
+
+import org.w3c.dom.Element;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.model.ModelObject;
+import de.dfki.vsm.model.sceneflow.chart.SuperNode;
+import de.dfki.vsm.model.sceneflow.chart.graphics.comment.CommentGraphics;
+import de.dfki.vsm.util.ios.IOSIndentWriter;
+import de.dfki.vsm.util.xml.XMLParseAction;
+import de.dfki.vsm.util.xml.XMLParseError;
 
 /**
  * @author Gregor Mehlmann
@@ -104,7 +103,9 @@ public class CommentBadge implements ModelObject {
     out.pop().println("</Comment>");
   }
 
-  public SyntaxObject getCopy() {
+  @Override
+  public ModelObject getCopy() {
+    // TODO: REACTIVATE
     return null;
   }
 }

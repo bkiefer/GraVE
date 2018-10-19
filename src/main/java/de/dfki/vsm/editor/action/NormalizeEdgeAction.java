@@ -6,26 +6,17 @@
  */
 package de.dfki.vsm.editor.action;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.editor.util.grid.AStarEdgeFinder;
-import de.dfki.vsm.editor.util.grid.BezierFit;
-import de.dfki.vsm.editor.util.grid.BezierPoint;
-import de.dfki.vsm.editor.util.grid.DockingPoint;
-import de.dfki.vsm.editor.util.grid.GridConstants;
-import de.dfki.vsm.editor.util.grid.GridRectangle;
-import de.dfki.vsm.editor.util.grid.pathfinding.Path;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
-
 import java.util.ArrayList;
 import java.util.Set;
+
+import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.util.grid.*;
+import de.dfki.vsm.editor.util.grid.pathfinding.Path;
 
 /**
  *

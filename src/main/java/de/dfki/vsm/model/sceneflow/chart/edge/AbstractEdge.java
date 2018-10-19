@@ -1,14 +1,15 @@
 package de.dfki.vsm.model.sceneflow.chart.edge;
 
-import de.dfki.vsm.model.ModelObject;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
-import de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgeGraphics;
-import de.dfki.vsm.util.tpl.TPLTuple;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.ArrayList;
+
+import de.dfki.vsm.model.ModelObject;
+import de.dfki.vsm.model.sceneflow.chart.BasicNode;
+import de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgeGraphics;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
+import de.dfki.vsm.util.tpl.TPLTuple;
 
 /**
  * @author Gregor Mehlmann

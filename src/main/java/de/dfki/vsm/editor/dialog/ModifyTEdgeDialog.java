@@ -1,36 +1,23 @@
 package de.dfki.vsm.editor.dialog;
 
+import java.awt.Color;
+//~--- JDK imports ------------------------------------------------------------
+import java.awt.Dimension;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.swing.*;
+
 //~--- non-JDK imports --------------------------------------------------------
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
-import de.dfki.vsm.editor.AddButton;
-import de.dfki.vsm.editor.CancelButton;
-import de.dfki.vsm.editor.EditButton;
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.OKButton;
-import de.dfki.vsm.editor.RemoveButton;
+
+import de.dfki.vsm.editor.*;
 import de.dfki.vsm.editor.util.AltStartNodeManager;
 import de.dfki.vsm.editor.util.HintTextField;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
 import de.dfki.vsm.model.sceneflow.chart.SuperNode;
 import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
 import de.dfki.vsm.util.tpl.TPLTuple;
-import java.awt.Color;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.Dimension;
-
-import java.util.Iterator;
-import java.util.Map;
-import javax.swing.BorderFactory;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 /**
  * @author Gregor Mehlmann

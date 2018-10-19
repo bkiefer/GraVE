@@ -1,20 +1,6 @@
 package de.dfki.vsm.editor.project.sceneflow;
 
-import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.action.RedoAction;
-import de.dfki.vsm.editor.action.UndoAction;
-import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.Preferences;
-import de.dfki.vsm.model.project.EditorConfig;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-//import de.dfki.vsm.runtime.RunTimeInstance;
-import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
-import de.dfki.vsm.util.ios.ResourceLoader;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-import de.dfki.vsm.xtesting.NewPropertyManager.PropertyManagerGUI;
+import static de.dfki.vsm.Preferences.SCREEN_HORIZONTAL;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -23,27 +9,32 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.LinkedList;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
-import javax.swing.TransferHandler;
+
+import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
-import static de.dfki.vsm.Preferences.SCREEN_HORIZONTAL;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
+
+import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.action.RedoAction;
+import de.dfki.vsm.editor.action.UndoAction;
 import de.dfki.vsm.editor.dialog.OptionsDialog;
 import de.dfki.vsm.editor.dialog.SaveFileDialog;
 import de.dfki.vsm.editor.event.ElementEditorToggledEvent;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
+import de.dfki.vsm.editor.project.EditorProject;
+import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.model.sceneflow.chart.SuperNode;
+//import de.dfki.vsm.runtime.RunTimeInstance;
+import de.dfki.vsm.util.evt.EventDispatcher;
+import de.dfki.vsm.util.evt.EventListener;
+import de.dfki.vsm.util.evt.EventObject;
+import de.dfki.vsm.util.ios.ResourceLoader;
+import de.dfki.vsm.xtesting.NewPropertyManager.PropertyManagerGUI;
 
 /**
  * @author Gregor Mehlmann
@@ -120,7 +111,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
    * ***********************************************************************************************************************
    */
   // The singelton logger instance
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  //private final Logger mLogger = LoggerFactory.getLogger(SceneFlowToolBar.class);
   // The singelton runtime instance
   //private final RunTimeInstance mRunTime = RunTimeInstance.getInstance();
   // The singelton editor instance
@@ -142,7 +133,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   private JButton mToggleElementEditor;
   private JButton mPlayButton;
   private JButton mStopButton;
-  private JButton mShowVarButton;
+  //private JButton mShowVarButton;
   private JButton mStraighten;
   private JButton mNormalize;
   private JButton mSaveProject;
@@ -418,10 +409,10 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     mStraighten.setToolTipText("Straighten all edges");
     sanitizeButton(mStraighten, tinyButtonDim);
     // The Show Variables Button
+    /*
     mShowVarButton = add(new AbstractAction("ACTION_SHOW_VARIABLES",
             Boolean.valueOf(Preferences.getProperty("showVariables")) ? ICON_VARS_STANDARD : ICON_VARS_HIDDEN_STANDARD) {
       public void actionPerformed(ActionEvent evt) {
-        mSceneFlowEditor.getWorkSpace().showVariablesOnWorkspace();
         updateShowVarsButtons();
         revalidate();
         repaint(100);
@@ -431,6 +422,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     mShowVarButton.setToolTipText(Boolean.valueOf(Preferences.getProperty("showVariables")) ? "Show Variables" : "Hide Variables");
     // Format The Button As Tiny
     sanitizeButton(mShowVarButton, tinyButtonDim);
+    */
     add(Box.createHorizontalStrut(10));
     add(createSeparator());
     add(Box.createHorizontalStrut(10));
@@ -595,6 +587,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
             ? ICON_LESS_ROLLOVER : ICON_MORE_ROLLOVER);
   }
 
+  /*
   private void updateShowVarsButtons() {
     mShowVarButton.setIcon(mSceneFlowEditor.getWorkSpace().isVarBadgeVisible()
             ? ICON_VARS_HIDDEN_STANDARD
@@ -606,6 +599,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
             ? "Hide Variables"
             : "Show Variables");
   }
+  */
 
   private void initPathDisplay() {
     mPathDisplay = new JPanel();    // new FlowLayout(FlowLayout.LEFT, 0, 0));

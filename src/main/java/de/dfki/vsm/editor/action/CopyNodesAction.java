@@ -1,10 +1,5 @@
 package de.dfki.vsm.editor.action;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +7,11 @@ import java.util.Set;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
+import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 
 /**
  * @author Patrick Gebhard

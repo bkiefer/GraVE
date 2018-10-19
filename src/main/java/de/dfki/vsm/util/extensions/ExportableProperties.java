@@ -1,8 +1,8 @@
 package de.dfki.vsm.util.extensions;
 
-import de.dfki.vsm.util.extensions.value.ProjectValueProperty;
-
 import java.util.Map;
+
+import de.dfki.vsm.util.extensions.value.ProjectValueProperty;
 
 /**
  * Created by alvaro on 4/20/17.

@@ -1,19 +1,19 @@
 package de.dfki.vsm.xtesting;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.util.bin.BINUtilities;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-
 import java.net.Socket;
-
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.util.bin.BINUtilities;
 
 /**
  * @author Gregor Mehlmann
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public class TestCMLClient {
 
   // The System Logger
-  private static LOGDefaultLogger sLogger = LOGDefaultLogger.getInstance();
+  private static Logger sLogger = LoggerFactory.getLogger(TestCMLClient.class);;
 
   // The Message Pattern
   // The Message Pattern
@@ -38,10 +38,10 @@ public class TestCMLClient {
   public static void main(String args[]) {
 
     // Print Some Information
-    sLogger.message("Host: " + args[1]);
-    sLogger.message("Port: " + args[2]);
-    sLogger.message("Name: " + args[3]);
-    sLogger.message("Text: " + args[4]);
+    sLogger.info("Host: " + args[1]);
+    sLogger.info("Port: " + args[2]);
+    sLogger.info("Name: " + args[3]);
+    sLogger.info("Text: " + args[4]);
 
     final String example
             = "<?xml version='1.0'?>\n<cai_response>\n<cai_command id='N35TestScene'>RenderXML</cai_command>\n\t<status>SUCCESS</status>\n</cai_response>";
@@ -70,20 +70,20 @@ public class TestCMLClient {
       sSocket = new Socket(args[1], Integer.parseInt(args[2]));
 
       // Print Some Information
-      sLogger.message("Creating CMLClient Connector");
+      sLogger.info("Creating CMLClient Connector");
     } catch (Exception exc) {
 
       // Print Some Information
-      sLogger.warning("Catching CMLClient Connector");
+      sLogger.warn("Catching CMLClient Connector");
 
       // Debug Some Information
-      sLogger.warning(exc.toString());
+      sLogger.warn(exc.toString());
     }
 
     if ((sSocket != null) && !sSocket.isClosed()) {
 
       // Print Some Information
-      sLogger.message("Starting CMLClient Connector");
+      sLogger.info("Starting CMLClient Connector");
 
       try {
 
@@ -92,7 +92,7 @@ public class TestCMLClient {
         final DataOutputStream writer = new DataOutputStream(sSocket.getOutputStream());
 
         // Print Some Information
-        sLogger.message("Executing CMLClient Connector");
+        sLogger.info("Executing CMLClient Connector");
 
         // Handle The Connection
         final String name = args[3];
@@ -131,25 +131,25 @@ public class TestCMLClient {
           final byte[] header = new byte[12];
 
           reader.readFully(header);
-          sLogger.message("CMLClient Connector Gets Header '" + BINUtilities.BytesToHexString(header) + "'");
+          sLogger.info("CMLClient Connector Gets Header '" + BINUtilities.BytesToHexString(header) + "'");
 
           //
           final byte[] msgtag = Arrays.copyOfRange(header, 0, 4);
 
-          sLogger.message("CMLClient Connector Gets MsgTag '" + BINUtilities.BytesToHexString(msgtag) + "'");
+          sLogger.info("CMLClient Connector Gets MsgTag '" + BINUtilities.BytesToHexString(msgtag) + "'");
 
           final byte[] status = Arrays.copyOfRange(header, 4, 8);
 
-          sLogger.message("CMLClient Connector Gets Status '" + BINUtilities.BytesToHexString(status) + "'");
+          sLogger.info("CMLClient Connector Gets Status '" + BINUtilities.BytesToHexString(status) + "'");
 
           final byte[] length = Arrays.copyOfRange(header, 8, 12);
 
-          sLogger.message("CMLClient Connector Gets Length '" + BINUtilities.BytesToHexString(length) + "'");
+          sLogger.info("CMLClient Connector Gets Length '" + BINUtilities.BytesToHexString(length) + "'");
 
           //
           final int size = BINUtilities.BytesLEToInt(length);
 
-          sLogger.message("CMLClient Connector Awaiting '" + size + "' Bytes");
+          sLogger.info("CMLClient Connector Awaiting '" + size + "' Bytes");
 
           //
           final byte[] ackn = new byte[size];
@@ -159,7 +159,7 @@ public class TestCMLClient {
           //
           final String data = new String(ackn, "UTF-8");
 
-          sLogger.message("CMLClient Connector Receiving '" + data + "'");
+          sLogger.info("CMLClient Connector Receiving '" + data + "'");
 
           //
 
@@ -175,10 +175,10 @@ public class TestCMLClient {
       } catch (Exception exc) {
 
         // Print Some Information
-        sLogger.warning("Catching CMLClient Connector");
+        sLogger.warn("Catching CMLClient Connector");
 
         // Debug Some Information
-        sLogger.warning(exc.toString());
+        sLogger.warn(exc.toString());
       }
 
       // Close The Socket Connection
@@ -188,15 +188,15 @@ public class TestCMLClient {
         } catch (Exception exc) {
 
           // Print Some Information
-          sLogger.warning("Catching CMLClient Connector");
+          sLogger.warn("Catching CMLClient Connector");
 
           // Debug Some Information
-          sLogger.warning(exc.toString());
+          sLogger.warn(exc.toString());
         }
       }
 
       // Print Some Information
-      sLogger.message("Stopping CMLClient Connector");
+      sLogger.info("Stopping CMLClient Connector");
     }
   }
 }

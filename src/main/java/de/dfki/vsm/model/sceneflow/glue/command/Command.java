@@ -1,17 +1,19 @@
 package de.dfki.vsm.model.sceneflow.glue.command;
 
-import de.dfki.vsm.model.sceneflow.glue.SyntaxObject;
-import de.dfki.vsm.util.ios.IOSIndentWriter;
-import de.dfki.vsm.util.xml.XMLParseError;
-import de.dfki.vsm.util.xml.XMLWriteError;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import de.dfki.vsm.util.cpy.Copyable;
+import de.dfki.vsm.util.ios.IOSIndentWriter;
+import de.dfki.vsm.util.xml.XMLParseError;
+import de.dfki.vsm.util.xml.XMLParseable;
+import de.dfki.vsm.util.xml.XMLWriteError;
+import de.dfki.vsm.util.xml.XMLWriteable;
 
 /**
  * @author Gregor Mehlmann
  */
-public class Command extends SyntaxObject {
+public class Command implements Copyable, XMLParseable, XMLWriteable {
 
   protected String content;
 
@@ -55,9 +57,7 @@ public class Command extends SyntaxObject {
     return result;
   }
 
-  ;
-
-    public static Command parse(final Element element) throws XMLParseError {
+  public static Command parse(final Element element) throws XMLParseError {
     // The command to parse
     Command command = new Command(element.getTextContent());
     return command;
@@ -67,7 +67,6 @@ public class Command extends SyntaxObject {
   public void parseXML(Element element) throws XMLParseError {
     content = "";
     NodeList l = element.getChildNodes();
-
   }
 
   @Override

@@ -1,22 +1,19 @@
 package de.dfki.vsm.editor.dialog;
 
-import de.dfki.vsm.editor.CancelButton;
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.OKButton;
-import de.dfki.vsm.editor.util.HintTextField;
-import de.dfki.vsm.model.sceneflow.glue.GlueParser;
-import de.dfki.vsm.model.sceneflow.glue.command.Expression;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+
+import javax.swing.*;
+
+import de.dfki.vsm.editor.CancelButton;
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.OKButton;
+import de.dfki.vsm.editor.util.HintTextField;
+import de.dfki.vsm.model.sceneflow.glue.GlueParser;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
 
 /**
  *
@@ -25,7 +22,7 @@ import javax.swing.JPanel;
 public class CreateExpDialog extends Dialog {
 
   //
-  private Expression mExpression;
+  private Command mExpression;
 
   //
   private HintTextField mInputTextField;
@@ -33,14 +30,14 @@ public class CreateExpDialog extends Dialog {
   private CancelButton mCancelButton;
   private JLabel errorMsg;
 
-  public CreateExpDialog(Expression expression) {
+  public CreateExpDialog(Command expression) {
     super(EditorInstance.getInstance(), "Specify Command", true);
     mExpression = expression;
     initComponents();
   }
 
   private void initComponents() {
-    mInputTextField = new HintTextField("Enter Expression");
+    mInputTextField = new HintTextField("Enter Command");
     mInputTextField.setBounds(10, 10, 300, 20);
     mOkButton = new OKButton();
     mOkButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -101,7 +98,7 @@ public class CreateExpDialog extends Dialog {
     mOkButton.requestFocus();
   }
 
-  public Expression run() {
+  public Command run() {
     setVisible(true);
 
     if (mPressedButton == Button.OK) {
@@ -133,7 +130,7 @@ public class CreateExpDialog extends Dialog {
     String inputString = mInputTextField.getText().trim();
 
     try {
-      final Expression exp = (Expression) GlueParser.run(inputString);
+      final Command exp = (Command) GlueParser.run(inputString);
 
       if (exp != null) {
         mExpression = exp;

@@ -1,16 +1,17 @@
 package de.dfki.vsm.model.project;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
-import de.dfki.vsm.util.xml.XMLUtilities;
 import de.dfki.vsm.util.xml.XMLWriteError;
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import org.w3c.dom.Element;
 
 /**
  * @author Gregor Mehlmann
@@ -18,8 +19,8 @@ import org.w3c.dom.Element;
 public final class ProjectConfig implements ModelObject {
 
   // The singelton logger instance
-  private final LOGDefaultLogger mLogger
-          = LOGDefaultLogger.getInstance();
+  private final Logger mLogger
+          = LoggerFactory.getLogger(ProjectConfig.class);;
   // The name of the project
   private String mProjectName;
   //
@@ -195,7 +196,7 @@ public final class ProjectConfig implements ModelObject {
     try {
       writeXML(writer);
     } catch (final XMLWriteError exc) {
-      mLogger.failure(exc.toString());
+      mLogger.error(exc.toString());
     }
     writer.flush();
     writer.close();

@@ -1,24 +1,18 @@
 package de.dfki.vsm.editor.dialog;
 
+//~--- JDK imports ------------------------------------------------------------
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.*;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.CancelButton;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.util.AltStartNodeManager;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import java.util.ArrayList;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 /**
  * @author Gregor Mehlmann

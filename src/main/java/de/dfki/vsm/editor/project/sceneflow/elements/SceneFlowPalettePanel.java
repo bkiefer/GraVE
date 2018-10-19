@@ -1,12 +1,5 @@
 package de.dfki.vsm.editor.project.sceneflow.elements;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.Preferences;
-import de.dfki.vsm.editor.Comment;
-import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,6 +8,15 @@ import java.awt.GridLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.Comment;
+import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.Node;
 
 /**
  * @author Sergio Soto
@@ -68,7 +70,7 @@ public class SceneFlowPalettePanel extends JPanel {
                   new Comment());
 
   //
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(SceneFlowPalettePanel.class);;
 
   //
   private final int paletteDimension = 230;

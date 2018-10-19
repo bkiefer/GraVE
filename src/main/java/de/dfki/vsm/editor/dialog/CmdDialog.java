@@ -1,5 +1,13 @@
 package de.dfki.vsm.editor.dialog;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
+
+import javax.swing.*;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.CancelButton;
 import de.dfki.vsm.editor.EditorInstance;
@@ -7,17 +15,6 @@ import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.util.HintTextField;
 import de.dfki.vsm.model.sceneflow.glue.GlueParser;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
-import de.dfki.vsm.model.sceneflow.glue.command.Expression;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyEvent;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 //~--- JDK imports ------------------------------------------------------------
 /**

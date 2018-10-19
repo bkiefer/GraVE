@@ -1,5 +1,12 @@
 package de.dfki.vsm.xtesting.NewPropertyManager;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.io.IOException;
+
+import javax.swing.JFrame;
+
 import de.dfki.vsm.model.project.ProjectConfig;
 import de.dfki.vsm.runtime.project.RunTimeProject;
 import javafx.application.Platform;
@@ -7,12 +14,6 @@ import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
 
 /**
  * Created by alvaro on 4/23/16.

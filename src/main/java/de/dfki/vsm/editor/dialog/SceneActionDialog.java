@@ -5,15 +5,6 @@
  */
 package de.dfki.vsm.editor.dialog;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.Preferences;
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.util.HintTextField;
-import de.dfki.vsm.model.acticon.ActiconAction;
-import de.dfki.vsm.model.acticon.ActiconConfig;
-import de.dfki.vsm.util.ios.ResourceLoader;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
 import java.awt.Component;
@@ -23,21 +14,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import java.util.ArrayList;
+import javax.swing.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ListCellRenderer;
-import javax.swing.WindowConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.util.HintTextField;
+import de.dfki.vsm.model.acticon.ActiconAction;
+import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
  * @author Patrick Gebahrd
@@ -45,7 +32,7 @@ import javax.swing.WindowConstants;
 public class SceneActionDialog extends JDialog {
 
   private static SceneActionDialog sInstance = null;
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(SceneActionDialog.class);;
   private final EditorInstance mEditor = EditorInstance.getInstance();
   private JPanel mMainPanel;
   private JPanel mActionPanel;

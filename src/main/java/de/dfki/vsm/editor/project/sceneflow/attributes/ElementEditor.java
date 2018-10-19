@@ -10,6 +10,9 @@ import java.util.HashMap;
 
 import javax.swing.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 //~--- non-JDK imports --------------------------------------------------------
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
@@ -27,12 +30,10 @@ import de.dfki.vsm.model.sceneflow.chart.edge.*;
 import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge.EdgeType;
 import de.dfki.vsm.model.sceneflow.glue.GlueParser;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
-import de.dfki.vsm.model.sceneflow.glue.command.Expression;
 import de.dfki.vsm.util.RegularExpressions;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
 
 ///**
 // * @author Gregor Mehlmann
@@ -382,7 +383,7 @@ class ConditionEditor extends JPanel implements EventListener {
     try {
       //ChartParser.parseResultType = ChartParser.LOG;
       //ChartParser.parseResultType = ChartParser.EXP;
-      Expression log = (Expression) GlueParser.run(inputString);
+      Command log = (Command) GlueParser.run(inputString);
 
       //LogicalCond log = ChartParser.logResult;
       //Expression log = ChartParser.expResult;
@@ -478,7 +479,7 @@ public class ElementEditor extends JScrollPane implements EventListener {
 
   //
   // private final Observable mObservable = new Observable();
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(ElementEditor.class);;
 
   private final NodeEditor mNodeEditor;
   private final EdgeEditor mEdgeEditor;
@@ -599,7 +600,7 @@ class InterruptEditor extends JPanel implements EventListener {
     String inputString = mIEdgeDialog.getInputTextField().getText().trim();
 
     try {
-      final Expression exp = (Expression) GlueParser.run(inputString);
+      final Command exp = (Command) GlueParser.run(inputString);
       if (exp != null) {
         mDataIEdge.setCondition(exp);
       } else {

@@ -1,8 +1,10 @@
 package de.dfki.vsm.runtime.plugin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.runtime.project.RunTimeProject;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
 
 /**
  * @author Gregor Mehlmann
@@ -10,8 +12,8 @@ import de.dfki.vsm.util.log.LOGDefaultLogger;
 public abstract class RunTimePlugin {
 
   // The system logger
-  protected final LOGDefaultLogger mLogger
-          = LOGDefaultLogger.getInstance();
+  protected final Logger mLogger
+          = LoggerFactory.getLogger(RunTimePlugin.class);;
 
   // The runtime project
   protected final RunTimeProject mProject;

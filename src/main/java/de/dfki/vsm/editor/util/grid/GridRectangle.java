@@ -6,21 +6,16 @@
  */
 package de.dfki.vsm.editor.util.grid;
 
+//~--- JDK imports ------------------------------------------------------------
+import java.awt.Rectangle;
+import java.util.Collection;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.util.EdgeGraphics;
-
 import math.geom2d.Point2D;
 import math.geom2d.line.Line2D;
 import math.geom2d.spline.CubicBezierCurve2D;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.Rectangle;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
-import static java.lang.Math.pow;
 
 /**
  *

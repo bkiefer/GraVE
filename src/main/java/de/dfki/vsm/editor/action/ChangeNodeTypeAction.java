@@ -1,5 +1,13 @@
 package de.dfki.vsm.editor.action;
 
+import java.util.ArrayList;
+//~--- JDK imports ------------------------------------------------------------
+import java.util.Set;
+
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Edge;
@@ -7,14 +15,6 @@ import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.model.sceneflow.chart.SuperNode;
 import de.dfki.vsm.model.sceneflow.chart.graphics.node.NodeGraphics;
-import java.util.ArrayList;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.util.Set;
-
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 
 /**
  * @author Patrick Gebhard

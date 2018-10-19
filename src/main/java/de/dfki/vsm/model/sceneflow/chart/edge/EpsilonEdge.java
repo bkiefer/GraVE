@@ -1,22 +1,22 @@
 package de.dfki.vsm.model.sceneflow.chart.edge;
 
+import java.util.ArrayList;
+//~--- JDK imports ------------------------------------------------------------
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.w3c.dom.Element;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgeGraphics;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.tpl.TPLTuple;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
 import de.dfki.vsm.util.xml.XMLWriteError;
-import java.util.ArrayList;
-
-import org.w3c.dom.Element;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * @author Gregor Mehlmann

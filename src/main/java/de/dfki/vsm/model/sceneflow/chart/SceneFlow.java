@@ -7,7 +7,6 @@ import org.w3c.dom.Element;
 
 import de.dfki.vsm.Preferences;
 import de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge;
-import de.dfki.vsm.model.sceneflow.chart.badge.VariableBadge;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.cpy.CopyTool;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
@@ -126,14 +125,6 @@ public final class SceneFlow extends SuperNode {
       mDEdge.writeXML(out);
     }
 
-    if (mLocalVariableBadge != null) {
-      mLocalVariableBadge.writeXML(out);
-    }
-
-    if (mGlobalVariableBadge != null) {
-      mGlobalVariableBadge.writeXML(out);
-    }
-
     for (i = 0; i < mCommentList.size(); i++) {
       mCommentList.get(i).writeXML(out);
     }
@@ -196,15 +187,9 @@ public final class SceneFlow extends SuperNode {
         String tag = element.getTagName();
 
         if (tag.equals("LocalVariableBadge")) {
-          VariableBadge varBadge = new VariableBadge("LocalVariableBadge");
 
-          varBadge.parseXML(element);
-          mLocalVariableBadge = varBadge;
         } else if (tag.equals("GlobalVariableBadge")) {
-          VariableBadge varBadge = new VariableBadge("GlobalVariableBadge");
 
-          varBadge.parseXML(element);
-          mGlobalVariableBadge = varBadge;
         } else if (tag.equals("VariableBadge")) {
 
           // do nothing (left for old project's compatibility)
@@ -253,29 +238,15 @@ public final class SceneFlow extends SuperNode {
   public int getHashCode() {
 
     // Add hash of General Attributes
-    int hashCode = ((mNodeName == null)
-            ? 0
-            : mNodeName.hashCode()) + ((mComment == null)
-            ? 0
-            : mComment.hashCode()) + ((mGraphics == null)
-            ? 0
-            : mGraphics.hashCode()) + ((mParentNode == null)
-            ? 0
-            : mParentNode.hashCode()) + ((mHistoryNode == null)
-            ? 0
-            : mHistoryNode.hashCode()) + ((mStartNodeMap == null)
-            ? 0
-            : mStartNodeMap.hashCode()) + ((mIsHistoryNode == true)
-            ? 1
-            : 0) + ((mLocalVariableBadge == null)
-                    ? 0
-                    : mLocalVariableBadge.hashCode()) + ((mGlobalVariableBadge == null)
-            ? 0
-            : mGlobalVariableBadge.hashCode()) + ((mHideLocalVarBadge == true)
-            ? 1
-            : 0) + ((mHideGlobalVarBadge == true)
-                    ? 1
-                    : 0);
+    int hashCode = ((mNodeName == null) ? 0 : mNodeName.hashCode())
+        + ((mComment == null) ? 0 : mComment.hashCode())
+        + ((mGraphics == null) ? 0 : mGraphics.hashCode())
+        + ((mParentNode == null) ? 0 : mParentNode.hashCode())
+        + ((mHistoryNode == null) ? 0 : mHistoryNode.hashCode())
+        + ((mStartNodeMap == null) ? 0 : mStartNodeMap.hashCode())
+        + ((mIsHistoryNode == true) ? 1 : 0)
+        + ((mHideLocalVarBadge == true) ? 1 : 0)
+        + ((mHideGlobalVarBadge == true) ? 1 : 0);
 
     // Add hash of all nodes on workspace
     for (int cntNode = 0; cntNode < mNodeList.size(); cntNode++) {

@@ -1,27 +1,9 @@
 package de.dfki.vsm.editor.project.sceneflow.elements;
 
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.TreeEntry;
-import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.editor.dialog.FunDefDialog;
-import de.dfki.vsm.editor.event.FunctionCreatedEvent;
-import de.dfki.vsm.editor.event.FunctionModifiedEvent;
-import de.dfki.vsm.editor.event.FunctionSelectedEvent;
-import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
-import de.dfki.vsm.Preferences;
-import de.dfki.vsm.model.sceneflow.chart.SceneFlow;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.FunctionDefinition;
-import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DragGestureListener;
-import java.awt.dnd.DragSource;
-import java.awt.dnd.DragSourceAdapter;
-import java.awt.dnd.DragSourceListener;
+import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -29,23 +11,24 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.ToolTipManager;
+
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.dfki.vsm.MainGrave;
+import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.TreeEntry;
+import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
+import de.dfki.vsm.editor.project.EditorProject;
+import de.dfki.vsm.model.sceneflow.chart.SceneFlow;
+import de.dfki.vsm.util.evt.EventDispatcher;
 
 /**
  * @author Gregor Mehlmann
@@ -53,7 +36,7 @@ import javax.swing.tree.TreeSelectionModel;
 public final class SceneFlowElementPanel extends JScrollPane {
 
   // The singelton logger instance
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(SceneFlowElementPanel.class);;
 
   // The element tree of this panel
   private final ElementTree mElementTree;
@@ -103,7 +86,7 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
   private final JMenuItem functionRemove = new JMenuItem("Remove");
 
   //
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);;
   private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
   private final EditorProject mProject;
@@ -120,7 +103,8 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
 
   public void updateFunctions() {
     mFunctionsEntry.removeAllChildren();
-
+    // TODO: REPLACE WITH SOMETHING SENSIBLE
+    /*
     List<FunctionDefinition> functionDefinitions = new ArrayList<FunctionDefinition>(
             //mSceneFlow.getUsrCmdDefMap().values()
             Collections.emptyList()
@@ -133,6 +117,7 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
               ? Preferences.ICON_FUNCTION_ENTRY
               : Preferences.ICON_FUNCTION_ERROR_ENTRY, def));
     }
+    */
   }
 
   /**
@@ -180,16 +165,7 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
     if (pathCount == 3) {
       TreePath parentPath = path.getParentPath();
 
-      if (parentPath.getLastPathComponent().equals(mFunctionsEntry)) {
-        //mScriptEditorPanel.getTabPane().setSelectedIndex(1);
-        // TODO: This is total bullshit cyclic dependencies and crossing the hiererchy
-        // Realize that with the update event mechanism!!!!!
-        //mScriptEditorPanel.getmParentPE().showSceneDocEditor();
-
-        FunctionDefinition selectedDef = (FunctionDefinition) ((TreeEntry) path.getLastPathComponent()).getData();
-
-        launchFunctionSelectedEvent(selectedDef);
-      } else if (lastPathComponent.getData() != null) {
+      if (lastPathComponent.getData() != null) {
 
       }
     }
@@ -340,21 +316,6 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
         else if (pathCount == 3) {
           TreePath parentPath = path.getParentPath();
 
-          if (parentPath.getLastPathComponent().equals(mFunctionsEntry)) {
-            FunctionDefinition selectedDef = (FunctionDefinition) ((TreeEntry) path.getLastPathComponent()).getData();
-
-            launchFunctionSelectedEvent(selectedDef);
-
-            if (e.isPopupTrigger()) {
-              menu.add(functionModify);
-              menu.add(functionRemove);
-              showPopup = true;
-            } else if ((e.getClickCount() == 2) && !e.isConsumed()) {
-              TreeEntry entry = (TreeEntry) path.getLastPathComponent();
-
-              modifyFunctionAction(entry);
-            }
-          }
         } else if (pathCount == 4 && e.getClickCount() >= 1) {
 
         }
@@ -362,12 +323,6 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
         if (showPopup) {
           menu.show(tree, e.getX(), e.getY());
         }
-      }
-
-      private void launchFunctionSelectedEvent(FunctionDefinition funDef) {
-        FunctionSelectedEvent ev = new FunctionSelectedEvent(this, funDef);
-
-        mEventCaster.convey(ev);
       }
 
       private void launchTreeEntrySelectedEvent(TreeEntry entry) {
@@ -379,87 +334,16 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
     };
   }
 
-  /**
-   *
-   *
-   */
-  private final void modifyFunctionAction(final TreeEntry entry) {
-    if (entry != null) {
-      FunctionDefinition usrCmdDef = new FunDefDialog((FunctionDefinition) entry.getData()).run();
-
-      if (usrCmdDef != null) {
-        FunctionDefinition oldFunDef = (FunctionDefinition) entry.getData();
-
-        //mSceneFlow.removeUsrCmdDef(oldFunDef.getName());
-        //mSceneFlow.putUsrCmdDef(usrCmdDef.getName(), usrCmdDef);
-        updateFunctions();
-
-        FunctionModifiedEvent ev = new FunctionModifiedEvent(this, usrCmdDef);
-
-        EventDispatcher.getInstance().convey(ev);
-      }
-    }
-  }
-
   //
   private String getEntryName(final TreeEntry entry) {
     if (entry != null) {
-      FunctionDefinition oldFunDef = (FunctionDefinition) entry.getData();
-
-      return oldFunDef.getName();
+      //FunctionDefinition oldFunDef = (FunctionDefinition) entry.getData();
+      //return oldFunDef.getName();
     }
 
     return null;
   }
 
-  /**
-   *
-   */
-  @Override
-  public void actionPerformed(ActionEvent e) {
-    Object source = e.getSource();
-
-    if (source == functionsAdd) {
-      FunctionDefinition usrCmdDef = new FunDefDialog(null).run();
-
-      if (usrCmdDef != null) {
-        //mSceneFlow.putUsrCmdDef(usrCmdDef.getName(), usrCmdDef);
-        updateFunctions();
-        EditorInstance.getInstance().refresh();
-        launchFunctionCreatedEvent(usrCmdDef);
-      }
-    } else if (source == functionModify) {
-      TreeEntry entry = (TreeEntry) getLastSelectedPathComponent();
-
-      modifyFunctionAction(entry);
-      EditorInstance.getInstance().refresh();
-      launchFunctionSelectedEvent((FunctionDefinition) entry.getData());
-    } else if (source == functionRemove) {
-      TreeEntry entry = (TreeEntry) getLastSelectedPathComponent();
-
-      if (entry != null) {
-        FunctionDefinition oldFunDef = (FunctionDefinition) entry.getData();
-
-        //mSceneFlow.removeUsrCmdDef(oldFunDef.getName());
-        updateFunctions();
-
-        EditorInstance.getInstance().refresh();
-        launchFunctionCreatedEvent((FunctionDefinition) entry.getData());
-      }
-    }
-  }
-
-  private void launchFunctionSelectedEvent(FunctionDefinition funDef) {
-    FunctionSelectedEvent ev = new FunctionSelectedEvent(this, funDef);
-
-    mEventCaster.convey(ev);
-  }
-
-  private void launchFunctionCreatedEvent(FunctionDefinition funDef) {
-    FunctionCreatedEvent ev = new FunctionCreatedEvent(this, funDef);
-
-    mEventCaster.convey(ev);
-  }
 
   /**
    * Drag and Drop support
@@ -552,5 +436,11 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
 
       return this;
     }
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    // TODO Auto-generated method stub
+
   }
 }

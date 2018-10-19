@@ -1,13 +1,5 @@
 package de.dfki.vsm.editor.action;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.Comment;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.editor.util.SceneFlowManager;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.model.sceneflow.chart.graphics.comment.CommentGraphics;
-import de.dfki.vsm.model.sceneflow.chart.graphics.comment.CommentBoundary;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Point;
 
@@ -15,6 +7,14 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.Comment;
+import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.util.SceneFlowManager;
+import de.dfki.vsm.model.sceneflow.chart.SuperNode;
+import de.dfki.vsm.model.sceneflow.chart.graphics.comment.CommentBoundary;
+import de.dfki.vsm.model.sceneflow.chart.graphics.comment.CommentGraphics;
 
 /**
  * @author Gregor Mehlmann

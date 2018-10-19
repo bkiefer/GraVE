@@ -1,25 +1,23 @@
 package de.dfki.vsm.editor.project;
 
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
-import de.dfki.vsm.editor.event.FunctionSelectedEvent;
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
-import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
-import de.dfki.vsm.Preferences;
-import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-//import org.fife.ui.autocomplete.AutoCompletion;
-
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
+
 import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+//import org.fife.ui.autocomplete.AutoCompletion;
+
+import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
+import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
+import de.dfki.vsm.util.evt.EventDispatcher;
+import de.dfki.vsm.util.evt.EventListener;
+import de.dfki.vsm.util.evt.EventObject;
 
 /**
  * @author Gregor Mehlmann
@@ -27,7 +25,7 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 public final class ProjectEditor extends JSplitPane implements EventListener {
 
   // The singelton logger instance
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(ProjectEditor.class);;
   // The singelton event multicaster
   private final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
   // The editor project of this editor
@@ -144,8 +142,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   // Update when an event happened
   @Override
   public void update(final EventObject event) {
-    if (event instanceof FunctionSelectedEvent
-            || event instanceof TreeEntrySelectedEvent) {
+    if (event instanceof TreeEntrySelectedEvent) {
       // Show the auxiliary editor
       showAuxiliaryEditor();
     }

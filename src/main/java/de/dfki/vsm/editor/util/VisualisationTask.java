@@ -6,7 +6,6 @@ package de.dfki.vsm.editor.util;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
-
 import java.util.TimerTask;
 
 import javax.swing.JComponent;

@@ -1,24 +1,21 @@
 package de.dfki.vsm.editor.action;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.editor.util.IDManager;
-import de.dfki.vsm.model.sceneflow.*;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
 
 //~--- JDK imports ------------------------------------------------------------
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+
+import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
+import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.util.IDManager;
+import de.dfki.vsm.model.sceneflow.chart.BasicNode;
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.model.sceneflow.chart.edge.*;
 
 /**
  * @author Patrick Gebhard

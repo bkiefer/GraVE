@@ -1,41 +1,32 @@
 package de.dfki.vsm.editor.dialog;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.AddButton;
-import de.dfki.vsm.editor.CancelButton;
-import de.dfki.vsm.editor.EditButton;
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.event.CEdgeDialogModifiedEvent;
-import de.dfki.vsm.editor.util.HintTextField;
-import de.dfki.vsm.editor.OKButton;
-import de.dfki.vsm.editor.RemoveButton;
-import de.dfki.vsm.editor.util.AltStartNodeManager;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.model.sceneflow.glue.GlueParser;
-import de.dfki.vsm.model.sceneflow.glue.command.Expression;
-import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
-import de.dfki.vsm.util.tpl.TPLTuple;
 import java.awt.Color;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Dimension;
-
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
 import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.*;
-
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyEvent;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.*;
+import de.dfki.vsm.editor.event.CEdgeDialogModifiedEvent;
+import de.dfki.vsm.editor.util.AltStartNodeManager;
+import de.dfki.vsm.editor.util.HintTextField;
+import de.dfki.vsm.model.sceneflow.chart.BasicNode;
+import de.dfki.vsm.model.sceneflow.chart.SuperNode;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
+import de.dfki.vsm.model.sceneflow.glue.GlueParser;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
+import de.dfki.vsm.util.evt.EventDispatcher;
+import de.dfki.vsm.util.evt.EventListener;
+import de.dfki.vsm.util.evt.EventObject;
+import de.dfki.vsm.util.tpl.TPLTuple;
 
 /**
  *
@@ -297,10 +288,10 @@ public class ModifyCEdgeDialog extends Dialog implements EventListener {
     String inputString = mInputTextField.getText().trim();
 
     try {
-      final Expression exp = (Expression) GlueParser.run(inputString);
+      final Command exp = (Command) GlueParser.run(inputString);
 
       //LogicalCond log = ChartParser.logResult;
-      //Expression log = ChartParser.expResult;
+      //Command log = ChartParser.expResult;
       if (exp != null) {
         mCEdge.setCondition(exp);
         mAltStartNodeManager.saveAltStartNodeMap();

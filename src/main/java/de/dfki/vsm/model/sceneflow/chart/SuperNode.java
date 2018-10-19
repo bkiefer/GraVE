@@ -8,7 +8,6 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge;
-import de.dfki.vsm.model.sceneflow.chart.badge.VariableBadge;
 import de.dfki.vsm.model.sceneflow.chart.edge.*;
 import de.dfki.vsm.model.sceneflow.chart.graphics.node.NodeGraphics;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
@@ -31,8 +30,6 @@ public class SuperNode extends BasicNode {
   protected BasicNode mHistoryNode = null;
   protected boolean mHideLocalVarBadge = false;
   protected boolean mHideGlobalVarBadge = false;
-  protected VariableBadge mLocalVariableBadge = new VariableBadge("LocalVariableBadge");
-  protected VariableBadge mGlobalVariableBadge = new VariableBadge("GlobalVariableBadge");
 
   public SuperNode() {
   }
@@ -210,22 +207,6 @@ public class SuperNode extends BasicNode {
     return null;
   }
 
-  public VariableBadge getLocalVariableBadge() {
-    return mLocalVariableBadge;
-  }
-
-  public void setLocalVariableBadge(VariableBadge vb) {
-    mLocalVariableBadge = vb;
-  }
-
-  public VariableBadge getGlobalVariableBadge() {
-    return mGlobalVariableBadge;
-  }
-
-  public void setGlobalVariableBadge(VariableBadge vb) {
-    mGlobalVariableBadge = vb;
-  }
-
   @Override
   public void establishTargetNodes() {
     super.establishTargetNodes();
@@ -319,14 +300,6 @@ public class SuperNode extends BasicNode {
       mGraphics.writeXML(out);
     }
 
-    if (mLocalVariableBadge != null) {
-      mLocalVariableBadge.writeXML(out);
-    }
-
-    if (mGlobalVariableBadge != null) {
-      mGlobalVariableBadge.writeXML(out);
-    }
-
     for (i = 0; i < mCommentList.size(); i++) {
       mCommentList.get(i).writeXML(out);
     }
@@ -371,15 +344,9 @@ public class SuperNode extends BasicNode {
             }
           });
         } else if (tag.equals("LocalVariableBadge")) {
-          VariableBadge varBadge = new VariableBadge("LocalVariableBadge");
 
-          varBadge.parseXML(element);
-          mLocalVariableBadge = varBadge;
         } else if (tag.equals("GlobalVariableBadge")) {
-          VariableBadge varBadge = new VariableBadge("GlobalVariableBadge");
 
-          varBadge.parseXML(element);
-          mGlobalVariableBadge = varBadge;
         } else if (tag.equals("VariableBadge")) {
 
           // do nothing (left for old project's compatibility)
@@ -467,8 +434,6 @@ public class SuperNode extends BasicNode {
             + ((mComment == null) ? 0 : mComment.hashCode())
             + ((mGraphics == null) ? 0 : mGraphics.toString().hashCode())
             + ((mHistoryNode == null) ? 0 : mHistoryNode.hashCode())
-            + ((mLocalVariableBadge == null) ? 0 : mLocalVariableBadge.hashCode())
-            + ((mGlobalVariableBadge == null) ? 0 : mGlobalVariableBadge.hashCode())
             + ((mHideLocalVarBadge == true) ? 1 : 0) + ((mHideGlobalVarBadge == true) ? 1 : 0);
 
     hashCode += mCmdList.hashCode();

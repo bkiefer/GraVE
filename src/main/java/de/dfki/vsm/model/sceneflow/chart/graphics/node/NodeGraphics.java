@@ -1,12 +1,12 @@
 package de.dfki.vsm.model.sceneflow.chart.graphics.node;
 
+import org.w3c.dom.Element;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
-
-import org.w3c.dom.Element;
 
 /**
  * @author Gregor Mehlmann

@@ -1,25 +1,18 @@
 package de.dfki.vsm.editor.project.sceneflow.attributes;
 
-import de.dfki.vsm.Preferences;
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.evt.EventListener;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
+
+import javax.swing.*;
+
+import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.model.sceneflow.chart.BasicNode;
+import de.dfki.vsm.util.evt.EventDispatcher;
+import de.dfki.vsm.util.evt.EventListener;
 
 /**
  * @author Gregor Mehlmann

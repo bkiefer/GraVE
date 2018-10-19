@@ -1,52 +1,34 @@
 package de.dfki.vsm.editor;
 
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
-import de.dfki.vsm.editor.dialog.*;
-import de.dfki.vsm.editor.project.sceneflow.workspace.ClipBoard;
+
+import de.dfki.vsm.MainGrave;
+import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.dialog.AboutDialog;
+import de.dfki.vsm.editor.dialog.OptionsDialog;
+import de.dfki.vsm.editor.dialog.QuitDialog;
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.editor.project.ProjectEditor;
-import de.dfki.vsm.editor.event.SceneStoppedEvent;
-import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.project.sceneflow.workspace.ClipBoard;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.ios.ResourceLoader;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileFilter;
 
 /**
  * @author Gregor Mehlmann
@@ -58,7 +40,7 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
   // The singelton runtime instance
   //private final RunTimeInstance mRunTime = RunTimeInstance.getInstance();
   // The singelton logger instance
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);;
   // The singelton event multicaster
   private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
   // The editor's GUI components
@@ -363,7 +345,7 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
       return openProject(file.getPath());
     } else {
       // Print an error message
-      mLogger.warning("Warning: Canceled opening of a project file");
+      mLogger.warn("Warning: Canceled opening of a project file");
       // And return failure here
       return false;
     }
@@ -406,7 +388,7 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
 
   public final boolean openProject(String path) {
     if (path == null) {
-      mLogger.failure("Error: Cannot open editor project from a bad Stream");
+      mLogger.error("Error: Cannot open editor project from a bad Stream");
       // And return failure here
       return false;
     }
@@ -438,7 +420,7 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
       return true;
     } else {
       // Print an error message
-      mLogger.failure("Error: Cannot load editor project from Stream");
+      mLogger.error("Error: Cannot load editor project from Stream");
       // Return false at failure
       return false;
     }
@@ -474,7 +456,7 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
             return true;
           } else {
             // Print an error message
-            mLogger.failure("Error: Cannot write the editor project '" + project + "'");
+            mLogger.error("Error: Cannot write the editor project '" + project + "'");
             // And return failure here
             return false;
           }
@@ -484,13 +466,13 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
         }
       } else {
         // Print an error message
-        mLogger.failure("Error: Cannot save a bad editor project");
+        mLogger.error("Error: Cannot save a bad editor project");
         // And return failure here
         return false;
       }
     } else {
       // Print an error message
-      mLogger.failure("Error: Cannot save a bad project editor");
+      mLogger.error("Error: Cannot save a bad project editor");
       // And return failure here
       return false;
     }
@@ -600,25 +582,25 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
             return true;
           } else {
             // Print an error message
-            mLogger.failure("Error: Cannot write the editor project '" + project + "'");
+            mLogger.error("Error: Cannot write the editor project '" + project + "'");
             // And return failure here
             return false;
           }
         } else {
           // Print an error message
-          mLogger.warning("Warning: Canceled saving of a project file");
+          mLogger.warn("Warning: Canceled saving of a project file");
           // And return failure here
           return false;
         }
       } else {
         // Print an error message
-        mLogger.failure("Error: Cannot save a bad editor project");
+        mLogger.error("Error: Cannot save a bad editor project");
         // And return failure here
         return false;
       }
     } else {
       // Print an error message
-      mLogger.failure("Error: Cannot save a bad project editor");
+      mLogger.error("Error: Cannot save a bad project editor");
       // And return failure here
       return false;
     }

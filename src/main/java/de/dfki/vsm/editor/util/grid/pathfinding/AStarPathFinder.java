@@ -6,13 +6,13 @@
  */
 package de.dfki.vsm.editor.util.grid.pathfinding;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.util.grid.pathfinding.heuristics.ClosestHeuristic;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.util.grid.pathfinding.heuristics.ClosestHeuristic;
 
 /**
  * A path finder implementation that uses the AStar heuristic based algorithm

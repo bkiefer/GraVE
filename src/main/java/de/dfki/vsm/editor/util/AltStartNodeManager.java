@@ -1,16 +1,16 @@
 package de.dfki.vsm.editor.util;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.util.tpl.TPLTuple;
 import java.util.ArrayList;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import de.dfki.vsm.model.sceneflow.chart.BasicNode;
+import de.dfki.vsm.model.sceneflow.chart.SuperNode;
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
+import de.dfki.vsm.util.tpl.TPLTuple;
 
 /**
  * @author Patrick Gebhard

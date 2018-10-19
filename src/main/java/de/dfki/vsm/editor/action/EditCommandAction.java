@@ -25,7 +25,7 @@ public class EditCommandAction extends EditorAction {
   @Override
   public void run() {
     mDispatcher.convey(new NodeSelectedEvent(this, mCmdBadge.getNode().getDataNode()));
-    mCmdBadge.setEditMode();
+    //mCmdBadge.setEditMode();
     mCmdBadge.revalidate();
     mCmdBadge.repaint(100);
   }

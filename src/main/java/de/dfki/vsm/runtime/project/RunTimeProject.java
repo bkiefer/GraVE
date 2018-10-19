@@ -1,15 +1,15 @@
 package de.dfki.vsm.runtime.project;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.model.project.AgentConfig;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.model.project.ProjectConfig;
 import de.dfki.vsm.model.sceneflow.chart.SceneFlow;
-import de.dfki.vsm.model.visicon.VisiconConfig;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
 import de.dfki.vsm.util.xml.XMLUtilities;
 
 /**
@@ -19,8 +19,8 @@ public class RunTimeProject {
 
   protected boolean isNewProject = false;
   // The singelton logger instance
-  protected final LOGDefaultLogger mLogger
-          = LOGDefaultLogger.getInstance();
+  protected final Logger mLogger
+          = LoggerFactory.getLogger(RunTimeProject.class);;
 
   // The project Path (added PG 11.4.2016);
   private String mProjectPath = "";
@@ -84,7 +84,7 @@ public class RunTimeProject {
     // Check if the file is null
     if (file == null) {
       // Print an error message
-      mLogger.failure("Error: Cannot parse runtime project from a bad file");
+      mLogger.error("Error: Cannot parse runtime project from a bad file");
       // Return false at error
       return false;
     }
@@ -110,7 +110,7 @@ public class RunTimeProject {
     // Check if the file is null
     if (file == null) {
       // Print an error message
-      mLogger.failure("Error: Cannot parse for information a runtime project from a bad file");
+      mLogger.error("Error: Cannot parse for information a runtime project from a bad file");
       // Return false at error
       return false;
     }
@@ -127,7 +127,7 @@ public class RunTimeProject {
     // Check if the file is null
     if (file == null) {
       // Print an error message
-      mLogger.failure("Error: Cannot write runtime project into a bad file");
+      mLogger.error("Error: Cannot write runtime project into a bad file");
       // Return false at error
       return false;
     }
@@ -136,11 +136,11 @@ public class RunTimeProject {
     // Check if the project directory does exist
     if (!base.exists()) {
       // Print a warning message in this case
-      mLogger.warning("Warning: Creating a new runtime project directory '" + base + "'");
+      mLogger.warn("Warning: Creating a new runtime project directory '" + base + "'");
       // Try to create a project base directory
       if (!base.mkdir()) {
         // Print an error message
-        mLogger.failure("Failure: Cannot create a new runtime project directory '" + base + "'");
+        mLogger.error("Failure: Cannot create a new runtime project directory '" + base + "'");
         // Return false at error
         return false;
       }
@@ -166,13 +166,13 @@ public class RunTimeProject {
       try {
         inputStream = new FileInputStream(file);
       } catch (FileNotFoundException e) {
-        mLogger.failure("Error: Cannot find project configuration file '" + file + "'");
+        mLogger.error("Error: Cannot find project configuration file '" + file + "'");
       }
     } else {
       inputStream = ClassLoader.getSystemResourceAsStream(path + System.getProperty("file.separator") + "project.xml");
       if (inputStream == null) {
         // Print an error message in this case
-        mLogger.failure("Error: Cannot find project configuration file  ");
+        mLogger.error("Error: Cannot find project configuration file  ");
         // Return failure if it does not exist
         return false;
       }
@@ -180,11 +180,11 @@ public class RunTimeProject {
     }
 
     if (!XMLUtilities.parseFromXMLStream(mProjectConfig, inputStream)) {
-      mLogger.failure("Error: Cannot parse project configuration file  in path" + path);
+      mLogger.error("Error: Cannot parse project configuration file  in path" + path);
       return false;
     }
 
-    mLogger.message("Loaded project from path '" + path + "':\n" + mProjectConfig);
+    mLogger.info("Loaded project from path '" + path + "':\n" + mProjectConfig);
     // Return success if the project was loaded
     return true;
   }
@@ -193,7 +193,7 @@ public class RunTimeProject {
     //Parse the config file for project from a string
     InputStream stream = new ByteArrayInputStream(xml.getBytes());
     if (!XMLUtilities.parseFromXMLStream(mProjectConfig, stream)) {
-      mLogger.failure("Error: Cannot parse agent");
+      mLogger.error("Error: Cannot parse agent");
       return false;
     }
     return true;
@@ -205,17 +205,17 @@ public class RunTimeProject {
     // Check if the configuration does exist
     if (!file.exists()) {
       // Print a warning message in this case
-      mLogger.warning("Warning: Creating the new project configuration file '" + file + "'");
+      mLogger.warn("Warning: Creating the new project configuration file '" + file + "'");
       // Create a new configuration file now
       try {
         // Try to create a new configuration file
         if (!file.createNewFile()) {
           // Print an error message in this case
-          mLogger.warning("Warning: There already exists a project configuration file '" + file + "'");
+          mLogger.warn("Warning: There already exists a project configuration file '" + file + "'");
         }
       } catch (final IOException exc) {
         // Print an error message in this case
-        mLogger.failure("Failure: Cannot create the new project configuration file '" + file + "'");
+        mLogger.error("Failure: Cannot create the new project configuration file '" + file + "'");
         // Return failure if it does not exist
         return false;
       }
@@ -223,12 +223,12 @@ public class RunTimeProject {
     // Write the project configuration file
     if (!XMLUtilities.writeToXMLFile(mProjectConfig, file, "UTF-8")) {
       // Print an error message in this case
-      mLogger.failure("Error: Cannot write project configuration file '" + file + "'");
+      mLogger.error("Error: Cannot write project configuration file '" + file + "'");
       // Return failure if it does not exist
       return false;
     }
     // Print an information message in this case
-    mLogger.message("Saved project configuration file '" + file + "':\n" + mProjectConfig);
+    mLogger.info("Saved project configuration file '" + file + "':\n" + mProjectConfig);
     // Return success if the project was saved
     return true;
   }
@@ -241,13 +241,13 @@ public class RunTimeProject {
       try {
         inputStream = new FileInputStream(file);
       } catch (FileNotFoundException e) {
-        mLogger.failure("Error: Cannot find sceneflow configuration file '" + file + "'");
+        mLogger.error("Error: Cannot find sceneflow configuration file '" + file + "'");
       }
     } else {
       inputStream = ClassLoader.getSystemResourceAsStream(path + System.getProperty("file.separator") + "sceneflow.xml");
       if (inputStream == null) {
         // Print an error message in this case
-        mLogger.failure("Error: Cannot find sceneflow configuration file   project ");
+        mLogger.error("Error: Cannot find sceneflow configuration file   project ");
         // Return failure if it does not exist
         return false;
       }
@@ -255,7 +255,7 @@ public class RunTimeProject {
     }
 
     if (!XMLUtilities.parseFromXMLStream(mSceneFlow, inputStream)) {
-      mLogger.failure("Error: Cannot parse sceneflow file  in path" + path);
+      mLogger.error("Error: Cannot parse sceneflow file  in path" + path);
       return false;
     }
     // Perform all the postprocessing steps
@@ -275,17 +275,17 @@ public class RunTimeProject {
     // Check if the configuration file does exist
     if (!file.exists()) {
       // Print a warning message in this case
-      mLogger.warning("Warning: Creating the new sceneflow configuration file '" + file + "'");
+      mLogger.warn("Warning: Creating the new sceneflow configuration file '" + file + "'");
       // Create a new configuration file now
       try {
         // Try to create a new configuration file
         if (!file.createNewFile()) {
           // Print an error message in this case
-          mLogger.warning("Warning: There already exists a sceneflow configuration file '" + file + "'");
+          mLogger.warn("Warning: There already exists a sceneflow configuration file '" + file + "'");
         }
       } catch (final IOException exc) {
         // Print an error message in this case
-        mLogger.failure("Failure: Cannot create the new sceneflow configuration file '" + file + "'");
+        mLogger.error("Failure: Cannot create the new sceneflow configuration file '" + file + "'");
         // Return failure if it does not exist
         return false;
       }
@@ -293,7 +293,7 @@ public class RunTimeProject {
     // Write the sceneflow configuration file
     if (!XMLUtilities.writeToXMLFile(mSceneFlow, file, "UTF-8")) {
       // Print an error message in this case
-      mLogger.failure("Error: Cannot write sceneflow configuration file '" + file + "'");
+      mLogger.error("Error: Cannot write sceneflow configuration file '" + file + "'");
       // Return failure if it does not exist
       return false;
     }

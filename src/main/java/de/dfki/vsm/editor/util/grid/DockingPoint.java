@@ -6,14 +6,14 @@
  */
 package de.dfki.vsm.editor.util.grid;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.Node.Type;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.Node.Type;
 
 /**
  *

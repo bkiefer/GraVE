@@ -1,32 +1,23 @@
 package de.dfki.vsm.util.xml;
 
-import de.dfki.vsm.util.ios.IOSIndentWriter;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-import java.io.ByteArrayInputStream;
-import org.w3c.dom.Document;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URL;
 import java.util.Properties;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+
+import de.dfki.vsm.util.ios.IOSIndentWriter;
 
 /**
  * @author Gregor Mehlmann
@@ -34,7 +25,7 @@ import org.xml.sax.SAXException;
 public final class XMLUtilities {
 
   // The singelton logger instance
-  private final static LOGDefaultLogger sLogger = LOGDefaultLogger.getInstance();
+  private final static Logger sLogger = LoggerFactory.getLogger(XMLUtilities.class);;
 
   // Parse a parseable object from a string
   public final static boolean parseFromXMLString(final XMLParseable parsable, final String string, final String charset) {
@@ -44,7 +35,7 @@ public final class XMLUtilities {
       //
       return parseFromXMLStream(parsable, stream);
     } catch (final UnsupportedEncodingException exc) {
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
     }
     //
     return false;
@@ -66,7 +57,7 @@ public final class XMLUtilities {
       return true;
     } catch (final XMLParseError | IOException | ParserConfigurationException | SAXException exc) {
       // Print an error message in this case
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return failure if the parsing failed
       return false;
     }
@@ -83,7 +74,7 @@ public final class XMLUtilities {
       return true;
     } catch (final IOException exc) {
       // Print some error message in this case
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return false if writing to XML failed
       return false;
     }
@@ -98,7 +89,7 @@ public final class XMLUtilities {
       return parseFromXMLStream(parsable, stream);
     } catch (final IOException exc) {
       // Print some error message in this case
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return false if parsing XML failed
       return false;
     }
@@ -113,7 +104,7 @@ public final class XMLUtilities {
       return parseFromXMLStream(properties, stream);
     } catch (final IOException exc) {
       // Print some error message in this case
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return false if writing to XML failed
       return false;
     }
@@ -128,7 +119,7 @@ public final class XMLUtilities {
       return parseFromXMLStream(parsable, stream);
     } catch (final FileNotFoundException exc) {
       // Print an error message in this case
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return failure if the parsing failed
       return false;
     }
@@ -143,7 +134,7 @@ public final class XMLUtilities {
       return parseFromXMLStream(properties, stream);
     } catch (final FileNotFoundException exc) {
       // Print some error message in this case
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return false if writing to XML failed
       return false;
     }
@@ -163,7 +154,7 @@ public final class XMLUtilities {
       return true;
     } catch (final XMLWriteError exc) {
       // Print some error message in this case
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return false if writing to XML failed
       return false;
     }
@@ -178,7 +169,7 @@ public final class XMLUtilities {
       return writeToXMLWriter(writeable, writer);
     } catch (final IOException exc) {
       // Print some error message in this case
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return false if writing to XML failed
       return false;
     }
@@ -204,7 +195,7 @@ public final class XMLUtilities {
       return true;
     } catch (final IOException exc) {
       // Print some error message in this case
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return false if writing to XML failed
       return false;
     }
@@ -219,7 +210,7 @@ public final class XMLUtilities {
       return writeToXMLStream(properties, stream);
     } catch (final FileNotFoundException exc) {
       // Print some error message in this case
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return false if writing to XML failed
       return false;
     }
@@ -240,7 +231,7 @@ public final class XMLUtilities {
       return document;
     } catch (final Exception/*ParserConfigurationException | SAXException | IOException */ exc) {
       // Print some error message in this case
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return null if parsing to XML failed
       return null;
     }
@@ -257,7 +248,7 @@ public final class XMLUtilities {
       return result.getWriter().toString();
     } catch (final TransformerException | TransformerFactoryConfigurationError exc) {
       // Print some error message in this case
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return null if parsing to XML failed
       return null;
     }
@@ -291,7 +282,7 @@ public final class XMLUtilities {
             | IllegalArgumentException
             | SAXException
             | IOException exc) {
-      sLogger.failure(exc.toString());
+      sLogger.error(exc.toString());
       // Return failure if the parsing failed
       return null;
     }

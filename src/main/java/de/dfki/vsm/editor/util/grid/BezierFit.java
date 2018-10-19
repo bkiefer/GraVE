@@ -6,11 +6,11 @@
  */
 package de.dfki.vsm.editor.util.grid;
 
-//~--- non-JDK imports --------------------------------------------------------
-import org.ujmp.core.Matrix;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.util.ArrayList;
+
+//~--- non-JDK imports --------------------------------------------------------
+import org.ujmp.core.Matrix;
 
 /**
  *

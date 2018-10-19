@@ -1,28 +1,29 @@
 package de.dfki.vsm.editor.dialog;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.CancelButton;
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.OKButton;
-import de.dfki.vsm.model.project.EditorConfig;
-import de.dfki.vsm.util.ios.ResourceLoader;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
+import static de.dfki.vsm.Preferences.sUSER_DIR;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.awt.event.KeyEvent;
-import java.util.*;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import static de.dfki.vsm.Preferences.sUSER_DIR;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.CancelButton;
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
+import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
+import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
  * @author Gregor Mehlmann
@@ -32,7 +33,7 @@ public class OptionsDialog extends JDialog {
 
   private static OptionsDialog sSingeltonInstance = null;
 
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(OptionsDialog.class);;
   private final EditorInstance mEditor = EditorInstance.getInstance();
   private final Dimension mLabelDimension = new Dimension(100, 10);
   private final Dimension buttonSize = new Dimension(125, 30);

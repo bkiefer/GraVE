@@ -1,49 +1,32 @@
 package de.dfki.vsm.editor.dialog;
 
-//~--- non-JDK imports --------------------------------------------------------
-import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
-import de.dfki.vsm.editor.AddButton;
-import de.dfki.vsm.editor.CancelButton;
-import de.dfki.vsm.editor.EditButton;
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.OKButton;
-import de.dfki.vsm.editor.RemoveButton;
-import de.dfki.vsm.editor.util.AltStartNodeManager;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.util.ios.ResourceLoader;
-import de.dfki.vsm.util.tpl.TPLTuple;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
+
+//~--- non-JDK imports --------------------------------------------------------
+import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
+
+import de.dfki.vsm.editor.*;
+import de.dfki.vsm.editor.util.AltStartNodeManager;
+import de.dfki.vsm.model.sceneflow.chart.BasicNode;
+import de.dfki.vsm.model.sceneflow.chart.SuperNode;
+import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
+import de.dfki.vsm.util.ios.ResourceLoader;
+import de.dfki.vsm.util.tpl.TPLTuple;
 
 /**
  * @author Patrick Gebhard

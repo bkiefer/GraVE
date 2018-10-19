@@ -1,5 +1,13 @@
 package de.dfki.vsm.editor.action;
 
+import static de.dfki.vsm.editor.Node.Type.*;
+
+//~--- JDK imports ------------------------------------------------------------
+import java.awt.Point;
+import java.util.HashMap;
+
+import javax.swing.undo.UndoManager;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Node.Type;
@@ -10,16 +18,6 @@ import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
 import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-
-import static de.dfki.vsm.editor.Node.Type.BasicNode;
-import static de.dfki.vsm.editor.Node.Type.SuperNode;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.Point;
-
-import java.util.HashMap;
-
-import javax.swing.undo.UndoManager;
 
 /**
  * @author Gregor Mehlmann

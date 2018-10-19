@@ -1,23 +1,6 @@
 package de.dfki.vsm.editor;
 
-import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
-import de.dfki.vsm.editor.dialog.NewProjectDialog;
-import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.Preferences;
-import de.dfki.vsm.MainGrave;
-import de.dfki.vsm.runtime.project.RunTimeProject;
-import de.dfki.vsm.util.ios.ResourceLoader;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-import de.dfki.vsm.xtesting.NewPropertyManager.PropertyManagerGUI;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -30,8 +13,21 @@ import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
+
+import de.dfki.vsm.MainGrave;
+import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.dialog.NewProjectDialog;
+import de.dfki.vsm.runtime.project.RunTimeProject;
+import de.dfki.vsm.util.ios.ResourceLoader;
+import de.dfki.vsm.xtesting.NewPropertyManager.PropertyManagerGUI;
 
 /**
  *
@@ -65,7 +61,7 @@ public class EditorStarter extends JPanel {
   private JFrame mParentFrame;
 
   // The singelton logger instance
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(EditorStarter.class);;
 
   private class CoolSeparator extends JSeparator {
 
@@ -558,7 +554,7 @@ public class EditorStarter extends JPanel {
       try {
         zip = new ZipInputStream(jar.openStream());
       } catch (IOException ex) {
-        mLogger.failure("Error reading resource");
+        mLogger.error("Error reading resource");
 
       }
       ZipEntry ze = null;
@@ -580,7 +576,7 @@ public class EditorStarter extends JPanel {
           }
         }
       } catch (IOException ex) {
-        mLogger.failure("Error reading resource");
+        mLogger.error("Error reading resource");
       }
 
     }

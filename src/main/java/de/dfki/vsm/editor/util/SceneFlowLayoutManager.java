@@ -5,18 +5,14 @@
  */
 package de.dfki.vsm.editor.util;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.Comment;
-import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.StartSign;
-import de.dfki.vsm.editor.VarBadgeLocal;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.*;
 
 /**
  *
@@ -78,9 +74,6 @@ public class SceneFlowLayoutManager implements LayoutManager {
       } else if (c instanceof Comment) {
 
         // System.out.println("Comment");
-      } else if (c instanceof VarBadgeLocal) {
-
-        // System.out.println("VarBadge");
       } else {
 
         // System.out.println("Unknown");

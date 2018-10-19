@@ -1,17 +1,17 @@
 package de.dfki.vsm.model.project;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-import de.dfki.vsm.util.xml.XMLUtilities;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Dimension;
-
 import java.io.*;
-
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+//~--- non-JDK imports --------------------------------------------------------
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.dfki.vsm.util.xml.XMLUtilities;
 
 /**
  * @author Patrick Gebhard
@@ -22,7 +22,7 @@ import java.util.TreeSet;
 public class EditorConfig {
 
   // The Logger Instance
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(EditorConfig.class);;
 
   ////////////////////////////////////////////////////////////////////////////
   // SCENEMAKER PROPERTIES
@@ -211,7 +211,7 @@ public class EditorConfig {
     if (!file.exists()) {
 
       // Print a warning message if this case
-      mLogger.warning("Warning: Creating the new project editor configuration file '" + file + "'");
+      mLogger.warn("Warning: Creating the new project editor configuration file '" + file + "'");
 
       // Create a new configuration file now
       try {
@@ -220,12 +220,12 @@ public class EditorConfig {
         if (!file.createNewFile()) {
 
           // Print an error message if this case
-          mLogger.warning("Warning: There already exists a project editor configuration file '" + file + "'");
+          mLogger.warn("Warning: There already exists a project editor configuration file '" + file + "'");
         }
       } catch (final IOException exc) {
 
         // Print an error message if this case
-        mLogger.failure("Failure: Cannot create the new project editor configuration file '" + file + "'");
+        mLogger.error("Failure: Cannot create the new project editor configuration file '" + file + "'");
 
         // Return failure if it does not exist
         return false;
@@ -236,7 +236,7 @@ public class EditorConfig {
     if (!XMLUtilities.writeToXMLFile(sPROPERTIES, file)) {
 
       // Print an error message if this case
-      mLogger.failure("Error: Cannot write project editor configuration file '" + file + "'");
+      mLogger.error("Error: Cannot write project editor configuration file '" + file + "'");
 
       // Return failure if it does not exist
       return false;
@@ -259,19 +259,19 @@ public class EditorConfig {
       try {
         inputStream = new FileInputStream(file);
       } catch (FileNotFoundException e) {
-        mLogger.failure("Error: Cannot find sproject configuration file '" + file + "'");
+        mLogger.error("Error: Cannot find sproject configuration file '" + file + "'");
       }
     } else {
       inputStream = ClassLoader.getSystemResourceAsStream(path + System.getProperty("file.separator") + "editorconfig.xml");
       if (inputStream == null) {
         // Print an error message in this case
-        mLogger.failure("Error: Cannot find project configuration file  " + file);
+        mLogger.error("Error: Cannot find project configuration file  " + file);
         // Return failure if it does not exist
         return false;
       }
     }
     if (!XMLUtilities.parseFromXMLStream(sPROPERTIES, inputStream)) {
-      mLogger.failure("Error: Cannot parse project configuration file  in path" + path);
+      mLogger.error("Error: Cannot parse project configuration file  in path" + path);
       return false;
     }
 
@@ -415,14 +415,14 @@ public class EditorConfig {
     init();
 
     // Print an information message if this case
-    mLogger.message("Loaded project editor configuration file in path'" + path + "':\n");
+    mLogger.info("Loaded project editor configuration file in path'" + path + "':\n");
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     if (XMLUtilities.writeToXMLStream(sPROPERTIES, stream)) {
       try {
         // mLogger.message(stream.toString("UTF-8"));
-        mLogger.message("Configuration File Loaded: " + path);
+        mLogger.info("Configuration File Loaded: " + path);
       } catch (Exception exc) {
-        mLogger.failure(exc.getMessage());
+        mLogger.error(exc.getMessage());
       }
     }
 

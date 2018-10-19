@@ -1,7 +1,5 @@
 package de.dfki.vsm.editor;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.Preferences;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -9,6 +7,9 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.Preferences;
 
 /**
  *

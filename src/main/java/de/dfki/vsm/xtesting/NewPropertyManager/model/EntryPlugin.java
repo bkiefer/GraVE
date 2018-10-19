@@ -1,8 +1,8 @@
 package de.dfki.vsm.xtesting.NewPropertyManager.model;
 
-import de.dfki.vsm.model.project.PluginConfig;
-
 import java.util.LinkedList;
+
+import de.dfki.vsm.model.project.PluginConfig;
 
 /**
  * Created by alvaro on 6/2/16.

@@ -1,8 +1,9 @@
 package de.dfki.vsm.editor.project;
 
+import java.io.File;
+
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.runtime.project.RunTimeProject;
-import java.io.File;
 
 /**
  * @author Gregor Mehlmann
@@ -33,7 +34,7 @@ public class EditorProject extends RunTimeProject {
     // Check if the file is null
     if (path == null) {
       // Print an error message
-      mLogger.failure("Error: Cannot parse editor project from a bad file");
+      mLogger.error("Error: Cannot parse editor project from a bad file");
       // Return false at error
       return false;
     }
@@ -48,7 +49,7 @@ public class EditorProject extends RunTimeProject {
         return parse();
       } else {
         // Print an error message
-        mLogger.failure("Error: Cannot find editor project directory '" + base + "'");
+        mLogger.error("Error: Cannot find editor project directory '" + base + "'");
         // Return false at error
         return false;
       }
@@ -58,10 +59,10 @@ public class EditorProject extends RunTimeProject {
           return true;
         }
       } catch (Exception e) {
-        mLogger.failure("Error: Cannot find editor project directory '");
+        mLogger.error("Error: Cannot find editor project directory '");
       }
       // Print an error message
-      mLogger.failure("Error: Cannot find editor project directory '" + file + "'");
+      mLogger.error("Error: Cannot find editor project directory '" + file + "'");
       // Return false at error
       return false;
     }
@@ -73,7 +74,7 @@ public class EditorProject extends RunTimeProject {
     // Check if the file is null
     if (file == null) {
       // Print an error message
-      mLogger.failure("Error: Cannot write editor project into a bad file");
+      mLogger.error("Error: Cannot write editor project into a bad file");
       // Return false at error
       return false;
     }
@@ -82,11 +83,11 @@ public class EditorProject extends RunTimeProject {
     // Check if the project directory does exist
     if (!base.exists()) {
       // Print a warning message in this case
-      mLogger.warning("Warning: Creating a new editor project directory '" + base + "'");
+      mLogger.warn("Warning: Creating a new editor project directory '" + base + "'");
       // Try to create a project base directory
       if (!base.mkdir()) {
         // Print an error message
-        mLogger.failure("Failure: Cannot create a new editor project directory '" + base + "'");
+        mLogger.error("Failure: Cannot create a new editor project directory '" + base + "'");
         // Return false at error
         return false;
       }
@@ -102,14 +103,14 @@ public class EditorProject extends RunTimeProject {
     // Check if the file is null
     if (mProjectFile == null) {
       // Print an error message
-      mLogger.failure("Error: Cannot parse editor project from a bad file");
+      mLogger.error("Error: Cannot parse editor project from a bad file");
       // Return false at error
       return false;
     }
     // Check if the project directory does exist
     if (!mProjectFile.exists()) {
       // Print an error message
-      mLogger.failure("Error: Cannot find editor project directory '" + mProjectFile + "'");
+      mLogger.error("Error: Cannot find editor project directory '" + mProjectFile + "'");
       // Return false at error
       return false;
     }
@@ -131,18 +132,18 @@ public class EditorProject extends RunTimeProject {
     // Check if the file is null
     if (mProjectFile == null) {
       // Print an error message
-      mLogger.failure("Error: Cannot write editor project into a bad file");
+      mLogger.error("Error: Cannot write editor project into a bad file");
       // Return false at error
       return false;
     }
     // Check if the project directory does exist
     if (!mProjectFile.exists()) {
       // Print a warning message in this case
-      mLogger.warning("Warning: Creating a new editor project directory '" + mProjectFile + "'");
+      mLogger.warn("Warning: Creating a new editor project directory '" + mProjectFile + "'");
       // Try to create a project base directory
       if (!mProjectFile.mkdir()) {
         // Print an error message
-        mLogger.failure("Failure: Cannot create a new editor project directory '" + mProjectFile + "'");
+        mLogger.error("Failure: Cannot create a new editor project directory '" + mProjectFile + "'");
         // Return false at error
         return false;
       }

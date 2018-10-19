@@ -1,13 +1,12 @@
 package de.dfki.vsm.xtesting.NewPropertyManager.model;
 
-import de.dfki.vsm.model.project.AgentConfig;
-import de.dfki.vsm.model.project.PluginConfig;
-import de.dfki.vsm.runtime.project.RunTimeProject;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -16,12 +15,16 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.LinkedList;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import de.dfki.vsm.model.project.AgentConfig;
+import de.dfki.vsm.model.project.PluginConfig;
+import de.dfki.vsm.runtime.project.RunTimeProject;
 
 /**
  * Created by alvaro on 6/4/16.

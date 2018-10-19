@@ -11,9 +11,15 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.text.AttributedString;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.*;
@@ -33,7 +39,6 @@ import de.dfki.vsm.model.sceneflow.chart.edge.*;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
 
 /**
  * @author Gregor Mehlmann
@@ -50,15 +55,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   private final Set<Comment> mCmtSet = new HashSet<>();
   private final HashMap<Node, CmdBadge> mCmdBadgeMap = new HashMap<>();
 
-  // Variable display
-  private VarBadgeLocal mLocalVarDisplay = null;
-  private VarBadgeGlobal mGlobalVarDisplay = null;
-  //private NodeVariableBadge mNodeVariableDisplay = null;
-  private boolean mVisibleBadges = true;
-
   // Flags for mouse interaction
-  private VarBadgeLocal mSelectedLocalVariableBadge = null;
-  private VarBadgeGlobal mSelectedGlobalVariableBadge = null;
   private Node mSelectedNode = null;
   public Edge mSelectedEdge = null;
   private Comment mSelectedComment = null;
@@ -68,7 +65,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   private Point mLastMousePosition = new Point(0, 0);
   private boolean mDoAreaSelection = false;
   private boolean mDoAreaAction = false;
-  private boolean mEditMode = false;
   private Set<Node> mSelectedNodes = new HashSet<>();
 
   // Variables for edge creation
@@ -89,11 +85,10 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
   //
   public final Observable mObservable = new Observable();
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(WorkSpacePanel.class);;
   private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
   //
-  private final LinkedList<VarBadgeLocal> mVarBadgeStack = new LinkedList<>();
   private ArrayList<CmdBadge> mCmdBadgeList = new ArrayList<CmdBadge>();
 
   // Drag & Drop support
@@ -345,115 +340,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     mDropTarget = new DropTarget(this, mDropTargetListener);
   }
 
-  public void showVariablesOnWorkspace() {
-    if (mLocalVarDisplay != null) {
-      if (mVisibleBadges) {
-        mLocalVarDisplay.setVisible(false);
-
-        if (mGlobalVarDisplay != null) {
-          mGlobalVarDisplay.setVisible(false);
-        }
-
-        mVisibleBadges = false;
-      } else {
-        mLocalVarDisplay.setVisible(true);
-
-        if (mGlobalVarDisplay != null) {
-          mGlobalVarDisplay.setVisible(true);
-        }
-
-        mVisibleBadges = true;
-      }
-    }
-
-    EditorInstance.getInstance().refresh();
-  }
-
-  /**
-   *
-   *
-   */
-  public void showVariableBadges() {
-    SuperNode sn = getSceneFlowManager().getCurrentActiveSuperNode();
-
-    mLocalVarDisplay = new VarBadgeLocal(sn, sn.isLocalVarBadgeHidden());
-    add(mLocalVarDisplay);
-    mEventCaster.register(mLocalVarDisplay);
-    mObservable.addObserver(mLocalVarDisplay);
-
-    if (getSceneFlowManager().getParentSuperNode(sn) != null) {
-      mGlobalVarDisplay = new VarBadgeGlobal(sn, sn.isGlobalVarBadgeHidden());
-      add(mGlobalVarDisplay);
-      mEventCaster.register(mGlobalVarDisplay);
-      mObservable.addObserver(mGlobalVarDisplay);
-    }
-
-    // add/remove to/from stack
-    // VarBadgeStack.a(mVarDisplay);
-    // repaint(100);
-  }
-
-  /**
-   *
-   *
-   *
-    public void showNodeVariables(Node node) {
-        ArrayList<String> localTypeDefList = new ArrayList<>();
-        ArrayList<String> globalTypeDefList = new ArrayList<>();
-        ArrayList<String> localVarDefList = new ArrayList<>();
-        ArrayList<String> globalVarDefList = new ArrayList<>();
-        ArrayList<DataTypeDefinition> typeDefs = node.getDataNode().getTypeDefList();
-
-        for (DataTypeDefinition typeDef : typeDefs) {
-            localTypeDefList.add(typeDef.getFormattedSyntax());
-        }
-
-        Set<SuperNode> parentSNss = null;
-
-        if (!getSceneFlowManager().isRootSuperNode(node.getDataNode())) {
-            parentSNss = getSceneFlowManager().getParentSuperNodeSet(node.getDataNode());
-        }
-
-        if (parentSNss != null) {
-            for (SuperNode sn : parentSNss) {
-                ArrayList<DataTypeDefinition> snTypeDefs = sn.getTypeDefList();
-
-                if (snTypeDefs.size() > 0) {
-                    for (DataTypeDefinition typeDef : snTypeDefs) {
-                        globalTypeDefList.add(typeDef.getFormattedSyntax() + " (" + sn.getName() + ") ");
-                    }
-                }
-            }
-        }
-
-        ArrayList<VariableDefinition> varDefs = node.getDataNode().getVarDefList();
-
-        for (VariableDefinition varDef : varDefs) {
-            localVarDefList.add(varDef.getFormattedSyntax());
-        }
-
-        Set<SuperNode> parentSNs = null;
-
-        if (!getSceneFlowManager().isRootSuperNode(node.getDataNode())) {
-            parentSNs = getSceneFlowManager().getParentSuperNodeSet(node.getDataNode());
-        }
-
-        if (parentSNs != null) {
-            for (SuperNode sn : parentSNs) {
-                ArrayList<VariableDefinition> snVarDefs = sn.getVarDefList();
-
-                if (snVarDefs.size() > 0) {
-                    for (VariableDefinition varDef : snVarDefs) {
-                        globalVarDefList.add(varDef.getFormattedSyntax() + " (" + sn.getName() + ") ");
-                    }
-                }
-            }
-        }
-
-        mNodeVariableDisplay = new NodeVariableBadge(node, this, localVarDefList, globalVarDefList, localTypeDefList,
-                globalTypeDefList);
-        add(mNodeVariableDisplay, 0);
-    }*/
   /**
    *
    *
@@ -760,35 +646,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     super.remove(badge);
     mEventCaster.remove(badge);
     mObservable.deleteObserver(badge);
-  }
-
-  /**
-   *
-   *
-   */
-  private void removeEventListeners() {
-    if (mLocalVarDisplay != null) {
-      mEventCaster.remove(mLocalVarDisplay);
-    }
-
-    if (mGlobalVarDisplay != null) {
-      mEventCaster.remove(mGlobalVarDisplay);
-    }
-
-    for (CmdBadge c : mCmdBadgeMap.values()) {
-      mEventCaster.remove(c);
-      c.stopVisualisation();
-    }
-
-    for (Node n : mNodeSet) {
-      mEventCaster.remove(n);
-      n.stopVisualisation();
-    }
-
-    for (Edge e : mEdgeSet) {
-      mEventCaster.remove(e);
-      e.stopVisualisation();
-    }
   }
 
   /**
@@ -1173,7 +1030,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   private void clearCurrentWorkspace() {
-    removeEventListeners();
     mObservable.deleteObservers();
 
     // Clear the list of currently shown nodes and edges and
@@ -1190,8 +1046,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     mSelectedEdge = null;
     mSelectedNode = null;
     mSelectedComment = null;
-    mSelectedLocalVariableBadge = null;
-    mSelectedGlobalVariableBadge = null;
     // Create a new Gridmanager for the workspace
     mGridManager.update();
     revalidate();
@@ -1206,7 +1060,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     // Show the variables on workspace.
     showNodesOnWorkSpace();
     showEdgesOnWorkSpace();
-    showVariableBadges();
     revalidate();
     repaint(100);
   }
@@ -1334,16 +1187,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    * https://github.com/SceneMaker/VisualSceneMaker/issues/126
    */
   public void deselectAllOtherComponents(JComponent comp) {
-    if ((!comp.equals(mSelectedLocalVariableBadge)) && (mSelectedLocalVariableBadge != null)) {
-      mSelectedLocalVariableBadge.deSelect();
-      mSelectedLocalVariableBadge = null;
-    }
-
-    if ((!comp.equals(mSelectedGlobalVariableBadge)) && (mSelectedGlobalVariableBadge != null)) {
-      mSelectedGlobalVariableBadge.deSelect();
-      mSelectedGlobalVariableBadge = null;
-    }
-
     if ((!comp.equals(mSelectedComment)) && (mSelectedComment != null)) {
       mSelectedComment.setDeselected();
       mSelectedComment = null;
@@ -1473,40 +1316,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       }
     }
 
-    // if there is a specific selected variable badge use it - much faster than checking all nodes
-    if (mSelectedLocalVariableBadge != null) {
-      if (mSelectedLocalVariableBadge.containsPoint(event.getPoint())) {
-
-        // DEBUG System.out.println(mSelectedNode.getDataNode().getName() + " clicked - (re) selected");
-        // tell c that it has been clicked
-        mSelectedLocalVariableBadge.mouseClicked(event);
-
-        return;
-      } else {
-
-        // System.out.println(mSelectedNode.getDataNode().getName() + " not clicked - deselected");
-        mSelectedLocalVariableBadge.deSelect();
-        mSelectedLocalVariableBadge = null;
-      }
-    }
-
-    // if there is a specific selected variable badge use it - much faster than checking all nodes
-    if (mSelectedGlobalVariableBadge != null) {
-      if (mSelectedGlobalVariableBadge.containsPoint(event.getPoint())) {
-
-        // DEBUG System.out.println(mSelectedNode.getDataNode().getName() + " clicked - (re) selected");
-        // tell c that it has been clicked
-        mSelectedGlobalVariableBadge.mouseClicked(event);
-
-        return;
-      } else {
-
-        // System.out.println(mSelectedNode.getDataNode().getName() + " not clicked - deselected");
-        mSelectedGlobalVariableBadge.deSelect();
-        mSelectedGlobalVariableBadge = null;
-      }
-    }
-
     if (!mIgnoreMouseInput) {
       boolean entityClicked = false;
 
@@ -1549,26 +1358,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
         if (comment.containsPoint(event.getPoint())) {
           mSelectedComment = comment;
           mSelectedComment.mouseClicked(event);
-          entityClicked = true;
-
-          return;
-        }
-      }
-
-      // look of mouse click was on a local variable badge
-      if (mLocalVarDisplay != null) {
-        if (mLocalVarDisplay.containsPoint(event.getPoint())) {
-          mSelectedLocalVariableBadge = mLocalVarDisplay;
-          mSelectedLocalVariableBadge.mouseClicked(event);
-          entityClicked = true;
-
-          return;
-        }
-      } else // look of mouse click was on a global variable badge
-      if (mGlobalVarDisplay != null) {
-        if (mGlobalVarDisplay.containsPoint(event.getPoint())) {
-          mSelectedGlobalVariableBadge = mGlobalVarDisplay;
-          mSelectedGlobalVariableBadge.mouseClicked(event);
           entityClicked = true;
 
           return;
@@ -1711,39 +1500,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       }
     }
 
-    // if there is a specific selected variable badge use it - much faster than checking all nodes
-    if (mSelectedGlobalVariableBadge != null) {
-      if (mSelectedGlobalVariableBadge.containsPoint(event.getPoint())) {
-
-        // DEBUG System.out.println(mSelectedNode.getDataNode().getName() + " clicked - (re) selected");
-        // tell c that it has been clicked
-        mSelectedGlobalVariableBadge.mouseClicked(event);
-
-        return;
-      } else {
-
-        // System.out.println(mSelectedNode.getDataNode().getName() + " not clicked - deselected");
-        mSelectedGlobalVariableBadge.deSelect();
-        mSelectedGlobalVariableBadge = null;
-      }
-    }
-
-    // if there is a specific selected variable badge use it - much faster than checking all nodes
-    if (mSelectedLocalVariableBadge != null) {
-      if (mSelectedLocalVariableBadge.containsPoint(event.getPoint())) {
-
-        // DEBUG System.out.println(mSelectedNode.getDataNode().getName() + " clicked - (re) selected");
-        // tell c that it has been clicked
-        mSelectedLocalVariableBadge.mouseClicked(event);
-
-        return;
-      } else {
-
-        // System.out.println(mSelectedNode.getDataNode().getName() + " not clicked - deselected");
-        mSelectedLocalVariableBadge.deSelect();
-        mSelectedLocalVariableBadge = null;
-      }
-    }
 
     //
     // Fall back cases - lookup
@@ -1787,25 +1543,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       }
     }
 
-    // look of mouse click was on a variable badge
-    if (mLocalVarDisplay != null) {
-      if (mLocalVarDisplay.containsPoint(event.getPoint())) {
-        mSelectedLocalVariableBadge = mLocalVarDisplay;
-        mSelectedLocalVariableBadge.mousePressed(event);
-
-        return;
-      }
-    }
-
-    // look of mouse click was on a variable badge
-    if (mGlobalVarDisplay != null) {
-      if (mGlobalVarDisplay.containsPoint(event.getPoint())) {
-        mSelectedGlobalVariableBadge = mGlobalVarDisplay;
-        mSelectedGlobalVariableBadge.mousePressed(event);
-
-        return;
-      }
-    }
 
     if (mSelectedCmdBadge == null) {
 
@@ -2127,50 +1864,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       }
     }
 
-    // if there is a specific selected comment use it
-    if (mSelectedLocalVariableBadge != null) {
-      Point currentMousePosition = event.getPoint();
-
-      if (mSelectedLocalVariableBadge.mSelected) {
-
-        // compute movement trajectory vectors
-        Point mouseMoveVector = new Point(currentMousePosition.x - mLastMousePosition.x,
-                currentMousePosition.y - mLastMousePosition.y);
-
-        mLastMousePosition = new Point(currentMousePosition.x, currentMousePosition.y);
-        dragVariableBadge(mSelectedLocalVariableBadge, event, mouseMoveVector);
-        checkChangesOnWorkspace();
-
-        return;
-      } else {
-
-        // System.out.println(mSelectedNode.getDataNode().getName() + " not dragged - deselected");
-        mSelectedLocalVariableBadge = null;
-      }
-    }
-
-    // if there is a specific selected comment use it
-    if (mSelectedGlobalVariableBadge != null) {
-      Point currentMousePosition = event.getPoint();
-
-      if (mSelectedGlobalVariableBadge.mSelected) {
-
-        // compute movement trajectory vectors
-        Point mouseMoveVector = new Point(currentMousePosition.x - mLastMousePosition.x,
-                currentMousePosition.y - mLastMousePosition.y);
-
-        mLastMousePosition = new Point(currentMousePosition.x, currentMousePosition.y);
-        dragVariableBadge(mSelectedGlobalVariableBadge, event, mouseMoveVector);
-        checkChangesOnWorkspace();
-
-        return;
-      } else {
-
-        // System.out.println(mSelectedNode.getDataNode().getName() + " not dragged - deselected");
-        mSelectedGlobalVariableBadge = null;
-      }
-    }
-
     // mouse interaction has to be the selection of an area ...
     mDoAreaSelection = true;
     mAreaSelection.width = event.getX() - mAreaSelection.x;
@@ -2288,58 +1981,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
       if ((event.getModifiersEx() == 1024)) {
         comment.mDragged = true;
-      }
-
-      revalidate();
-      repaint(100);
-    }
-  }
-
-  /**
-   *
-   *
-   */
-  private void dragVariableBadge(VarBadgeLocal vb, MouseEvent event, Point moveVec) {
-    boolean validDragging = true;
-    Point vbPos = vb.getLocation();
-
-    if (((vbPos.x + moveVec.x) <= 0) || ((vbPos.y + moveVec.y) <= 0)) {
-
-      // stop dragging, if upper and left border would be passed!
-      validDragging = false;
-    }
-
-    if (validDragging) {
-      vb.updateLocation(moveVec);
-
-      if ((event.getModifiersEx() == 1024)) {
-        vb.mDragged = true;
-      }
-
-      revalidate();
-      repaint(100);
-    }
-  }
-
-  /**
-   *
-   *
-   */
-  private void dragVariableBadge(VarBadgeGlobal vb, MouseEvent event, Point moveVec) {
-    boolean validDragging = true;
-    Point vbPos = vb.getLocation();
-
-    if (((vbPos.x + moveVec.x) <= 0) || ((vbPos.y + moveVec.y) <= 0)) {
-
-      // stop dragging, if upper and left border would be passed!
-      validDragging = false;
-    }
-
-    if (validDragging) {
-      vb.updateLocation(moveVec);
-
-      if ((event.getModifiersEx() == 1024)) {
-        vb.mDragged = true;
       }
 
       revalidate();
@@ -2578,10 +2219,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
                 mSelectNodePoint.y - (mEditorConfig.sNODEHEIGHT / 2) + 1);
       }
     }
-  }
-
-  public boolean isVarBadgeVisible() {
-    return mLocalVarDisplay.isVisible();
   }
 
   /**

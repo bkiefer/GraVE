@@ -1,11 +1,11 @@
 package de.dfki.vsm.editor.action;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 
 /**
  *

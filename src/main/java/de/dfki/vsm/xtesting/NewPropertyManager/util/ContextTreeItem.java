@@ -1,20 +1,17 @@
 package de.dfki.vsm.xtesting.NewPropertyManager.util;
 
-import de.dfki.vsm.model.project.AgentConfig;
-import de.dfki.vsm.model.project.PluginConfig;
+import java.util.LinkedList;
+
 import de.dfki.vsm.xtesting.NewPropertyManager.model.AbstractTreeEntry;
 import de.dfki.vsm.xtesting.NewPropertyManager.model.EntryAgent;
 import de.dfki.vsm.xtesting.NewPropertyManager.model.EntryPlugin;
 import de.dfki.vsm.xtesting.NewPropertyManager.util.events.ContextEvent;
 import de.dfki.vsm.xtesting.NewPropertyManager.util.events.DeleteContextEventAgent;
 import de.dfki.vsm.xtesting.NewPropertyManager.util.events.DeleteContextEventPlugin;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-
-import java.util.LinkedList;
 
 /**
  * Created by alvaro on 5/14/16.

@@ -1,19 +1,21 @@
 package de.dfki.vsm.editor.action;
 
+import static de.dfki.vsm.editor.Node.Type.*;
+
+import java.awt.Point;
+
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
 import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Node.Type;
+import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
 import de.dfki.vsm.model.sceneflow.chart.SuperNode;
 import de.dfki.vsm.model.sceneflow.chart.graphics.node.NodeGraphics;
-import static de.dfki.vsm.editor.Node.Type.BasicNode;
-import static de.dfki.vsm.editor.Node.Type.SuperNode;
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.util.evt.EventDispatcher;
-import java.awt.Point;
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 
 /**
  * @author Gregor Mehlmann

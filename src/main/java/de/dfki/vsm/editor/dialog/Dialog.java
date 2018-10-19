@@ -1,8 +1,5 @@
 package de.dfki.vsm.editor.dialog;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.util.ios.ResourceLoader;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,14 +8,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
+import javax.swing.*;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
  * @author Gregor Mehlmann

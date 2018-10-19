@@ -5,20 +5,14 @@
  */
 package de.dfki.vsm.editor;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.Preferences;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
 import java.awt.Font;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.UIManager;
+import javax.swing.*;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.Preferences;
 
 /**
  *

@@ -1,11 +1,14 @@
 package de.dfki.vsm;
 
-import de.dfki.vsm.editor.EditorInstance;
-//import de.dfki.vsm.runtime.RunTimeInstance;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
 import java.io.File;
-import java.io.IOException;
+
 import javax.swing.SwingUtilities;
+
+//import de.dfki.vsm.runtime.RunTimeInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.dfki.vsm.editor.EditorInstance;
 
 /**
  * @author Gregor Mehlmann
@@ -13,8 +16,8 @@ import javax.swing.SwingUtilities;
 public final class MainGrave {
 
   // The logger instance of SceneMaker3
-  private final static LOGDefaultLogger sLogger
-          = LOGDefaultLogger.getInstance();
+  private final static Logger sLogger
+          = LoggerFactory.getLogger(MainGrave.class);;
 
   // Start SceneMaker3 in a specific mode
   public static void main(final String[] args) {
@@ -51,7 +54,7 @@ public final class MainGrave {
   // Start the editor with some project
   private static void editor(final File file) {
     //
-    sLogger.message("Starting VSM editor with file '" + file + "'");
+    sLogger.info("Starting VSM editor with file '" + file + "'");
     // Get the singelton runtime instance
     //final RunTimeInstance sRunTime = RunTimeInstance.getInstance();
     // Get the singelton editor instance
@@ -138,11 +141,11 @@ public final class MainGrave {
 
   // Print usage when usage error happened
   private static void usage() {
-    sLogger.failure("Error: Usage: [filename]");
+    sLogger.error("Error: Usage: [filename]");
   }
 
   // Print error when a file error happened
   private static void error(final File file) {
-    sLogger.failure("Error: Cannot find file '" + file.getAbsolutePath() + "'");
+    sLogger.error("Error: Cannot find file '" + file.getAbsolutePath() + "'");
   }
 }

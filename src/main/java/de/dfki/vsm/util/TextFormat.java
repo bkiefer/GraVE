@@ -1,20 +1,18 @@
 package de.dfki.vsm.util;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.util.tpl.TPLTuple;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.font.TextAttribute;
-
 import java.text.AttributedString;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.util.tpl.TPLTuple;
 
 /**
  * @author Gregor Mehlmann

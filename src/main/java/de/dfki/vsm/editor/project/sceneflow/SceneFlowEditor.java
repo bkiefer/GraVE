@@ -1,65 +1,46 @@
 package de.dfki.vsm.editor.project.sceneflow;
 
+//~--- JDK imports ------------------------------------------------------------
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
+import javax.swing.undo.UndoManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 //~--- non-JDK imports --------------------------------------------------------
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
+
+import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.event.ElementEditorToggledEvent;
 import de.dfki.vsm.editor.event.NodeExecutedEvent;
+import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.editor.project.sceneflow.attributes.ElementEditor;
 import de.dfki.vsm.editor.project.sceneflow.elements.SceneFlowElementPanel;
 import de.dfki.vsm.editor.project.sceneflow.elements.SceneFlowPalettePanel;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.Preferences;
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.event.ElementEditorToggledEvent;
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
-import de.dfki.vsm.editor.project.ProjectEditor;
 import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.sceneflow.chart.SceneFlow;
 import de.dfki.vsm.model.sceneflow.chart.SuperNode;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import java.io.IOException;
-
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.TransferHandler;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.plaf.basic.BasicSplitPaneDivider;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
-import javax.swing.undo.UndoManager;
 
 /**
  * @author Gregor Mehlmann
@@ -68,7 +49,7 @@ import javax.swing.undo.UndoManager;
 public final class SceneFlowEditor extends JPanel implements EventListener {
 
   // The singelton logger instance
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(SceneFlowEditor.class);;
 
   // TODO: move undo manager up at least to project editor
   private UndoManager mUndoManager = null;

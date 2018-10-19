@@ -1,18 +1,17 @@
 package de.dfki.vsm.model.visicon;
 
+//~--- JDK imports ------------------------------------------------------------
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+
+import org.w3c.dom.Element;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
 import de.dfki.vsm.util.xml.XMLWriteError;
-
-import org.w3c.dom.Element;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.io.ByteArrayOutputStream;
-
-import java.util.ArrayList;
 
 /**
  * @author Gregor Mehlmann

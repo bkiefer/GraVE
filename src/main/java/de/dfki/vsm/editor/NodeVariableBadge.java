@@ -1,24 +1,18 @@
 package de.dfki.vsm.editor;
 
+//~--- JDK imports ------------------------------------------------------------
+import java.awt.*;
+import java.awt.font.TextLayout;
+import java.text.AttributedString;
+import java.util.ArrayList;
+
+import javax.swing.JComponent;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.TextFormat;
 import de.dfki.vsm.util.tpl.TPLTuple;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.font.TextLayout;
-
-import java.text.AttributedString;
-
-import java.util.ArrayList;
-
-import javax.swing.JComponent;
 
 /**
  * @author Gregor Mehlmann

@@ -1,11 +1,11 @@
 package de.dfki.vsm.model.acticon;
 
+import org.w3c.dom.Element;
+
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseError;
 import de.dfki.vsm.util.xml.XMLWriteError;
-
-import org.w3c.dom.Element;
 
 /**
  * @author Gregor Mehlmann

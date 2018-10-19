@@ -1,8 +1,8 @@
 package de.dfki.vsm.editor.project.sceneflow.workspace;
 
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-
 import java.util.HashSet;
+
+import de.dfki.vsm.model.sceneflow.chart.BasicNode;
 
 /**
  * Created by alvaro on 7/18/16.

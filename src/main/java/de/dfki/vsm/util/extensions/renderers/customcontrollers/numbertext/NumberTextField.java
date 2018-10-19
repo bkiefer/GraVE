@@ -6,6 +6,7 @@ package de.dfki.vsm.util.extensions.renderers.customcontrollers.numbertext;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;

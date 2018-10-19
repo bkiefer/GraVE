@@ -1,5 +1,7 @@
 package de.dfki.vsm.xtesting.NewPropertyManager.util;
 
+import java.util.LinkedList;
+
 import de.dfki.vsm.xtesting.NewPropertyManager.model.EntryAgent;
 import de.dfki.vsm.xtesting.NewPropertyManager.model.EntryDevice;
 import de.dfki.vsm.xtesting.NewPropertyManager.model.EntryPlugin;
@@ -8,10 +10,8 @@ import de.dfki.vsm.xtesting.NewPropertyManager.util.events.CellEvent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
-
-import java.util.LinkedList;
+import javafx.scene.input.KeyEvent;
 
 public class TreeCellImpl<AbstractTreeEntry> extends TreeCell<AbstractTreeEntry> implements TreeObservable {
 

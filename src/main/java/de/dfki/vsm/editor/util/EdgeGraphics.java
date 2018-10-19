@@ -1,8 +1,5 @@
 package de.dfki.vsm.editor.util;
 
-import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.model.project.EditorConfig;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
@@ -10,8 +7,11 @@ import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.CubicCurve2D;
-
 import java.util.ArrayList;
+
+import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.model.project.EditorConfig;
 
 /**
  * @author Patrick Gebhard

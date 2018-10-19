@@ -1,24 +1,19 @@
 package de.dfki.vsm.xtesting;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 //~--- JDK imports ------------------------------------------------------------
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+//~--- non-JDK imports --------------------------------------------------------
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -27,7 +22,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class TestSSITCPLog {
 
   // The System Logger
-  private static LOGDefaultLogger sLogger = LOGDefaultLogger.getInstance();
+  private static Logger sLogger = LoggerFactory.getLogger(TestSSITCPLog.class);;
 
   // The Server Socket
   private static ServerSocket sServer;
@@ -43,14 +38,14 @@ public class TestSSITCPLog {
       sServer = new ServerSocket(Integer.parseInt(args[0]));
 
       // Print Some Information
-      sLogger.message("Creating SSI Logger Listener");
+      sLogger.info("Creating SSI Logger Listener");
     } catch (Exception exc) {
 
       // Print Some Information
-      sLogger.warning("Catching SSI Logger Listener");
+      sLogger.warn("Catching SSI Logger Listener");
 
       // Debug Some Information
-      sLogger.warning(exc.toString());
+      sLogger.warn(exc.toString());
     }
 
     // Continue Accepting Connections
@@ -58,26 +53,26 @@ public class TestSSITCPLog {
       try {
 
         // Print Some Information
-        sLogger.message("Starting SSI Logger Listener");
+        sLogger.info("Starting SSI Logger Listener");
 
         // Accept An Incoming Connection
         sSocket = sServer.accept();
 
         // Print Some Information
-        sLogger.message("Accepting SSI Logger Connection");
+        sLogger.info("Accepting SSI Logger Connection");
       } catch (Exception exc) {
 
         // Print Some Information
-        sLogger.warning("Catching SSI Logger Listener");
+        sLogger.warn("Catching SSI Logger Listener");
 
         // Debug Some Information
-        sLogger.warning(exc.toString());
+        sLogger.warn(exc.toString());
       }
 
       if ((sSocket != null) && !sSocket.isClosed()) {
 
         // Print Some Information
-        sLogger.message("Starting SSI Logger Connection");
+        sLogger.info("Starting SSI Logger Connection");
 
         try {
 
@@ -88,7 +83,7 @@ public class TestSSITCPLog {
                   "UTF-8"));
 
           // Print Some Information
-          sLogger.message("Executing SSI Logger Connection");
+          sLogger.info("Executing SSI Logger Connection");
 
           // Handle The Connection
           boolean done = false;
@@ -102,7 +97,7 @@ public class TestSSITCPLog {
             if (line != null) {
 
               // Print Some Information
-              sLogger.message("SSI Logger Connection Receiving '" + line + "'");
+              sLogger.info("SSI Logger Connection Receiving '" + line + "'");
 
               // Translate The SSI Speech Recognition Result Into
               // An Adequate Document Object Model Representation.
@@ -134,21 +129,21 @@ public class TestSSITCPLog {
 
                   // The Sensor Specific Data
                   // Print Some Information
-                  sLogger.message("SSI Logger Receiving Content '" + content + "'");
-                  sLogger.message("SSI Logger Receiving Sender '" + sender + "'");
-                  sLogger.message("SSI Logger Receiving Event  '" + mode + "'");
-                  sLogger.message("SSI Logger Receiving Type '" + type + "'");
-                  sLogger.message("SSI Logger Receiving State  '" + state + "'");
-                  sLogger.message("SSI Logger Receiving From '" + from + "'");
-                  sLogger.message("SSI Logger Receiving Dur '" + dur + "'");
-                  sLogger.message("SSI Logger Receiving Prob '" + prob + "'");
-                  sLogger.message("SSI Logger Receiving Glue '" + glue + "'");
+                  sLogger.info("SSI Logger Receiving Content '" + content + "'");
+                  sLogger.info("SSI Logger Receiving Sender '" + sender + "'");
+                  sLogger.info("SSI Logger Receiving Event  '" + mode + "'");
+                  sLogger.info("SSI Logger Receiving Type '" + type + "'");
+                  sLogger.info("SSI Logger Receiving State  '" + state + "'");
+                  sLogger.info("SSI Logger Receiving From '" + from + "'");
+                  sLogger.info("SSI Logger Receiving Dur '" + dur + "'");
+                  sLogger.info("SSI Logger Receiving Prob '" + prob + "'");
+                  sLogger.info("SSI Logger Receiving Glue '" + glue + "'");
                 }
               }
             } else {
 
               // Print Some Debug Information
-              sLogger.warning("Aborting H3DProxy Connection");
+              sLogger.warn("Aborting H3DProxy Connection");
 
               // Set The Termination Flag
               done = true;
@@ -157,18 +152,18 @@ public class TestSSITCPLog {
         } catch (Exception exc) {
 
           // Print Some Information
-          sLogger.warning("Catching H3DProxy Connection");
+          sLogger.warn("Catching H3DProxy Connection");
 
           // Debug Some Information
-          sLogger.warning(exc.toString());
+          sLogger.warn(exc.toString());
         }
 
         // Print Some Information
-        sLogger.message("Stopping H3DProxy Connection");
+        sLogger.info("Stopping H3DProxy Connection");
       }
     }
 
     // Print Some Information
-    sLogger.message("Stopping H3DProxy Listener");
+    sLogger.info("Stopping H3DProxy Listener");
   }
 }

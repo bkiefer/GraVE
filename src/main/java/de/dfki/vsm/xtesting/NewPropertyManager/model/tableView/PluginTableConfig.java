@@ -1,9 +1,9 @@
 package de.dfki.vsm.xtesting.NewPropertyManager.model.tableView;
 
+import java.util.Iterator;
+
 import de.dfki.vsm.model.config.ConfigFeature;
 import de.dfki.vsm.model.project.PluginConfig;
-
-import java.util.Iterator;
 
 /**
  * Created by alvaro on 6/3/16.

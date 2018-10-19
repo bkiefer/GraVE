@@ -1,22 +1,21 @@
 package de.dfki.vsm.model.sceneflow.chart.edge;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
-import de.dfki.vsm.model.sceneflow.glue.command.Expression;
-import de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgeGraphics;
-import de.dfki.vsm.util.tpl.TPLTuple;
-import de.dfki.vsm.util.xml.XMLParseAction;
-import de.dfki.vsm.util.xml.XMLParseError;
-import de.dfki.vsm.util.xml.XMLWriteError;
 import java.util.ArrayList;
-
-import org.w3c.dom.Element;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import org.w3c.dom.Element;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.model.sceneflow.chart.BasicNode;
+import de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgeGraphics;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
+import de.dfki.vsm.util.tpl.TPLTuple;
+import de.dfki.vsm.util.xml.XMLParseAction;
+import de.dfki.vsm.util.xml.XMLParseError;
+import de.dfki.vsm.util.xml.XMLWriteError;
 
 /**
  * @author Gregor Mehlmann
@@ -24,7 +23,7 @@ import java.util.Map;
 public class TimeoutEdge extends AbstractEdge {
 
   protected long mTimeout = Long.MIN_VALUE;
-  protected Expression mExpression = null;
+  protected Command mExpression = null;
 
   public TimeoutEdge() {
   }
@@ -32,7 +31,7 @@ public class TimeoutEdge extends AbstractEdge {
   // PG: Allow expression for mor flexibility. Consistency check through GUI
   public TimeoutEdge(String target, String source, BasicNode targetNode, BasicNode sourceNode, EdgeGraphics graphics,
           ArrayList<Command> cmdList, HashMap<TPLTuple<String, BasicNode>, TPLTuple<String, BasicNode>> altStartNodeMap,
-          Expression expression) {
+          Command expression) {
     super(target, source, targetNode, sourceNode, graphics, cmdList, altStartNodeMap);
     mExpression = expression;
   }
@@ -57,11 +56,11 @@ public class TimeoutEdge extends AbstractEdge {
     // mTimeout = value;
   }
 
-  public void setExpression(Expression value) {
+  public void setExpression(Command value) {
     mExpression = value;
   }
 
-  public Expression getExpression() {
+  public Command getExpression() {
     return mExpression;
   }
 

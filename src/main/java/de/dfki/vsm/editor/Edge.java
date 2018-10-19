@@ -1,44 +1,8 @@
 package de.dfki.vsm.editor;
 
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.editor.action.ModifyEdgeAction;
-import de.dfki.vsm.editor.event.EdgeEditEvent;
-import de.dfki.vsm.editor.event.EdgeExecutedEvent;
-import de.dfki.vsm.editor.event.EdgeSelectedEvent;
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
-import de.dfki.vsm.editor.event.SceneStoppedEvent;
-import de.dfki.vsm.editor.util.EdgeGraphics;
-import de.dfki.vsm.Preferences;
-import de.dfki.vsm.editor.util.VisualisationTask;
-import de.dfki.vsm.model.project.EditorConfig;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
-import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-import static de.dfki.vsm.Preferences.sCEDGE_COLOR;
-import static de.dfki.vsm.Preferences.sEEDGE_COLOR;
-import static de.dfki.vsm.Preferences.sFEDGE_COLOR;
-import static de.dfki.vsm.Preferences.sIEDGE_COLOR;
-import static de.dfki.vsm.Preferences.sPEDGE_COLOR;
-import static de.dfki.vsm.Preferences.sTEDGE_COLOR;
-import de.dfki.vsm.editor.action.RedoAction;
-import de.dfki.vsm.editor.action.UndoAction;
-import de.dfki.vsm.model.sceneflow.glue.GlueParser;
-import de.dfki.vsm.model.sceneflow.glue.command.Expression;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import static de.dfki.vsm.Preferences.*;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -51,15 +15,8 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
+
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.SimpleAttributeSet;
@@ -68,6 +25,31 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.action.ModifyEdgeAction;
+import de.dfki.vsm.editor.action.RedoAction;
+import de.dfki.vsm.editor.action.UndoAction;
+import de.dfki.vsm.editor.event.EdgeEditEvent;
+import de.dfki.vsm.editor.event.EdgeExecutedEvent;
+import de.dfki.vsm.editor.event.EdgeSelectedEvent;
+import de.dfki.vsm.editor.event.NodeSelectedEvent;
+import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.util.EdgeGraphics;
+import de.dfki.vsm.editor.util.VisualisationTask;
+import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
+import de.dfki.vsm.model.sceneflow.glue.GlueParser;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
+import de.dfki.vsm.util.evt.EventDispatcher;
+import de.dfki.vsm.util.evt.EventListener;
+import de.dfki.vsm.util.evt.EventObject;
 
 /**
  * @author Patrick Gebhard
@@ -113,7 +95,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
   // Activity monitor
   private VisualisationTask mVisualisationTask = null;
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(Edge.class);;
 
   // edit panel
   private JPanel mTextPanel = null;
@@ -504,7 +486,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       try {
         ((TimeoutEdge) mDataEdge).setTimeout(Long.valueOf(input));
       } catch (NumberFormatException e) {
-        mLogger.warning("Invalid Number Format");
+        mLogger.warn("Invalid Number Format");
       }
 
     } else if (mType.equals(TYPE.CEDGE)) {
@@ -512,10 +494,10 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         //ChartParser.parseResultType = ChartParser.LOG;
         //ChartParser.parseResultType = ChartParser.EXP;
 
-        Expression log = (Expression) GlueParser.run(input);
+        Command log = (Command) GlueParser.run(input);
 
         //LogicalCond log = ChartParser.logResult;
-        //Expression log = ChartParser.expResult;
+        //Command log = ChartParser.expResult;
         if (log != null) {
           ((GuardedEdge) mDataEdge).setCondition(log);
         } else {
@@ -531,10 +513,10 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         //ChartParser.parseResultType = ChartParser.LOG;
         //ChartParser.parseResultType = ChartParser.EXP;
 
-        Expression log = (Expression) GlueParser.run(input);
+        Command log = (Command) GlueParser.run(input);
 
         //LogicalCond log = ChartParser.logResult;
-        //Expression log = ChartParser.expResult;
+        //Command log = ChartParser.expResult;
         if (log != null) {
           ((InterruptEdge) mDataEdge).setCondition(log);
         } else {
@@ -997,10 +979,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
    */
   @Override
   public synchronized void update(EventObject event) {
-    if (event instanceof SceneStoppedEvent) {
-      mVisualisationTask = null;
-      repaint(100);
-    }
 
     if (mEditorConfig.sVISUALISATION) {
       if (event instanceof EdgeExecutedEvent) {

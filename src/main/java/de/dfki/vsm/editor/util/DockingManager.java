@@ -1,17 +1,18 @@
 package de.dfki.vsm.editor.util;
 
+//~--- JDK imports ------------------------------------------------------------
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.model.project.EditorConfig;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.Point;
-import java.util.ArrayList;
-
-import java.util.Hashtable;
-import java.util.Set;
 
 /**
  * EdgeNodeDockingManager manages incoming and outgoing edges of a
@@ -27,7 +28,7 @@ public class DockingManager {
   private ArrayList<DockPoint> mDockPoints = new ArrayList<DockPoint>();
   private Hashtable<Edge, DockPoint> mEdgeDockPoints = new Hashtable<Edge, DockPoint>();
   private Hashtable<Edge, DockPoint> mEdgeSecondDockPoints = new Hashtable<Edge, DockPoint>();
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(DockingManager.class);;
   private EditorConfig mEditorConfig;
 
   public DockingManager(Node node) {

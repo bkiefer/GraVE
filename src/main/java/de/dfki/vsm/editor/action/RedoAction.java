@@ -1,11 +1,5 @@
 package de.dfki.vsm.editor.action;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.event.ProjectChangedEvent;
-import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -17,6 +11,14 @@ import javax.swing.KeyStroke;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.UndoManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.event.ProjectChangedEvent;
+import de.dfki.vsm.util.evt.EventDispatcher;
+
 /**
  *
  * @author Gregor Mehlmann
@@ -24,7 +26,7 @@ import javax.swing.undo.UndoManager;
 public class RedoAction extends AbstractAction {
   // The singelton logger instance
 
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(RedoAction.class);;
 
   private static RedoAction sSingeltonInstance = null;
 
@@ -51,7 +53,7 @@ public class RedoAction extends AbstractAction {
     try {
       manager.redo();
     } catch (CannotRedoException e) {
-      mLogger.failure(e.getMessage());
+      mLogger.error(e.getMessage());
     }
 
     refreshRedoState();

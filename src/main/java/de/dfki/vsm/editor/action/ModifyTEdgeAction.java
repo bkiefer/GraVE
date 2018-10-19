@@ -1,15 +1,15 @@
 package de.dfki.vsm.editor.action;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.editor.dialog.ModifyTEdgeDialog;
-import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
-
 //~--- JDK imports ------------------------------------------------------------
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.dialog.ModifyTEdgeDialog;
+import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
 
 /**
  * @author Gregor Mehlmann

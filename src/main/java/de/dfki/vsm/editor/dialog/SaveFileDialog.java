@@ -5,8 +5,6 @@
  */
 package de.dfki.vsm.editor.dialog;
 
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowToolBar;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -14,8 +12,12 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
+
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.project.sceneflow.SceneFlowToolBar;
 
 /**
  *

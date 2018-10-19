@@ -1,10 +1,10 @@
 package de.dfki.vsm.model.sceneflow.chart.graphics.workspace;
 
+import java.awt.Dimension;
+
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
 import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-
-import java.awt.*;
 
 /**
  * Created by Alvaro on 1/24/17.

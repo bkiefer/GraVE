@@ -1,8 +1,11 @@
 package de.dfki.vsm.editor.dialog;
 
-import javax.swing.*;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  * Created by alvaro on 5/28/16.

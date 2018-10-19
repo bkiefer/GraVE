@@ -1,15 +1,15 @@
 package de.dfki.vsm.model.acticon;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+
+import org.w3c.dom.Element;
+
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
-import de.dfki.vsm.util.xml.XMLUtilities;
 import de.dfki.vsm.util.xml.XMLWriteError;
-import org.w3c.dom.Element;
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 
 /**
  * @author Gregor Mehlmann

@@ -6,19 +6,19 @@
  */
 package de.dfki.vsm.editor;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.util.ios.ResourceLoader;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
-import javax.swing.ImageIcon;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
  *

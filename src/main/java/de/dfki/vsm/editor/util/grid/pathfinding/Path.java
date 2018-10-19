@@ -8,7 +8,6 @@ package de.dfki.vsm.editor.util.grid.pathfinding;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.io.Serializable;
-
 import java.util.ArrayList;
 
 /**

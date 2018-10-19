@@ -1,37 +1,26 @@
 package de.dfki.vsm;
 
-import de.dfki.vsm.util.ios.ResourceLoader;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-
 //~--- JDK imports ------------------------------------------------------------
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.KeyEvent;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-
 import java.lang.reflect.Method;
-
 import java.net.URL;
 import java.text.SimpleDateFormat;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
  * @author Gregor Mehlmann
@@ -40,7 +29,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  * Standard VSM configurations
  */
 public final class Preferences {
-
+  private static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
   // The editor properties object
   private static final Properties sPROPERTIES = new Properties();
   // The global properties file
@@ -284,7 +273,7 @@ public final class Preferences {
         sPROPERTIES.storeToXML(fileOutputStream, "Properties for the Sceneflow Editor", "ISO8859_1");
       }
     } catch (IOException e) {
-      LOGDefaultLogger.getInstance().failure("Error: " + e.getMessage());
+      mLogger.error("Error: " + e.getMessage());
     }
     init();
   }
@@ -321,7 +310,7 @@ public final class Preferences {
           sPROPERTIES.loadFromXML(in);
         }
       } catch (IOException e) {
-        LOGDefaultLogger.getInstance().failure("Error: " + e.getMessage());
+        mLogger.error("Error: " + e.getMessage());
       }
     }
 
@@ -469,7 +458,7 @@ public final class Preferences {
         setDockIconImage.invoke(app, new Object[]{Preferences.ICON_SCENEMAKER_DOC.getImage()});
       }
     } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException exc) {
-      LOGDefaultLogger.getInstance().failure("Error: " + exc.getMessage());
+      mLogger.error("Error: " + exc.getMessage());
     }
   }
 

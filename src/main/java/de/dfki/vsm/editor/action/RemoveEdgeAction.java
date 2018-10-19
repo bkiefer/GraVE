@@ -1,13 +1,13 @@
 package de.dfki.vsm.editor.action;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-
 //~--- JDK imports ------------------------------------------------------------
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 
 /**
  * @author Gregor Mehlmann

@@ -1,10 +1,11 @@
 package de.dfki.vsm.util.evt;
 
-import de.dfki.vsm.util.log.LOGDefaultLogger;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.swing.SwingUtilities;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Gregor Mehlmann
@@ -15,7 +16,7 @@ public final class EventDispatcher {
   private static EventDispatcher sInstance = null;
 
   // The Logger Instance
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(EventDispatcher.class);
 
   // The Listener List
   private final CopyOnWriteArrayList<EventListener> mListenerList;
@@ -28,8 +29,7 @@ public final class EventDispatcher {
     //
     mTimer = new Timer("EventCasterTimer");
     //
-    mListenerList
-            = new CopyOnWriteArrayList();
+    mListenerList = new CopyOnWriteArrayList();
   }
 
   // Get The Singelton Instance
@@ -78,7 +78,7 @@ public final class EventDispatcher {
       // Schedule this timer task
       mTimer.schedule(task, timeout);
     } catch (final IllegalStateException exc) {
-      mLogger.warning(exc.toString());
+      mLogger.warn(exc.toString());
     }
   }
 

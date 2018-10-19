@@ -1,15 +1,15 @@
 package de.dfki.vsm.util.ios;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Image;
 import java.awt.Toolkit;
-
 import java.net.URL;
 
 import javax.swing.ImageIcon;
+
+//~--- non-JDK imports --------------------------------------------------------
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A utility class for loading objects from JAR files.
@@ -18,7 +18,7 @@ import javax.swing.ImageIcon;
  */
 public class ResourceLoader {
 
-  private final static LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final static Logger mLogger = LoggerFactory.getLogger(ResourceLoader.class);;
 
 //  public static File loadFile(String resource) {
 //      return loadFile(ResourceLoader.class, resource);
@@ -67,7 +67,7 @@ public class ResourceLoader {
     if (url != null) {
       icon = new ImageIcon(url);
     } else {
-      mLogger.warning(String.format("Could not find resource '%s'.", resource));
+      mLogger.warn(String.format("Could not find resource '%s'.", resource));
     }
 
     return icon;
@@ -99,7 +99,7 @@ public class ResourceLoader {
     if (url != null) {
       image = Toolkit.getDefaultToolkit().createImage(url);
     } else {
-      mLogger.warning(String.format("Could not find resource '%s'.", resource));
+      mLogger.warn(String.format("Could not find resource '%s'.", resource));
     }
 
     return image;

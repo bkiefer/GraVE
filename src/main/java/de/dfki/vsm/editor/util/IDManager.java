@@ -4,22 +4,16 @@
  */
 package de.dfki.vsm.editor.util;
 
+//~--- JDK imports ------------------------------------------------------------
+import java.util.*;
+
+import de.dfki.vsm.model.sceneflow.chart.BasicNode;
+import de.dfki.vsm.model.sceneflow.chart.SuperNode;
+import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
 import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import java.util.ArrayList;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * IDManager provides unique ids for nodes and supernodes

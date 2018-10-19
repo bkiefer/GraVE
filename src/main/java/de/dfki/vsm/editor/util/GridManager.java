@@ -4,32 +4,24 @@
  */
 package de.dfki.vsm.editor.util;
 
+//~--- JDK imports ------------------------------------------------------------
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.grid.GridConstants;
 import de.dfki.vsm.editor.util.grid.GridRectangle;
 import de.dfki.vsm.model.project.EditorConfig;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
 import de.dfki.vsm.model.sceneflow.chart.SuperNode;
 import de.dfki.vsm.model.sceneflow.chart.graphics.workspace.WorkAreaSize;
 import de.dfki.vsm.model.sceneflow.chart.graphics.workspace.WorkSpaceInitNodeSize;
 import de.dfki.vsm.model.sceneflow.chart.graphics.workspace.WorkSpaceSuperNode;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.geom.Point2D;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
 
 /*
 * @author Patrick

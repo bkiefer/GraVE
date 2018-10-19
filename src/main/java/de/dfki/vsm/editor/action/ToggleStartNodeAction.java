@@ -1,12 +1,12 @@
 package de.dfki.vsm.editor.action;
 
+//~--- JDK imports ------------------------------------------------------------
+import java.util.HashMap;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-
-//~--- JDK imports ------------------------------------------------------------
-import java.util.HashMap;
 
 /**
  * @author Patrick Gebhard

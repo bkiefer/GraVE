@@ -1,19 +1,5 @@
 package de.dfki.vsm.editor.action;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.Node.Flavour;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.EpsilonEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Point;
 
@@ -21,12 +7,23 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+//~--- non-JDK imports --------------------------------------------------------
+import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.Node.Flavour;
+import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.model.sceneflow.chart.edge.*;
+
 /**
  * @author Patrick Gebhard
  */
 public class DeflectEdgeAction extends EdgeAction {
 
-  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  private final Logger mLogger = LoggerFactory.getLogger(DeflectEdgeAction.class);;
 
   public DeflectEdgeAction(WorkSpacePanel workSpace, Edge edge, Node newTargetNode, Point newDropPoint) {
     mWorkSpace = workSpace;
@@ -40,14 +37,14 @@ public class DeflectEdgeAction extends EdgeAction {
     mSourceGUINodeDockPoint = mSourceGUINode.getEdgeDockPoint(edge);
     mLastTargetGUINodeDockPoint = edge.mLastTargetNodeDockPoint;    // last target node dockpoint
     mTargetGUINodeDockPoint = newDropPoint;
-    mLogger.message("new target dockpoint (was drop point) " + mTargetGUINodeDockPoint);
+    mLogger.info("new target dockpoint (was drop point) " + mTargetGUINodeDockPoint);
     mGUIEdgeType = edge.getType();
     mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
     mUndoManager = mSceneFlowPane.getUndoManager();
   }
 
   public void createDeflectEdge() {
-    mLogger.message("create new egde " + mSourceGUINode.getDataNode().getName() + " to "
+    mLogger.info("create new egde " + mSourceGUINode.getDataNode().getName() + " to "
             + mTargetGUINode.getDataNode().getName());
     mDataEdge.setTargetNode(mTargetGUINode.getDataNode());
     mDataEdge.setSourceNode(mSourceGUINode.getDataNode());    // this is the new node
@@ -121,12 +118,12 @@ public class DeflectEdgeAction extends EdgeAction {
         break;
     }
 
-    mLogger.message("edge creation");
+    mLogger.info("edge creation");
 
     // create a new gui edge
     mGUIEdge = new Edge(mWorkSpace, mDataEdge, mGUIEdgeType, mSourceGUINode, mTargetGUINode,
             mSourceGUINodeDockPoint, mTargetGUINodeDockPoint);
-    mLogger.message("edge connection from source point " + mSourceGUINodeDockPoint + " to "
+    mLogger.info("edge connection from source point " + mSourceGUINodeDockPoint + " to "
             + mTargetGUINodeDockPoint);
 
 //      // connect edge

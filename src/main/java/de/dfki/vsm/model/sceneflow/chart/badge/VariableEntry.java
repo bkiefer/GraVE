@@ -1,7 +1,8 @@
 package de.dfki.vsm.model.sceneflow.chart.badge;
 
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
 import java.text.AttributedString;
+
+import de.dfki.vsm.model.sceneflow.chart.SuperNode;
 
 public class VariableEntry {
 

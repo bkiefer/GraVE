@@ -1,13 +1,15 @@
 package de.dfki.vsm.model.project;
 
-import de.dfki.vsm.model.config.ConfigFeature;
+import java.util.ArrayList;
+
+import org.w3c.dom.Element;
+
 import de.dfki.vsm.model.config.ConfigElement;
+import de.dfki.vsm.model.config.ConfigFeature;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
 import de.dfki.vsm.util.xml.XMLWriteError;
-import java.util.ArrayList;
-import org.w3c.dom.Element;
 
 /**
  * @author Gregor Mehlmann

@@ -1,8 +1,8 @@
 package de.dfki.vsm.util.extensions.renderers.customcontrollers.pathchoosers;
 
-import javafx.stage.FileChooser;
-
 import java.io.File;
+
+import javafx.stage.FileChooser;
 
 /**
  * Created by alvaro on 4/26/17.

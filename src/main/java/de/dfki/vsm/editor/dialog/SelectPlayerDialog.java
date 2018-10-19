@@ -1,17 +1,21 @@
 package de.dfki.vsm.editor.dialog;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
 import de.dfki.vsm.Preferences;
 import de.dfki.vsm.editor.CancelButton;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.util.HintTextField;
 import de.dfki.vsm.runtime.project.RunTimeProject;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 /**
  * Created by alvaro on 2/6/16.
