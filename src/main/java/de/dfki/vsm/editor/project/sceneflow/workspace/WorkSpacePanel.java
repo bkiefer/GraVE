@@ -18,9 +18,6 @@ import java.util.Set;
 
 import javax.swing.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.*;
 import de.dfki.vsm.editor.action.*;
@@ -85,7 +82,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
   //
   public final Observable mObservable = new Observable();
-  //private final Logger mLogger = LoggerFactory.getLogger(WorkSpacePanel.class);
   private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
   //
