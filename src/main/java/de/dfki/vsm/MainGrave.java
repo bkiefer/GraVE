@@ -12,54 +12,54 @@ import javax.swing.SwingUtilities;
  */
 public final class MainGrave {
 
-    // The logger instance of SceneMaker3
-    private final static LOGDefaultLogger sLogger
-            = LOGDefaultLogger.getInstance();
+  // The logger instance of SceneMaker3
+  private final static LOGDefaultLogger sLogger
+          = LOGDefaultLogger.getInstance();
 
-    // Start SceneMaker3 in a specific mode
-    public static void main(final String[] args) {
-        // Let Java Swing do the work for us
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public final void run() {
-                // Check if we have at least one argument
-                if (args.length > 0) {
-                  // Get the project file name agrument
-                  final String name = args[0];
-                  // Create the project configuration
-                  final File file = new File(name);
-                  if (file.exists()) {
-                    editor(file);
-                  } else {
-                    error(file);
-                  }
-                } else {
-                  usage();
-                }
-            }
-        });
-    }
+  // Start SceneMaker3 in a specific mode
+  public static void main(final String[] args) {
+    // Let Java Swing do the work for us
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public final void run() {
+        // Check if we have at least one argument
+        if (args.length > 0) {
+          // Get the project file name agrument
+          final String name = args[0];
+          // Create the project configuration
+          final File file = new File(name);
+          if (file.exists()) {
+            editor(file);
+          } else {
+            error(file);
+          }
+        } else {
+          usage();
+        }
+      }
+    });
+  }
 
-    // Start the editor without a project
-    private static void editor() {
-        // Get the singelton editor instance
-        final EditorInstance sEditor = EditorInstance.getInstance();
-        // Show the singelton editor instance
-        sEditor.setVisible(true);
-    }
+  // Start the editor without a project
+  private static void editor() {
+    // Get the singelton editor instance
+    final EditorInstance sEditor = EditorInstance.getInstance();
+    // Show the singelton editor instance
+    sEditor.setVisible(true);
+  }
 
-    // Start the editor with some project
-    private static void editor(final File file) {
-        //
-        sLogger.message("Starting VSM editor with file '" + file + "'");
-        // Get the singelton runtime instance
-        //final RunTimeInstance sRunTime = RunTimeInstance.getInstance();
-        // Get the singelton editor instance
-        final EditorInstance sEditor = EditorInstance.getInstance();
-        // Get an editor project from file
-        sEditor.openProject(file.getPath());
-        // Show the singelton editor instance
-        sEditor.setVisible(true);
+  // Start the editor with some project
+  private static void editor(final File file) {
+    //
+    sLogger.message("Starting VSM editor with file '" + file + "'");
+    // Get the singelton runtime instance
+    //final RunTimeInstance sRunTime = RunTimeInstance.getInstance();
+    // Get the singelton editor instance
+    final EditorInstance sEditor = EditorInstance.getInstance();
+    // Get an editor project from file
+    sEditor.openProject(file.getPath());
+    // Show the singelton editor instance
+    sEditor.setVisible(true);
 //
 //         // Do something for Patrick ...
 //         final Thread control = new Thread() {
@@ -134,15 +134,15 @@ public final class MainGrave {
 //         // Print some information
 //         System.err.println("Starting Editor Mode ...");
 
-    }
+  }
 
-    // Print usage when usage error happened
-    private static void usage() {
-        sLogger.failure("Error: Usage: [filename]");
-    }
+  // Print usage when usage error happened
+  private static void usage() {
+    sLogger.failure("Error: Usage: [filename]");
+  }
 
-    // Print error when a file error happened
-    private static void error(final File file) {
-        sLogger.failure("Error: Cannot find file '" + file.getAbsolutePath() + "'");
-    }
+  // Print error when a file error happened
+  private static void error(final File file) {
+    sLogger.failure("Error: Cannot find file '" + file.getAbsolutePath() + "'");
+  }
 }

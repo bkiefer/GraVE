@@ -5,5 +5,4 @@ package de.dfki.vsm.model.sceneflow.glue.command;
  */
 public abstract class Invocation extends Command {
 
-
 }

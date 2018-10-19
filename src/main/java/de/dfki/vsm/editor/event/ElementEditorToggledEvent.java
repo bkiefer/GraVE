@@ -1,7 +1,6 @@
 package de.dfki.vsm.editor.event;
 
 //~--- non-JDK imports --------------------------------------------------------
-
 import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
 import de.dfki.vsm.util.evt.EventObject;
 
@@ -10,11 +9,11 @@ import de.dfki.vsm.util.evt.EventObject;
  */
 public class ElementEditorToggledEvent extends EventObject {
 
-    public ElementEditorToggledEvent(Object source) {
-        super(source);
-    }
+  public ElementEditorToggledEvent(Object source) {
+    super(source);
+  }
 
-    public String getEventDescription() {
-        return "Element Editor toggled";
-    }
+  public String getEventDescription() {
+    return "Element Editor toggled";
+  }
 }

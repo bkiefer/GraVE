@@ -8,13 +8,15 @@ import java.io.File;
  * Created by alvaro on 4/26/17.
  */
 public class CustomFileChooser implements PathChooser {
-    private FileChooser fileChooser;
 
-    public CustomFileChooser(){
-        fileChooser = new FileChooser();
-    }
-    @Override
-    public File showDialog() {
-        return fileChooser.showOpenDialog(null);
-    }
+  private FileChooser fileChooser;
+
+  public CustomFileChooser() {
+    fileChooser = new FileChooser();
+  }
+
+  @Override
+  public File showDialog() {
+    return fileChooser.showOpenDialog(null);
+  }
 }

@@ -7,7 +7,6 @@
 package de.dfki.vsm.editor.util.grid.pathfinding.heuristics;
 
 //~--- non-JDK imports --------------------------------------------------------
-
 import de.dfki.vsm.editor.util.grid.pathfinding.AStarHeuristic;
 import de.dfki.vsm.editor.util.grid.pathfinding.Mover;
 import de.dfki.vsm.editor.util.grid.pathfinding.TileBasedMap;
@@ -20,22 +19,22 @@ import de.dfki.vsm.editor.util.grid.pathfinding.TileBasedMap;
  */
 public class ManhattanHeuristic implements AStarHeuristic {
 
-    /** The minimum movement cost from any one square to the next */
-    private int minimumCost;
+  /** The minimum movement cost from any one square to the next */
+  private int minimumCost;
 
-    /**
-     * Create a new heuristic
-     *
-     * @param minimumCost The minimum movement cost from any one square to the next
-     */
-    public ManhattanHeuristic(int minimumCost) {
-        this.minimumCost = minimumCost;
-    }
+  /**
+   * Create a new heuristic
+   *
+   * @param minimumCost The minimum movement cost from any one square to the next
+   */
+  public ManhattanHeuristic(int minimumCost) {
+    this.minimumCost = minimumCost;
+  }
 
-    /**
-     * @see AStarHeuristic#getCost(TileBasedMap, Mover, int, int, int, int)
-     */
-    public float getCost(TileBasedMap map, Mover mover, int x, int y, int tx, int ty) {
-        return minimumCost * (Math.abs(x - tx) + Math.abs(y - ty));
-    }
+  /**
+   * @see AStarHeuristic#getCost(TileBasedMap, Mover, int, int, int, int)
+   */
+  public float getCost(TileBasedMap map, Mover mover, int x, int y, int tx, int ty) {
+    return minimumCost * (Math.abs(x - tx) + Math.abs(y - ty));
+  }
 }

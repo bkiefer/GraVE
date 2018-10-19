@@ -11,12 +11,19 @@ public class FunctionDefinition extends Definition {
     return null;
   }
 
-  public String getName(){return "";};
-  public String getMethod(){return "";}
+  public String getName() {
+    return "";
+  }
+
+  ;
+  public String getMethod() {
+    return "";
+  }
 
   public boolean isValidClass() {
     // TODO Auto-generated method stub
     return false;
-  };
+  }
+;
 
 }

@@ -18,4 +18,5 @@ package de.dfki.vsm.editor.util.grid.pathfinding;
  *
  * @author Kevin Glass
  */
-public interface Mover {}
+public interface Mover {
+}

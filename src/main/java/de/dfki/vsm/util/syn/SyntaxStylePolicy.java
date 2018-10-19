@@ -33,162 +33,162 @@ import javax.swing.text.Utilities;
  */
 public final class SyntaxStylePolicy implements ModelObject {
 
-    // The Singelton Logger
-    private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+  // The Singelton Logger
+  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
 
-    // The Token Style Map
-    private final HashMap<String, SyntaxTokenStyle> mStyleMap = new HashMap<>();
+  // The Token Style Map
+  private final HashMap<String, SyntaxTokenStyle> mStyleMap = new HashMap<>();
 
-    // The Syntax Style URL
-    final URL mURL;
+  // The Syntax Style URL
+  final URL mURL;
 
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    public SyntaxStylePolicy(final URL url) {
-        // Initialize The URL
-        mURL = url;
-        // Parse The Policy
-        try {
-            // Parse The Policy From An URL
-            if (XMLUtilities.parseFromXMLURL(this, mURL)) {
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  public SyntaxStylePolicy(final URL url) {
+    // Initialize The URL
+    mURL = url;
+    // Parse The Policy
+    try {
+      // Parse The Policy From An URL
+      if (XMLUtilities.parseFromXMLURL(this, mURL)) {
 
-                // Print Some Debug Information
-                mLogger.message("Success: Loading Style Policy URL:\n" + toString());
+        // Print Some Debug Information
+        mLogger.message("Success: Loading Style Policy URL:\n" + toString());
 //                mLogger.message("Success: Loading Style Policy URL:\n");
-            } else {
-                // Print Some Information
-                mLogger.failure("Failure: Cannot Parse Style Policy URL '"
-                        + mURL.toString() + "'");
-            }
+      } else {
+        // Print Some Information
+        mLogger.failure("Failure: Cannot Parse Style Policy URL '"
+                + mURL.toString() + "'");
+      }
+    } catch (Exception exc) {
+      // Print Some Information
+      mLogger.failure("Failure: Cannot Parse Style Policy URL '"
+              + mURL.toString() + "'");
+      // Print Some Information
+      mLogger.failure(exc.toString());
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  public final SyntaxTokenStyle getStyle(final String token) {
+
+    // Get The Syntax Style Entry
+    return mStyleMap.get(token);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  public final int drawStyle(Segment segment, int x, int y, Graphics graphics, TabExpander e, int offset,
+          final String token) {
+
+    // Get The Syntax Style Entry
+    final SyntaxTokenStyle entry = mStyleMap.get(token);
+
+    // Set The Font Style Emph
+    final Font font = graphics.getFont().deriveFont((entry.isEmph()
+            ? Font.ITALIC
+            : Font.PLAIN) | (entry.isBold()
+            ? Font.BOLD
+            : Font.PLAIN));
+
+    // Set The New Font
+    graphics.setFont(font);
+
+    // Set The Foreground Color
+    graphics.setColor(entry.getFCol());
+
+    // Draw The Text Foreground
+    return Utilities.drawTabbedText(segment, x, y, graphics, e, offset);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  @Override
+  public final void writeXML(final IOSIndentWriter writer) throws XMLWriteError {
+    writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    writer.println("<StylePolicy>").push();
+
+    for (SyntaxTokenStyle entry : mStyleMap.values()) {
+      entry.writeXML(writer);
+      writer.endl();
+    }
+
+    writer.pop().print("</StylePolicy>");
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  @Override
+  public void parseXML(final Element element) throws XMLParseError {
+
+    // Process The Child Nodes
+    XMLParseAction.processChildNodes(element, "TokenStyle", new XMLParseAction() {
+      @Override
+      public void run(Element element) throws XMLParseError {
+
+        // Create A New Token Style
+        SyntaxTokenStyle entry = new SyntaxTokenStyle();
+
+        // Parse The New Token Style
+        entry.parseXML(element);
+
+        try {
+
+          // Put The New Style To The Map
+          mStyleMap.put(entry.getName(), entry);
         } catch (Exception exc) {
-            // Print Some Information
-            mLogger.failure("Failure: Cannot Parse Style Policy URL '"
-                    + mURL.toString() + "'");
-            // Print Some Information
-            mLogger.failure(exc.toString());
+          mLogger.warning(exc.toString());
         }
+      }
+    });
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  @Override
+  public SyntaxStylePolicy getCopy() {
+    return new SyntaxStylePolicy(mURL);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  @Override
+  public final String toString() {
+
+    // Create A Byte Array Stream
+    final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+    // Initialize The Indent Writer
+    final IOSIndentWriter stream = new IOSIndentWriter(buffer);
+
+    try {
+
+      // Write Object
+      writeXML(stream);
+    } catch (XMLWriteError exc) {
+      mLogger.failure(exc.toString());
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    public final SyntaxTokenStyle getStyle(final String token) {
+    // Cleanup Stream and Writer
+    stream.flush();
+    stream.close();
 
-        // Get The Syntax Style Entry
-        return mStyleMap.get(token);
+    // Return String Representation
+    try {
+      //return buffer.toString("UTF-8");
+      return buffer.toString();
+    } catch (final Exception exc) {
+      exc.printStackTrace();
+      //
+      return null;
     }
-
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    public final int drawStyle(Segment segment, int x, int y, Graphics graphics, TabExpander e, int offset,
-            final String token) {
-
-        // Get The Syntax Style Entry
-        final SyntaxTokenStyle entry = mStyleMap.get(token);
-
-        // Set The Font Style Emph
-        final Font font = graphics.getFont().deriveFont((entry.isEmph()
-                ? Font.ITALIC
-                : Font.PLAIN) | (entry.isBold()
-                ? Font.BOLD
-                : Font.PLAIN));
-
-        // Set The New Font
-        graphics.setFont(font);
-
-        // Set The Foreground Color
-        graphics.setColor(entry.getFCol());
-
-        // Draw The Text Foreground
-        return Utilities.drawTabbedText(segment, x, y, graphics, e, offset);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    @Override
-    public final void writeXML(final IOSIndentWriter writer) throws XMLWriteError {
-        writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        writer.println("<StylePolicy>").push();
-
-        for (SyntaxTokenStyle entry : mStyleMap.values()) {
-            entry.writeXML(writer);
-            writer.endl();
-        }
-
-        writer.pop().print("</StylePolicy>");
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    @Override
-    public void parseXML(final Element element) throws XMLParseError {
-
-        // Process The Child Nodes
-        XMLParseAction.processChildNodes(element, "TokenStyle", new XMLParseAction() {
-            @Override
-            public void run(Element element) throws XMLParseError {
-
-                // Create A New Token Style
-                SyntaxTokenStyle entry = new SyntaxTokenStyle();
-
-                // Parse The New Token Style
-                entry.parseXML(element);
-
-                try {
-
-                    // Put The New Style To The Map
-                    mStyleMap.put(entry.getName(), entry);
-                } catch (Exception exc) {
-                    mLogger.warning(exc.toString());
-                }
-            }
-        });
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    @Override
-    public SyntaxStylePolicy getCopy() {
-        return new SyntaxStylePolicy(mURL);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    @Override
-    public final String toString() {
-
-        // Create A Byte Array Stream
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-        // Initialize The Indent Writer
-        final IOSIndentWriter stream = new IOSIndentWriter(buffer);
-
-        try {
-
-            // Write Object
-            writeXML(stream);
-        } catch (XMLWriteError exc) {
-            mLogger.failure(exc.toString());
-        }
-
-        // Cleanup Stream and Writer
-        stream.flush();
-        stream.close();
-
-        // Return String Representation
-        try {
-            //return buffer.toString("UTF-8");
-            return buffer.toString();
-        } catch (final Exception exc) {
-            exc.printStackTrace();
-            //
-            return null;
-        }
-    }
+  }
 }

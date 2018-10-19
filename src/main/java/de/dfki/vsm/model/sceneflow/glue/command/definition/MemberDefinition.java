@@ -11,8 +11,21 @@ public class MemberDefinition extends Definition {
     return null;
   }
 
-  public String getName(){return "";};
-  public String getType(){return "";};
-  public void setName(String s){};
-  public void setType(String s){};
+  public String getName() {
+    return "";
+  }
+
+  ;
+  public String getType() {
+    return "";
+  }
+
+  ;
+  public void setName(String s) {
+  }
+
+  ;
+  public void setType(String s) {
+  }
+;
 }

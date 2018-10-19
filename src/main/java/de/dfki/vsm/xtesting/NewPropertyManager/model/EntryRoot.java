@@ -5,7 +5,7 @@ package de.dfki.vsm.xtesting.NewPropertyManager.model;
  */
 public class EntryRoot extends AbstractTreeEntry {
 
-    public EntryRoot(String pName){
-        name = pName;
-    }
+  public EntryRoot(String pName) {
+    name = pName;
+  }
 }

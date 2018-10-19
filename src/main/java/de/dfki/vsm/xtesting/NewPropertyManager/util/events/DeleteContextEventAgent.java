@@ -7,15 +7,15 @@ import de.dfki.vsm.xtesting.NewPropertyManager.model.AbstractTreeEntry;
  * Created by alvaro on 8/6/16.
  */
 public class DeleteContextEventAgent extends NotificationObject {
-    private AbstractTreeEntry treeEntry;
 
-    public DeleteContextEventAgent(AbstractTreeEntry item){
-        treeEntry = item;
-    }
+  private AbstractTreeEntry treeEntry;
 
-    public AbstractTreeEntry getTreeEntry() {
-        return treeEntry;
-    }
+  public DeleteContextEventAgent(AbstractTreeEntry item) {
+    treeEntry = item;
+  }
 
+  public AbstractTreeEntry getTreeEntry() {
+    return treeEntry;
+  }
 
 }

@@ -9,14 +9,17 @@ import java.util.HashSet;
  * The clipboard should be shared among the different projects
  *
  */
+public class ClipBoard extends HashSet<BasicNode> {
 
-public  class ClipBoard extends HashSet<BasicNode> {
-    private static ClipBoard sInstance;
-    private ClipBoard(){}
-    public static ClipBoard getsInstance(){
-        if(sInstance == null){
-            sInstance = new ClipBoard();
-        }
-        return sInstance;
+  private static ClipBoard sInstance;
+
+  private ClipBoard() {
+  }
+
+  public static ClipBoard getsInstance() {
+    if (sInstance == null) {
+      sInstance = new ClipBoard();
     }
+    return sInstance;
+  }
 }

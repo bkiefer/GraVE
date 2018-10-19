@@ -8,49 +8,51 @@ import java.util.Iterator;
 /**
  * Created by alvaro on 6/3/16.
  */
-public class PluginTableConfig extends TableConfig{
-    private PluginConfig plugin;
-    public PluginTableConfig(PluginConfig pluginConfig){
-        plugin = pluginConfig;
-    }
+public class PluginTableConfig extends TableConfig {
 
-    public PluginTableConfig(String pKey, String pValue, PluginConfig pluginConfig){
-        plugin = pluginConfig;
-        key = pKey;
-        value = pValue;
-    }
+  private PluginConfig plugin;
 
-    public PluginConfig getPluginConfig(){
-        return plugin;
-    }
+  public PluginTableConfig(PluginConfig pluginConfig) {
+    plugin = pluginConfig;
+  }
 
-    public void saveEntry(){
-        plugin.setProperty(key, value);
-    }
+  public PluginTableConfig(String pKey, String pValue, PluginConfig pluginConfig) {
+    plugin = pluginConfig;
+    key = pKey;
+    value = pValue;
+  }
 
-    public void removeProperty(String oldKey){
-        try {
-            ConfigFeature feature = getConfig(oldKey);
-            plugin.remove(feature);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+  public PluginConfig getPluginConfig() {
+    return plugin;
+  }
 
-    private ConfigFeature getConfig(String key) throws Exception {
-        boolean found = false;
-        ConfigFeature configFeature = null;
-        Iterator it = getPluginConfig().getEntryList().iterator();
-        while (it.hasNext() && !found){
-            ConfigFeature feat = (ConfigFeature) it.next();
-            if(feat.getKey().equals(key)){
-                found = true;
-                configFeature = feat;
-            }
-        }
-        if(!found){
-            throw new Exception("Feature not found");
-        }
-        return configFeature;
+  public void saveEntry() {
+    plugin.setProperty(key, value);
+  }
+
+  public void removeProperty(String oldKey) {
+    try {
+      ConfigFeature feature = getConfig(oldKey);
+      plugin.remove(feature);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
+
+  private ConfigFeature getConfig(String key) throws Exception {
+    boolean found = false;
+    ConfigFeature configFeature = null;
+    Iterator it = getPluginConfig().getEntryList().iterator();
+    while (it.hasNext() && !found) {
+      ConfigFeature feat = (ConfigFeature) it.next();
+      if (feat.getKey().equals(key)) {
+        found = true;
+        configFeature = feat;
+      }
+    }
+    if (!found) {
+      throw new Exception("Feature not found");
+    }
+    return configFeature;
+  }
 }

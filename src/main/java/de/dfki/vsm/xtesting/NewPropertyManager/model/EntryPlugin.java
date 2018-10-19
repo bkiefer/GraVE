@@ -8,34 +8,36 @@ import java.util.LinkedList;
  * Created by alvaro on 6/2/16.
  */
 public class EntryPlugin extends AbstractTreeEntry {
-    private LinkedList<EntryAgent> agents = new LinkedList<>();
-    private PluginConfig pluginConfig;
-    public EntryPlugin(String pName){
-        name = pName;
-    }
 
-    public EntryPlugin(PluginConfig pConfig){
-        pluginConfig = pConfig;
-        name = pluginConfig.getPluginName();
-    }
+  private LinkedList<EntryAgent> agents = new LinkedList<>();
+  private PluginConfig pluginConfig;
 
-    public void addAgent(EntryAgent agent){
-        agents.add(agent);
-    }
+  public EntryPlugin(String pName) {
+    name = pName;
+  }
 
-    public LinkedList<EntryAgent> getAgents(){
-        return agents;
-    }
+  public EntryPlugin(PluginConfig pConfig) {
+    pluginConfig = pConfig;
+    name = pluginConfig.getPluginName();
+  }
 
-    public PluginConfig getPluginConfig(){
-        return pluginConfig;
-    }
+  public void addAgent(EntryAgent agent) {
+    agents.add(agent);
+  }
 
-    public String getPluginClassName(){
-        return pluginConfig.getClassName();
-    }
+  public LinkedList<EntryAgent> getAgents() {
+    return agents;
+  }
 
-    public void setPluginConfig(PluginConfig plugin){
-        pluginConfig = plugin;
-    }
+  public PluginConfig getPluginConfig() {
+    return pluginConfig;
+  }
+
+  public String getPluginClassName() {
+    return pluginConfig.getClassName();
+  }
+
+  public void setPluginConfig(PluginConfig plugin) {
+    pluginConfig = plugin;
+  }
 }

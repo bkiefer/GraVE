@@ -1,7 +1,6 @@
 package de.dfki.vsm.util.log;
 
 //~--- JDK imports ------------------------------------------------------------
-
 import java.io.IOException;
 
 import java.net.DatagramPacket;
@@ -19,68 +18,69 @@ import java.util.logging.LogRecord;
  * @author Gregor Mehlmann
  */
 public class LOGSSISockHandler extends Handler {
-    private final DatagramSocket mSocket;
-    private final SocketAddress  mAddress;
 
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    public LOGSSISockHandler(final String host, final int port) throws IOException {
+  private final DatagramSocket mSocket;
+  private final SocketAddress mAddress;
 
-        // Install The Socket Handler
-        mSocket  = new DatagramSocket();
-        mAddress = new InetSocketAddress(host, port);
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  public LOGSSISockHandler(final String host, final int port) throws IOException {
 
-        // Connect The Datagram Socket
-        mSocket.connect(mAddress);
+    // Install The Socket Handler
+    mSocket = new DatagramSocket();
+    mAddress = new InetSocketAddress(host, port);
 
-        // Install A New Console Formatter
-        setFormatter(new LOGSSISockFormat());
+    // Connect The Datagram Socket
+    mSocket.connect(mAddress);
 
-        // Log The Messages From All Levels
-        setLevel(Level.ALL);
+    // Install A New Console Formatter
+    setFormatter(new LOGSSISockFormat());
+
+    // Log The Messages From All Levels
+    setLevel(Level.ALL);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  @Override
+  public void close() {
+
+    // Close The Socket
+    mSocket.close();
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  @Override
+  public void flush() {
+
+    // No Flushing Necessary For UDP Sockets
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  @Override
+  public void publish(final LogRecord record) {
+    if (isLoggable(record)) {
+      try {
+
+        // Format The Message
+        final Formatter formatter = getFormatter();
+        final String message = formatter.format(record);
+        byte[] data = message.getBytes();
+
+        // Addressiere Paket und setze Daten
+        final DatagramPacket packet = new DatagramPacket(data, data.length, mAddress);
+
+        // Send The Paket
+        mSocket.send(packet);
+      } catch (Exception exc) {
+        reportError(exc.getMessage(), exc, ErrorManager.WRITE_FAILURE);
+      }
     }
-
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    @Override
-    public void close() {
-
-        // Close The Socket
-        mSocket.close();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    @Override
-    public void flush() {
-
-        // No Flushing Necessary For UDP Sockets
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    @Override
-    public void publish(final LogRecord record) {
-        if (isLoggable(record)) {
-            try {
-
-                // Format The Message
-                final Formatter formatter = getFormatter();
-                final String    message   = formatter.format(record);
-                byte[]          data      = message.getBytes();
-
-                // Addressiere Paket und setze Daten
-                final DatagramPacket packet = new DatagramPacket(data, data.length, mAddress);
-
-                // Send The Paket
-                mSocket.send(packet);
-            } catch (Exception exc) {
-                reportError(exc.getMessage(), exc, ErrorManager.WRITE_FAILURE);
-            }
-        }
-    }
+  }
 }

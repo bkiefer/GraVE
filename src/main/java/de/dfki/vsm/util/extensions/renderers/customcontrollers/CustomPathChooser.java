@@ -16,41 +16,40 @@ import java.io.File;
  */
 public class CustomPathChooser {
 
-    private TextField labelSelectedDirectory;
-    private PathChooser pathChooser;
+  private TextField labelSelectedDirectory;
+  private PathChooser pathChooser;
 
-    public CustomPathChooser(){
-        pathChooser = new CustomDirectoryChooser();
-    }
+  public CustomPathChooser() {
+    pathChooser = new CustomDirectoryChooser();
+  }
 
-    public CustomPathChooser(PathChooser chooser){
-        pathChooser = chooser;
-    }
+  public CustomPathChooser(PathChooser chooser) {
+    pathChooser = chooser;
+  }
 
-    public Node getControl(){
-        labelSelectedDirectory = new TextField();
-        Button btnOpenDirectoryChooser = new Button();
-        btnOpenDirectoryChooser.setText("...");
-        btnOpenDirectoryChooser.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                File selectedDirectory = pathChooser.showDialog();
-                if(selectedDirectory == null){
-                    labelSelectedDirectory.setText("No Directory selected");
-                }else{
-                    labelSelectedDirectory.setText(selectedDirectory.getAbsolutePath());
-                }
-            }
-        });
+  public Node getControl() {
+    labelSelectedDirectory = new TextField();
+    Button btnOpenDirectoryChooser = new Button();
+    btnOpenDirectoryChooser.setText("...");
+    btnOpenDirectoryChooser.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        File selectedDirectory = pathChooser.showDialog();
+        if (selectedDirectory == null) {
+          labelSelectedDirectory.setText("No Directory selected");
+        } else {
+          labelSelectedDirectory.setText(selectedDirectory.getAbsolutePath());
+        }
+      }
+    });
 
-        HBox hBox = new HBox();
-        hBox.getChildren().addAll(labelSelectedDirectory, btnOpenDirectoryChooser);
-        return hBox;
-    }
+    HBox hBox = new HBox();
+    hBox.getChildren().addAll(labelSelectedDirectory, btnOpenDirectoryChooser);
+    return hBox;
+  }
 
-    public String getFilePath(){
-        return  labelSelectedDirectory.getText();
-    }
-
+  public String getFilePath() {
+    return labelSelectedDirectory.getText();
+  }
 
 }

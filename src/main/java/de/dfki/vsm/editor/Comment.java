@@ -1,7 +1,6 @@
 package de.dfki.vsm.editor;
 
 //~--- non-JDK imports --------------------------------------------------------
-
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.model.sceneflow.chart.graphics.comment.CommentBoundary;
@@ -10,7 +9,6 @@ import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
 //~--- JDK imports ------------------------------------------------------------
-
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -42,187 +40,186 @@ import javax.swing.text.html.HTMLEditorKit;
  * @author Gregor Mehlmann
  */
 public class Comment extends JComponent implements EventListener, Observer, MouseListener, MouseMotionListener {
-    private JEditorPane mTextEditor = null;
-    private JLabel      mTextLabel  = null;
 
-    // font
-    private Font mFont = null;
+  private JEditorPane mTextEditor = null;
+  private JLabel mTextLabel = null;
 
-    // position
-    private Point mClickPosition     = new Point(0, 0);
-    private Point mLastMousePosition = new Point(0, 0);
+  // font
+  private Font mFont = null;
 
-    // edit
-    private boolean            mEditMode = false;
-    private WorkSpacePanel          mWorkSpace;
-    private EditorConfig mEditorConfig;
+  // position
+  private Point mClickPosition = new Point(0, 0);
+  private Point mLastMousePosition = new Point(0, 0);
 
-    // image
-    private Image                               mResizeMarker;
-    private AlphaComposite                      mAC;
-    private AlphaComposite                      mACFull;
-    private de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge mDataComment;
+  // edit
+  private boolean mEditMode = false;
+  private WorkSpacePanel mWorkSpace;
+  private EditorConfig mEditorConfig;
 
-    // interaction flags
-    public boolean mSelected;
-    public boolean mPressed;
-    public boolean mDragged;
-    public boolean mResizing;
-    public int     mXMovement;
-    public int     mYMovement;
+  // image
+  private Image mResizeMarker;
+  private AlphaComposite mAC;
+  private AlphaComposite mACFull;
+  private de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge mDataComment;
 
-    public Comment() {
-        mDataComment = null;
-    }
+  // interaction flags
+  public boolean mSelected;
+  public boolean mPressed;
+  public boolean mDragged;
+  public boolean mResizing;
+  public int mXMovement;
+  public int mYMovement;
 
-    public Comment(WorkSpacePanel ws, de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge dataComment) {
-        mAC          = AlphaComposite.getInstance(AlphaComposite.XOR, 0.15f);
-        mACFull      = AlphaComposite.getInstance(AlphaComposite.SRC, 1.0f);
-        mWorkSpace   = ws;
-        mEditorConfig = mWorkSpace.getEditorConfig();
-        mDataComment = dataComment;
+  public Comment() {
+    mDataComment = null;
+  }
 
-        // resize marker
-        mResizeMarker = ResourceLoader.loadImage("img/new/resize.png");
+  public Comment(WorkSpacePanel ws, de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge dataComment) {
+    mAC = AlphaComposite.getInstance(AlphaComposite.XOR, 0.15f);
+    mACFull = AlphaComposite.getInstance(AlphaComposite.SRC, 1.0f);
+    mWorkSpace = ws;
+    mEditorConfig = mWorkSpace.getEditorConfig();
+    mDataComment = dataComment;
 
-        // font setup
-        mFont = new Font("SansSerif", Font.ITALIC,    /* (mWorkSpace != null) ? */
-                         mEditorConfig.sWORKSPACEFONTSIZE /* : sBUILDING_BLOCK_FONT_SIZE */);
+    // resize marker
+    mResizeMarker = ResourceLoader.loadImage("img/new/resize.png");
 
-        // size setup
-        Rectangle rect = new Rectangle(mDataComment.getGraphics().getRectangle().getXPos(),
-                                       mDataComment.getGraphics().getRectangle().getYPos(),
-                                       mDataComment.getGraphics().getRectangle().getWidth(),
-                                       mDataComment.getGraphics().getRectangle().getHeight());
+    // font setup
+    mFont = new Font("SansSerif", Font.ITALIC, /* (mWorkSpace != null) ? */
+            mEditorConfig.sWORKSPACEFONTSIZE /* : sBUILDING_BLOCK_FONT_SIZE */);
 
-        setBounds(rect);
-        mTextLabel = new JLabel();
-        mTextLabel.setOpaque(false);
-        mTextLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        mTextLabel.setVerticalAlignment(SwingConstants.TOP);
-        mTextLabel.setFont(mFont);
+    // size setup
+    Rectangle rect = new Rectangle(mDataComment.getGraphics().getRectangle().getXPos(),
+            mDataComment.getGraphics().getRectangle().getYPos(),
+            mDataComment.getGraphics().getRectangle().getWidth(),
+            mDataComment.getGraphics().getRectangle().getHeight());
 
-        // mTextLabel.setForeground(new Color(147, 130, 52, 127));
-        mTextLabel.setForeground(new Color(75, 75, 75, 127));
-        mTextEditor = new JEditorPane();
-        //mTextEditor.setContentType();
-        mTextEditor.setOpaque(false);
-        mTextEditor.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+    setBounds(rect);
+    mTextLabel = new JLabel();
+    mTextLabel.setOpaque(false);
+    mTextLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+    mTextLabel.setVerticalAlignment(SwingConstants.TOP);
+    mTextLabel.setFont(mFont);
 
-        // now use the same font than the label!
-       // String bodyRule = "body { font-family: " + mFont.getFamily() + "; " + "font-size: " + mFont.getSize() + "pt; }";
+    // mTextLabel.setForeground(new Color(147, 130, 52, 127));
+    mTextLabel.setForeground(new Color(75, 75, 75, 127));
+    mTextEditor = new JEditorPane();
+    //mTextEditor.setContentType();
+    mTextEditor.setOpaque(false);
+    mTextEditor.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
-        //((HTMLDocument) mTextEditor.getDocument()).getStyleSheet().addRule(bodyRule);
-        setLayout(new BorderLayout());
+    // now use the same font than the label!
+    // String bodyRule = "body { font-family: " + mFont.getFamily() + "; " + "font-size: " + mFont.getSize() + "pt; }";
+    //((HTMLDocument) mTextEditor.getDocument()).getStyleSheet().addRule(bodyRule);
+    setLayout(new BorderLayout());
 
-        // first put it in the editor, then back in the label
-        mTextEditor.setText(mDataComment.getHTMLText());
-        mTextLabel.setText(formatLabelText(mTextEditor.getText()));
-        add(mTextLabel, BorderLayout.CENTER);
-    }
+    // first put it in the editor, then back in the label
+    mTextEditor.setText(mDataComment.getHTMLText());
+    mTextLabel.setText(formatLabelText(mTextEditor.getText()));
+    add(mTextLabel, BorderLayout.CENTER);
+  }
 
-    private String formatLabelText(String text){
-        //In order to the JLabel accept break lines
-        text = text.replaceAll("(\r\n|\n)", "<br />");
-        String displayText = "<html>" + text + "</html>";
-        return displayText;
-    }
+  private String formatLabelText(String text) {
+    //In order to the JLabel accept break lines
+    text = text.replaceAll("(\r\n|\n)", "<br />");
+    String displayText = "<html>" + text + "</html>";
+    return displayText;
+  }
 
-    @Override
-    public void update(EventObject event) {   }
+  @Override
+  public void update(EventObject event) {
+  }
 
+  @Override
+  public void update(Observable o, Object obj) {
+    update();
+  }
 
-    @Override
-    public void update(Observable o, Object obj) {
-        update();
-    }
+  public void update() {
 
+    mFont = new Font("SansSerif", Font.ITALIC, mEditorConfig.sWORKSPACEFONTSIZE);
+    mTextLabel.setFont(mFont);
+    mTextEditor.setFont(mFont);
 
-    public void update() {
+    String bodyRule = "body { font-family: " + mFont.getFamily() + "; " + "font-size: " + mFont.getSize() + "pt; }";
 
-        mFont = new Font("SansSerif", Font.ITALIC, mEditorConfig.sWORKSPACEFONTSIZE);
-        mTextLabel.setFont(mFont);
-        mTextEditor.setFont(mFont);
+    //((HTMLDocument) mTextEditor.getDocument()).getStyleSheet().addRule(bodyRule);
+    mDataComment.setHTMLText(mTextEditor.getText());
+    mTextEditor.setText(mDataComment.getHTMLText());
+    mTextLabel.setText(formatLabelText(mTextEditor.getText()));
+    repaint(100);
+  }
 
-        String bodyRule = "body { font-family: " + mFont.getFamily() + "; " + "font-size: " + mFont.getSize() + "pt; }";
+  public String getDescription() {
+    return toString();
+  }
 
-        //((HTMLDocument) mTextEditor.getDocument()).getStyleSheet().addRule(bodyRule);
-        mDataComment.setHTMLText(mTextEditor.getText());
-        mTextEditor.setText(mDataComment.getHTMLText());
-        mTextLabel.setText(formatLabelText(mTextEditor.getText()));
-        repaint(100);
-    }
+  public de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge getData() {
+    return mDataComment;
+  }
 
-    public String getDescription() {
-        return toString();
-    }
-
-    public de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge getData() {
-        return mDataComment;
-    }
-
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+  @Override
+  public void paintComponent(Graphics g) {
+    super.paintComponent(g);
 
 //      mFont = new Font("SansSerif", Font.PLAIN, /*(mWorkSpace != null) ?*/ sWORKSPACEFONTSIZE /*: sBUILDING_BLOCK_FONT_SIZE*/);
 //           mTextLabel.setFont(mFont);
 //             mTextLabel.setText(mTextEditor.getText());
 //    S tring bodyRule = "body { font-family: " + mFont.getFamily() + "; " + "font-size: " + mFont.getSize() + "pt; }";
 //    ( (HTMLDocument) mTextEditor.getDocument()).getStyleSheet().addRule(bodyRule);
-        Graphics2D graphics = (Graphics2D) g;
+    Graphics2D graphics = (Graphics2D) g;
 
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Rectangle r = getBounds();
+    Rectangle r = getBounds();
 
-        // graphics.setColor(new Color(227, 206, 29, 127));
-        graphics.setColor(new Color(200, 200, 200, 200));
+    // graphics.setColor(new Color(227, 206, 29, 127));
+    graphics.setColor(new Color(200, 200, 200, 200));
 
-        if (mEditMode) {
-            graphics.setStroke(new BasicStroke(2.0f));
-            graphics.drawRoundRect(0, 0, r.width - 1, r.height - 1, 15, 15);
-        } else {
-            graphics.fillRoundRect(0, 0, r.width, r.height, 15, 15);
-            graphics.setComposite(mAC);
-            graphics.drawImage(mResizeMarker, r.width - 13, r.height - 13, this);
-            graphics.setComposite(mACFull);
-        }
+    if (mEditMode) {
+      graphics.setStroke(new BasicStroke(2.0f));
+      graphics.drawRoundRect(0, 0, r.width - 1, r.height - 1, 15, 15);
+    } else {
+      graphics.fillRoundRect(0, 0, r.width, r.height, 15, 15);
+      graphics.setComposite(mAC);
+      graphics.drawImage(mResizeMarker, r.width - 13, r.height - 13, this);
+      graphics.setComposite(mACFull);
+    }
+  }
+
+  public void resize(Point p) {
+    Rectangle r = getBounds();
+
+    if (!((r.width <= 50) && (p.x < 0))) {
+      r.width = r.width + p.x;
+      r.width = (r.width < 50)
+              ? 50
+              : r.width;
     }
 
-    public void resize(Point p) {
-        Rectangle r = getBounds();
-
-        if (!((r.width <= 50) && (p.x < 0))) {
-            r.width = r.width + p.x;
-            r.width = (r.width < 50)
-                      ? 50
-                      : r.width;
-        }
-
-        if (!((r.height <= 50) && (p.y < 0))) {
-            r.height = r.height + p.y;
-            r.height = (r.height < 50)
-                       ? 50
-                       : r.height;
-        }
-
-        setBounds(r);
-        setSize(r.width, r.height);
-
-        // update data
-        Rectangle r2 = getBounds();
-
-        mDataComment.getGraphics().setRectangle(new CommentBoundary(r2.x, r2.y, r2.width, r2.height));
-
-        // DEBUG System.out.println("size " + getBounds());
+    if (!((r.height <= 50) && (p.y < 0))) {
+      r.height = r.height + p.y;
+      r.height = (r.height < 50)
+              ? 50
+              : r.height;
     }
 
-    public boolean containsPoint(Point p) {
-        return getBounds().contains(p.x, p.y);
-    }
+    setBounds(r);
+    setSize(r.width, r.height);
 
-    /*
+    // update data
+    Rectangle r2 = getBounds();
+
+    mDataComment.getGraphics().setRectangle(new CommentBoundary(r2.x, r2.y, r2.width, r2.height));
+
+    // DEBUG System.out.println("size " + getBounds());
+  }
+
+  public boolean containsPoint(Point p) {
+    return getBounds().contains(p.x, p.y);
+  }
+
+  /*
      * Returns true if mouse in the lower right area, which stands for the resizng area.
      *  --------
      * |        |
@@ -232,132 +229,136 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
      * |      | |
      * |--------
      *
-     */
-    public boolean isResizingAreaSelected(Point p) {
-        Rectangle r = getBounds();
+   */
+  public boolean isResizingAreaSelected(Point p) {
+    Rectangle r = getBounds();
 
-        // DEBUG System.out.println("bounds " + getBounds());
-        // DEBUG System.out.println("point " + p);
-        if (((r.x + r.width) - p.x < 15) && ((r.y + r.height) - p.y < 15)) {
-            return true;
-        } else {
-            return false;
-        }
+    // DEBUG System.out.println("bounds " + getBounds());
+    // DEBUG System.out.println("point " + p);
+    if (((r.x + r.width) - p.x < 15) && ((r.y + r.height) - p.y < 15)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public void mouseClicked(MouseEvent e) {
+
+    // DEBUG System.out.println("mouse clicked");
+    mPressed = false;
+    mSelected = true;
+
+    Point loc = getLocation();
+    Point clickLoc = e.getPoint();
+
+    mLastMousePosition = new Point(clickLoc);
+
+    // save click location relavitvely to node postion
+    mClickPosition.setLocation(clickLoc.x - loc.x, clickLoc.y - loc.y);
+
+    if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() == 2)) {
+
+      // DEBUG System.out.println("double click");
+      String text = mTextEditor.getText();
+
+      mTextEditor.setText(text);
+      remove(mTextLabel);
+      add(mTextEditor, BorderLayout.CENTER);
+      mEditMode = true;
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-        // DEBUG System.out.println("mouse clicked");
-        mPressed  = false;
-        mSelected = true;
-
-        Point loc      = getLocation();
-        Point clickLoc = e.getPoint();
-
-        mLastMousePosition = new Point(clickLoc);
-
-        // save click location relavitvely to node postion
-        mClickPosition.setLocation(clickLoc.x - loc.x, clickLoc.y - loc.y);
-
-        if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() == 2)) {
-
-            // DEBUG System.out.println("double click");
-            String text = mTextEditor.getText();
-
-            mTextEditor.setText(text);
-            remove(mTextLabel);
-            add(mTextEditor, BorderLayout.CENTER);
-            mEditMode = true;
-        }
-
-        // show contect menu
-        if ((e.getButton() == MouseEvent.BUTTON3) && (e.getClickCount() == 1)) {
-            mWorkSpace.showContextMenu(e, this);
-        }
-
-        revalidate();
-        repaint(100);
+    // show contect menu
+    if ((e.getButton() == MouseEvent.BUTTON3) && (e.getClickCount() == 1)) {
+      mWorkSpace.showContextMenu(e, this);
     }
 
-    @Override
-    public void mousePressed(MouseEvent e) {
+    revalidate();
+    repaint(100);
+  }
 
-        // DEBUG System.out.println("mouse pressed");
-        mPressed  = true;
-        mSelected = true;
+  @Override
+  public void mousePressed(MouseEvent e) {
 
-        Point loc      = getLocation();
-        Point clickLoc = e.getPoint();
+    // DEBUG System.out.println("mouse pressed");
+    mPressed = true;
+    mSelected = true;
 
-        mLastMousePosition = new Point(clickLoc);
+    Point loc = getLocation();
+    Point clickLoc = e.getPoint();
 
-        // save click location relavitvely to node postion
-        mClickPosition.setLocation(clickLoc.x - loc.x, clickLoc.y - loc.y);
-    }
+    mLastMousePosition = new Point(clickLoc);
 
-    @Override
-    public void mouseReleased(MouseEvent e) {
+    // save click location relavitvely to node postion
+    mClickPosition.setLocation(clickLoc.x - loc.x, clickLoc.y - loc.y);
+  }
 
-        // DEBUG System.out.println("mouse released");
-        mPressed           = false;
-        mDragged           = false;
-        mLastMousePosition = new Point(0, 0);
-        repaint(100);
-    }
+  @Override
+  public void mouseReleased(MouseEvent e) {
 
-    @Override
-    public void mouseEntered(MouseEvent e) {}
+    // DEBUG System.out.println("mouse released");
+    mPressed = false;
+    mDragged = false;
+    mLastMousePosition = new Point(0, 0);
+    repaint(100);
+  }
 
-    @Override
-    public void mouseExited(MouseEvent e) {}
+  @Override
+  public void mouseEntered(MouseEvent e) {
+  }
 
-    @Override
-    public void mouseDragged(MouseEvent e) {}
+  @Override
+  public void mouseExited(MouseEvent e) {
+  }
 
-    @Override
-    public void mouseMoved(MouseEvent e) {}
+  @Override
+  public void mouseDragged(MouseEvent e) {
+  }
 
-    /*
+  @Override
+  public void mouseMoved(MouseEvent e) {
+  }
+
+  /*
      * Resets the comment to its default visual behavior
-     */
-    public void setDeselected() {
+   */
+  public void setDeselected() {
 
-        // DEBUG System.out.println("Comment Deselected!");
-        if (mEditMode) {
-            String htmlText = mTextEditor.getText();
+    // DEBUG System.out.println("Comment Deselected!");
+    if (mEditMode) {
+      String htmlText = mTextEditor.getText();
 
-            System.out.println(htmlText);
-            mTextLabel.setText(formatLabelText(htmlText));
-            remove(mTextEditor);
-            add(mTextLabel, BorderLayout.CENTER);
-            mEditMode = false;
+      System.out.println(htmlText);
+      mTextLabel.setText(formatLabelText(htmlText));
+      remove(mTextEditor);
+      add(mTextLabel, BorderLayout.CENTER);
+      mEditMode = false;
 
-            // store text in TEXT node
-            mDataComment.setHTMLText(htmlText);
-        }
-
-        mSelected = false;
-        mPressed  = false;
-        mDragged  = false;
-        mResizing = false;
-        repaint(100);
-        update();
+      // store text in TEXT node
+      mDataComment.setHTMLText(htmlText);
     }
 
-    public synchronized void updateLocation(Point mouseMovementVector) {
-        Point currentNodeLocation = getLocation();
+    mSelected = false;
+    mPressed = false;
+    mDragged = false;
+    mResizing = false;
+    repaint(100);
+    update();
+  }
 
-        mXMovement = mouseMovementVector.x;
-        mYMovement = mouseMovementVector.y;
+  public synchronized void updateLocation(Point mouseMovementVector) {
+    Point currentNodeLocation = getLocation();
 
-        Point finalLocation = new Point(currentNodeLocation.x + mXMovement, currentNodeLocation.y + mYMovement);
+    mXMovement = mouseMovementVector.x;
+    mYMovement = mouseMovementVector.y;
 
-        setLocation(finalLocation);
+    Point finalLocation = new Point(currentNodeLocation.x + mXMovement, currentNodeLocation.y + mYMovement);
 
-        // update data
-        Rectangle r = getBounds();
+    setLocation(finalLocation);
 
-        mDataComment.getGraphics().setRectangle(new CommentBoundary(r.x, r.y, r.width, r.height));
-    }
+    // update data
+    Rectangle r = getBounds();
+
+    mDataComment.getGraphics().setRectangle(new CommentBoundary(r.x, r.y, r.width, r.height));
+  }
 }

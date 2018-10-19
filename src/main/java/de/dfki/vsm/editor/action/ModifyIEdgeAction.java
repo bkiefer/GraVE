@@ -15,68 +15,70 @@ import de.dfki.vsm.model.sceneflow.glue.command.Command;
  * @author Gregor Mehlmann
  */
 public class ModifyIEdgeAction extends ModifyEdgeAction {
-    private Command mOldCondition;
-    private Command mNewCondition;
 
-    public ModifyIEdgeAction(Edge edge, WorkSpacePanel workSpace) {
-        super(edge, workSpace);
+  private Command mOldCondition;
+  private Command mNewCondition;
+
+  public ModifyIEdgeAction(Edge edge, WorkSpacePanel workSpace) {
+    super(edge, workSpace);
+  }
+
+  @Override
+  public void run() {
+
+    // Remember the old condition
+    mOldCondition = ((InterruptEdge) mDataEdge).getCondition();
+
+    // Show a dialog to modify the condition
+    ModifyIEdgeDialog dialog = new ModifyIEdgeDialog(((InterruptEdge) mDataEdge));
+    InterruptEdge iedge = dialog.run();
+
+    // If the condition was successfully modified then
+    // remember the new condition and update the undomanager
+    if (iedge != null) {
+      mNewCondition = iedge.getCondition();
+      mUndoManager.addEdit(new Edit());
+      UndoAction.getInstance().refreshUndoState();
+      RedoAction.getInstance().refreshRedoState();
+    }
+  }
+
+  private class Edit extends AbstractUndoableEdit {
+
+    @Override
+    public void undo() throws CannotUndoException {
+      ((InterruptEdge) mDataEdge).setCondition(mOldCondition);
+
+      // mGUIEdge.update();
+      mGUIEdge.repaint(100);
     }
 
     @Override
-    public void run() {
+    public void redo() throws CannotRedoException {
+      ((InterruptEdge) mDataEdge).setCondition(mNewCondition);
 
-        // Remember the old condition
-        mOldCondition = ((InterruptEdge) mDataEdge).getCondition();
-
-        // Show a dialog to modify the condition
-        ModifyIEdgeDialog dialog = new ModifyIEdgeDialog(((InterruptEdge) mDataEdge));
-        InterruptEdge             iedge  = dialog.run();
-
-        // If the condition was successfully modified then
-        // remember the new condition and update the undomanager
-        if (iedge != null) {
-            mNewCondition = iedge.getCondition();
-            mUndoManager.addEdit(new Edit());
-            UndoAction.getInstance().refreshUndoState();
-            RedoAction.getInstance().refreshRedoState();
-        }
+      // mGUIEdge.update();
+      mGUIEdge.repaint(100);
     }
 
-    private class Edit extends AbstractUndoableEdit {
-        @Override
-        public void undo() throws CannotUndoException {
-            ((InterruptEdge) mDataEdge).setCondition(mOldCondition);
-
-            // mGUIEdge.update();
-            mGUIEdge.repaint(100);
-        }
-
-        @Override
-        public void redo() throws CannotRedoException {
-            ((InterruptEdge) mDataEdge).setCondition(mNewCondition);
-
-            // mGUIEdge.update();
-            mGUIEdge.repaint(100);
-        }
-
-        @Override
-        public boolean canUndo() {
-            return true;
-        }
-
-        @Override
-        public boolean canRedo() {
-            return true;
-        }
-
-        @Override
-        public String getUndoPresentationName() {
-            return "Undo modification of IEdge";
-        }
-
-        @Override
-        public String getRedoPresentationName() {
-            return "Redo modification of IEdge";
-        }
+    @Override
+    public boolean canUndo() {
+      return true;
     }
+
+    @Override
+    public boolean canRedo() {
+      return true;
+    }
+
+    @Override
+    public String getUndoPresentationName() {
+      return "Undo modification of IEdge";
+    }
+
+    @Override
+    public String getRedoPresentationName() {
+      return "Redo modification of IEdge";
+    }
+  }
 }

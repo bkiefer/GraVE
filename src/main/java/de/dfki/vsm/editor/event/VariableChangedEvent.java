@@ -9,24 +9,24 @@ import de.dfki.vsm.util.tpl.TPLTuple;
  */
 public class VariableChangedEvent extends EventObject {
 
-    private TPLTuple<String, String> mVariableValuePair;
+  private TPLTuple<String, String> mVariableValuePair;
 
-    public VariableChangedEvent(Object source, TPLTuple<String, String> variableValuePair) {
-        super(source);
-        mVariableValuePair = variableValuePair;
-    }
+  public VariableChangedEvent(Object source, TPLTuple<String, String> variableValuePair) {
+    super(source);
+    mVariableValuePair = variableValuePair;
+  }
 
-    public TPLTuple<String, String> getVarValue() {
-        return mVariableValuePair;
-    }
+  public TPLTuple<String, String> getVarValue() {
+    return mVariableValuePair;
+  }
 
-    public String getEventDescription() {
-        return "VariableChangedEvent(" + mVariableValuePair.getFirst() + ", " + mVariableValuePair.getSecond() + ")";
-    }
+  public String getEventDescription() {
+    return "VariableChangedEvent(" + mVariableValuePair.getFirst() + ", " + mVariableValuePair.getSecond() + ")";
+  }
 
-    @Override
-    public String toString() {
-        return getEventDescription();
-    }
+  @Override
+  public String toString() {
+    return getEventDescription();
+  }
 
 }

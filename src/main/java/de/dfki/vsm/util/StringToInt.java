@@ -10,10 +10,10 @@ package de.dfki.vsm.util;
  * @author Robbie
  */
 public class StringToInt {
-    
-   public static int changeStringToInt(String s){
-       int i;
-       i = Integer.parseInt(s);
-       return i;
-   }
+
+  public static int changeStringToInt(String s) {
+    int i;
+    i = Integer.parseInt(s);
+    return i;
+  }
 }

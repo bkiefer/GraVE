@@ -7,38 +7,40 @@ import java.util.Observer;
 /**
  * Created by alvaro on 5/28/16.
  */
-public class WaitingDialog extends JDialog implements Observer{
-    private JLabel messageLabel = new JLabel("Loading...");
-    private JPanel messagePane = new JPanel();
-    private String messageText;
-    public WaitingDialog(){
-        super();
-        messageText= "" ;
-        initComponents();
-    }
-    public WaitingDialog(String text){
-        super();
-        messageText = text;
-        messageLabel.setText(text);
-        initComponents();
-    }
+public class WaitingDialog extends JDialog implements Observer {
 
-    public void setMessageText(String text){
-        messageText = text;
-        messageLabel.setText(text);
-    }
+  private JLabel messageLabel = new JLabel("Loading...");
+  private JPanel messagePane = new JPanel();
+  private String messageText;
 
-    private void initComponents(){
-        messagePane.add(messageLabel);
-        add(messagePane);
-        setTitle("Info");
-        pack();
-        setLocationRelativeTo(null);
-    }
+  public WaitingDialog() {
+    super();
+    messageText = "";
+    initComponents();
+  }
 
+  public WaitingDialog(String text) {
+    super();
+    messageText = text;
+    messageLabel.setText(text);
+    initComponents();
+  }
 
-    @Override
-    public void update(Observable o, Object arg) {
+  public void setMessageText(String text) {
+    messageText = text;
+    messageLabel.setText(text);
+  }
 
-    }
+  private void initComponents() {
+    messagePane.add(messageLabel);
+    add(messagePane);
+    setTitle("Info");
+    pack();
+    setLocationRelativeTo(null);
+  }
+
+  @Override
+  public void update(Observable o, Object arg) {
+
+  }
 }

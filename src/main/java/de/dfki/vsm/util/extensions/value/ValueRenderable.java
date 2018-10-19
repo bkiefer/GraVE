@@ -7,11 +7,14 @@ import javafx.scene.control.Control;
  * Created by alvaro on 4/20/17.
  */
 public interface ValueRenderable {
-    void render();
-    Node getRenderer();
-    String getValue();
 
-    void setValueProperty(ProjectValueProperty valueProperty);
+  void render();
 
-    void setStyle();
+  Node getRenderer();
+
+  String getValue();
+
+  void setValueProperty(ProjectValueProperty valueProperty);
+
+  void setStyle();
 }

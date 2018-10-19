@@ -29,6 +29,3 @@ package de.dfki.vsm.editor.action;
 //    }
 //}
 
-
-
-

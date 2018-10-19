@@ -5,37 +5,32 @@ package de.dfki.vsm.xtesting.NewPropertyManager.model.tableView;
  */
 public class TableConfig {
 
-    protected String value;
-    protected String key;
+  protected String value;
+  protected String key;
 
+  public TableConfig() {
 
+  }
 
-    public TableConfig(){
+  public TableConfig(String pKey, String pValue) {
+    value = pValue;
+    key = pKey;
+  }
 
-    }
+  public String getValue() {
+    return value;
+  }
 
-    public TableConfig(String pKey, String pValue){
-        value = pValue;
-        key = pKey;
-    }
+  public void setValue(String value) {
+    this.value = value;
+  }
 
+  public String getKey() {
+    return key;
+  }
 
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
+  public void setKey(String key) {
+    this.key = key;
+  }
 
 }

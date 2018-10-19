@@ -11,57 +11,59 @@ import java.awt.*;
  * Calculate the current area workspace
  */
 public abstract class WorkAreaSize {
-    protected int width;
-    protected int height = 0;
-    int nodeWidth;
-    int nodeHeight;
-    private WorkSpacePanel mWorkSpacePanel;
-    WorkAreaSize(WorkSpacePanel workSpacePanel, int nodeWidth, int nodeHeight){
-            this.mWorkSpacePanel = workSpacePanel;
-            this.nodeHeight = nodeHeight;
-            this.nodeWidth = nodeWidth;
-        width = 0;
-    }
 
-    public Dimension calculate() {
-        getSizeFromSceneFlowNodeList();
-        getSizeFromSuperNodeList();
-        adjustSizeToWorkSpace();
-        return new Dimension(width, height);
-    }
+  protected int width;
+  protected int height = 0;
+  int nodeWidth;
+  int nodeHeight;
+  private WorkSpacePanel mWorkSpacePanel;
 
-    private void adjustSizeToWorkSpace() {
-        if(mWorkSpacePanel.getSize().height > height){
-            height = mWorkSpacePanel.getSize().height;
-        }
-        if(mWorkSpacePanel.getSize().width> width){
-            width = mWorkSpacePanel.getSize().width;
-        }
-    }
+  WorkAreaSize(WorkSpacePanel workSpacePanel, int nodeWidth, int nodeHeight) {
+    this.mWorkSpacePanel = workSpacePanel;
+    this.nodeHeight = nodeHeight;
+    this.nodeWidth = nodeWidth;
+    width = 0;
+  }
 
-    private void getSizeFromSuperNodeList() {
-        for (SuperNode n : mWorkSpacePanel.getSceneFlowEditor().getSceneFlow().getSuperNodeList()) {
-            updateWidth(n);
-            updateHeight(n);
-        }
-    }
+  public Dimension calculate() {
+    getSizeFromSceneFlowNodeList();
+    getSizeFromSuperNodeList();
+    adjustSizeToWorkSpace();
+    return new Dimension(width, height);
+  }
 
-    private void getSizeFromSceneFlowNodeList() {
-        for (BasicNode n : mWorkSpacePanel.getSceneFlowEditor().getSceneFlow().getNodeList()) {
-            updateWidth(n);
-            updateHeight(n);
-        }
+  private void adjustSizeToWorkSpace() {
+    if (mWorkSpacePanel.getSize().height > height) {
+      height = mWorkSpacePanel.getSize().height;
     }
+    if (mWorkSpacePanel.getSize().width > width) {
+      width = mWorkSpacePanel.getSize().width;
+    }
+  }
 
-    private void updateHeight(BasicNode n) {
-        if (n.getGraphics().getPosition().getYPos() > height) {
-            height = n.getGraphics().getPosition().getYPos() + nodeHeight;
-        }
+  private void getSizeFromSuperNodeList() {
+    for (SuperNode n : mWorkSpacePanel.getSceneFlowEditor().getSceneFlow().getSuperNodeList()) {
+      updateWidth(n);
+      updateHeight(n);
     }
+  }
 
-    private void updateWidth(BasicNode n) {
-        if (n.getGraphics().getPosition().getXPos() > width) {
-            width = n.getGraphics().getPosition().getXPos() + nodeWidth;
-        }
+  private void getSizeFromSceneFlowNodeList() {
+    for (BasicNode n : mWorkSpacePanel.getSceneFlowEditor().getSceneFlow().getNodeList()) {
+      updateWidth(n);
+      updateHeight(n);
     }
+  }
+
+  private void updateHeight(BasicNode n) {
+    if (n.getGraphics().getPosition().getYPos() > height) {
+      height = n.getGraphics().getPosition().getYPos() + nodeHeight;
+    }
+  }
+
+  private void updateWidth(BasicNode n) {
+    if (n.getGraphics().getPosition().getXPos() > width) {
+      width = n.getGraphics().getPosition().getXPos() + nodeWidth;
+    }
+  }
 }

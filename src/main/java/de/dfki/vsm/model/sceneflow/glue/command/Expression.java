@@ -6,7 +6,7 @@ package de.dfki.vsm.model.sceneflow.glue.command;
 public abstract class Expression extends Command {
 
   @Override
-  public Expression getCopy()  {
+  public Expression getCopy() {
     Expression result = null;
     try {
       result = this.getClass().newInstance();
@@ -15,6 +15,7 @@ public abstract class Expression extends Command {
     }
     result.content = this.content;
     return result;
-  };
+  }
+;
 
 }

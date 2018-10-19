@@ -9,28 +9,28 @@ import de.dfki.vsm.util.log.LOGDefaultLogger;
  */
 public abstract class RunTimePlugin {
 
-    // The system logger
-    protected final LOGDefaultLogger mLogger
-            = LOGDefaultLogger.getInstance();
+  // The system logger
+  protected final LOGDefaultLogger mLogger
+          = LOGDefaultLogger.getInstance();
 
-    // The runtime project
-    protected final RunTimeProject mProject;
-    // The plugin's name
-    protected final PluginConfig mConfig;
+  // The runtime project
+  protected final RunTimeProject mProject;
+  // The plugin's name
+  protected final PluginConfig mConfig;
 
-    // Construct the plugin
-    public RunTimePlugin(
-            final PluginConfig config,
-            final RunTimeProject project) {
-        // Initializ the config
-        mConfig = config;
-        // Initialize the project
-        mProject = project;
-    }
+  // Construct the plugin
+  public RunTimePlugin(
+          final PluginConfig config,
+          final RunTimeProject project) {
+    // Initializ the config
+    mConfig = config;
+    // Initialize the project
+    mProject = project;
+  }
 
-    // Launch the plugin
-    public abstract void launch();
+  // Launch the plugin
+  public abstract void launch();
 
-    // Unload the plugin
-    public abstract void unload();
+  // Unload the plugin
+  public abstract void unload();
 }

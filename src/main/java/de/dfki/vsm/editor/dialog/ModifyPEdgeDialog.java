@@ -51,611 +51,606 @@ import javax.swing.text.PlainDocument;
  */
 public class ModifyPEdgeDialog extends Dialog {
 
-    //
-    private HashMap<RandomEdge, JTextField> mPEdgeMap = new HashMap<RandomEdge, JTextField>();
-    private final Dimension buttonSize = new Dimension(150, 30);
-    private final Dimension smallButtonSize = new Dimension(30, 30);
-    // Data model components
-    private final BasicNode mSourceNode;
-    private final BasicNode mTargetNode;
-    private final RandomEdge mPEdge;
+  //
+  private HashMap<RandomEdge, JTextField> mPEdgeMap = new HashMap<RandomEdge, JTextField>();
+  private final Dimension buttonSize = new Dimension(150, 30);
+  private final Dimension smallButtonSize = new Dimension(30, 30);
+  // Data model components
+  private final BasicNode mSourceNode;
+  private final BasicNode mTargetNode;
+  private final RandomEdge mPEdge;
 
-    //
-    private final AltStartNodeManager mAltStartNodeManager;
+  //
+  private final AltStartNodeManager mAltStartNodeManager;
 
-    // GUI-Components
-    private JPanel mHeaderPanel;
-    private JLabel mHeaderLabel;
+  // GUI-Components
+  private JPanel mHeaderPanel;
+  private JLabel mHeaderLabel;
 
-    //
-    private JPanel mButtonPanel;
-    private OKButton mOkButton;
-    private CancelButton mCancelButton;
-    private JLabel mNormButton;
-    private JLabel mUniButton;
+  //
+  private JPanel mButtonPanel;
+  private OKButton mOkButton;
+  private CancelButton mCancelButton;
+  private JLabel mNormButton;
+  private JLabel mUniButton;
 
-    //
-    private JPanel mAltStartNodePanel;
-    private JLabel mAltStartNodeLabel;
-    private JList mAltStartNodeList;
-    private JScrollPane mAltStartNodeScrollPane;
-    private AddButton mAddAltStartNodeButton;
-    private RemoveButton mRemoveAltStartNodeButton;
-    private EditButton mEditAltStartNodeButton;
+  //
+  private JPanel mAltStartNodePanel;
+  private JLabel mAltStartNodeLabel;
+  private JList mAltStartNodeList;
+  private JScrollPane mAltStartNodeScrollPane;
+  private AddButton mAddAltStartNodeButton;
+  private RemoveButton mRemoveAltStartNodeButton;
+  private EditButton mEditAltStartNodeButton;
 
-    //
-    private JPanel mEdgeProbPanel;
+  //
+  private JPanel mEdgeProbPanel;
 
-    //
-    private JPanel mRestPanel;
-    private JLabel mRestLabel;
-    private JTextField mRestField;
-    private Dimension labelSize = new Dimension(200, 30);
-    private Dimension textFielSize = new Dimension(230, 30);
-    private JLabel errorMsg;
-    
-    //ICONS
-    private final ImageIcon ICON_NORMALIZE_STANDARD = ResourceLoader.loadImageIcon("img/normalize_gray.png");
-    private final ImageIcon ICON_NORMALIZE_ROLLOVER = ResourceLoader.loadImageIcon("img/normalize_blue.png");
-    
-    private final ImageIcon ICON_UNIFORM_STANDARD = ResourceLoader.loadImageIcon("img/uniform_gray.png");
-    private final ImageIcon ICON_UNIFORM_ROLLOVER = ResourceLoader.loadImageIcon("img/uniform_blue.png");
-    
-    public ModifyPEdgeDialog(BasicNode sourceNode, BasicNode targetNode) {
-        super(EditorInstance.getInstance(), "Create Probability Edge", true);
-        mSourceNode = sourceNode;
-        mTargetNode = targetNode;
+  //
+  private JPanel mRestPanel;
+  private JLabel mRestLabel;
+  private JTextField mRestField;
+  private Dimension labelSize = new Dimension(200, 30);
+  private Dimension textFielSize = new Dimension(230, 30);
+  private JLabel errorMsg;
 
-        // Create a new probability edge
-        mPEdge = new RandomEdge();
-        mPEdge.setTargetUnid(mTargetNode.getId());
-        mPEdge.setSourceUnid(mSourceNode.getId());
-        mPEdge.setSourceNode(mSourceNode);
-        mPEdge.setTargetNode(mTargetNode);
+  //ICONS
+  private final ImageIcon ICON_NORMALIZE_STANDARD = ResourceLoader.loadImageIcon("img/normalize_gray.png");
+  private final ImageIcon ICON_NORMALIZE_ROLLOVER = ResourceLoader.loadImageIcon("img/normalize_blue.png");
 
-        // Fill the local data map with the existing edges
-        for (RandomEdge edge : mSourceNode.getPEdgeList()) {
-            mPEdgeMap.put(edge, null);
-        }
+  private final ImageIcon ICON_UNIFORM_STANDARD = ResourceLoader.loadImageIcon("img/uniform_gray.png");
+  private final ImageIcon ICON_UNIFORM_ROLLOVER = ResourceLoader.loadImageIcon("img/uniform_blue.png");
 
-        // The current edge
-        mPEdgeMap.put(mPEdge, null);
+  public ModifyPEdgeDialog(BasicNode sourceNode, BasicNode targetNode) {
+    super(EditorInstance.getInstance(), "Create Probability Edge", true);
+    mSourceNode = sourceNode;
+    mTargetNode = targetNode;
 
-        // TODO: move to EdgeDialog
-        mAltStartNodeManager = new AltStartNodeManager(mPEdge);
+    // Create a new probability edge
+    mPEdge = new RandomEdge();
+    mPEdge.setTargetUnid(mTargetNode.getId());
+    mPEdge.setSourceUnid(mSourceNode.getId());
+    mPEdge.setSourceNode(mSourceNode);
+    mPEdge.setTargetNode(mTargetNode);
 
-        // Init the GUI-Components
-        initComponents();
-
-        //
-        loadAltStartNodeMap();
+    // Fill the local data map with the existing edges
+    for (RandomEdge edge : mSourceNode.getPEdgeList()) {
+      mPEdgeMap.put(edge, null);
     }
 
-    public ModifyPEdgeDialog(RandomEdge edge) {
-        super(EditorInstance.getInstance(), "Modify Probability Edge", true);
-        mPEdge = edge;
-        mSourceNode = mPEdge.getSourceNode();
-        mTargetNode = mPEdge.getTargetNode();
+    // The current edge
+    mPEdgeMap.put(mPEdge, null);
 
-        // Fill the map with the data
-        for (RandomEdge pedge : mSourceNode.getPEdgeList()) {
-            mPEdgeMap.put(pedge, /* new JTextField("", 3) */ null);
-        }
+    // TODO: move to EdgeDialog
+    mAltStartNodeManager = new AltStartNodeManager(mPEdge);
 
-        // TODO: move to EdgeDialog
-        mAltStartNodeManager = new AltStartNodeManager(mPEdge);
+    // Init the GUI-Components
+    initComponents();
 
-        // Init the GUI-Components
-        initComponents();
+    //
+    loadAltStartNodeMap();
+  }
 
-        //
-        loadAltStartNodeMap();
+  public ModifyPEdgeDialog(RandomEdge edge) {
+    super(EditorInstance.getInstance(), "Modify Probability Edge", true);
+    mPEdge = edge;
+    mSourceNode = mPEdge.getSourceNode();
+    mTargetNode = mPEdge.getTargetNode();
+
+    // Fill the map with the data
+    for (RandomEdge pedge : mSourceNode.getPEdgeList()) {
+      mPEdgeMap.put(pedge, /* new JTextField("", 3) */ null);
     }
 
-    /**
-     * Set the correct size of the components
-     *
-     * @param jb
-     * @param dim
-     */
-    private void sanitizeComponent(JComponent jb, Dimension dim) {
-        jb.setPreferredSize(dim);
-        jb.setMinimumSize(dim);
-        jb.setMaximumSize(dim);
-    }
+    // TODO: move to EdgeDialog
+    mAltStartNodeManager = new AltStartNodeManager(mPEdge);
 
-    private void initComponents() {
+    // Init the GUI-Components
+    initComponents();
 
-        // Init probability panel
-        initEdgeProbabilityPanel();
+    //
+    loadAltStartNodeMap();
+  }
 
-        // Init button panel
-        initButtonPanel();
+  /**
+   * Set the correct size of the components
+   *
+   * @param jb
+   * @param dim
+   */
+  private void sanitizeComponent(JComponent jb, Dimension dim) {
+    jb.setPreferredSize(dim);
+    jb.setMinimumSize(dim);
+    jb.setMaximumSize(dim);
+  }
 
-        // Init alternative start node panel
-        initAltStartNodePanel();
-        //Error message
-        errorMsg = new JLabel("Information Required");
-        errorMsg.setForeground(Color.white);
-        errorMsg.setMinimumSize(labelSize);
-        //FINAL 
-        Box finalBox = Box.createVerticalBox();
-        finalBox.add(mEdgeProbPanel);
-        finalBox.add(Box.createVerticalStrut(20));
-        finalBox.add(mAltStartNodePanel);
-        finalBox.add(Box.createVerticalStrut(20));
-        finalBox.add(errorMsg);
-        finalBox.add(Box.createVerticalStrut(20));
-        finalBox.add(mButtonPanel);
+  private void initComponents() {
 
-        addComponent(finalBox, 20, 20, 480, 480);
+    // Init probability panel
+    initEdgeProbabilityPanel();
 
-        packComponents(510, 500);
-    }
+    // Init button panel
+    initButtonPanel();
 
-    private void initButtonPanel() {
+    // Init alternative start node panel
+    initAltStartNodePanel();
+    //Error message
+    errorMsg = new JLabel("Information Required");
+    errorMsg.setForeground(Color.white);
+    errorMsg.setMinimumSize(labelSize);
+    //FINAL
+    Box finalBox = Box.createVerticalBox();
+    finalBox.add(mEdgeProbPanel);
+    finalBox.add(Box.createVerticalStrut(20));
+    finalBox.add(mAltStartNodePanel);
+    finalBox.add(Box.createVerticalStrut(20));
+    finalBox.add(errorMsg);
+    finalBox.add(Box.createVerticalStrut(20));
+    finalBox.add(mButtonPanel);
 
-        // Ok button
-        mOkButton = new OKButton();
-        mOkButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                okActionPerformed();
-            }
-        });
+    addComponent(finalBox, 20, 20, 480, 480);
 
-        // Cancel button
-        mCancelButton = new CancelButton();
-        mCancelButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                cancelActionPerformed();
-            }
-        });
-        // Button panel
-        Box secondButtonBox = Box.createHorizontalBox();
-        secondButtonBox.add(Box.createHorizontalGlue());
-        secondButtonBox.add(mCancelButton);
-        secondButtonBox.add(Box.createHorizontalStrut(30));
-        secondButtonBox.add(mOkButton);
-        secondButtonBox.add(Box.createHorizontalGlue());
+    packComponents(510, 500);
+  }
 
-        mButtonPanel = new JPanel(null);
-        mButtonPanel.setOpaque(false);
-        mButtonPanel.setMinimumSize(new Dimension(480, 80));
-        mButtonPanel.setLayout(new BoxLayout(mButtonPanel, BoxLayout.Y_AXIS));
+  private void initButtonPanel() {
+
+    // Ok button
+    mOkButton = new OKButton();
+    mOkButton.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        okActionPerformed();
+      }
+    });
+
+    // Cancel button
+    mCancelButton = new CancelButton();
+    mCancelButton.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        cancelActionPerformed();
+      }
+    });
+    // Button panel
+    Box secondButtonBox = Box.createHorizontalBox();
+    secondButtonBox.add(Box.createHorizontalGlue());
+    secondButtonBox.add(mCancelButton);
+    secondButtonBox.add(Box.createHorizontalStrut(30));
+    secondButtonBox.add(mOkButton);
+    secondButtonBox.add(Box.createHorizontalGlue());
+
+    mButtonPanel = new JPanel(null);
+    mButtonPanel.setOpaque(false);
+    mButtonPanel.setMinimumSize(new Dimension(480, 80));
+    mButtonPanel.setLayout(new BoxLayout(mButtonPanel, BoxLayout.Y_AXIS));
 //        mButtonPanel.add(firstButtonBox);
 //        mButtonPanel.add(Box.createVerticalStrut(30));
-        mButtonPanel.add(secondButtonBox);
+    mButtonPanel.add(secondButtonBox);
 
-    }
+  }
 
-    private void initEdgeProbabilityPanel() {
+  private void initEdgeProbabilityPanel() {
 
-        // Init header label
-        mHeaderLabel = new JLabel("Edge Probabilities:");
-        sanitizeComponent(mHeaderLabel, labelSize);
+    // Init header label
+    mHeaderLabel = new JLabel("Edge Probabilities:");
+    sanitizeComponent(mHeaderLabel, labelSize);
 
-        // Init edge probability panel
-        mEdgeProbPanel = new JPanel();
-        mEdgeProbPanel.setOpaque(false);
-        mEdgeProbPanel.setLayout(new BoxLayout(mEdgeProbPanel, BoxLayout.Y_AXIS));
-        mEdgeProbPanel.add(mHeaderLabel);
-        mEdgeProbPanel.add(Box.createVerticalStrut(30));
-        //nodes scroll pane
-        JPanel nodesPanel = new JPanel();
-        nodesPanel.setLayout(new BoxLayout(nodesPanel, BoxLayout.Y_AXIS));
-        nodesPanel.setBorder(null);
-        JScrollPane nodesScrollPanel = new JScrollPane(nodesPanel);
-        nodesScrollPanel.getVerticalScrollBar().setUI(new WindowsScrollBarUI());
-        //nodesScrollPanel.setPreferredSize(new Dimension(480, 90));
-        nodesScrollPanel.setMinimumSize(new Dimension(340, 90));
-        nodesScrollPanel.setMaximumSize(new Dimension(480, 90));
-        nodesScrollPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        nodesScrollPanel.setBorder(null);
-        //
-        boolean requiresUniformAction = false;
-        
-        for (RandomEdge pedge : mPEdgeMap.keySet()) {
+    // Init edge probability panel
+    mEdgeProbPanel = new JPanel();
+    mEdgeProbPanel.setOpaque(false);
+    mEdgeProbPanel.setLayout(new BoxLayout(mEdgeProbPanel, BoxLayout.Y_AXIS));
+    mEdgeProbPanel.add(mHeaderLabel);
+    mEdgeProbPanel.add(Box.createVerticalStrut(30));
+    //nodes scroll pane
+    JPanel nodesPanel = new JPanel();
+    nodesPanel.setLayout(new BoxLayout(nodesPanel, BoxLayout.Y_AXIS));
+    nodesPanel.setBorder(null);
+    JScrollPane nodesScrollPanel = new JScrollPane(nodesPanel);
+    nodesScrollPanel.getVerticalScrollBar().setUI(new WindowsScrollBarUI());
+    //nodesScrollPanel.setPreferredSize(new Dimension(480, 90));
+    nodesScrollPanel.setMinimumSize(new Dimension(340, 90));
+    nodesScrollPanel.setMaximumSize(new Dimension(480, 90));
+    nodesScrollPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    nodesScrollPanel.setBorder(null);
+    //
+    boolean requiresUniformAction = false;
 
-            // Init description label
-            JLabel pedgeDescription = new JLabel(mSourceNode.getName() + " ( " + mSourceNode.getId() + " ) "
-                    + " \u2192  " + pedge.getTargetNode().getName() + " ( "
-                    + pedge.getTargetNode().getId() + " ) ");
+    for (RandomEdge pedge : mPEdgeMap.keySet()) {
 
-            sanitizeComponent(pedgeDescription, labelSize);
-            // Compute initial probability
-            int prob = pedge.getProbability();
+      // Init description label
+      JLabel pedgeDescription = new JLabel(mSourceNode.getName() + " ( " + mSourceNode.getId() + " ) "
+              + " \u2192  " + pedge.getTargetNode().getName() + " ( "
+              + pedge.getTargetNode().getId() + " ) ");
 
-            if (prob == Integer.MIN_VALUE) {
-                prob = 100;
-                if (mPEdgeMap.size() >= 3)
-                {
-                    prob = 0;
-                }
-                else 
-                {
-                    requiresUniformAction = true;
-                }
+      sanitizeComponent(pedgeDescription, labelSize);
+      // Compute initial probability
+      int prob = pedge.getProbability();
+
+      if (prob == Integer.MIN_VALUE) {
+        prob = 100;
+        if (mPEdgeMap.size() >= 3) {
+          prob = 0;
+        } else {
+          requiresUniformAction = true;
+        }
+      }
+      // Init probability text field
+      JTextField probField = new JTextField(new IntegerDocument(), String.valueOf(prob), 3);
+      probField.setMinimumSize(new Dimension(40, 25));
+      probField.setPreferredSize(new Dimension(40, 25));
+      probField.setMaximumSize(new Dimension(40, 25));
+      probField.addCaretListener(new CaretListener() {
+        public void caretUpdate(CaretEvent e) {
+          int sum = 0;
+          for (JTextField textField : mPEdgeMap.values()) {
+            try {
+              sum += Integer.valueOf(textField.getText().trim()).intValue();
+            } catch (NumberFormatException es) {
             }
-            // Init probability text field
-            JTextField probField = new JTextField(new IntegerDocument(), String.valueOf(prob), 3);
-            probField.setMinimumSize(new Dimension(40, 25));
-            probField.setPreferredSize(new Dimension(40, 25));
-            probField.setMaximumSize(new Dimension(40, 25));
-            probField.addCaretListener(new CaretListener() {
-                public void caretUpdate(CaretEvent e) {
-                    int sum = 0;
-                    for (JTextField textField : mPEdgeMap.values()) {
-                        try {
-                            sum += Integer.valueOf(textField.getText().trim()).intValue();
-                        }
-                        catch (NumberFormatException es) {
-                        }
-                    }
-                    // Set the rest to the rest text field
-                    mRestField.setText(Integer.valueOf(100 - sum).toString());
-                }
-            });
-            
-            // Add the text field to the mapping
-            mPEdgeMap.put(pedge, probField);
+          }
+          // Set the rest to the rest text field
+          mRestField.setText(Integer.valueOf(100 - sum).toString());
+        }
+      });
 
-            // Init probability panel
-            JPanel pedgePanel = new JPanel();
-            pedgePanel.setOpaque(false);
-            pedgePanel.setLayout(new BoxLayout(pedgePanel, BoxLayout.X_AXIS));
-            pedgePanel.add(pedgeDescription);
-            pedgePanel.add(Box.createRigidArea(new Dimension(15, 0)));
-            pedgePanel.add(probField);
-            pedgePanel.add(Box.createHorizontalStrut(30));
-            nodesPanel.add(pedgePanel);
+      // Add the text field to the mapping
+      mPEdgeMap.put(pedge, probField);
+
+      // Init probability panel
+      JPanel pedgePanel = new JPanel();
+      pedgePanel.setOpaque(false);
+      pedgePanel.setLayout(new BoxLayout(pedgePanel, BoxLayout.X_AXIS));
+      pedgePanel.add(pedgeDescription);
+      pedgePanel.add(Box.createRigidArea(new Dimension(15, 0)));
+      pedgePanel.add(probField);
+      pedgePanel.add(Box.createHorizontalStrut(30));
+      nodesPanel.add(pedgePanel);
 //            mEdgeProbPanel
 
-        }
-        
-        // Init rest panel
-        mRestPanel = new JPanel();
-        mRestPanel.setOpaque(false);
-        mRestPanel.setLayout(new BoxLayout(mRestPanel, BoxLayout.X_AXIS));
-        mRestLabel = new JLabel("Rest:");
-        sanitizeComponent(mRestLabel, labelSize);
-        mRestField = new JTextField(3);
-        mRestField.setMinimumSize(new Dimension(40, 25));
-        mRestField.setPreferredSize(new Dimension(40, 25));
-        mRestField.setMaximumSize(new Dimension(40, 25));
-        mRestField.setDocument(new IntegerDocument());
-        mRestField.setEditable(false);
-        mRestField.setEnabled(false);
-        mRestPanel.add(mRestLabel);
-        mRestPanel.add(Box.createRigidArea(new Dimension(15, 0)));
-        mRestPanel.add(mRestField);
-        mRestPanel.add(Box.createHorizontalGlue());
-        
-        // Normalize button
-        mNormButton = new JLabel();
-        mNormButton.setHorizontalAlignment(SwingConstants.RIGHT);
-        mNormButton.setOpaque(true);
-        mNormButton.setBackground(Color.white);
-        mNormButton.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        mNormButton.setToolTipText("Normalize");
+    }
+
+    // Init rest panel
+    mRestPanel = new JPanel();
+    mRestPanel.setOpaque(false);
+    mRestPanel.setLayout(new BoxLayout(mRestPanel, BoxLayout.X_AXIS));
+    mRestLabel = new JLabel("Rest:");
+    sanitizeComponent(mRestLabel, labelSize);
+    mRestField = new JTextField(3);
+    mRestField.setMinimumSize(new Dimension(40, 25));
+    mRestField.setPreferredSize(new Dimension(40, 25));
+    mRestField.setMaximumSize(new Dimension(40, 25));
+    mRestField.setDocument(new IntegerDocument());
+    mRestField.setEditable(false);
+    mRestField.setEnabled(false);
+    mRestPanel.add(mRestLabel);
+    mRestPanel.add(Box.createRigidArea(new Dimension(15, 0)));
+    mRestPanel.add(mRestField);
+    mRestPanel.add(Box.createHorizontalGlue());
+
+    // Normalize button
+    mNormButton = new JLabel();
+    mNormButton.setHorizontalAlignment(SwingConstants.RIGHT);
+    mNormButton.setOpaque(true);
+    mNormButton.setBackground(Color.white);
+    mNormButton.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+    mNormButton.setToolTipText("Normalize");
+    mNormButton.setIcon(ICON_NORMALIZE_STANDARD);
+    // mNormButton.setIconTextGap(20);
+    //mNormButton.setFont(new Font("Helvetica", Font.PLAIN, 20));
+    mNormButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+    mNormButton.setPreferredSize(smallButtonSize);
+    mNormButton.setMinimumSize(smallButtonSize);
+    mNormButton.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        normalizeActionPerformed();
+      }
+
+      public void mouseEntered(MouseEvent me) {
+        mNormButton.setIcon(ICON_NORMALIZE_ROLLOVER);
+        mNormButton.setBackground(new Color(82, 127, 255));
+      }
+
+      public void mouseExited(MouseEvent me) {
         mNormButton.setIcon(ICON_NORMALIZE_STANDARD);
-       // mNormButton.setIconTextGap(20);
-        //mNormButton.setFont(new Font("Helvetica", Font.PLAIN, 20));
-        mNormButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-        mNormButton.setPreferredSize(smallButtonSize);
-        mNormButton.setMinimumSize(smallButtonSize);
-        mNormButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                normalizeActionPerformed();
-            }
+        mNormButton.setBackground(new Color(255, 255, 255));
+      }
+    });
 
-            public void mouseEntered(MouseEvent me) {
-                mNormButton.setIcon(ICON_NORMALIZE_ROLLOVER);
-                mNormButton.setBackground(new Color(82, 127, 255));
-            }
+    // Uniform button
+    mUniButton = new JLabel();
+    mUniButton.setHorizontalAlignment(SwingConstants.RIGHT);
+    mUniButton.setOpaque(true);
+    mUniButton.setBackground(Color.white);
+    mUniButton.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+    mUniButton.setToolTipText("Uniform");
+    mUniButton.setIcon(ICON_UNIFORM_STANDARD);
+    //mUniButton.setIconTextGap(20);
+    //mUniButton.setFont(new Font("Helvetica", Font.PLAIN, 20));
+    mUniButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+    mUniButton.setPreferredSize(smallButtonSize);
+    mUniButton.setMinimumSize(smallButtonSize);
+    mUniButton.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        uniformActionPerformed();
+      }
 
-            public void mouseExited(MouseEvent me) {
-                mNormButton.setIcon(ICON_NORMALIZE_STANDARD);
-                mNormButton.setBackground(new Color(255, 255, 255));
-            }
-        });
+      public void mouseEntered(MouseEvent me) {
+        mUniButton.setIcon(ICON_UNIFORM_ROLLOVER);
+        mUniButton.setBackground(new Color(82, 127, 255));
+      }
 
-        // Uniform button
-        mUniButton = new JLabel();
-        mUniButton.setHorizontalAlignment(SwingConstants.RIGHT);
-        mUniButton.setOpaque(true);
-        mUniButton.setBackground(Color.white);
-        mUniButton.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        mUniButton.setToolTipText("Uniform");
+      public void mouseExited(MouseEvent me) {
         mUniButton.setIcon(ICON_UNIFORM_STANDARD);
-        //mUniButton.setIconTextGap(20);
-        //mUniButton.setFont(new Font("Helvetica", Font.PLAIN, 20));
-        mUniButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-        mUniButton.setPreferredSize(smallButtonSize);
-        mUniButton.setMinimumSize(smallButtonSize);
-        mUniButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                uniformActionPerformed();
-            }
+        mUniButton.setBackground(new Color(255, 255, 255));
+      }
+    });
+    // Button panel
+    Box topContainer = Box.createHorizontalBox();
+    Box probButtonsBox = Box.createVerticalBox();
+    // probButtonsBox.add(Box.createHorizontalGlue());
+    probButtonsBox.add(mNormButton);
+    probButtonsBox.add(Box.createVerticalStrut(20));
+    probButtonsBox.add(mUniButton);
+    // probButtonsBox.add(Box.createHorizontalGlue());
+    topContainer.add(nodesScrollPanel);
+    topContainer.add(Box.createHorizontalStrut(130));
+    topContainer.add(probButtonsBox);
+    // Add the rest panel
+    mEdgeProbPanel.add(topContainer);
+    mEdgeProbPanel.add(Box.createVerticalStrut(40));
+    mEdgeProbPanel.add(mRestPanel);
 
-            public void mouseEntered(MouseEvent me) {
-                mUniButton.setIcon(ICON_UNIFORM_ROLLOVER);
-                mUniButton.setBackground(new Color(82, 127, 255));
-            }
+    // Highlight the prbability text field of the current edge
+    mPEdgeMap.get(mPEdge).setCaretPosition(0);
+    if (requiresUniformAction) {
+      uniformActionPerformed();
+    }
+  }
 
-            public void mouseExited(MouseEvent me) {
-                mUniButton.setIcon(ICON_UNIFORM_STANDARD);
-                mUniButton.setBackground(new Color(255, 255, 255));
-            }
-        });
-         // Button panel
-        Box topContainer = Box.createHorizontalBox();
-        Box probButtonsBox = Box.createVerticalBox();
-       // probButtonsBox.add(Box.createHorizontalGlue());
-        probButtonsBox.add(mNormButton);
-        probButtonsBox.add(Box.createVerticalStrut(20));
-        probButtonsBox.add(mUniButton);
-       // probButtonsBox.add(Box.createHorizontalGlue());
-        topContainer.add(nodesScrollPanel);
-        topContainer.add(Box.createHorizontalStrut(130));
-        topContainer.add(probButtonsBox);
-        // Add the rest panel
-        mEdgeProbPanel.add(topContainer);
-        mEdgeProbPanel.add(Box.createVerticalStrut(40));
-        mEdgeProbPanel.add(mRestPanel);
+  protected void initAltStartNodePanel() {
 
-        // Highlight the prbability text field of the current edge
-        mPEdgeMap.get(mPEdge).setCaretPosition(0);
-        if(requiresUniformAction)
-        {
-            uniformActionPerformed();
-        }
+    // Init alternative start node label
+    mAltStartNodeLabel = new JLabel("Alternative Start Nodes:");
+    sanitizeComponent(mAltStartNodeLabel, labelSize);
+    // Init alternative start node list
+    mAltStartNodeList = new JList(new DefaultListModel());
+    mAltStartNodeScrollPane = new JScrollPane(mAltStartNodeList);
+    Dimension tfSize = new Dimension(200, 110);
+    mAltStartNodeScrollPane.setPreferredSize(tfSize);
+    mAltStartNodeScrollPane.setMinimumSize(tfSize);
+    mAltStartNodeScrollPane.setMaximumSize(tfSize);
+
+    // Init alternative start node buttons300
+    // add button
+    mAddAltStartNodeButton = new AddButton();
+    mAddAltStartNodeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        addAltStartNode();
+      }
+    });
+
+    // remove button
+    mRemoveAltStartNodeButton = new RemoveButton();
+    mRemoveAltStartNodeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        removeAltStartNode();
+      }
+    });
+
+    // edit button
+    mEditAltStartNodeButton = new EditButton();
+    mEditAltStartNodeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        editAltStartNode();
+      }
+    });
+
+    // Init alternative start node panel
+    Box buttonsBox = Box.createVerticalBox();
+    buttonsBox.setMaximumSize(new Dimension(20, 100));
+    buttonsBox.add(mAddAltStartNodeButton);
+    buttonsBox.add(Box.createVerticalStrut(10));
+    buttonsBox.add(mRemoveAltStartNodeButton);
+    buttonsBox.add(Box.createVerticalStrut(10));
+    buttonsBox.add(mEditAltStartNodeButton);
+    mAltStartNodePanel = new JPanel();
+    mAltStartNodePanel.setLayout(new BoxLayout(mAltStartNodePanel, BoxLayout.X_AXIS));
+    mAltStartNodePanel.add(mAltStartNodeLabel);
+    mAltStartNodePanel.add(Box.createHorizontalStrut(10));
+    mAltStartNodePanel.add(mAltStartNodeScrollPane);
+    mAltStartNodePanel.add(Box.createHorizontalStrut(10));
+    mAltStartNodePanel.add(buttonsBox);
+    mAltStartNodePanel.add(Box.createHorizontalGlue());
+  }
+
+  private void saveProbabilities() {
+    if (!areProbabilitiesValid()) {
+      return;
     }
 
-    protected void initAltStartNodePanel() {
+    // Save the probabilities
+    Iterator it = mPEdgeMap.entrySet().iterator();
 
-        // Init alternative start node label
-        mAltStartNodeLabel = new JLabel("Alternative Start Nodes:");
-        sanitizeComponent(mAltStartNodeLabel, labelSize);
-        // Init alternative start node list
-        mAltStartNodeList = new JList(new DefaultListModel());
-        mAltStartNodeScrollPane = new JScrollPane(mAltStartNodeList);
-        Dimension tfSize = new Dimension(200, 110);
-        mAltStartNodeScrollPane.setPreferredSize(tfSize);
-        mAltStartNodeScrollPane.setMinimumSize(tfSize);
-        mAltStartNodeScrollPane.setMaximumSize(tfSize);
+    while (it.hasNext()) {
+      Map.Entry entry = (Map.Entry) it.next();
+      RandomEdge edge = (RandomEdge) entry.getKey();
+      JTextField field = (JTextField) entry.getValue();
 
-        // Init alternative start node buttons300
-        // add button
-        mAddAltStartNodeButton = new AddButton();
-        mAddAltStartNodeButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                addAltStartNode();
-            }
-        });
+      edge.setProbability(Integer.valueOf(field.getText().trim()));
+    }
+  }
 
-        // remove button
-        mRemoveAltStartNodeButton = new RemoveButton();
-        mRemoveAltStartNodeButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                removeAltStartNode();
-            }
-        });
+  private boolean areProbabilitiesValid() {
+    int sum = 0;
 
-        // edit button
-        mEditAltStartNodeButton = new EditButton();
-        mEditAltStartNodeButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                editAltStartNode();
-            }
-        });
-
-        // Init alternative start node panel
-        Box buttonsBox = Box.createVerticalBox();
-        buttonsBox.setMaximumSize(new Dimension(20, 100));
-        buttonsBox.add(mAddAltStartNodeButton);
-        buttonsBox.add(Box.createVerticalStrut(10));
-        buttonsBox.add(mRemoveAltStartNodeButton);
-        buttonsBox.add(Box.createVerticalStrut(10));
-        buttonsBox.add(mEditAltStartNodeButton);
-        mAltStartNodePanel = new JPanel();
-        mAltStartNodePanel.setLayout(new BoxLayout(mAltStartNodePanel, BoxLayout.X_AXIS));
-        mAltStartNodePanel.add(mAltStartNodeLabel);
-        mAltStartNodePanel.add(Box.createHorizontalStrut(10));
-        mAltStartNodePanel.add(mAltStartNodeScrollPane);
-        mAltStartNodePanel.add(Box.createHorizontalStrut(10));
-        mAltStartNodePanel.add(buttonsBox);
-        mAltStartNodePanel.add(Box.createHorizontalGlue());
+    for (JTextField textField : mPEdgeMap.values()) {
+      try {
+        if (textField.getText().length() == 0) {
+          textField.setBorder(BorderFactory.createLineBorder(Color.red));
+          errorMsg.setForeground(Color.red);
+          return false;
+        }
+        sum += Integer.valueOf(textField.getText().trim()).intValue();
+      } catch (NumberFormatException e) {
+        return false;
+      }
     }
 
-    private void saveProbabilities() {
-        if (!areProbabilitiesValid()) {
-            return;
-        }
+    return (sum == 100);
+  }
 
-        // Save the probabilities
-        Iterator it = mPEdgeMap.entrySet().iterator();
+  public RandomEdge run() {
+    setVisible(true);
 
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            RandomEdge edge = (RandomEdge) entry.getKey();
-            JTextField field = (JTextField) entry.getValue();
-
-            edge.setProbability(Integer.valueOf(field.getText().trim()));
-        }
+    if (mPressedButton == Button.OK) {
+      return mPEdge;
+    } else {
+      return null;
     }
+  }
 
-    private boolean areProbabilitiesValid() {
-        int sum = 0;
+  public void normalizeActionPerformed() {
 
-        for (JTextField textField : mPEdgeMap.values()) {
-            try {
-                if (textField.getText().length() == 0) {
-                    textField.setBorder(BorderFactory.createLineBorder(Color.red));
-                    errorMsg.setForeground(Color.red);
-                    return false;
-                }
-                sum += Integer.valueOf(textField.getText().trim()).intValue();
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        }
+    // Compute the total sum of all probabilities
+    int sum = 0;
 
-        return (sum == 100);
-    }
+    for (JTextField textField : mPEdgeMap.values()) {
+      try {
+        int value = Integer.valueOf(textField.getText().trim());
 
-    public RandomEdge run() {
-        setVisible(true);
+        if (value <= 0) {
 
-        if (mPressedButton == Button.OK) {
-            return mPEdge;
+          // ERROR
         } else {
-            return null;
+          sum += value;
         }
+      } catch (NumberFormatException e) {
+
+        // ERROR
+      }
     }
 
-    public void normalizeActionPerformed() {
+    for (JTextField textField : mPEdgeMap.values()) {
+      double prob = Integer.valueOf(textField.getText().trim()).doubleValue();
+      double ratiuon = (prob / Integer.valueOf(sum).doubleValue()) * 100.0d;
 
-        // Compute the total sum of all probabilities
-        int sum = 0;
-
-        for (JTextField textField : mPEdgeMap.values()) {
-            try {
-                int value = Integer.valueOf(textField.getText().trim());
-
-                if (value <= 0) {
-
-                    // ERROR
-                } else {
-                    sum += value;
-                }
-            } catch (NumberFormatException e) {
-
-                // ERROR
-            }
-        }
-
-        for (JTextField textField : mPEdgeMap.values()) {
-            double prob = Integer.valueOf(textField.getText().trim()).doubleValue();
-            double ratiuon = (prob / Integer.valueOf(sum).doubleValue()) * 100.0d;
-
-            textField.setText(Integer.valueOf((int) Math.round(ratiuon)).toString());
-        }
+      textField.setText(Integer.valueOf((int) Math.round(ratiuon)).toString());
     }
+  }
 
-    public void uniformActionPerformed() {
-        int numEdges = mPEdgeMap.size();
-        int uniProb = 100 / numEdges;
-        int restVal = 100 % numEdges;
+  public void uniformActionPerformed() {
+    int numEdges = mPEdgeMap.size();
+    int uniProb = 100 / numEdges;
+    int restVal = 100 % numEdges;
 
-        for (JTextField textField : mPEdgeMap.values()) {
-            textField.setText(Integer.toString(uniProb));
-        }
+    for (JTextField textField : mPEdgeMap.values()) {
+      textField.setText(Integer.toString(uniProb));
     }
+  }
 
-    @Override
-    public void okActionPerformed() {
-        if (areProbabilitiesValid()) {
-            saveProbabilities();
-            saveAltStartNodeMap();
-            dispose(Button.OK);
-        }
+  @Override
+  public void okActionPerformed() {
+    if (areProbabilitiesValid()) {
+      saveProbabilities();
+      saveAltStartNodeMap();
+      dispose(Button.OK);
     }
+  }
 
-    @Override
-    protected void cancelActionPerformed() {
-        dispose(Button.CANCEL);
+  @Override
+  protected void cancelActionPerformed() {
+    dispose(Button.CANCEL);
+  }
+
+  private void loadAltStartNodeMap() {
+    mAltStartNodeManager.loadAltStartNodeMap();
+
+    if (mPEdge.getTargetNode() instanceof SuperNode) {
+      Iterator it = mAltStartNodeManager.mAltStartNodeMap.entrySet().iterator();
+
+      while (it.hasNext()) {
+        Map.Entry pairs = (Map.Entry) it.next();
+        TPLTuple<String, BasicNode> startNodePair = (TPLTuple<String, BasicNode>) pairs.getKey();
+        TPLTuple<String, BasicNode> altStartNodePair = (TPLTuple<String, BasicNode>) pairs.getValue();
+
+        ((DefaultListModel) mAltStartNodeList.getModel()).addElement(startNodePair.getFirst() + "/"
+                + altStartNodePair.getFirst());
+
+        ////System.err.println("loading start node "+startNodePair.getSecond());
+        ////System.err.println("loading alt start node "+altStartNodePair.getSecond());
+      }
+    } else {
+      mAddAltStartNodeButton.setEnabled(false);
+      mRemoveAltStartNodeButton.setEnabled(false);
+      mEditAltStartNodeButton.setEnabled(false);
+      mAltStartNodeList.setEnabled(false);
+      mAltStartNodeScrollPane.setEnabled(false);
     }
+  }
 
-    private void loadAltStartNodeMap() {
-        mAltStartNodeManager.loadAltStartNodeMap();
+  private void saveAltStartNodeMap() {
+    mAltStartNodeManager.saveAltStartNodeMap();
+  }
 
-        if (mPEdge.getTargetNode() instanceof SuperNode) {
-            Iterator it = mAltStartNodeManager.mAltStartNodeMap.entrySet().iterator();
+  private void addAltStartNode() {
+    CreateAltStartNodeDialog dialog = new CreateAltStartNodeDialog(mAltStartNodeManager);
 
-            while (it.hasNext()) {
-                Map.Entry pairs = (Map.Entry) it.next();
-                TPLTuple<String, BasicNode> startNodePair = (TPLTuple<String, BasicNode>) pairs.getKey();
-                TPLTuple<String, BasicNode> altStartNodePair = (TPLTuple<String, BasicNode>) pairs.getValue();
+    dialog.run();
 
-                ((DefaultListModel) mAltStartNodeList.getModel()).addElement(startNodePair.getFirst() + "/"
-                        + altStartNodePair.getFirst());
+    // /
+    ((DefaultListModel) mAltStartNodeList.getModel()).clear();
 
-                ////System.err.println("loading start node "+startNodePair.getSecond());
-                ////System.err.println("loading alt start node "+altStartNodePair.getSecond());
-            }
-        } else {
-            mAddAltStartNodeButton.setEnabled(false);
-            mRemoveAltStartNodeButton.setEnabled(false);
-            mEditAltStartNodeButton.setEnabled(false);
-            mAltStartNodeList.setEnabled(false);
-            mAltStartNodeScrollPane.setEnabled(false);
-        }
+    Iterator it = mAltStartNodeManager.mAltStartNodeMap.entrySet().iterator();
+
+    while (it.hasNext()) {
+      Map.Entry pairs = (Map.Entry) it.next();
+      TPLTuple<String, BasicNode> startNodePair = (TPLTuple<String, BasicNode>) pairs.getKey();
+      TPLTuple<String, BasicNode> altStartNodePair = (TPLTuple<String, BasicNode>) pairs.getValue();
+
+      ((DefaultListModel) mAltStartNodeList.getModel()).addElement(startNodePair.getFirst() + "/"
+              + altStartNodePair.getFirst());
     }
+  }
 
-    private void saveAltStartNodeMap() {
-        mAltStartNodeManager.saveAltStartNodeMap();
+  private void removeAltStartNode() {
+    String selectedValue = (String) mAltStartNodeList.getSelectedValue();
+
+    if (selectedValue != null) {
+      String[] idPair = selectedValue.split("/");
+      String startNodeId = idPair[0];
+
+      // String altStartNodeId = idPair[1];
+      System.err.println("remove alt start node" + startNodeId);
+      mAltStartNodeManager.removeAltStartNode(startNodeId);
+      ((DefaultListModel) mAltStartNodeList.getModel()).removeElement(selectedValue);
     }
+  }
 
-    private void addAltStartNode() {
-        CreateAltStartNodeDialog dialog = new CreateAltStartNodeDialog(mAltStartNodeManager);
+  private void editAltStartNode() {
+  }
 
-        dialog.run();
+  public JPanel getEdgeProbPanel() {
+    return mEdgeProbPanel;
+  }
 
-        // /
-        ((DefaultListModel) mAltStartNodeList.getModel()).clear();
+  public JPanel getButtonPanel() {
+    return mButtonPanel;
+  }
 
-        Iterator it = mAltStartNodeManager.mAltStartNodeMap.entrySet().iterator();
+  public JLabel getNormButton() {
+    return mNormButton;
+  }
 
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            TPLTuple<String, BasicNode> startNodePair = (TPLTuple<String, BasicNode>) pairs.getKey();
-            TPLTuple<String, BasicNode> altStartNodePair = (TPLTuple<String, BasicNode>) pairs.getValue();
+  public JLabel getUniButton() {
+    return mUniButton;
+  }
 
-            ((DefaultListModel) mAltStartNodeList.getModel()).addElement(startNodePair.getFirst() + "/"
-                    + altStartNodePair.getFirst());
-        }
-    }
+  public JPanel getAltStartNodePanel() {
+    return mAltStartNodePanel;
+  }
 
-    private void removeAltStartNode() {
-        String selectedValue = (String) mAltStartNodeList.getSelectedValue();
-
-        if (selectedValue != null) {
-            String[] idPair = selectedValue.split("/");
-            String startNodeId = idPair[0];
-
-            // String altStartNodeId = idPair[1];
-            System.err.println("remove alt start node" + startNodeId);
-            mAltStartNodeManager.removeAltStartNode(startNodeId);
-            ((DefaultListModel) mAltStartNodeList.getModel()).removeElement(selectedValue);
-        }
-    }
-
-    private void editAltStartNode() {
-    }
-
-    public JPanel getEdgeProbPanel() {
-        return mEdgeProbPanel;
-    }
-
-    public JPanel getButtonPanel() {
-        return mButtonPanel;
-    }
-
-    public JLabel getNormButton() {
-        return mNormButton;
-    }
-
-    public JLabel getUniButton() {
-        return mUniButton;
-    }
-
-    public JPanel getAltStartNodePanel() {
-        return mAltStartNodePanel;
-    }
-
-    public HashMap<RandomEdge, JTextField> getPEdgeMap() {
-        return mPEdgeMap;
-    }
+  public HashMap<RandomEdge, JTextField> getPEdgeMap() {
+    return mPEdgeMap;
+  }
 }
 
 /**
@@ -664,16 +659,16 @@ public class ModifyPEdgeDialog extends Dialog {
  */
 class IntegerDocument extends PlainDocument {
 
-    @Override
-    public void insertString(int offset, String s, AttributeSet attributeSet) throws BadLocationException {
-        try {
-            Integer.parseInt(s);
-        } catch (Exception e) {
-            Toolkit.getDefaultToolkit().beep();
+  @Override
+  public void insertString(int offset, String s, AttributeSet attributeSet) throws BadLocationException {
+    try {
+      Integer.parseInt(s);
+    } catch (Exception e) {
+      Toolkit.getDefaultToolkit().beep();
 
-            return;
-        }
-
-        super.insertString(offset, s, attributeSet);
+      return;
     }
+
+    super.insertString(offset, s, attributeSet);
+  }
 }

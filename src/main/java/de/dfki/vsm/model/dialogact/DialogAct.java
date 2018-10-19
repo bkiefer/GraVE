@@ -10,21 +10,21 @@ import java.util.Map;
  */
 public class DialogAct {
 
-    private final String mPhase;
-    private final String mName;
-    private Map<String, List<String>> mAttributeValueMap;
+  private final String mPhase;
+  private final String mName;
+  private Map<String, List<String>> mAttributeValueMap;
 
-    public DialogAct(String name, String phase, Map<String, List<String>> attributeValueMap) {
-        mName = name;
-        mPhase = phase;
-        mAttributeValueMap = attributeValueMap;
-    }
+  public DialogAct(String name, String phase, Map<String, List<String>> attributeValueMap) {
+    mName = name;
+    mPhase = phase;
+    mAttributeValueMap = attributeValueMap;
+  }
 
-    public String getName() {
-        return mName;
-    }
+  public String getName() {
+    return mName;
+  }
 
-    public String getPhase() {
-        return mPhase;
-    }
+  public String getPhase() {
+    return mPhase;
+  }
 }

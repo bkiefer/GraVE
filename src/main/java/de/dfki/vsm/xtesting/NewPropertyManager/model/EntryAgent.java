@@ -8,36 +8,37 @@ import de.dfki.vsm.xtesting.NewPropertyManager.util.ContextTreeItem;
  * Created by alvaro on 6/2/16.
  */
 public class EntryAgent extends AbstractTreeEntry {
-    private AgentConfig agentConfig;
-    private AbstractTreeItem contextTreeItem;
-    public EntryAgent(String pName){
-        name = pName;
-    }
-    public void setContextTreeItem(AbstractTreeItem contextItem){
-        contextTreeItem = contextItem;
-    }
 
-    public AbstractTreeItem getContextTreeItem(){
-        return  contextTreeItem;
-    }
+  private AgentConfig agentConfig;
+  private AbstractTreeItem contextTreeItem;
 
-    public EntryAgent(AgentConfig agent){
-        agentConfig = agent;
-        name = agentConfig.getAgentName();
-    }
+  public EntryAgent(String pName) {
+    name = pName;
+  }
 
-    public AgentConfig getAgentConfig(){
-        return agentConfig;
-    }
+  public void setContextTreeItem(AbstractTreeItem contextItem) {
+    contextTreeItem = contextItem;
+  }
 
-    public String getPluginName(){
-        return agentConfig.getDeviceName();
-    }
+  public AbstractTreeItem getContextTreeItem() {
+    return contextTreeItem;
+  }
 
-    public void setAgentConfig(AgentConfig agent){
-        agentConfig = agent;
-    }
+  public EntryAgent(AgentConfig agent) {
+    agentConfig = agent;
+    name = agentConfig.getAgentName();
+  }
 
+  public AgentConfig getAgentConfig() {
+    return agentConfig;
+  }
 
+  public String getPluginName() {
+    return agentConfig.getDeviceName();
+  }
+
+  public void setAgentConfig(AgentConfig agent) {
+    agentConfig = agent;
+  }
 
 }

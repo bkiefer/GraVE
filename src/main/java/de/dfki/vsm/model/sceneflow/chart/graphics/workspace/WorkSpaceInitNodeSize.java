@@ -8,8 +8,8 @@ import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
  */
 public class WorkSpaceInitNodeSize extends WorkAreaSize {
 
-    public WorkSpaceInitNodeSize(WorkSpacePanel workSpacePanel, int nodeWidth, int nodeHeight) {
-        super(workSpacePanel, nodeWidth, nodeHeight);
-    }
+  public WorkSpaceInitNodeSize(WorkSpacePanel workSpacePanel, int nodeWidth, int nodeHeight) {
+    super(workSpacePanel, nodeWidth, nodeHeight);
+  }
 
 }

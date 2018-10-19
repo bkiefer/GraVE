@@ -255,61 +255,61 @@ import de.dfki.vsm.util.log.LOGDefaultLogger;
  */
 class CmdEditor extends AttributeEditor {
 
-    public CmdEditor() {
-        super("Edit Command Executions:");
+  public CmdEditor() {
+    super("Edit Command Executions:");
+  }
+
+  @Override
+  public void update(EventObject event) {
+    if (event instanceof NodeSelectedEvent) {
+
+      // Update the selected node
+      mDataNode = ((NodeSelectedEvent) event).getNode();
+
+      // Reload the command execution list
+      mListModel.clear();
+
+      Command cmd = mDataNode.getCmd();
+      mListModel.addElement(cmd);
+
+    } else {
+
+      // Do nothing
     }
+  }
 
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof NodeSelectedEvent) {
-
-            // Update the selected node
-            mDataNode = ((NodeSelectedEvent) event).getNode();
-
-            // Reload the command execution list
-            mListModel.clear();
-
-            Command cmd = mDataNode.getCmd();
-            mListModel.addElement(cmd);
-
-        } else {
-
-            // Do nothing
-        }
+  @Override
+  protected void add() {
+    de.dfki.vsm.editor.Node currentNode = EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().getNode(mDataNode.getId());
+    if (currentNode != null) {
+      EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().deselectAllOtherComponents(currentNode);
+      new CmdDialog(mDataNode.getCmd()).run();
     }
+  }
 
-    @Override
-    protected void add() {
-        de.dfki.vsm.editor.Node currentNode = EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().getNode(mDataNode.getId());
-        if (currentNode != null) {
-            EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().deselectAllOtherComponents(currentNode);
-            new CmdDialog(mDataNode.getCmd()).run();
-        }
-    }
+  @Override
+  protected void edit() {
+    Command oldCmd = mDataNode.getCmd();
+    Command newCmd = new CmdDialog(oldCmd).run();
+  }
 
-    @Override
-    protected void edit() {
-      Command oldCmd = mDataNode.getCmd();
-      Command newCmd = new CmdDialog(oldCmd).run();
-    }
+  @Override
+  protected void remove() {
+    // TODO Auto-generated method stub
 
-    @Override
-    protected void remove() {
-      // TODO Auto-generated method stub
+  }
 
-    }
+  @Override
+  protected void up() {
+    // TODO Auto-generated method stub
 
-    @Override
-    protected void up() {
-      // TODO Auto-generated method stub
+  }
 
-    }
+  @Override
+  protected void down() {
+    // TODO Auto-generated method stub
 
-    @Override
-    protected void down() {
-      // TODO Auto-generated method stub
-
-    }
+  }
 }
 
 /**
@@ -321,80 +321,80 @@ class CmdEditor extends AttributeEditor {
  */
 class ConditionEditor extends JPanel implements EventListener {
 
-    private GuardedEdge mDataCEdge;
-    private ModifyCEdgeDialog mCEdgeDialog;
+  private GuardedEdge mDataCEdge;
+  private ModifyCEdgeDialog mCEdgeDialog;
 
-    public ConditionEditor() {
-        initComponents();
-        EventDispatcher.getInstance().register(this);
-    }
+  public ConditionEditor() {
+    initComponents();
+    EventDispatcher.getInstance().register(this);
+  }
 
-    private void initComponents() {
-        setBackground(Color.white);
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-    }
+  private void initComponents() {
+    setBackground(Color.white);
+    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+  }
 
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof EdgeSelectedEvent) {
-            if (event instanceof EdgeSelectedEvent) {
-                if (((EdgeSelectedEvent) event).getEdge().getEdgeType().equals(EdgeType.GuardedEdge)) {
-                    mDataCEdge = (GuardedEdge) ((EdgeSelectedEvent) event).getEdge();
-                    createNewDialog();
-                    removeAll();
-                    mCEdgeDialog.getInputPanel().setMinimumSize(new Dimension(200, 40));
-                    mCEdgeDialog.getInputPanel().setMaximumSize(new Dimension(1000, 40));
-                    mCEdgeDialog.getInputPanel().setPreferredSize(new Dimension(200, 40));
-                    mCEdgeDialog.getInputPanel().setAlignmentX(RIGHT_ALIGNMENT);
-                    mCEdgeDialog.getAltStartNodePanel().setMinimumSize(new Dimension(200, 150));
-                    mCEdgeDialog.getAltStartNodePanel().setMaximumSize(new Dimension(1000, 150));
-                    mCEdgeDialog.getAltStartNodePanel().setPreferredSize(new Dimension(200, 150));
-                    mCEdgeDialog.getAltStartNodePanel().setAlignmentX(RIGHT_ALIGNMENT);
-                    add(mCEdgeDialog.getInputPanel());
-                    add(mCEdgeDialog.getAltStartNodePanel());
-                    mCEdgeDialog.getInputTextField().addKeyListener(new KeyAdapter() {
-                        @Override
-                        public void keyReleased(KeyEvent event) {
-                            save();
-                            EditorInstance.getInstance().refresh();
-                        }
-                    });
-                }
+  @Override
+  public void update(EventObject event) {
+    if (event instanceof EdgeSelectedEvent) {
+      if (event instanceof EdgeSelectedEvent) {
+        if (((EdgeSelectedEvent) event).getEdge().getEdgeType().equals(EdgeType.GuardedEdge)) {
+          mDataCEdge = (GuardedEdge) ((EdgeSelectedEvent) event).getEdge();
+          createNewDialog();
+          removeAll();
+          mCEdgeDialog.getInputPanel().setMinimumSize(new Dimension(200, 40));
+          mCEdgeDialog.getInputPanel().setMaximumSize(new Dimension(1000, 40));
+          mCEdgeDialog.getInputPanel().setPreferredSize(new Dimension(200, 40));
+          mCEdgeDialog.getInputPanel().setAlignmentX(RIGHT_ALIGNMENT);
+          mCEdgeDialog.getAltStartNodePanel().setMinimumSize(new Dimension(200, 150));
+          mCEdgeDialog.getAltStartNodePanel().setMaximumSize(new Dimension(1000, 150));
+          mCEdgeDialog.getAltStartNodePanel().setPreferredSize(new Dimension(200, 150));
+          mCEdgeDialog.getAltStartNodePanel().setAlignmentX(RIGHT_ALIGNMENT);
+          add(mCEdgeDialog.getInputPanel());
+          add(mCEdgeDialog.getAltStartNodePanel());
+          mCEdgeDialog.getInputTextField().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent event) {
+              save();
+              EditorInstance.getInstance().refresh();
             }
-        } else {
-
-          if(!(event instanceof CEdgeDialogModifiedEvent)){
-              int a = 0;
-          }
+          });
         }
+      }
+    } else {
+
+      if (!(event instanceof CEdgeDialogModifiedEvent)) {
+        int a = 0;
+      }
     }
+  }
 
-    private void createNewDialog() {
-        if(mCEdgeDialog != null){
-            mCEdgeDialog.removeListener();
-        }
-        mCEdgeDialog = new ModifyCEdgeDialog(mDataCEdge);
+  private void createNewDialog() {
+    if (mCEdgeDialog != null) {
+      mCEdgeDialog.removeListener();
     }
+    mCEdgeDialog = new ModifyCEdgeDialog(mDataCEdge);
+  }
 
-    private void save() {
-        String inputString = mCEdgeDialog.getInputTextField().getText().trim();
+  private void save() {
+    String inputString = mCEdgeDialog.getInputTextField().getText().trim();
 
-        try {
-            //ChartParser.parseResultType = ChartParser.LOG;
-            //ChartParser.parseResultType = ChartParser.EXP;
-            Expression log = (Expression) GlueParser.run(inputString);
+    try {
+      //ChartParser.parseResultType = ChartParser.LOG;
+      //ChartParser.parseResultType = ChartParser.EXP;
+      Expression log = (Expression) GlueParser.run(inputString);
 
-            //LogicalCond log = ChartParser.logResult;
-            //Expression log = ChartParser.expResult;
-            if (log != null) {
-                mDataCEdge.setCondition(log);
-            } else {
+      //LogicalCond log = ChartParser.logResult;
+      //Expression log = ChartParser.expResult;
+      if (log != null) {
+        mDataCEdge.setCondition(log);
+      } else {
 
-                // Do nothing
-            }
-        } catch (Exception e) {
-        }
+        // Do nothing
+      }
+    } catch (Exception e) {
     }
+  }
 }
 
 /**
@@ -406,65 +406,65 @@ class ConditionEditor extends JPanel implements EventListener {
  */
 class EdgeEditor extends JPanel implements EventListener {
 
-    private final TimeOutEditor mTimeOutEditor;
-    private final ConditionEditor mConditionEditor;
-    private final ProbabilityEditor mProbabilityEditor;
-    private final InterruptEditor mInterruptEditor;
+  private final TimeOutEditor mTimeOutEditor;
+  private final ConditionEditor mConditionEditor;
+  private final ProbabilityEditor mProbabilityEditor;
+  private final InterruptEditor mInterruptEditor;
 
-    public EdgeEditor() {
+  public EdgeEditor() {
 
-        // Init the child editors
-        mTimeOutEditor = new TimeOutEditor();
-        mConditionEditor = new ConditionEditor();
-        mProbabilityEditor = new ProbabilityEditor();
-        mInterruptEditor = new InterruptEditor();
+    // Init the child editors
+    mTimeOutEditor = new TimeOutEditor();
+    mConditionEditor = new ConditionEditor();
+    mProbabilityEditor = new ProbabilityEditor();
+    mInterruptEditor = new InterruptEditor();
 
-        // Init components
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(Color.white);
-        setBorder(BorderFactory.createEmptyBorder());
-        add(mTimeOutEditor);
-        add(mConditionEditor);
-        add(mProbabilityEditor);
-        add(mInterruptEditor);
-        EventDispatcher.getInstance().register(this);
+    // Init components
+    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    setBackground(Color.white);
+    setBorder(BorderFactory.createEmptyBorder());
+    add(mTimeOutEditor);
+    add(mConditionEditor);
+    add(mProbabilityEditor);
+    add(mInterruptEditor);
+    EventDispatcher.getInstance().register(this);
+  }
+
+  @Override
+  public void update(EventObject event) {
+    if (event instanceof EdgeSelectedEvent) {
+
+      // Get the selected node
+      AbstractEdge edge = ((EdgeSelectedEvent) event).getEdge();
+
+      if (edge instanceof TimeoutEdge) {
+        mTimeOutEditor.setVisible(true);
+      } else {
+        mTimeOutEditor.setVisible(false);
+      }
+
+      if (edge instanceof GuardedEdge) {
+        mConditionEditor.setVisible(true);
+      } else {
+        mConditionEditor.setVisible(false);
+      }
+
+      if (edge instanceof InterruptEdge) {
+        mInterruptEditor.setVisible(true);
+      } else {
+        mInterruptEditor.setVisible(false);
+      }
+
+      if (edge instanceof RandomEdge) {
+        mProbabilityEditor.setVisible(true);
+      } else {
+        mProbabilityEditor.setVisible(false);
+      }
+    } else {
+
+      // Do nothing
     }
-
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof EdgeSelectedEvent) {
-
-            // Get the selected node
-            AbstractEdge edge = ((EdgeSelectedEvent) event).getEdge();
-
-            if (edge instanceof TimeoutEdge) {
-                mTimeOutEditor.setVisible(true);
-            } else {
-                mTimeOutEditor.setVisible(false);
-            }
-
-            if (edge instanceof GuardedEdge) {
-                mConditionEditor.setVisible(true);
-            } else {
-                mConditionEditor.setVisible(false);
-            }
-
-            if (edge instanceof InterruptEdge) {
-                mInterruptEditor.setVisible(true);
-            } else {
-                mInterruptEditor.setVisible(false);
-            }
-
-            if (edge instanceof RandomEdge) {
-                mProbabilityEditor.setVisible(true);
-            } else {
-                mProbabilityEditor.setVisible(false);
-            }
-        } else {
-
-            // Do nothing
-        }
-    }
+  }
 }
 
 /**
@@ -476,62 +476,60 @@ class EdgeEditor extends JPanel implements EventListener {
  */
 public class ElementEditor extends JScrollPane implements EventListener {
 
+  //
+  // private final Observable mObservable = new Observable();
+  private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+
+  private final NodeEditor mNodeEditor;
+  private final EdgeEditor mEdgeEditor;
+
+  public ElementEditor() {
+
+    // Init node editor and edge editor
+    mNodeEditor = new NodeEditor();
+    mEdgeEditor = new EdgeEditor();
+
     //
-    // private final Observable mObservable = new Observable();
-    private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
+    // Init the scrollpane attributes
+    setPreferredSize(new Dimension(260, 500));
+    setMinimumSize(new Dimension(260, 500));
+    setBorder(BorderFactory.createEtchedBorder());
+    setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    getVerticalScrollBar().setUI(new WindowsScrollBarUI());
+    getViewport().setOpaque(false);
+    setOpaque(false);
 
-    private final NodeEditor mNodeEditor;
-    private final EdgeEditor mEdgeEditor;
+    // Set the initial viewport to null
+    setViewportView(null);
 
-    public ElementEditor() {
+    // Add the element editor to the event multicaster
+    EventDispatcher.getInstance().register(this);
+  }
 
-        // Init node editor and edge editor
-        mNodeEditor = new NodeEditor();
-        mEdgeEditor = new EdgeEditor();
+  public final void refresh() {
 
-        //
-        // Init the scrollpane attributes
-        setPreferredSize(new Dimension(260, 500));
-        setMinimumSize(new Dimension(260, 500));
-        setBorder(BorderFactory.createEtchedBorder());
-        setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        getVerticalScrollBar().setUI(new WindowsScrollBarUI());
-        getViewport().setOpaque(false);
-        setOpaque(false);
+    // Print some information
+    //mLogger.message("Refreshing '" + this + "'");
+  }
 
-        // Set the initial viewport to null
-        setViewportView(null);
+  @Override
+  public void update(EventObject event) {
+    if (event instanceof NodeSelectedEvent) {
 
-        // Add the element editor to the event multicaster
-        EventDispatcher.getInstance().register(this);
+      // Update the node of the node editor
+      // mNodeEditor.update(((NodeSelectedEvent) event).getNode());
+      setViewportView(mNodeEditor);
+    } else if (event instanceof EdgeSelectedEvent) {
+
+      // Update the edge of the edge editor
+      // mEdgeEditor.update(((EdgeSelectedEvent) event).getEdge());
+      setViewportView(mEdgeEditor);
+    } else {
+
+      // Do nothing
     }
-
-    public final void refresh() {
-
-        // Print some information
-        //mLogger.message("Refreshing '" + this + "'");
-    }
-
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof NodeSelectedEvent) {
-
-            // Update the node of the node editor
-            // mNodeEditor.update(((NodeSelectedEvent) event).getNode());
-            setViewportView(mNodeEditor);
-        } else if (event instanceof EdgeSelectedEvent) {
-
-            // Update the edge of the edge editor
-            // mEdgeEditor.update(((EdgeSelectedEvent) event).getEdge());
-            setViewportView(mEdgeEditor);
-        } else {
-
-            // Do nothing
-        }
-    }
+  }
 }
-
-
 
 /**
  *
@@ -542,75 +540,75 @@ public class ElementEditor extends JScrollPane implements EventListener {
  */
 class InterruptEditor extends JPanel implements EventListener {
 
-    private InterruptEdge mDataIEdge;
-    private ModifyIEdgeDialog mIEdgeDialog;
+  private InterruptEdge mDataIEdge;
+  private ModifyIEdgeDialog mIEdgeDialog;
 
-    public InterruptEditor() {
-        initComponents();
-        EventDispatcher.getInstance().register(this);
-    }
+  public InterruptEditor() {
+    initComponents();
+    EventDispatcher.getInstance().register(this);
+  }
 
-    private void initComponents() {
-        setBackground(Color.white);
-        setPreferredSize(new Dimension(500, 270));
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-    }
+  private void initComponents() {
+    setBackground(Color.white);
+    setPreferredSize(new Dimension(500, 270));
+    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+  }
 
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof EdgeSelectedEvent) {
-            if (event instanceof EdgeSelectedEvent) {
-                if (((EdgeSelectedEvent) event).getEdge().getEdgeType().equals(EdgeType.InterruptEdge)) {
-                    mDataIEdge = (InterruptEdge) ((EdgeSelectedEvent) event).getEdge();
-                    createNewDialog();
-                    removeAll();
-                    mIEdgeDialog.getInputPanel().setMinimumSize(new Dimension(200, 40));
-                    mIEdgeDialog.getInputPanel().setMaximumSize(new Dimension(1000, 40));
-                    mIEdgeDialog.getInputPanel().setPreferredSize(new Dimension(200, 40));
-                    mIEdgeDialog.getInputPanel().setAlignmentX(RIGHT_ALIGNMENT);
-                    mIEdgeDialog.getAltStartNodePanel().setMinimumSize(new Dimension(200, 150));
-                    mIEdgeDialog.getAltStartNodePanel().setMaximumSize(new Dimension(1000, 150));
-                    mIEdgeDialog.getAltStartNodePanel().setPreferredSize(new Dimension(200, 150));
-                    mIEdgeDialog.getAltStartNodePanel().setAlignmentX(RIGHT_ALIGNMENT);
-                    add(mIEdgeDialog.getInputPanel());
-                    add(mIEdgeDialog.getAltStartNodePanel());
-                    add(Box.createVerticalGlue());
-                    mIEdgeDialog.getInputTextField().addKeyListener(new KeyAdapter() {
-                        @Override
-                        public void keyReleased(KeyEvent event) {
-                            save();
-                            EditorInstance.getInstance().refresh();
-                        }
-                    });
-                }
+  @Override
+  public void update(EventObject event) {
+    if (event instanceof EdgeSelectedEvent) {
+      if (event instanceof EdgeSelectedEvent) {
+        if (((EdgeSelectedEvent) event).getEdge().getEdgeType().equals(EdgeType.InterruptEdge)) {
+          mDataIEdge = (InterruptEdge) ((EdgeSelectedEvent) event).getEdge();
+          createNewDialog();
+          removeAll();
+          mIEdgeDialog.getInputPanel().setMinimumSize(new Dimension(200, 40));
+          mIEdgeDialog.getInputPanel().setMaximumSize(new Dimension(1000, 40));
+          mIEdgeDialog.getInputPanel().setPreferredSize(new Dimension(200, 40));
+          mIEdgeDialog.getInputPanel().setAlignmentX(RIGHT_ALIGNMENT);
+          mIEdgeDialog.getAltStartNodePanel().setMinimumSize(new Dimension(200, 150));
+          mIEdgeDialog.getAltStartNodePanel().setMaximumSize(new Dimension(1000, 150));
+          mIEdgeDialog.getAltStartNodePanel().setPreferredSize(new Dimension(200, 150));
+          mIEdgeDialog.getAltStartNodePanel().setAlignmentX(RIGHT_ALIGNMENT);
+          add(mIEdgeDialog.getInputPanel());
+          add(mIEdgeDialog.getAltStartNodePanel());
+          add(Box.createVerticalGlue());
+          mIEdgeDialog.getInputTextField().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent event) {
+              save();
+              EditorInstance.getInstance().refresh();
             }
-        } else {
-
-            // Do nothing
+          });
         }
-    }
+      }
+    } else {
 
-    private void createNewDialog() {
-        if(mIEdgeDialog != null){
-            mIEdgeDialog.removeListener();
-        }
-        mIEdgeDialog = new ModifyIEdgeDialog(mDataIEdge);
+      // Do nothing
     }
+  }
 
-    private void save() {
-        String inputString = mIEdgeDialog.getInputTextField().getText().trim();
-
-        try {
-            final Expression exp = (Expression) GlueParser.run(inputString);
-            if (exp != null) {
-                mDataIEdge.setCondition(exp);
-            } else {
-                // Do nothing
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+  private void createNewDialog() {
+    if (mIEdgeDialog != null) {
+      mIEdgeDialog.removeListener();
     }
+    mIEdgeDialog = new ModifyIEdgeDialog(mDataIEdge);
+  }
+
+  private void save() {
+    String inputString = mIEdgeDialog.getInputTextField().getText().trim();
+
+    try {
+      final Expression exp = (Expression) GlueParser.run(inputString);
+      if (exp != null) {
+        mDataIEdge.setCondition(exp);
+      } else {
+        // Do nothing
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 }
 
 /**
@@ -622,64 +620,64 @@ class InterruptEditor extends JPanel implements EventListener {
  */
 class NameEditor extends JPanel implements EventListener {
 
-    private JTextField mNameField;
-    private BasicNode mDataNode;
+  private JTextField mNameField;
+  private BasicNode mDataNode;
 
-    public NameEditor() {
-        initComponents();
-        EventDispatcher.getInstance().register(this);
+  public NameEditor() {
+    initComponents();
+    EventDispatcher.getInstance().register(this);
+  }
+
+  private void initComponents() {
+
+    // Init the node name text field
+    mNameField = new JTextField();
+    mNameField.setMinimumSize(new Dimension(200, 20));
+    mNameField.setMaximumSize(new Dimension(1000, 20));
+    mNameField.setPreferredSize(new Dimension(200, 20));
+    mNameField.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyReleased(KeyEvent event) {
+        save();
+        EditorInstance.getInstance().refresh();
+      }
+    });
+
+    // Init the node name panel
+    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+    setOpaque(false);
+    setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Edit Node Name:"));
+    add(mNameField);
+    add(Box.createRigidArea(new Dimension(40, 20)));
+  }
+
+  @Override
+  public void update(EventObject event) {
+    if (event instanceof NodeSelectedEvent) {
+
+      // Update the selected node
+      mDataNode = ((NodeSelectedEvent) event).getNode();
+
+      // Reload the node name
+      mNameField.setText(mDataNode.getName());
+    } else {
+
+      // Do nothing
     }
+  }
 
-    private void initComponents() {
+  private void save() {
 
-        // Init the node name text field
-        mNameField = new JTextField();
-        mNameField.setMinimumSize(new Dimension(200, 20));
-        mNameField.setMaximumSize(new Dimension(1000, 20));
-        mNameField.setPreferredSize(new Dimension(200, 20));
-        mNameField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent event) {
-                save();
-                EditorInstance.getInstance().refresh();
-            }
-        });
+    mDataNode.setName(sanitizeString(mNameField.getText().trim()));
+  }
 
-        // Init the node name panel
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        setOpaque(false);
-        setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Edit Node Name:"));
-        add(mNameField);
-        add(Box.createRigidArea(new Dimension(40, 20)));
-    }
-
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof NodeSelectedEvent) {
-
-            // Update the selected node
-            mDataNode = ((NodeSelectedEvent) event).getNode();
-
-            // Reload the node name
-            mNameField.setText(mDataNode.getName());
-        } else {
-
-            // Do nothing
-        }
-    }
-
-    private void save() {
-
-        mDataNode.setName(sanitizeString(mNameField.getText().trim()));
-    }
-
-    //ESCAPES STRINGS
-    private String sanitizeString(String st) {
-        String output = st;
-        output = output.replaceAll("'", "");
-        output = output.replaceAll("\"", "");
-        return output;
-    }
+  //ESCAPES STRINGS
+  private String sanitizeString(String st) {
+    String output = st;
+    output = output.replaceAll("'", "");
+    output = output.replaceAll("\"", "");
+    return output;
+  }
 }
 
 /**
@@ -691,62 +689,62 @@ class NameEditor extends JPanel implements EventListener {
  */
 class NodeEditor extends JPanel implements EventListener {
 
-    private final NameEditor mNameEditor;
-    private final StartNodeEditor mStartNodeEditor;
+  private final NameEditor mNameEditor;
+  private final StartNodeEditor mStartNodeEditor;
 
-    // private final FunDefEditor mFunDefEditor;
-    private final CmdEditor mCmdEditor;
+  // private final FunDefEditor mFunDefEditor;
+  private final CmdEditor mCmdEditor;
 
-    public NodeEditor() {
+  public NodeEditor() {
 
-        // Init the child editors
-        mNameEditor = new NameEditor();
-        mStartNodeEditor = new StartNodeEditor();
+    // Init the child editors
+    mNameEditor = new NameEditor();
+    mStartNodeEditor = new StartNodeEditor();
 
-        // mFunDefEditor = new FunDefEditor();
-        mCmdEditor = new CmdEditor();
+    // mFunDefEditor = new FunDefEditor();
+    mCmdEditor = new CmdEditor();
 
-        // Init components
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(Color.white);
-        setBorder(BorderFactory.createEmptyBorder());
-        add(mNameEditor);
-        add(mStartNodeEditor);
+    // Init components
+    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    setBackground(Color.white);
+    setBorder(BorderFactory.createEmptyBorder());
+    add(mNameEditor);
+    add(mStartNodeEditor);
 
-        // add(mFunDefEditor);
-        add(mCmdEditor);
+    // add(mFunDefEditor);
+    add(mCmdEditor);
 
-        // Add the element editor to the event multicaster
-        EventDispatcher.getInstance().register(this);
+    // Add the element editor to the event multicaster
+    EventDispatcher.getInstance().register(this);
+  }
+
+  @Override
+  public void update(EventObject event) {
+    if (event instanceof NodeSelectedEvent) {
+
+      // Get the selected node
+      BasicNode node = ((NodeSelectedEvent) event).getNode();
+
+      // Show or hide the start node editor
+      if (node instanceof SuperNode) {
+        mStartNodeEditor.setVisible(true);
+      } else {
+        mStartNodeEditor.setVisible(false);
+      }
+
+      // Show or hide the function definition editor
+      if (node instanceof SceneFlow) {
+
+        // mFunDefEditor.setVisible(true);
+      } else {
+
+        // mFunDefEditor.setVisible(false);
+      }
+    } else {
+
+      // Do nothing
     }
-
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof NodeSelectedEvent) {
-
-            // Get the selected node
-            BasicNode node = ((NodeSelectedEvent) event).getNode();
-
-            // Show or hide the start node editor
-            if (node instanceof SuperNode) {
-                mStartNodeEditor.setVisible(true);
-            } else {
-                mStartNodeEditor.setVisible(false);
-            }
-
-            // Show or hide the function definition editor
-            if (node instanceof SceneFlow) {
-
-                // mFunDefEditor.setVisible(true);
-            } else {
-
-                // mFunDefEditor.setVisible(false);
-            }
-        } else {
-
-            // Do nothing
-        }
-    }
+  }
 }
 
 /**
@@ -758,83 +756,83 @@ class NodeEditor extends JPanel implements EventListener {
  */
 class ProbabilityEditor extends JPanel implements EventListener {
 
-    private final HashMap<RandomEdge, JTextField> mPEdgeMap = new HashMap<RandomEdge, JTextField>();
-    private RandomEdge mDataPEdge;
-    private ModifyPEdgeDialog mPEdgeDialog;
-    private JPanel mButtonPanel;
+  private final HashMap<RandomEdge, JTextField> mPEdgeMap = new HashMap<RandomEdge, JTextField>();
+  private RandomEdge mDataPEdge;
+  private ModifyPEdgeDialog mPEdgeDialog;
+  private JPanel mButtonPanel;
 
-    public ProbabilityEditor() {
-        initComponents();
-        EventDispatcher.getInstance().register(this);
-    }
+  public ProbabilityEditor() {
+    initComponents();
+    EventDispatcher.getInstance().register(this);
+  }
 
-    private void initComponents() {
-        setBackground(Color.white);
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setAlignmentY(CENTER_ALIGNMENT);
-        setAlignmentX(CENTER_ALIGNMENT);
-    }
+  private void initComponents() {
+    setBackground(Color.white);
+    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    setAlignmentY(CENTER_ALIGNMENT);
+    setAlignmentX(CENTER_ALIGNMENT);
+  }
 
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof EdgeSelectedEvent) {
-            if (((EdgeSelectedEvent) event).getEdge().getEdgeType().equals(EdgeType.RandomEdge)) {
-                mDataPEdge = (RandomEdge) ((EdgeSelectedEvent) event).getEdge();
-                mPEdgeDialog = new ModifyPEdgeDialog(mDataPEdge);
-                removeAll();
-                mPEdgeDialog.getEdgeProbPanel().setMinimumSize(new Dimension(200, 140));
-                mPEdgeDialog.getEdgeProbPanel().setMaximumSize(new Dimension(1000, 140));
-                mPEdgeDialog.getEdgeProbPanel().setPreferredSize(new Dimension(200, 140));
-                add(mPEdgeDialog.getEdgeProbPanel());
-                mPEdgeDialog.getAltStartNodePanel().setMinimumSize(new Dimension(200, 150));
-                mPEdgeDialog.getAltStartNodePanel().setMaximumSize(new Dimension(1000, 150));
-                mPEdgeDialog.getAltStartNodePanel().setPreferredSize(new Dimension(200, 150));
-                add(mPEdgeDialog.getAltStartNodePanel());
+  @Override
+  public void update(EventObject event) {
+    if (event instanceof EdgeSelectedEvent) {
+      if (((EdgeSelectedEvent) event).getEdge().getEdgeType().equals(EdgeType.RandomEdge)) {
+        mDataPEdge = (RandomEdge) ((EdgeSelectedEvent) event).getEdge();
+        mPEdgeDialog = new ModifyPEdgeDialog(mDataPEdge);
+        removeAll();
+        mPEdgeDialog.getEdgeProbPanel().setMinimumSize(new Dimension(200, 140));
+        mPEdgeDialog.getEdgeProbPanel().setMaximumSize(new Dimension(1000, 140));
+        mPEdgeDialog.getEdgeProbPanel().setPreferredSize(new Dimension(200, 140));
+        add(mPEdgeDialog.getEdgeProbPanel());
+        mPEdgeDialog.getAltStartNodePanel().setMinimumSize(new Dimension(200, 150));
+        mPEdgeDialog.getAltStartNodePanel().setMaximumSize(new Dimension(1000, 150));
+        mPEdgeDialog.getAltStartNodePanel().setPreferredSize(new Dimension(200, 150));
+        add(mPEdgeDialog.getAltStartNodePanel());
 
-                for (JTextField textField : mPEdgeDialog.getPEdgeMap().values()) {
-                    textField.addKeyListener(new KeyAdapter() {
-                        @Override
-                        public void keyReleased(KeyEvent event) {
-                            save();
-                        }
-                    });
-                }
-
-                mPEdgeDialog.getNormButton().addMouseListener(new java.awt.event.MouseAdapter() {
-                    public void mouseClicked(java.awt.event.MouseEvent evt) {
-                        mPEdgeDialog.normalizeActionPerformed();
-                        save();
-                    }
-                });
-                mPEdgeDialog.getUniButton().addMouseListener(new java.awt.event.MouseAdapter() {
-                    public void mouseClicked(java.awt.event.MouseEvent evt) {
-                        mPEdgeDialog.uniformActionPerformed();
-                        save();
-                    }
-                });
-                mButtonPanel = new JPanel();
-                mButtonPanel.setOpaque(false);
-                mButtonPanel.setMinimumSize(new Dimension(440, 40));
-                mButtonPanel.setLayout(new BoxLayout(mButtonPanel, BoxLayout.X_AXIS));
-                mButtonPanel.add(Box.createRigidArea(new Dimension(20, 10)));
-                mButtonPanel.add(mPEdgeDialog.getUniButton());
-                mButtonPanel.add(Box.createRigidArea(new Dimension(20, 10)));
-                mButtonPanel.add(mPEdgeDialog.getNormButton());
-                add(Box.createRigidArea(new Dimension(20, 20)));
-                add(mButtonPanel);
+        for (JTextField textField : mPEdgeDialog.getPEdgeMap().values()) {
+          textField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent event) {
+              save();
             }
-        } else {
-
-            // Do nothing
+          });
         }
-    }
 
-    private void save() {
-        mPEdgeDialog.okActionPerformed();
-        EditorInstance.getInstance().refresh();
+        mPEdgeDialog.getNormButton().addMouseListener(new java.awt.event.MouseAdapter() {
+          public void mouseClicked(java.awt.event.MouseEvent evt) {
+            mPEdgeDialog.normalizeActionPerformed();
+            save();
+          }
+        });
+        mPEdgeDialog.getUniButton().addMouseListener(new java.awt.event.MouseAdapter() {
+          public void mouseClicked(java.awt.event.MouseEvent evt) {
+            mPEdgeDialog.uniformActionPerformed();
+            save();
+          }
+        });
+        mButtonPanel = new JPanel();
+        mButtonPanel.setOpaque(false);
+        mButtonPanel.setMinimumSize(new Dimension(440, 40));
+        mButtonPanel.setLayout(new BoxLayout(mButtonPanel, BoxLayout.X_AXIS));
+        mButtonPanel.add(Box.createRigidArea(new Dimension(20, 10)));
+        mButtonPanel.add(mPEdgeDialog.getUniButton());
+        mButtonPanel.add(Box.createRigidArea(new Dimension(20, 10)));
+        mButtonPanel.add(mPEdgeDialog.getNormButton());
+        add(Box.createRigidArea(new Dimension(20, 20)));
+        add(mButtonPanel);
+      }
+    } else {
 
-        // System.out.println("save");
+      // Do nothing
     }
+  }
+
+  private void save() {
+    mPEdgeDialog.okActionPerformed();
+    EditorInstance.getInstance().refresh();
+
+    // System.out.println("save");
+  }
 }
 
 /**
@@ -846,78 +844,78 @@ class ProbabilityEditor extends JPanel implements EventListener {
  */
 class StartNodeEditor extends AttributeEditor {
 
-    public StartNodeEditor() {
-        super("Edit Start Nodes:");
-        disableAddButton();
-        disableUpDownButtons();
-    }
+  public StartNodeEditor() {
+    super("Edit Start Nodes:");
+    disableAddButton();
+    disableUpDownButtons();
+  }
 
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof NodeSelectedEvent) {
+  @Override
+  public void update(EventObject event) {
+    if (event instanceof NodeSelectedEvent) {
 
-            // Update the selected node
-            mDataNode = ((NodeSelectedEvent) event).getNode();
+      // Update the selected node
+      mDataNode = ((NodeSelectedEvent) event).getNode();
 
-            // Reload the start node list
-            if (mDataNode instanceof SuperNode) {
-                mListModel.clear();
+      // Reload the start node list
+      if (mDataNode instanceof SuperNode) {
+        mListModel.clear();
 
-                for (BasicNode startNode : ((SuperNode) mDataNode).getStartNodeMap().values()) {
-                    mListModel.addElement(startNode.getName() + "(" + startNode.getId() + ")");
-                }
-            }
-        } else {
-
-            // Do nothing
+        for (BasicNode startNode : ((SuperNode) mDataNode).getStartNodeMap().values()) {
+          mListModel.addElement(startNode.getName() + "(" + startNode.getId() + ")");
         }
+      }
+    } else {
+
+      // Do nothing
+    }
+  }
+
+  @Override
+  protected void add() {
+
+    // Create list of child nodes
+    ArrayList<String> nodeDataList = new ArrayList<>();
+
+    for (BasicNode node : ((SuperNode) mDataNode).getNodeAndSuperNodeList()) {
+      if (!node.isHistoryNode()) {
+        nodeDataList.add(node.getName() + "(" + node.getId() + ")");
+      }
+    }
+  }
+
+  @Override
+  protected void remove() {
+    String value = (String) mList.getSelectedValue();
+
+    if (value != null) {
+      String id = RegularExpressions.getMatches(value, "\\((\\w*)\\)", 2).get(1);
+
+      // Get the new start node
+      BasicNode oldStartNode = ((SuperNode) mDataNode).getChildNodeById(id);
+
+      ((SuperNode) mDataNode).removeStartNode(oldStartNode);
+      EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().getNode(id).removeStartSign();
+      mListModel.removeElement(value);
+      EditorInstance.getInstance().refresh();
+      UndoAction.getInstance().refreshUndoState();
+      RedoAction.getInstance().refreshRedoState();
     }
 
-    @Override
-    protected void add() {
+    // Reload the current start node list of the supernode
+  }
 
-        // Create list of child nodes
-        ArrayList<String> nodeDataList = new ArrayList<>();
+  @Override
+  protected void edit() {
+  }
 
-        for (BasicNode node : ((SuperNode) mDataNode).getNodeAndSuperNodeList()) {
-            if (!node.isHistoryNode()) {
-                nodeDataList.add(node.getName() + "(" + node.getId() + ")");
-            }
-        }
-    }
+  @Override
+  protected void up() {
+  }
 
-    @Override
-    protected void remove() {
-        String value = (String) mList.getSelectedValue();
-
-        if (value != null) {
-            String id = RegularExpressions.getMatches(value, "\\((\\w*)\\)", 2).get(1);
-
-            // Get the new start node
-            BasicNode oldStartNode = ((SuperNode) mDataNode).getChildNodeById(id);
-
-            ((SuperNode) mDataNode).removeStartNode(oldStartNode);
-            EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().getNode(id).removeStartSign();
-            mListModel.removeElement(value);
-            EditorInstance.getInstance().refresh();
-            UndoAction.getInstance().refreshUndoState();
-            RedoAction.getInstance().refreshRedoState();
-        }
-
-        // Reload the current start node list of the supernode
-    }
-
-    @Override
-    protected void edit() {
-    }
-
-    @Override
-    protected void up() {
-    }
-
-    @Override
-    protected void down() {
-    }
+  @Override
+  protected void down() {
+  }
 }
 
 /**
@@ -929,54 +927,52 @@ class StartNodeEditor extends AttributeEditor {
  */
 class TimeOutEditor extends JPanel implements EventListener {
 
-    private TimeoutEdge mDataTEdge;
-    private ModifyTEdgeDialog mTEdgeDialog;
+  private TimeoutEdge mDataTEdge;
+  private ModifyTEdgeDialog mTEdgeDialog;
 
-    public TimeOutEditor() {
-        initComponents();
-        EventDispatcher.getInstance().register(this);
+  public TimeOutEditor() {
+    initComponents();
+    EventDispatcher.getInstance().register(this);
+  }
+
+  private void initComponents() {
+    setBackground(Color.white);
+    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    setAlignmentX(RIGHT_ALIGNMENT);
+  }
+
+  @Override
+  public void update(EventObject event) {
+    if (event instanceof EdgeSelectedEvent) {
+      if (((EdgeSelectedEvent) event).getEdge().getEdgeType().equals(EdgeType.TimeoutEdge)) {
+        mDataTEdge = (TimeoutEdge) ((EdgeSelectedEvent) event).getEdge();
+        mTEdgeDialog = new ModifyTEdgeDialog(mDataTEdge);
+        removeAll();
+        mTEdgeDialog.getInputPanel().setMinimumSize(new Dimension(200, 40));
+        mTEdgeDialog.getInputPanel().setMaximumSize(new Dimension(1000, 40));
+        mTEdgeDialog.getInputPanel().setPreferredSize(new Dimension(200, 40));
+        mTEdgeDialog.getInputPanel().setAlignmentX(RIGHT_ALIGNMENT);
+        mTEdgeDialog.getAltStartNodePanel().setMinimumSize(new Dimension(200, 150));
+        mTEdgeDialog.getAltStartNodePanel().setMaximumSize(new Dimension(1000, 150));
+        mTEdgeDialog.getAltStartNodePanel().setPreferredSize(new Dimension(200, 150));
+        mTEdgeDialog.getAltStartNodePanel().setAlignmentX(RIGHT_ALIGNMENT);
+        add(mTEdgeDialog.getInputPanel());
+        add(mTEdgeDialog.getAltStartNodePanel());
+        mTEdgeDialog.getInputTextField().addKeyListener(new KeyAdapter() {
+          @Override
+          public void keyReleased(KeyEvent event) {
+            save();
+            EditorInstance.getInstance().refresh();
+          }
+        });
+      }
+    } else {
+
+      // Do nothing
     }
+  }
 
-    private void initComponents() {
-        setBackground(Color.white);
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setAlignmentX(RIGHT_ALIGNMENT);
-    }
-
-    @Override
-    public void update(EventObject event) {
-        if (event instanceof EdgeSelectedEvent) {
-            if (((EdgeSelectedEvent) event).getEdge().getEdgeType().equals(EdgeType.TimeoutEdge)) {
-                mDataTEdge = (TimeoutEdge) ((EdgeSelectedEvent) event).getEdge();
-                mTEdgeDialog = new ModifyTEdgeDialog(mDataTEdge);
-                removeAll();
-                mTEdgeDialog.getInputPanel().setMinimumSize(new Dimension(200, 40));
-                mTEdgeDialog.getInputPanel().setMaximumSize(new Dimension(1000, 40));
-                mTEdgeDialog.getInputPanel().setPreferredSize(new Dimension(200, 40));
-                mTEdgeDialog.getInputPanel().setAlignmentX(RIGHT_ALIGNMENT);
-                mTEdgeDialog.getAltStartNodePanel().setMinimumSize(new Dimension(200, 150));
-                mTEdgeDialog.getAltStartNodePanel().setMaximumSize(new Dimension(1000, 150));
-                mTEdgeDialog.getAltStartNodePanel().setPreferredSize(new Dimension(200, 150));
-                mTEdgeDialog.getAltStartNodePanel().setAlignmentX(RIGHT_ALIGNMENT);
-                add(mTEdgeDialog.getInputPanel());
-                add(mTEdgeDialog.getAltStartNodePanel());
-                mTEdgeDialog.getInputTextField().addKeyListener(new KeyAdapter() {
-                    @Override
-                    public void keyReleased(KeyEvent event) {
-                        save();
-                        EditorInstance.getInstance().refresh();
-                    }
-                });
-            }
-        } else {
-
-            // Do nothing
-        }
-    }
-
-    private void save() {
-        mDataTEdge.setTimeout(Integer.parseInt(mTEdgeDialog.getInputTextField().getText()));
-    }
+  private void save() {
+    mDataTEdge.setTimeout(Integer.parseInt(mTEdgeDialog.getInputTextField().getText()));
+  }
 }
-
-

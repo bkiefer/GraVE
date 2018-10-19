@@ -7,7 +7,6 @@
 package de.dfki.vsm.editor.util.grid.pathfinding.heuristics;
 
 //~--- non-JDK imports --------------------------------------------------------
-
 import de.dfki.vsm.editor.util.grid.pathfinding.AStarHeuristic;
 import de.dfki.vsm.editor.util.grid.pathfinding.Mover;
 import de.dfki.vsm.editor.util.grid.pathfinding.TileBasedMap;
@@ -21,13 +20,13 @@ import de.dfki.vsm.editor.util.grid.pathfinding.TileBasedMap;
  */
 public class ClosestSquaredHeuristic implements AStarHeuristic {
 
-    /**
-     * @see AStarHeuristic#getCost(TileBasedMap, Mover, int, int, int, int)
-     */
-    public float getCost(TileBasedMap map, Mover mover, int x, int y, int tx, int ty) {
-        float dx = tx - x;
-        float dy = ty - y;
+  /**
+   * @see AStarHeuristic#getCost(TileBasedMap, Mover, int, int, int, int)
+   */
+  public float getCost(TileBasedMap map, Mover mover, int x, int y, int tx, int ty) {
+    float dx = tx - x;
+    float dy = ty - y;
 
-        return ((dx * dx) + (dy * dy));
-    }
+    return ((dx * dx) + (dy * dy));
+  }
 }

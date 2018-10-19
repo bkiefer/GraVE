@@ -1,7 +1,6 @@
 package de.dfki.vsm.editor.util;
 
 //~--- non-JDK imports --------------------------------------------------------
-
 import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
@@ -11,7 +10,6 @@ import de.dfki.vsm.model.sceneflow.chart.SuperNode;
 import java.util.ArrayList;
 
 //~--- JDK imports ------------------------------------------------------------
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -21,303 +19,304 @@ import java.util.Set;
  * @author Patrick Gebhard
  */
 public class SceneFlowManager {
-    private final SceneFlow             mSceneFlow;
-    private final IDManager             mIDManager;
-    private final LinkedList<SuperNode> mActiveSuperNodes;
 
-    public SceneFlowManager(SceneFlow sceneFlow) {
-        mSceneFlow        = sceneFlow;
-        mIDManager        = new IDManager(mSceneFlow);
-        mActiveSuperNodes = new LinkedList<SuperNode>();
-        mActiveSuperNodes.addLast(mSceneFlow);
-    }
+  private final SceneFlow mSceneFlow;
+  private final IDManager mIDManager;
+  private final LinkedList<SuperNode> mActiveSuperNodes;
 
-    public SceneFlow getSceneFlow() {
-        return mSceneFlow;
-    }
+  public SceneFlowManager(SceneFlow sceneFlow) {
+    mSceneFlow = sceneFlow;
+    mIDManager = new IDManager(mSceneFlow);
+    mActiveSuperNodes = new LinkedList<SuperNode>();
+    mActiveSuperNodes.addLast(mSceneFlow);
+  }
 
-    public IDManager getIDManager() {
-        return mIDManager;
-    }
+  public SceneFlow getSceneFlow() {
+    return mSceneFlow;
+  }
 
-    public SuperNode getCurrentActiveSuperNode() {
-        return mActiveSuperNodes.getLast();
-    }
+  public IDManager getIDManager() {
+    return mIDManager;
+  }
 
-    public LinkedList<SuperNode> getActiveSuperNodes() {
-        return mActiveSuperNodes;
-    }
+  public SuperNode getCurrentActiveSuperNode() {
+    return mActiveSuperNodes.getLast();
+  }
 
-    public void addActiveSuperNode(SuperNode value) {
-        mActiveSuperNodes.addLast(value);
-    }
+  public LinkedList<SuperNode> getActiveSuperNodes() {
+    return mActiveSuperNodes;
+  }
 
-    public SuperNode removeActiveSuperNode() {
-        return mActiveSuperNodes.removeLast();
-    }
+  public void addActiveSuperNode(SuperNode value) {
+    mActiveSuperNodes.addLast(value);
+  }
 
-    public boolean isRootSuperNode(BasicNode n) {
-        return (n.equals((SuperNode) mSceneFlow));
-    }
+  public SuperNode removeActiveSuperNode() {
+    return mActiveSuperNodes.removeLast();
+  }
 
-    /*
+  public boolean isRootSuperNode(BasicNode n) {
+    return (n.equals((SuperNode) mSceneFlow));
+  }
+
+  /*
      * Returns a set of BasicNode IDs that are alternative Startnodes of a SuperNode
-     */
-    public Set<String> getAlternativeStartNode(SuperNode superNode) {
-        Set<String> altStartNodeIDs = new HashSet<String>();
+   */
+  public Set<String> getAlternativeStartNode(SuperNode superNode) {
+    Set<String> altStartNodeIDs = new HashSet<String>();
 
-        if (!(superNode instanceof SceneFlow)) {
-            SuperNode    parentSuperNode = getParentSuperNode(superNode);
-            ArrayList<BasicNode> parentNodeSet   = parentSuperNode.getNodeList();
-            Set<String>  currentNodeIDs  = new HashSet<String>();
+    if (!(superNode instanceof SceneFlow)) {
+      SuperNode parentSuperNode = getParentSuperNode(superNode);
+      ArrayList<BasicNode> parentNodeSet = parentSuperNode.getNodeList();
+      Set<String> currentNodeIDs = new HashSet<String>();
 
-            for (BasicNode cn : superNode.getNodeList()) {
-                currentNodeIDs.add(cn.getId());
-            }
+      for (BasicNode cn : superNode.getNodeList()) {
+        currentNodeIDs.add(cn.getId());
+      }
 
-            for (BasicNode node : parentNodeSet) {
-                if (node.hasEdge()) {
-                    switch (node.getFlavour()) {
-                    case CNODE :
-                        ArrayList<GuardedEdge> ces = node.getCEdgeList();
+      for (BasicNode node : parentNodeSet) {
+        if (node.hasEdge()) {
+          switch (node.getFlavour()) {
+            case CNODE:
+              ArrayList<GuardedEdge> ces = node.getCEdgeList();
 
-                        for (GuardedEdge c : ces) {
+              for (GuardedEdge c : ces) {
 
-                            // collectAltStartNodeIDs(processIDs(c.getStart()), currentNodeIDs, altStartNodeIDs);
-                        }
+                // collectAltStartNodeIDs(processIDs(c.getStart()), currentNodeIDs, altStartNodeIDs);
+              }
 
-                        break;
+              break;
 
-                    case PNODE :
-                        ArrayList<RandomEdge> pes = node.getPEdgeList();
+            case PNODE:
+              ArrayList<RandomEdge> pes = node.getPEdgeList();
 
-                        for (RandomEdge p : pes) {
+              for (RandomEdge p : pes) {
 
-                            // collectAltStartNodeIDs(processIDs(p.getStart()), currentNodeIDs, altStartNodeIDs);
-                        }
+                // collectAltStartNodeIDs(processIDs(p.getStart()), currentNodeIDs, altStartNodeIDs);
+              }
 
-                        break;
+              break;
 
-                    case INODE :
-                        ArrayList<InterruptEdge> ies = node.getIEdgeList();
+            case INODE:
+              ArrayList<InterruptEdge> ies = node.getIEdgeList();
 
-                        for (InterruptEdge i : ies) {
+              for (InterruptEdge i : ies) {
 
-                            // collectAltStartNodeIDs(processIDs(i.getStart()), currentNodeIDs, altStartNodeIDs);
-                        }
+                // collectAltStartNodeIDs(processIDs(i.getStart()), currentNodeIDs, altStartNodeIDs);
+              }
 
-                        break;
+              break;
 
-                    case NONE :
-                        if (node.hasDEdge()) {
+            case NONE:
+              if (node.hasDEdge()) {
 
-                            // collectAltStartNodeIDs(processIDs(node.getDedge().getStart()), currentNodeIDs, altStartNodeIDs);
-                        }
+                // collectAltStartNodeIDs(processIDs(node.getDedge().getStart()), currentNodeIDs, altStartNodeIDs);
+              }
 
-                        break;
-                    }
-                }
-            }
+              break;
+          }
         }
-
-        return altStartNodeIDs;
+      }
     }
 
-    /*
+    return altStartNodeIDs;
+  }
+
+  /*
      * Returns the list of all parent SuperNodes containing the root SuperNode
-     */
-    public Set<SuperNode> getParentSuperNodeSet(BasicNode n) {
-        Set<SuperNode> nSet = new HashSet<SuperNode>();
+   */
+  public Set<SuperNode> getParentSuperNodeSet(BasicNode n) {
+    Set<SuperNode> nSet = new HashSet<SuperNode>();
 
-        if (isRootSuperNode(n)) {    // if given node n is root SuperNode return null
-            return null;
-        } else {
-            SuperNode sn = getParentSuperNode(n);
+    if (isRootSuperNode(n)) {    // if given node n is root SuperNode return null
+      return null;
+    } else {
+      SuperNode sn = getParentSuperNode(n);
 
-            if (sn != null) {
-                nSet.add(sn);
+      if (sn != null) {
+        nSet.add(sn);
 
-                if (!sn.equals((SuperNode) mSceneFlow)) {
-                    nSet = buildSuperNodeSet(sn, nSet);
-                }
-            }
+        if (!sn.equals((SuperNode) mSceneFlow)) {
+          nSet = buildSuperNodeSet(sn, nSet);
         }
-
-        return (nSet.size() > 0)
-               ? nSet
-               : null;
+      }
     }
 
-    /*
+    return (nSet.size() > 0)
+            ? nSet
+            : null;
+  }
+
+  /*
      * Helper method for the recursive process of building the set of parent
      * SuperNodes to a given BasicNode.
-     */
-    private Set<SuperNode> buildSuperNodeSet(SuperNode sn, Set<SuperNode> nSet) {
-        SuperNode pn = getParentSuperNode(sn);
+   */
+  private Set<SuperNode> buildSuperNodeSet(SuperNode sn, Set<SuperNode> nSet) {
+    SuperNode pn = getParentSuperNode(sn);
 
-        if (pn != null) {
-            nSet.add(pn);
+    if (pn != null) {
+      nSet.add(pn);
 
-            if (!pn.equals((SuperNode) mSceneFlow)) {
-                nSet = buildSuperNodeSet(pn, nSet);
-            }
-        }
-
-        return nSet;
+      if (!pn.equals((SuperNode) mSceneFlow)) {
+        nSet = buildSuperNodeSet(pn, nSet);
+      }
     }
 
-    /*
+    return nSet;
+  }
+
+  /*
      * Returns the parent SuperNode to a given BasicNode n
-     */
-    public SuperNode getParentSuperNode(BasicNode n) {
-        if (!isRootSuperNode(n)) {
-            SuperNode parentSuperNode = (SuperNode) mSceneFlow;
-            Set<BasicNode> ns              = getSubNodes(parentSuperNode);
+   */
+  public SuperNode getParentSuperNode(BasicNode n) {
+    if (!isRootSuperNode(n)) {
+      SuperNode parentSuperNode = (SuperNode) mSceneFlow;
+      Set<BasicNode> ns = getSubNodes(parentSuperNode);
 
-            // checking if node is contained in the nodes of the root SuperNode
-            for (BasicNode cn : ns) {
-                if (cn.equals(n)) {
-                    return parentSuperNode;
-                } else {
-                    if (SuperNode.class.isInstance(cn)) {
-                        SuperNode sun = findParentSuperNode((SuperNode) cn, n);
-
-                        if (sun != null) {
-                            return sun;
-                        }
-                    }
-                }
-            }
-        }
-
-        // return null if no parent (super) node exists
-        return null;
-    }
-
-    /*
-     * Helper method for recursive traversion of supernodes to find Parent SuperNode to given BasicNode
-     */
-    private SuperNode findParentSuperNode(SuperNode currentSN, BasicNode n) {
-        if (hasSuperNodes(currentSN)) {
-            SuperNode parentSuperNode = currentSN;
-            Set<BasicNode> ns              = getSubNodes(currentSN);
-
-            for (BasicNode cn : ns) {
-                if (cn.equals(n)) {
-                    return parentSuperNode;
-                } else {
-                    if (SuperNode.class.isInstance(cn)) {
-                        SuperNode sun = findParentSuperNode((SuperNode) cn, n);
-
-                        if (sun != null) {
-                            return sun;
-                        }
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /*
-     * Checks if a given BasicNode instance is a subnode of a given intance of SuperNode
-     */
-    public boolean isSubNode(BasicNode superNode, BasicNode n) {
-        if (!(superNode instanceof SuperNode)) {
-            return false;
-        }
-
-        Set<BasicNode> nSet = getSuperNodeSubNodes((SuperNode) superNode, new HashSet<BasicNode>());
-
-        // DEBUG //System.out.println("super node set size " + nSet.size());
-        if ((nSet == null) || (nSet.size() == 0)) {
-            return false;
-        }
-
-        if (nSet.contains(n)) {
-            return true;
+      // checking if node is contained in the nodes of the root SuperNode
+      for (BasicNode cn : ns) {
+        if (cn.equals(n)) {
+          return parentSuperNode;
         } else {
-            return false;
+          if (SuperNode.class.isInstance(cn)) {
+            SuperNode sun = findParentSuperNode((SuperNode) cn, n);
+
+            if (sun != null) {
+              return sun;
+            }
+          }
         }
+      }
     }
 
-    private Set<BasicNode> getSuperNodeSubNodes(SuperNode sNode, Set allSubNodes) {
+    // return null if no parent (super) node exists
+    return null;
+  }
 
-        // get all super nodes and nodes
-        ArrayList<BasicNode>      ns  = sNode.getNodeList();         // .getNodeSet();
-        ArrayList<SuperNode> sns = sNode.getSuperNodeList();    // .getSuperNodeSet();
+  /*
+     * Helper method for recursive traversion of supernodes to find Parent SuperNode to given BasicNode
+   */
+  private SuperNode findParentSuperNode(SuperNode currentSN, BasicNode n) {
+    if (hasSuperNodes(currentSN)) {
+      SuperNode parentSuperNode = currentSN;
+      Set<BasicNode> ns = getSubNodes(currentSN);
 
-        // add super nodes and nodes to one set
-        for (SuperNode sn : sns) {
-            allSubNodes.add(sn);
-            getSuperNodeSubNodes(sn, allSubNodes);    // recurvsively collect all SubSupernodes
+      for (BasicNode cn : ns) {
+        if (cn.equals(n)) {
+          return parentSuperNode;
+        } else {
+          if (SuperNode.class.isInstance(cn)) {
+            SuperNode sun = findParentSuperNode((SuperNode) cn, n);
+
+            if (sun != null) {
+              return sun;
+            }
+          }
         }
-
-        for (BasicNode n : ns) {
-            allSubNodes.add(n);
-        }
-
-        return allSubNodes;
+      }
     }
 
-    /*
+    return null;
+  }
+
+  /*
+     * Checks if a given BasicNode instance is a subnode of a given intance of SuperNode
+   */
+  public boolean isSubNode(BasicNode superNode, BasicNode n) {
+    if (!(superNode instanceof SuperNode)) {
+      return false;
+    }
+
+    Set<BasicNode> nSet = getSuperNodeSubNodes((SuperNode) superNode, new HashSet<BasicNode>());
+
+    // DEBUG //System.out.println("super node set size " + nSet.size());
+    if ((nSet == null) || (nSet.size() == 0)) {
+      return false;
+    }
+
+    if (nSet.contains(n)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private Set<BasicNode> getSuperNodeSubNodes(SuperNode sNode, Set allSubNodes) {
+
+    // get all super nodes and nodes
+    ArrayList<BasicNode> ns = sNode.getNodeList();         // .getNodeSet();
+    ArrayList<SuperNode> sns = sNode.getSuperNodeList();    // .getSuperNodeSet();
+
+    // add super nodes and nodes to one set
+    for (SuperNode sn : sns) {
+      allSubNodes.add(sn);
+      getSuperNodeSubNodes(sn, allSubNodes);    // recurvsively collect all SubSupernodes
+    }
+
+    for (BasicNode n : ns) {
+      allSubNodes.add(n);
+    }
+
+    return allSubNodes;
+  }
+
+  /*
      * Checks if a given SuperNode contains an instance of SuperNode an returns a appropriate
      * boolean value
      *
      * @param SuperNode
-     */
-    private boolean hasSuperNodes(SuperNode sn) {
+   */
+  private boolean hasSuperNodes(SuperNode sn) {
 
-        // return (sn.getSuperNodeSet().size() > 0) ? true : false;
-        return (sn.getSuperNodeList().size() > 0);
+    // return (sn.getSuperNodeSet().size() > 0) ? true : false;
+    return (sn.getSuperNodeList().size() > 0);
+  }
+
+  public Set<BasicNode> getSubNodes() {
+    return getSubNodes((SuperNode) mSceneFlow);
+  }
+
+  public Set<BasicNode> getSubNodes(SuperNode sNode) {
+    HashSet<BasicNode> allNodes = new HashSet<BasicNode>();
+
+    // get all super nodes and nodes
+    // Set<Node> ns = sNode.getNodeSet();
+    // Set<SuperNode> sns = sNode.getSuperNodeSet();
+    ArrayList<BasicNode> ns = sNode.getNodeList();         // .getNodeSet();
+    ArrayList<SuperNode> sns = sNode.getSuperNodeList();    // .getSuperNodeSet();
+
+    // add super nodes and nodes to one set
+    for (SuperNode sn : sns) {
+      allNodes.add(sn);
     }
 
-    public Set<BasicNode> getSubNodes() {
-        return getSubNodes((SuperNode) mSceneFlow);
+    for (BasicNode n : ns) {
+      allNodes.add(n);
     }
 
-    public Set<BasicNode> getSubNodes(SuperNode sNode) {
-        HashSet<BasicNode> allNodes = new HashSet<BasicNode>();
+    return allNodes;
+  }
 
-        // get all super nodes and nodes
-        // Set<Node> ns = sNode.getNodeSet();
-        // Set<SuperNode> sns = sNode.getSuperNodeSet();
-        ArrayList<BasicNode>      ns  = sNode.getNodeList();         // .getNodeSet();
-        ArrayList<SuperNode> sns = sNode.getSuperNodeList();    // .getSuperNodeSet();
+  public Set<String> getSubNodesNames() {
+    HashSet<String> allNodeNames = new HashSet<String>();
 
-        // add super nodes and nodes to one set
-        for (SuperNode sn : sns) {
-            allNodes.add(sn);
-        }
+    // get all active super nodes and nodes
+    // Set<Node> ns = mActiveSuperNodes.getLast().getNodeSet();
+    // Set<SuperNode> sns = mActiveSuperNodes.getLast().getSuperNodeSet();
+    ArrayList<BasicNode> ns = mActiveSuperNodes.getLast().getNodeList();         // .getNodeSet();
+    ArrayList<SuperNode> sns = mActiveSuperNodes.getLast().getSuperNodeList();    // .getSuperNodeSet();
 
-        for (BasicNode n : ns) {
-            allNodes.add(n);
-        }
-
-        return allNodes;
+    // add super nodes and nodes to one set
+    for (SuperNode sn : sns) {
+      allNodeNames.add(sn.getName() + " (" + sn.getId() + ")");
     }
 
-    public Set<String> getSubNodesNames() {
-        HashSet<String> allNodeNames = new HashSet<String>();
-
-        // get all active super nodes and nodes
-        // Set<Node> ns = mActiveSuperNodes.getLast().getNodeSet();
-        // Set<SuperNode> sns = mActiveSuperNodes.getLast().getSuperNodeSet();
-        ArrayList<BasicNode>      ns  = mActiveSuperNodes.getLast().getNodeList();         // .getNodeSet();
-        ArrayList<SuperNode> sns = mActiveSuperNodes.getLast().getSuperNodeList();    // .getSuperNodeSet();
-
-        // add super nodes and nodes to one set
-        for (SuperNode sn : sns) {
-            allNodeNames.add(sn.getName() + " (" + sn.getId() + ")");
-        }
-
-        for (BasicNode n : ns) {
-            allNodeNames.add(n.getName() + " (" + n.getId() + ")");
-        }
-
-        return allNodeNames;
+    for (BasicNode n : ns) {
+      allNodeNames.add(n.getName() + " (" + n.getId() + ")");
     }
+
+    return allNodeNames;
+  }
 
 //  public String getSceneFlowFileName() {
 //      return mSceneFlowFileName;

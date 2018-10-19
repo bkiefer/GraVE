@@ -21,37 +21,36 @@ import javax.swing.JFileChooser;
  *
  * @author mfallas
  */
-public class SaveFileDialog extends JFileChooser{
-    
-    public SaveFileDialog()
-    {
-        setCurrentDirectory(new File(System.getProperty("user.home")));
-        setFileSelectionMode(JFileChooser.FILES_ONLY);
-        //addChoosableFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "gif", "bmp"));
-    }
-    public boolean save ()
-    {
-        int userSelection = showSaveDialog(EditorInstance.getInstance());
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            try {
-                File fileToSave = getSelectedFile();
-                String path = fileToSave.getAbsolutePath();
-                if (!path.matches(".*\\.(jpg|jpeg|png|bmp|gif)")) {
-                    // If the extension isn't there. We need to replace it
-                    path = path.concat(".jpg");
-                    fileToSave = new File(path);
-                    System.out.println(path);
-                }
-                Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-                RenderedImage image = (RenderedImage) t.getTransferData(DataFlavor.imageFlavor);
-                boolean isSuccess = ImageIO.write(image, "png", fileToSave);
-                //isSuccess ? return true : return false;
-            } catch (Exception ex) {
-                Logger.getLogger(SceneFlowToolBar.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return true;
+public class SaveFileDialog extends JFileChooser {
+
+  public SaveFileDialog() {
+    setCurrentDirectory(new File(System.getProperty("user.home")));
+    setFileSelectionMode(JFileChooser.FILES_ONLY);
+    //addChoosableFileFilter(new FileNameExtensionFilter("Images", "jpg", "png", "gif", "bmp"));
+  }
+
+  public boolean save() {
+    int userSelection = showSaveDialog(EditorInstance.getInstance());
+    if (userSelection == JFileChooser.APPROVE_OPTION) {
+      try {
+        File fileToSave = getSelectedFile();
+        String path = fileToSave.getAbsolutePath();
+        if (!path.matches(".*\\.(jpg|jpeg|png|bmp|gif)")) {
+          // If the extension isn't there. We need to replace it
+          path = path.concat(".jpg");
+          fileToSave = new File(path);
+          System.out.println(path);
         }
-        return false;
+        Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+        RenderedImage image = (RenderedImage) t.getTransferData(DataFlavor.imageFlavor);
+        boolean isSuccess = ImageIO.write(image, "png", fileToSave);
+        //isSuccess ? return true : return false;
+      } catch (Exception ex) {
+        Logger.getLogger(SceneFlowToolBar.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      return true;
     }
-    
+    return false;
+  }
+
 }

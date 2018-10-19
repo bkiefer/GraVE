@@ -8,31 +8,30 @@ import javafx.scene.control.TextField;
  */
 public class StringRender extends ValueRender {
 
-    private String value;
+  private String value;
 
-    @Override
-    public void render() {
-        value = "";
-        setDefaultValue();
-        control = new TextField(value);
-        setStyle();
+  @Override
+  public void render() {
+    value = "";
+    setDefaultValue();
+    control = new TextField(value);
+    setStyle();
 
+  }
+
+  private void setDefaultValue() {
+    if (valueProperty.hasDefaultValue()) {
+      value = (String) valueProperty.getDefaultValue();
     }
+  }
 
-    private void setDefaultValue() {
-        if(valueProperty.hasDefaultValue()){
-            value = (String) valueProperty.getDefaultValue();
-        }
-    }
+  @Override
+  public String getValue() {
+    return getTextField().getText();
+  }
 
-    @Override
-    public String getValue() {
-        return getTextField().getText();
-    }
-
-    private TextField getTextField() {
-        return (TextField)control;
-    }
-
+  private TextField getTextField() {
+    return (TextField) control;
+  }
 
 }

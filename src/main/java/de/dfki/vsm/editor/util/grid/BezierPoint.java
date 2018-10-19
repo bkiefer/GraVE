@@ -11,18 +11,19 @@ package de.dfki.vsm.editor.util.grid;
  * @author Souza Putra
  */
 public class BezierPoint {
-    double x, y;
 
-    public BezierPoint(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
+  double x, y;
 
-    public double getX() {
-        return this.x;
-    }
+  public BezierPoint(double x, double y) {
+    this.x = x;
+    this.y = y;
+  }
 
-    public double getY() {
-        return this.y;
-    }
+  public double getX() {
+    return this.x;
+  }
+
+  public double getY() {
+    return this.y;
+  }
 }

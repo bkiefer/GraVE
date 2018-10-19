@@ -16,48 +16,49 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 public class ExportableClassInitializer {
-    private final RunTimeProject project;
-    private final PluginConfig pluginConfig;
-    private Class clazz;
-    private Constructor constructor;
-    private RunTimePlugin runTimePlugin;
-    private ExportableProperties exportableProperties;
 
-    public ExportableClassInitializer( RunTimeProject project, PluginConfig pluginConfig){
-        this.project = project;
-        this.pluginConfig = pluginConfig;
-    }
+  private final RunTimeProject project;
+  private final PluginConfig pluginConfig;
+  private Class clazz;
+  private Constructor constructor;
+  private RunTimePlugin runTimePlugin;
+  private ExportableProperties exportableProperties;
 
-    void initializeClass() throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, NotExportableInterface {
-        createConstructor();
-        createRuntimePlugin();
-    }
+  public ExportableClassInitializer(RunTimeProject project, PluginConfig pluginConfig) {
+    this.project = project;
+    this.pluginConfig = pluginConfig;
+  }
 
-    public ExportableProperties getAsExportablePropertyClass() {
-        return (ExportableProperties) runTimePlugin;
-    }
+  void initializeClass() throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, NotExportableInterface {
+    createConstructor();
+    createRuntimePlugin();
+  }
 
-    private void createRuntimePlugin() throws InstantiationException, IllegalAccessException, InvocationTargetException {
-        runTimePlugin = (RunTimePlugin) constructor.newInstance(pluginConfig, project);
-    }
+  public ExportableProperties getAsExportablePropertyClass() {
+    return (ExportableProperties) runTimePlugin;
+  }
 
-    private void createConstructor() throws ClassNotFoundException, NoSuchMethodException, NotExportableInterface {
-        String className = pluginConfig.getClassName();
-        clazz = Class.forName(className);
-        isImplementingExportableInterface();
-        constructor = clazz.getConstructor(PluginConfig.class, RunTimeProject.class);
-    }
+  private void createRuntimePlugin() throws InstantiationException, IllegalAccessException, InvocationTargetException {
+    runTimePlugin = (RunTimePlugin) constructor.newInstance(pluginConfig, project);
+  }
 
-    private void isImplementingExportableInterface() throws NotExportableInterface {
-        Class[] interfaces = clazz.getInterfaces();
-        boolean implementsInterface = false;
-        for (Class implementedInterface: interfaces) {
-            if(implementedInterface.getName().contains("ExportableProperties")){
-                implementsInterface = true;
-            }
-        }
-        if(!implementsInterface){
-            throw new NotExportableInterface("This class does not implement ExportableProperties interface");
-        }
+  private void createConstructor() throws ClassNotFoundException, NoSuchMethodException, NotExportableInterface {
+    String className = pluginConfig.getClassName();
+    clazz = Class.forName(className);
+    isImplementingExportableInterface();
+    constructor = clazz.getConstructor(PluginConfig.class, RunTimeProject.class);
+  }
+
+  private void isImplementingExportableInterface() throws NotExportableInterface {
+    Class[] interfaces = clazz.getInterfaces();
+    boolean implementsInterface = false;
+    for (Class implementedInterface : interfaces) {
+      if (implementedInterface.getName().contains("ExportableProperties")) {
+        implementsInterface = true;
+      }
     }
+    if (!implementsInterface) {
+      throw new NotExportableInterface("This class does not implement ExportableProperties interface");
+    }
+  }
 }

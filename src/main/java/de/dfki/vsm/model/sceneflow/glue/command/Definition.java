@@ -5,6 +5,6 @@ package de.dfki.vsm.model.sceneflow.glue.command;
  */
 public abstract class Definition extends Command {
 
-    @Override
-    public abstract Definition getCopy();
+  @Override
+  public abstract Definition getCopy();
 }

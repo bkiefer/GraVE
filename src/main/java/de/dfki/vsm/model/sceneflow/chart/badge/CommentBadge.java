@@ -22,89 +22,89 @@ import javax.swing.JEditorPane;
  */
 public class CommentBadge implements ModelObject {
 
-    protected SuperNode mParentNode = null;
-    protected String mHTMLText = "";
-    protected CommentGraphics mGraphics;
-    protected int mFontSize;
-    JEditorPane mTextEditor;
+  protected SuperNode mParentNode = null;
+  protected String mHTMLText = "";
+  protected CommentGraphics mGraphics;
+  protected int mFontSize;
+  JEditorPane mTextEditor;
 
-    public void setParentNode(SuperNode value) {
-        mParentNode = value;
+  public void setParentNode(SuperNode value) {
+    mParentNode = value;
+  }
+
+  public CommentGraphics getGraphics() {
+    return mGraphics;
+  }
+
+  public void setGraphics(CommentGraphics value) {
+    mGraphics = value;
+  }
+
+  public void setFontSize(int value) {
+    mFontSize = value;
+  }
+
+  public String getHTMLText() {
+    return mHTMLText.trim();
+  }
+
+  public void setHTMLText(String text) {
+    mHTMLText = text.trim();
+  }
+
+  private void formatHTML() {
+    // PG 30.7.2016 Da fuck? This is not allowed in the model!
+    //mFontSize = EditorInstance.getInstance().getSelectedProjectEditor().getEditorProject().getEditorConfig().sWORKSPACEFONTSIZE;
+    mFontSize = 16;
+
+    if (mTextEditor == null) {
+      mTextEditor = new JEditorPane();
     }
 
-    public CommentGraphics getGraphics() {
-        return mGraphics;
-    }
+    //mTextEditor.setContentType(new HTMLEditorKit().getContentType());
+    // now use the same font than the label!
+    Font mFont = new Font("SansSerif", Font.PLAIN, mFontSize);
+    String bodyRule = "body { font-family: " + mFont.getFamily() + "; " + "font-size: " + mFont.getSize() + "pt; }";
 
-    public void setGraphics(CommentGraphics value) {
-        mGraphics = value;
-    }
+    // ((HTMLDocument) mTextEditor.getDocument()).getStyleSheet().addRule(bodyRule);
+    mTextEditor.setText(mHTMLText);
+    mHTMLText = mTextEditor.getText();
+  }
 
-    public void setFontSize(int value) {
-        mFontSize = value;
-    }
+  public void parseXML(Element element) throws XMLParseError {
+    XMLParseAction.processChildNodes(element, new XMLParseAction() {
+      public void run(Element element) throws XMLParseError {
+        String tag = element.getTagName();
 
-    public String getHTMLText() {
-        return mHTMLText.trim();
-    }
-
-    public void setHTMLText(String text) {
-        mHTMLText = text.trim();
-    }
-
-    private void formatHTML() {
-        // PG 30.7.2016 Da fuck? This is not allowed in the model!      
-        //mFontSize = EditorInstance.getInstance().getSelectedProjectEditor().getEditorProject().getEditorConfig().sWORKSPACEFONTSIZE;
-        mFontSize = 16;
-
-        if (mTextEditor == null) {
-            mTextEditor = new JEditorPane();
+        if (tag.equals("Graphics")) {
+          mGraphics = new CommentGraphics();
+          mGraphics.parseXML(element);
+        } else if (tag.equals("Text")) {
+          mHTMLText = element.getTextContent();
+        } else {
+          throw new XMLParseError(null,
+                  "Cannot parse the element with the tag \"" + tag
+                  + "\" into a comment child!");
         }
+      }
+    });
+  }
 
-        //mTextEditor.setContentType(new HTMLEditorKit().getContentType());
-        // now use the same font than the label!
-        Font mFont = new Font("SansSerif", Font.PLAIN, mFontSize);
-        String bodyRule = "body { font-family: " + mFont.getFamily() + "; " + "font-size: " + mFont.getSize() + "pt; }";
+  public void writeXML(IOSIndentWriter out) {
+    out.println("<Comment>").push();
 
-        // ((HTMLDocument) mTextEditor.getDocument()).getStyleSheet().addRule(bodyRule);
-        mTextEditor.setText(mHTMLText);
-        mHTMLText = mTextEditor.getText();
+    if (mGraphics != null) {
+      mGraphics.writeXML(out);
     }
 
-    public void parseXML(Element element) throws XMLParseError {
-        XMLParseAction.processChildNodes(element, new XMLParseAction() {
-            public void run(Element element) throws XMLParseError {
-                String tag = element.getTagName();
+    out.println("<Text style=\"color:blue\">").push();
+    formatHTML();
+    out.println(mHTMLText.trim());
+    out.pop().println("</Text>");
+    out.pop().println("</Comment>");
+  }
 
-                if (tag.equals("Graphics")) {
-                    mGraphics = new CommentGraphics();
-                    mGraphics.parseXML(element);
-                } else if (tag.equals("Text")) {
-                    mHTMLText = element.getTextContent();
-                } else {
-                    throw new XMLParseError(null,
-                            "Cannot parse the element with the tag \"" + tag
-                            + "\" into a comment child!");
-                }
-            }
-        });
-    }
-
-    public void writeXML(IOSIndentWriter out) {
-        out.println("<Comment>").push();
-
-        if (mGraphics != null) {
-            mGraphics.writeXML(out);
-        }
-
-        out.println("<Text style=\"color:blue\">").push();
-        formatHTML();
-        out.println(mHTMLText.trim());
-        out.pop().println("</Text>");
-        out.pop().println("</Comment>");
-    }
-
-    public SyntaxObject getCopy() {
-        return null;
-    }
+  public SyntaxObject getCopy() {
+    return null;
+  }
 }

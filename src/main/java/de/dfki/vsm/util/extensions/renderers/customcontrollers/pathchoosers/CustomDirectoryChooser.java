@@ -8,14 +8,15 @@ import java.io.File;
  * Created by alvaro on 4/26/17.
  */
 public class CustomDirectoryChooser implements PathChooser {
-    private DirectoryChooser directoryChooser;
 
-    public CustomDirectoryChooser(){
-        directoryChooser = new DirectoryChooser();
-    }
+  private DirectoryChooser directoryChooser;
 
-    @Override
-    public File showDialog() {
-        return directoryChooser.showDialog(null);
-    }
+  public CustomDirectoryChooser() {
+    directoryChooser = new DirectoryChooser();
+  }
+
+  @Override
+  public File showDialog() {
+    return directoryChooser.showDialog(null);
+  }
 }

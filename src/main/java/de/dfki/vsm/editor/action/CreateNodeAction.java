@@ -20,119 +20,121 @@ import javax.swing.undo.CannotUndoException;
  * @author Patrick Gebhard
  */
 public class CreateNodeAction extends NodeAction {
-      //
-    private final EventDispatcher mDispatcher
-            = EventDispatcher.getInstance();
-    
-    public CreateNodeAction(WorkSpacePanel workSpace, de.dfki.vsm.model.sceneflow.chart.BasicNode node) {
-        mWorkSpace        = workSpace;
-        mCoordinate       = new Point(node.getGraphics().getPosition().getXPos(),
-                                      node.getGraphics().getPosition().getYPos());
-        mGUINodeType      = (SuperNode.class.isInstance(node))
-                            ? de.dfki.vsm.editor.Node.Type.SuperNode
-                            : de.dfki.vsm.editor.Node.Type.BasicNode;
-        mSceneFlowPane    = mWorkSpace.getSceneFlowEditor();
-        mSceneFlowManager = mWorkSpace.getSceneFlowManager();
-        mUndoManager      = mSceneFlowPane.getUndoManager();
-        mIDManager        = mSceneFlowManager.getIDManager();
-        mDataNodeId       = node.getId();
-        mDataNode         = node;
+  //
 
-        // DEBUG mDataNode.writeXML(new IndentOutputStream(System.out));
-        mParentDataNode = mSceneFlowManager.getCurrentActiveSuperNode();
+  private final EventDispatcher mDispatcher
+          = EventDispatcher.getInstance();
 
-        // Create the GUI-BasicNode
-        mGUINode = new de.dfki.vsm.editor.Node(mWorkSpace, mDataNode);
+  public CreateNodeAction(WorkSpacePanel workSpace, de.dfki.vsm.model.sceneflow.chart.BasicNode node) {
+    mWorkSpace = workSpace;
+    mCoordinate = new Point(node.getGraphics().getPosition().getXPos(),
+            node.getGraphics().getPosition().getYPos());
+    mGUINodeType = (SuperNode.class.isInstance(node))
+            ? de.dfki.vsm.editor.Node.Type.SuperNode
+            : de.dfki.vsm.editor.Node.Type.BasicNode;
+    mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
+    mSceneFlowManager = mWorkSpace.getSceneFlowManager();
+    mUndoManager = mSceneFlowPane.getUndoManager();
+    mIDManager = mSceneFlowManager.getIDManager();
+    mDataNodeId = node.getId();
+    mDataNode = node;
 
-        // Create the command badge of the GUI-BasicNode
-        mCmdBadge = new CmdBadge(mGUINode);
-        mGUINode.resetLocation(mWorkSpace.mGridManager.getNodeLocation(mCoordinate));
+    // DEBUG mDataNode.writeXML(new IndentOutputStream(System.out));
+    mParentDataNode = mSceneFlowManager.getCurrentActiveSuperNode();
+
+    // Create the GUI-BasicNode
+    mGUINode = new de.dfki.vsm.editor.Node(mWorkSpace, mDataNode);
+
+    // Create the command badge of the GUI-BasicNode
+    mCmdBadge = new CmdBadge(mGUINode);
+    mGUINode.resetLocation(mWorkSpace.mGridManager.getNodeLocation(mCoordinate));
+  }
+
+  public CreateNodeAction(WorkSpacePanel workSpace, Point coordinate, Type type) {
+    mWorkSpace = workSpace;
+    mCoordinate = coordinate;
+    mGUINodeType = type;
+    mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
+    mSceneFlowManager = mWorkSpace.getSceneFlowManager();
+    mUndoManager = mSceneFlowPane.getUndoManager();
+    mIDManager = mSceneFlowManager.getIDManager();
+
+    if (mGUINodeType == BasicNode) {
+      mDataNodeId = mIDManager.getNextFreeNodeID();
+      mDataNode = new BasicNode();
+      mDataNode.setNameAndId(mDataNodeId);
+      mDataNode.setGraphics(new NodeGraphics(mCoordinate.x, mCoordinate.y));
+      mParentDataNode = mSceneFlowManager.getCurrentActiveSuperNode();
+    } else if (mGUINodeType == SuperNode) {
+      mDataNodeId = mIDManager.getNextFreeSuperNodeID();
+      mDataNode = new SuperNode();
+      mDataNode.setNameAndId(mDataNodeId);
+      mDataNode.setGraphics(new NodeGraphics(mCoordinate.x, mCoordinate.y));
+      mParentDataNode = mSceneFlowManager.getCurrentActiveSuperNode();
+
+      //////////////////
+      BasicNode mHistoryDataNode = new BasicNode();
+
+      mHistoryDataNode.setHistoryNodeFlag(true);
+      mHistoryDataNode.setName("History");
+      mHistoryDataNode.setId(mIDManager.getNextFreeNodeID());
+      mHistoryDataNode.setGraphics(new NodeGraphics(0, 0));
+      mHistoryDataNode.setParentNode((SuperNode) mDataNode);
+      ((SuperNode) mDataNode).addNode(mHistoryDataNode);
+      ((SuperNode) mDataNode).setHistoryNode(mHistoryDataNode);
     }
 
-    public CreateNodeAction(WorkSpacePanel workSpace, Point coordinate, Type type) {
-        mWorkSpace        = workSpace;
-        mCoordinate       = coordinate;
-        mGUINodeType      = type;
-        mSceneFlowPane    = mWorkSpace.getSceneFlowEditor();
-        mSceneFlowManager = mWorkSpace.getSceneFlowManager();
-        mUndoManager      = mSceneFlowPane.getUndoManager();
-        mIDManager        = mSceneFlowManager.getIDManager();
+    // Create the GUI-BasicNode
+    mGUINode = new de.dfki.vsm.editor.Node(mWorkSpace, mDataNode);
 
-        if (mGUINodeType == BasicNode) {
-            mDataNodeId = mIDManager.getNextFreeNodeID();
-            mDataNode   = new BasicNode();
-            mDataNode.setNameAndId(mDataNodeId);
-            mDataNode.setGraphics(new NodeGraphics(mCoordinate.x, mCoordinate.y));
-            mParentDataNode = mSceneFlowManager.getCurrentActiveSuperNode();
-        } else if (mGUINodeType == SuperNode) {
-            mDataNodeId = mIDManager.getNextFreeSuperNodeID();
-            mDataNode   = new SuperNode();
-            mDataNode.setNameAndId(mDataNodeId);
-            mDataNode.setGraphics(new NodeGraphics(mCoordinate.x, mCoordinate.y));
-            mParentDataNode = mSceneFlowManager.getCurrentActiveSuperNode();
+    // Create the command badge of the GUI-BasicNode
+    mCmdBadge = new CmdBadge(mGUINode);
 
-            //////////////////
-            BasicNode mHistoryDataNode = new BasicNode();
+    // Make newly created node selected
+    mDispatcher.convey(new NodeSelectedEvent(this, mDataNode));
 
-            mHistoryDataNode.setHistoryNodeFlag(true);
-            mHistoryDataNode.setName("History");
-            mHistoryDataNode.setId(mIDManager.getNextFreeNodeID());
-            mHistoryDataNode.setGraphics(new NodeGraphics(0, 0));
-            mHistoryDataNode.setParentNode((SuperNode) mDataNode);
-            ((SuperNode) mDataNode).addNode(mHistoryDataNode);
-            ((SuperNode) mDataNode).setHistoryNode(mHistoryDataNode);
-        }
+  }
 
-        // Create the GUI-BasicNode
-        mGUINode = new de.dfki.vsm.editor.Node(mWorkSpace, mDataNode);
+  public void run() {
+    create();
+    mUndoManager.addEdit(new Edit());
+    UndoAction.getInstance().refreshUndoState();
+    RedoAction.getInstance().refreshRedoState();
+  }
 
-        // Create the command badge of the GUI-BasicNode
-        mCmdBadge = new CmdBadge(mGUINode);
-        
-        // Make newly created node selected
-        mDispatcher.convey(new NodeSelectedEvent(this, mDataNode));
-                         
+  private class Edit extends AbstractUndoableEdit {
+
+    @Override
+    public void undo() throws CannotUndoException {
+      delete();
     }
 
-    public void run() {
-        create();
-        mUndoManager.addEdit(new Edit());
-        UndoAction.getInstance().refreshUndoState();
-        RedoAction.getInstance().refreshRedoState();
+    @Override
+    public void redo() throws CannotRedoException {
+
+      // say IDMAnger thta id is used
+      mIDManager.setID(mGUINode);
+      create();
     }
 
-    private class Edit extends AbstractUndoableEdit {
-        @Override
-        public void undo() throws CannotUndoException {
-            delete();
-        }
-
-        @Override
-        public void redo() throws CannotRedoException {
-
-            // say IDMAnger thta id is used
-            mIDManager.setID(mGUINode);
-            create();
-        }
-
-        @Override
-        public boolean canUndo() {
-            return true;
-        }
-
-        @Override
-        public boolean canRedo() {
-            return true;
-        }
-
-        @Override
-        public String getUndoPresentationName() {
-            return "Undo Creation Of Node " + mDataNode.getName();
-        }
-
-        @Override
-        public String getRedoPresentationName() {
-            return "Redo Creation Of Node " + mDataNode.getName();
-        }
+    @Override
+    public boolean canUndo() {
+      return true;
     }
+
+    @Override
+    public boolean canRedo() {
+      return true;
+    }
+
+    @Override
+    public String getUndoPresentationName() {
+      return "Undo Creation Of Node " + mDataNode.getName();
+    }
+
+    @Override
+    public String getRedoPresentationName() {
+      return "Redo Creation Of Node " + mDataNode.getName();
+    }
+  }
 }

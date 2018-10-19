@@ -19,84 +19,84 @@ import de.dfki.vsm.model.sceneflow.glue.command.Command;
  */
 public class ModifyCEdgeAction extends ModifyEdgeAction {
 
-    /**
-     * The old condition of the conditional edge
-     */
-    private Command mOldCondition;
+  /**
+   * The old condition of the conditional edge
+   */
+  private Command mOldCondition;
 
-    /**
-     * The new condition of the conditional edge
-     */
-    private Command mNewCondition;
+  /**
+   * The new condition of the conditional edge
+   */
+  private Command mNewCondition;
 
-    /**
-     *
-     * @param edge
-     * @param workSpace
-     */
-    public ModifyCEdgeAction(Edge edge, WorkSpacePanel workSpace) {
-        super(edge, workSpace);
+  /**
+   *
+   * @param edge
+   * @param workSpace
+   */
+  public ModifyCEdgeAction(Edge edge, WorkSpacePanel workSpace) {
+    super(edge, workSpace);
+  }
+
+  /**
+   * Execute this action
+   */
+  @Override
+  public void run() {
+
+    // Remember the old condition
+    mOldCondition = ((GuardedEdge) mDataEdge).getCondition();
+
+    // Show a dialog to modify the condition
+    ModifyCEdgeDialog dialog = new ModifyCEdgeDialog(((GuardedEdge) mDataEdge));
+    GuardedEdge cedge = dialog.run();
+
+    // If the condition was successfully modified then
+    // remember the new condition and update the undomanager
+    if (cedge != null) {
+      mNewCondition = cedge.getCondition();
+      mUndoManager.addEdit(new Edit());
+      UndoAction.getInstance().refreshUndoState();
+      RedoAction.getInstance().refreshRedoState();
     }
+  }
 
-    /**
-     * Execute this action
-     */
+  private class Edit extends AbstractUndoableEdit {
+
     @Override
-    public void run() {
+    public void undo() throws CannotUndoException {
+      ((GuardedEdge) mDataEdge).setCondition(mOldCondition);
 
-        // Remember the old condition
-        mOldCondition = ((GuardedEdge) mDataEdge).getCondition();
-
-        // Show a dialog to modify the condition
-        ModifyCEdgeDialog dialog = new ModifyCEdgeDialog(((GuardedEdge) mDataEdge));
-        GuardedEdge cedge = dialog.run();
-
-        // If the condition was successfully modified then
-        // remember the new condition and update the undomanager
-        if (cedge != null) {
-            mNewCondition = cedge.getCondition();
-            mUndoManager.addEdit(new Edit());
-            UndoAction.getInstance().refreshUndoState();
-            RedoAction.getInstance().refreshRedoState();
-        }
+      // mGUIEdge.update();
+      mGUIEdge.repaint(100);
     }
 
-    private class Edit extends AbstractUndoableEdit {
+    @Override
+    public void redo() throws CannotRedoException {
+      ((GuardedEdge) mDataEdge).setCondition(mNewCondition);
 
-        @Override
-        public void undo() throws CannotUndoException {
-            ((GuardedEdge) mDataEdge).setCondition(mOldCondition);
-
-            // mGUIEdge.update();
-            mGUIEdge.repaint(100);
-        }
-
-        @Override
-        public void redo() throws CannotRedoException {
-            ((GuardedEdge) mDataEdge).setCondition(mNewCondition);
-
-            // mGUIEdge.update();
-            mGUIEdge.repaint(100);
-        }
-
-        @Override
-        public boolean canUndo() {
-            return true;
-        }
-
-        @Override
-        public boolean canRedo() {
-            return true;
-        }
-
-        @Override
-        public String getUndoPresentationName() {
-            return "Undo modification of CEdge";
-        }
-
-        @Override
-        public String getRedoPresentationName() {
-            return "Redo modification of CEdge";
-        }
+      // mGUIEdge.update();
+      mGUIEdge.repaint(100);
     }
+
+    @Override
+    public boolean canUndo() {
+      return true;
+    }
+
+    @Override
+    public boolean canRedo() {
+      return true;
+    }
+
+    @Override
+    public String getUndoPresentationName() {
+      return "Undo modification of CEdge";
+    }
+
+    @Override
+    public String getRedoPresentationName() {
+      return "Redo modification of CEdge";
+    }
+  }
 }

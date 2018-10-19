@@ -11,43 +11,43 @@ import org.w3c.dom.Element;
  */
 public final class CommentGraphics implements ModelObject {
 
-    private CommentBoundary mRectangle;
+  private CommentBoundary mRectangle;
 
-    public CommentGraphics() {
-        mRectangle = new CommentBoundary();
-    }
+  public CommentGraphics() {
+    mRectangle = new CommentBoundary();
+  }
 
-    public CommentGraphics(final CommentBoundary rectangle) {
-        mRectangle = rectangle;
-    }
+  public CommentGraphics(final CommentBoundary rectangle) {
+    mRectangle = rectangle;
+  }
 
-    public final void setRectangle(final CommentBoundary value) {
-        mRectangle = value;
-    }
+  public final void setRectangle(final CommentBoundary value) {
+    mRectangle = value;
+  }
 
-    public final CommentBoundary getRectangle() {
-        return mRectangle;
-    }
+  public final CommentBoundary getRectangle() {
+    return mRectangle;
+  }
 
-    @Override
-    public final CommentGraphics getCopy() {
-        return new CommentGraphics(mRectangle.getCopy());
-    }
+  @Override
+  public final CommentGraphics getCopy() {
+    return new CommentGraphics(mRectangle.getCopy());
+  }
 
-    @Override
-    public final void writeXML(final IOSIndentWriter out) {
-        out.println("<Graphics>").push();
-        mRectangle.writeXML(out);
-        out.pop().println("</Graphics>");
-    }
+  @Override
+  public final void writeXML(final IOSIndentWriter out) {
+    out.println("<Graphics>").push();
+    mRectangle.writeXML(out);
+    out.pop().println("</Graphics>");
+  }
 
-    @Override
-    public final void parseXML(final Element element) throws XMLParseError {
-        XMLParseAction.processChildNodes(element, "Boundary", new XMLParseAction() {
-            @Override
-            public void run(final Element element) throws XMLParseError {
-                mRectangle.parseXML(element);
-            }
-        });
-    }
+  @Override
+  public final void parseXML(final Element element) throws XMLParseError {
+    XMLParseAction.processChildNodes(element, "Boundary", new XMLParseAction() {
+      @Override
+      public void run(final Element element) throws XMLParseError {
+        mRectangle.parseXML(element);
+      }
+    });
+  }
 }
