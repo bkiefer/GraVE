@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
 
 /**
  * @author Patrick Gebhard
@@ -24,7 +25,7 @@ import de.dfki.vsm.model.project.EditorConfig;
 public final class EdgeGraphics {
 
   Edge mEdge = null;
-  de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge mDataEdge = null;
+  AbstractEdge mDataEdge = null;
   Node mSourceNode = null;
   Node mTargetNode = null;
   public Point[] mCoordList = new Point[4];    // the edge curve control points
@@ -482,7 +483,7 @@ public final class EdgeGraphics {
     de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgeArrow arrow
             = new de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgeArrow();
     ArrayList<de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgePoint> xmlEdgePoints
-            = new ArrayList();
+            = new ArrayList<>();
     de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgePoint startPoint
             = new de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgePoint();
 

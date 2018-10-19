@@ -10,8 +10,6 @@ import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -19,16 +17,12 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.undo.UndoManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 //~--- non-JDK imports --------------------------------------------------------
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
 import de.dfki.vsm.Preferences;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.event.ElementEditorToggledEvent;
-import de.dfki.vsm.editor.event.NodeExecutedEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.editor.project.sceneflow.attributes.ElementEditor;
@@ -46,16 +40,14 @@ import de.dfki.vsm.util.evt.EventObject;
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
+@SuppressWarnings("serial")
 public final class SceneFlowEditor extends JPanel implements EventListener {
 
   // The singelton logger instance
-  private final Logger mLogger = LoggerFactory.getLogger(SceneFlowEditor.class);;
+  //private final Logger mLogger = LoggerFactory.getLogger(SceneFlowEditor.class);
 
   // TODO: move undo manager up at least to project editor
   private UndoManager mUndoManager = null;
-
-  // TODO: make final singelton timer
-  private Timer mVisualizationTimer = new Timer("SceneFlowEditor-Timer");
 
   //
   private final SceneFlow mSceneFlow;
@@ -180,7 +172,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
             ? true
             : false);
 
-    //INITIALIZE THE SPLIT PANEL WITH WORK SPACE AND ELEMENTEDITOR
+    // INITIALIZE THE SPLIT PANEL WITH WORK SPACE AND ELEMENTEDITOR
     mWorkSpaceScrollPane.setMinimumSize(new Dimension(10, 10));
     mWorkSpaceScrollPane.setMaximumSize(new Dimension(10000, 3000));
     mSplitPane.setLeftComponent(mWorkSpaceScrollPane);
@@ -224,11 +216,6 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
   // Update the visualization
   @Override
   public final void update(final EventObject event) {
-    if (mVisualizationTimer != null) {
-      if (event instanceof NodeExecutedEvent) {
-        setMessageLabelText("SceneFlow is running", false);
-      }
-    }
   }
 
   public void setViewPosition(Point p) {
@@ -315,51 +302,17 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
   }
 
   public void setMessageLabelText(String value) {
-    setMessageLabelText(value, false);
-  }
-
-  public void setMessageLabelText(String value, boolean forever) {
-    if (forever) {
       mFooterLabel.setText(value);
-    } else {
-      mFooterLabel.setText(value);
-
-      VisuTask visuTask = new VisuTask(25, mFooterLabel);
-
-      try {
-        mVisualizationTimer.cancel();
-        mVisualizationTimer = new Timer();
-        mVisualizationTimer.schedule(visuTask, 0, 100);
-      } catch (Exception e) {
-
-        // e.printStackTrace();
-      }
-    }
   }
 
   public void close() {
-
     // Delete all observers
-//      mObservable.deleteObservers();
+    // mObservable.deleteObservers();
+
     // Cleanup worspace
     mWorkSpacePanel.cleanup();
-
-    // Stop visualization
-    stopVisualisation();
   }
 
-  /**
-   * Nullifies the VisalisationTimer thread
-   */
-  public void stopVisualisation() {
-    if (mVisualizationTimer != null) {
-      mVisualizationTimer.purge();
-      mVisualizationTimer.cancel();
-
-      // TODO: Why setting to null
-      // mVisuTimer = null;
-    }
-  }
 
   public JSplitPane getSplitPane() {
     return mSplitPane;
@@ -483,53 +436,6 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
 
     public boolean isDataFlavorSupported(DataFlavor flavor) {
       return flavor.equals(DataFlavor.imageFlavor);
-    }
-  }
-
-  /**
-   *
-   *
-   *
-   *
-   *
-   */
-  private class VisuTask extends TimerTask {
-
-    int mSteps = 0;
-    JLabel mLabel = null;
-    Color mLabelColor = null;
-    int mOpacyStep = 0;
-    int mRedVal = 0;
-    int mGreenVal = 0;
-    int mBlueVal = 0;
-    int mOpacyVal = 255;
-
-    VisuTask(int steps, JLabel l) {
-      mSteps = steps;
-      mLabel = l;
-      mLabelColor = l.getForeground();
-      mRedVal = mLabelColor.getRed();
-      mGreenVal = mLabelColor.getGreen();
-      mBlueVal = mLabelColor.getBlue();
-      mOpacyStep = 255 / mSteps;
-    }
-
-    public synchronized int getActivityTime() {
-      return mSteps;
-    }
-
-    public void run() {
-      mSteps = (mSteps > 0)
-              ? mSteps - 1
-              : 0;
-      mOpacyVal -= mOpacyStep;
-      mLabel.setForeground(new Color(mRedVal, mGreenVal, mBlueVal, mOpacyVal));
-      mLabel.repaint(100);
-
-      if (mSteps == 0) {
-        mLabel.setText("");
-        cancel();
-      }
     }
   }
 }

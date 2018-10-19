@@ -247,71 +247,6 @@ import de.dfki.vsm.util.evt.EventObject;
 //        }
 //    }
 //}
-/**
- *
- *
- * @author Gregor Mehlmann
- *
- * TODO: THIS HAS TO BE TURNED INTO STH ELSE
- */
-class CmdEditor extends AttributeEditor {
-
-  public CmdEditor() {
-    super("Edit Command Executions:");
-  }
-
-  @Override
-  public void update(EventObject event) {
-    if (event instanceof NodeSelectedEvent) {
-
-      // Update the selected node
-      mDataNode = ((NodeSelectedEvent) event).getNode();
-
-      // Reload the command execution list
-      mListModel.clear();
-
-      Command cmd = mDataNode.getCmd();
-      mListModel.addElement(cmd);
-
-    } else {
-
-      // Do nothing
-    }
-  }
-
-  @Override
-  protected void add() {
-    de.dfki.vsm.editor.Node currentNode = EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().getNode(mDataNode.getId());
-    if (currentNode != null) {
-      EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().deselectAllOtherComponents(currentNode);
-      new CmdDialog(mDataNode.getCmd()).run();
-    }
-  }
-
-  @Override
-  protected void edit() {
-    Command oldCmd = mDataNode.getCmd();
-    Command newCmd = new CmdDialog(oldCmd).run();
-  }
-
-  @Override
-  protected void remove() {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  protected void up() {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  protected void down() {
-    // TODO Auto-generated method stub
-
-  }
-}
 
 /**
  *
@@ -691,29 +626,18 @@ class NameEditor extends JPanel implements EventListener {
 class NodeEditor extends JPanel implements EventListener {
 
   private final NameEditor mNameEditor;
-  private final StartNodeEditor mStartNodeEditor;
-
-  // private final FunDefEditor mFunDefEditor;
-  private final CmdEditor mCmdEditor;
 
   public NodeEditor() {
 
     // Init the child editors
     mNameEditor = new NameEditor();
-    mStartNodeEditor = new StartNodeEditor();
 
-    // mFunDefEditor = new FunDefEditor();
-    mCmdEditor = new CmdEditor();
 
     // Init components
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setBackground(Color.white);
     setBorder(BorderFactory.createEmptyBorder());
     add(mNameEditor);
-    add(mStartNodeEditor);
-
-    // add(mFunDefEditor);
-    add(mCmdEditor);
 
     // Add the element editor to the event multicaster
     EventDispatcher.getInstance().register(this);
@@ -726,21 +650,6 @@ class NodeEditor extends JPanel implements EventListener {
       // Get the selected node
       BasicNode node = ((NodeSelectedEvent) event).getNode();
 
-      // Show or hide the start node editor
-      if (node instanceof SuperNode) {
-        mStartNodeEditor.setVisible(true);
-      } else {
-        mStartNodeEditor.setVisible(false);
-      }
-
-      // Show or hide the function definition editor
-      if (node instanceof SceneFlow) {
-
-        // mFunDefEditor.setVisible(true);
-      } else {
-
-        // mFunDefEditor.setVisible(false);
-      }
     } else {
 
       // Do nothing
@@ -833,89 +742,6 @@ class ProbabilityEditor extends JPanel implements EventListener {
     EditorInstance.getInstance().refresh();
 
     // System.out.println("save");
-  }
-}
-
-/**
- *
- *
- * @author Gregor Mehlmann
- *
- *
- */
-class StartNodeEditor extends AttributeEditor {
-
-  public StartNodeEditor() {
-    super("Edit Start Nodes:");
-    disableAddButton();
-    disableUpDownButtons();
-  }
-
-  @Override
-  public void update(EventObject event) {
-    if (event instanceof NodeSelectedEvent) {
-
-      // Update the selected node
-      mDataNode = ((NodeSelectedEvent) event).getNode();
-
-      // Reload the start node list
-      if (mDataNode instanceof SuperNode) {
-        mListModel.clear();
-
-        for (BasicNode startNode : ((SuperNode) mDataNode).getStartNodeMap().values()) {
-          mListModel.addElement(startNode.getName() + "(" + startNode.getId() + ")");
-        }
-      }
-    } else {
-
-      // Do nothing
-    }
-  }
-
-  @Override
-  protected void add() {
-
-    // Create list of child nodes
-    ArrayList<String> nodeDataList = new ArrayList<>();
-
-    for (BasicNode node : ((SuperNode) mDataNode).getNodeAndSuperNodeList()) {
-      if (!node.isHistoryNode()) {
-        nodeDataList.add(node.getName() + "(" + node.getId() + ")");
-      }
-    }
-  }
-
-  @Override
-  protected void remove() {
-    String value = (String) mList.getSelectedValue();
-
-    if (value != null) {
-      String id = RegularExpressions.getMatches(value, "\\((\\w*)\\)", 2).get(1);
-
-      // Get the new start node
-      BasicNode oldStartNode = ((SuperNode) mDataNode).getChildNodeById(id);
-
-      ((SuperNode) mDataNode).removeStartNode(oldStartNode);
-      EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().getNode(id).removeStartSign();
-      mListModel.removeElement(value);
-      EditorInstance.getInstance().refresh();
-      UndoAction.getInstance().refreshUndoState();
-      RedoAction.getInstance().refreshRedoState();
-    }
-
-    // Reload the current start node list of the supernode
-  }
-
-  @Override
-  protected void edit() {
-  }
-
-  @Override
-  protected void up() {
-  }
-
-  @Override
-  protected void down() {
   }
 }
 

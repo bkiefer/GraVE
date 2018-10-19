@@ -85,7 +85,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
   //
   public final Observable mObservable = new Observable();
-  private final Logger mLogger = LoggerFactory.getLogger(WorkSpacePanel.class);;
+  //private final Logger mLogger = LoggerFactory.getLogger(WorkSpacePanel.class);
   private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
   //
