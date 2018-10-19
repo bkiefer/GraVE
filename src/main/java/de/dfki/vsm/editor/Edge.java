@@ -34,12 +34,10 @@ import de.dfki.vsm.editor.action.ModifyEdgeAction;
 import de.dfki.vsm.editor.action.RedoAction;
 import de.dfki.vsm.editor.action.UndoAction;
 import de.dfki.vsm.editor.event.EdgeEditEvent;
-import de.dfki.vsm.editor.event.EdgeExecutedEvent;
 import de.dfki.vsm.editor.event.EdgeSelectedEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.EdgeGraphics;
-import de.dfki.vsm.editor.util.VisualisationTask;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
@@ -94,7 +92,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   public Point mLastTargetNodeDockPoint = null;
 
   // Activity monitor
-  private VisualisationTask mVisualisationTask = null;
   private final Logger mLogger = LoggerFactory.getLogger(Edge.class);;
 
   // edit panel
@@ -895,29 +892,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       paintRoundedTextBadge(graphics, new Point(-(mFontWidthCorrection + 5), 0), targets);
       graphics.setTransform(currentAT);
     }
-
-    // draw activity cue
-    if (mVisualisationTask != null) {
-      if (mVisualisationTask.getActivityTime() <= 20) {
-
-        // fade out
-        int gray = ((20 - mVisualisationTask.getActivityTime()) * 6);
-
-        graphics.setColor(new Color(246 - gray, gray, gray, ((mEditorConfig.sACTIVITYTRACE)
-                ? 100
-                : 5 * mVisualisationTask.getActivityTime())));
-      } else {
-
-        // visualise activity
-        graphics.setColor(new Color(246, 0, 0, 100));
-      }
-
-      graphics.setStroke(new BasicStroke(20f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
-      graphics.draw(mEg.mCurve);
-    }
-
-//      }
-//    }
   }
 
   public boolean isInEditMode() {
@@ -979,21 +953,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
    */
   @Override
   public synchronized void update(EventObject event) {
-
-    if (mEditorConfig.sVISUALISATION) {
-      if (event instanceof EdgeExecutedEvent) {
-        de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge edge = ((EdgeExecutedEvent) event).getEdge();
-
-        if (edge.equals(mDataEdge)) {
-          if (mVisualisationTask != null) {
-            mVisualisationTask.cancel();
-          }
-
-          mVisualisationTask = new VisualisationTask(mEditorConfig.sVISUALISATIONTIME, this);
-          mVisualisationTimer.schedule(mVisualisationTask, 0, 15);
-        }
-      }
-    }
   }
 
   /**

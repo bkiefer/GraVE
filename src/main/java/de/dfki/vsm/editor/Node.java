@@ -10,14 +10,10 @@ import java.util.*;
 
 import javax.swing.JComponent;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.dfki.vsm.editor.event.*;
+import de.dfki.vsm.editor.event.NodeSelectedEvent;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.DockingManager;
-import de.dfki.vsm.editor.util.VisualisationTask;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.model.sceneflow.chart.SuperNode;
 import de.dfki.vsm.util.evt.EventDispatcher;
@@ -48,8 +44,6 @@ public final class Node extends JComponent implements EventListener, Observer {
   public boolean mPressed = false;
   public boolean mDragged = false;
 
-  //
-  private final Logger mLogger = LoggerFactory.getLogger(Node.class);;
   private final EventDispatcher mEventMulticaster = EventDispatcher.getInstance();
   private Type mType;
   private de.dfki.vsm.model.sceneflow.chart.BasicNode mDataNode;
@@ -66,9 +60,6 @@ public final class Node extends JComponent implements EventListener, Observer {
   // TODO: eventually move computation of color to paint component
   public Color mColor;
 
-  //
-  private Timer mVisuTimer;
-  private VisualisationTask mVisualisationTask;
   private boolean mIsActive;
 
   public enum Flavour {
@@ -112,9 +103,6 @@ public final class Node extends JComponent implements EventListener, Observer {
               ? true
               : false;
     }
-
-    // Init the visualization timer
-    mVisuTimer = new Timer("Node(" + mDataNode.getId() + ")-Visualization-Timer");
 
     // Set initial position
     Point pos = new Point(mDataNode.getGraphics().getPosition().getXPos(),
@@ -327,51 +315,6 @@ public final class Node extends JComponent implements EventListener, Observer {
    */
   @Override
   public void update(EventObject event) {
-    if (mEditorConfig.sVISUALISATION) {
-      if (event instanceof NodeStartedEvent) {
-        if ((((NodeStartedEvent) event).getNode().equals(mDataNode))
-            || ((NodeStartedEvent) event).getNode().isSubNodeOf(mDataNode)) {
-
-          // Cancel the visualization the previous
-          if (mVisualisationTask != null) {
-            mVisualisationTask.cancel();
-          }
-
-          mIsActive = true;
-
-          // TODO: necessary?
-          repaint(100);
-        }
-      } else if (event instanceof NodeExecutedEvent) {
-        if ((((NodeExecutedEvent) event).getNode().equals(mDataNode))
-                || ((NodeExecutedEvent) event).getNode().isSubNodeOf(mDataNode)) {
-          mIsActive = false;
-
-          if (mVisualisationTask != null) {
-            mVisualisationTask.cancel();
-          }
-
-          //mVisualisationTask = new VisualisationTask(mEditorConfig.sVISUALISATIONTIME, this);
-          //mVisuTimer = new Timer("BasicNode(" + mDataNode.getId() + ")-Visualization-Timer");
-          //mVisuTimer.schedule(mVisualisationTask, 0, 15);
-          repaint(100);
-        }
-      } else if (event instanceof NodeTerminatedEvent) {
-        mIsActive = false;
-
-        if ((((NodeTerminatedEvent) event).getNode().equals(mDataNode))
-                || ((NodeTerminatedEvent) event).getNode().isSubNodeOf(mDataNode)) {
-          if (mVisualisationTask != null) {
-            mVisualisationTask.cancel();
-          }
-
-          //mVisualisationTask = new VisualisationTask(mEditorConfig.sVISUALISATIONTIME, this,
-          //        new Color(0, 0, 0, 100));
-          //mVisuTimer.schedule(mVisualisationTask, 0, 15);
-          repaint(100);
-        }
-      }
-    }
   }
 
   /**
@@ -773,26 +716,6 @@ public final class Node extends JComponent implements EventListener, Observer {
     repaint(100);
   }
 
-  public void stopVisualisation() {
-    mVisuTimer.cancel();
-    mVisuTimer.purge();
-
-    // TODO: why null?
-    //mVisuTimer = null;
-  }
-
-  public void hightlightNode() {
-    if (mVisuTimer != null) {
-      if (mVisualisationTask != null) {
-        mVisualisationTask.cancel();
-      }
-
-      mVisualisationTask = new VisualisationTask(mEditorConfig.sVISUALISATIONTIME, this,
-              new Color(255, 255, 255, 100), VisualisationTask.Type.Highlight);
-      mVisuTimer.schedule(mVisualisationTask, 0, 25);
-    }
-  }
-
   //
   @Override
   public void paintComponent(final Graphics graphics) {
@@ -847,30 +770,6 @@ public final class Node extends JComponent implements EventListener, Observer {
         g2d.fillRect(1, 1, mEditorConfig.sNODEWIDTH - 1, mEditorConfig.sNODEHEIGHT - 1);
       }
 
-      if (mVisualisationTask != null) {
-        if (mVisualisationTask.getActivityTime() > 10) {
-          g2d.setColor(mVisualisationTask.getColor());
-        } else {
-          int red = mVisualisationTask.getColor().getRed();
-          int green = mVisualisationTask.getColor().getGreen();
-          int blue = mVisualisationTask.getColor().getBlue();
-          int alpha = mVisualisationTask.getColor().getAlpha();
-          int gray = ((10 - mVisualisationTask.getActivityTime()) * 6);
-
-          g2d.setColor(new Color((mEditorConfig.sACTIVITYTRACE && !mVisualisationTask.isHighLight())
-                  ? gray
-                  : red, (mEditorConfig.sACTIVITYTRACE
-                  && !mVisualisationTask.isHighLight())
-                  ? gray
-                  : green, (mEditorConfig.sACTIVITYTRACE && !mVisualisationTask.isHighLight())
-                  ? gray
-                  : blue, (mEditorConfig.sACTIVITYTRACE && !mVisualisationTask.isHighLight())
-                  ? 100
-                  : alpha - (alpha - 6 * mVisualisationTask.getActivityTime())));
-        }
-
-        g2d.fillRect(1, 1, mEditorConfig.sNODEWIDTH - 1, mEditorConfig.sNODEHEIGHT - 1);
-      }
     } else if (mType == Type.BasicNode) {
       g2d.fillOval(borderOffset + 1, borderOffset + 1, mEditorConfig.sNODEWIDTH - borderOffset * 2 - 1,
               mEditorConfig.sNODEHEIGHT - borderOffset * 2 - 1);
@@ -893,33 +792,6 @@ public final class Node extends JComponent implements EventListener, Observer {
       // draw activity cue
       if (mIsActive) {
         g2d.setColor(new Color(246, 0, 0, 100));
-        g2d.fillOval(1, 1, mEditorConfig.sNODEWIDTH - 1, mEditorConfig.sNODEHEIGHT - 1);
-      }
-
-      // draw visualisation ...
-      if (mVisualisationTask != null) {
-        if (mVisualisationTask.getActivityTime() <= 10) {    // fade out
-          int red = mVisualisationTask.getColor().getRed();
-          int green = mVisualisationTask.getColor().getGreen();
-          int blue = mVisualisationTask.getColor().getBlue();
-          int alpha = mVisualisationTask.getColor().getAlpha();
-          int gray = ((10 - mVisualisationTask.getActivityTime()) * 6);
-
-          g2d.setColor(new Color((mEditorConfig.sACTIVITYTRACE && !mVisualisationTask.isHighLight())
-                  ? gray
-                  : red, (mEditorConfig.sACTIVITYTRACE
-                  && !mVisualisationTask.isHighLight())
-                  ? gray
-                  : green, (mEditorConfig.sACTIVITYTRACE && !mVisualisationTask.isHighLight())
-                  ? gray
-                  : blue, (mEditorConfig.sACTIVITYTRACE && !mVisualisationTask.isHighLight())
-                  ? 100
-                  : alpha - (alpha - 6 * mVisualisationTask.getActivityTime())));
-        } else {
-          g2d.setColor(mVisualisationTask.getColor());
-        }
-
-        g2d.setStroke(new BasicStroke(20f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
         g2d.fillOval(1, 1, mEditorConfig.sNODEWIDTH - 1, mEditorConfig.sNODEHEIGHT - 1);
       }
     }

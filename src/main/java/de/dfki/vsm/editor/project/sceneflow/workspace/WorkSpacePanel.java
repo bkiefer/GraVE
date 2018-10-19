@@ -1899,7 +1899,8 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
       for (Node node : mNodeSet) {
         if (node.containsPoint(mSelectNodePoint.x, mSelectNodePoint.y)) {
-          node.hightlightNode();
+          // TODO: MAYBE REACTIVATE
+          // node.highlightNode();
 
           break;
         }
