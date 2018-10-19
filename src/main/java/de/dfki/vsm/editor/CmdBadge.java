@@ -2,49 +2,34 @@ package de.dfki.vsm.editor;
 
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
-import de.dfki.vsm.editor.util.VisualisationTask;
 import de.dfki.vsm.model.project.EditorConfig;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
-import de.dfki.vsm.model.sceneflow.glue.GlueParser;
-import de.dfki.vsm.util.TextFormat;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.log.LOGDefaultLogger;
-import de.dfki.vsm.util.tpl.TPLTuple;
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
-import java.awt.font.TextLayout;
-import java.text.AttributedString;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Observer;
 import java.util.Timer;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JComponent;
-import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import org.fife.ui.rsyntaxtextarea.*;
-import org.fife.ui.rtextarea.RTextScrollPane;
+import org.fife.ui.rtextarea.ColorBackgroundPainterStrategy;
 
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
-public class CmdBadge extends JComponent implements EventListener, Observer {
+public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer {
 
     //
     private final LOGDefaultLogger mLogger = LOGDefaultLogger.getInstance();
@@ -64,29 +49,33 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
     private final EditorConfig mEditorConfig;
     private final Timer mVisuTimer;
 
-    // The maintained list
-    //private final JTextArea mCmdEditor;
     private final Font mFont;
-
-    // the new TextArea
-    RSyntaxTextArea textArea;
+    private boolean isFocused;
 
     /**
      *
      *
      */
     public CmdBadge(Node node) {
+        super(30, 40);
+        setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        setCodeFoldingEnabled(true);
+        setVisible(true);
+        setBackground(new Color(235, 235, 235, 0));
+        setOpaque(false);
+        addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) { isFocused = true; }
+            public void focusLost(FocusEvent e) { isFocused = false; }
+        });
+        
+        isFocused = false;
         mNode = node;
         mEditorConfig = mNode.getWorkSpace().getEditorConfig();
         mVisuTimer = new Timer("Command-Badge-Visualization-Timer");
         mFont = new Font("Monospaced",
                 Font.ITALIC,
                 mEditorConfig.sWORKSPACEFONTSIZE);
-       // mCmdEditor = new JTextArea();
-        textArea = new RSyntaxTextArea(30, 40);
-        textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-        textArea.setCodeFoldingEnabled(true);
-        textArea.setVisible(true);
+        setFont(mFont);
 
         Dimension dimension = new Dimension(10, 10);
         setSize(dimension);
@@ -95,11 +84,11 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
             - (dimension.width / 2),
             mNode.getLocation().y + mEditorConfig.sNODEHEIGHT);
         setLayout(new BorderLayout());
-        add(textArea, BorderLayout.CENTER);
+        //add(textArea, BorderLayout.CENTER);
 
-        KeyStroke keyStroke = KeyStroke.getKeyStroke("ENTER");
-        Object actionKey = textArea.getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
-        textArea.getActionMap().put(actionKey, wrapper);
+        //KeyStroke keyStroke = KeyStroke.getKeyStroke("ENTER");
+        //Object actionKey = getInputMap(JComponent.WHEN_FOCUSED).get(keyStroke);
+        //getActionMap().put(actionKey, wrapper);
         //textArea.requestFocusInWindow();
         update();
     }
@@ -110,23 +99,28 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
 
         System.out.println("Paint cmdbadge");
         Dimension dimension =
-                new Dimension(textArea.getWidth(), textArea.getHeight());
+                new Dimension(getWidth(), getHeight());
         //setSize(dimension);
         setLocation(mNode.getLocation().x + (mEditorConfig.sNODEWIDTH / 2) - (dimension.width / 2),
                 mNode.getLocation().y + mEditorConfig.sNODEHEIGHT);
-        Graphics2D graphics = (Graphics2D) g;
-        graphics.fillRoundRect(0, 0, dimension.width, dimension.height, 5, 5);
-        graphics.setStroke(new BasicStroke(1.5f));
-        graphics.setColor(Color.BLACK);
-        textArea.setEditable(mEditMode);
-        if (mEditMode) {
-            textArea.setBackground(new Color(155, 155, 155, 100));
+        //Graphics2D graphics = (Graphics2D) g;
+        //graphics.fillRoundRect(0, 0, dimension.width, dimension.height, 5, 5);
+        //graphics.setStroke(new BasicStroke(1.5f));
+        //graphics.setColor(Color.BLACK);
+        
+        if (isFocused) {
+            setBackground(new Color(0, 0, 0, 100));
+            setForeground(new Color(255, 255, 255, 100));
+            setOpaque(true);
         } else {
-            textArea.setBackground(new Color(100, 100, 100, 100));
+            setBackground(new Color(175, 175, 175, 0));
+            setForeground(new Color(0, 0, 0, 100));
+            setOpaque(false);
         }
         //textArea.paint(g);
     }
 
+    /*
     public void setEditMode() {
         mEditMode = true;
         return;/*
@@ -139,16 +133,17 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
 
         mDispatcher.convey(new NodeSelectedEvent(this, mNode.getDataNode()));
         //mCmdEditor.requestFocusInWindow();
-        */
-    }
+        
+    }*/
 
     /*
      * Resets badge to its default visual behavior
      */
     public synchronized void endEditMode() {
 
+      // TODO: This will never be executed, because mEditMode is never set
         if (mEditMode) {
-          mNode.getDataNode().getCmd().setContent(textArea.getText());
+          mNode.getDataNode().getCmd().setContent(getText());
 
           mDispatcher.convey(new ProjectChangedEvent(this));
           mDispatcher.convey(new NodeSelectedEvent(this, mNode.getDataNode()));
@@ -219,28 +214,25 @@ public class CmdBadge extends JComponent implements EventListener, Observer {
 
       // Sets visibility of the component to true only if there is something to display
       setVisible(! content.isEmpty());
-      textArea.setText(content);
+      setText(content);
+      
       if (! content.isEmpty()) {
-        Dimension dimension = new Dimension(200,
-            textArea.getLineCount()*textArea.getLineHeight());
+        Dimension dimension = new Dimension(200, getLineCount()*getLineHeight());
         setSize(dimension);
         setLocation(mNode.getLocation().x + (mEditorConfig.sNODEWIDTH / 2)
             - (dimension.width / 2),
             mNode.getLocation().y + mEditorConfig.sNODEHEIGHT);
       } else {
-        setSize(new Dimension(textArea.getWidth(), textArea.getHeight()));
+        setSize(new Dimension(getWidth(), getHeight()));
       }
-    }
-
-    /*
-     * Implements ActivityListener
-     */
-    @Override
-    public void update(EventObject event) {
-
     }
 
     public Node getNode() {
         return mNode;
     }
+    
+  @Override
+  public void update(EventObject event) {
+    System.out.println("Event happened!!");
+  }
 }
