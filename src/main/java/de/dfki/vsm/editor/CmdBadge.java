@@ -28,7 +28,10 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
   private final Node mNode;
   private final EditorConfig mEditorConfig;
 
+  // TODO: put preferences into external yml
   private final Font mFont;
+  private final int maxWidth = 200;
+  private final int maxHeight = 100;
 
   /**
    */
@@ -36,20 +39,25 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
     super(30, 40);
     setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
     setCodeFoldingEnabled(true);
+    this.setWrapStyleWord(true);
     setVisible(true);
-    setBackground(new Color(235, 235, 235, 0));
-    setOpaque(false);
+    //setBackground(new Color(255, 255, 255, 90));
+    setBackground(new Color(175, 175, 175, 95));
+    this.setMaximumSize(new Dimension(maxWidth, maxHeight));
+    
+    // Get rid of annoying yellow line
+    setHighlighter(null);
+    setHighlightCurrentLine(false);
+    setHighlightSecondaryLanguages(false);
+    
     addFocusListener(new FocusListener() {
       public void focusGained(FocusEvent e) {
-        setBackground(new Color(0, 0, 0, 100));
-        setForeground(new Color(255, 255, 255, 100));
+        setBackground(new Color(255, 255, 255, 100));
         setOpaque(true);
       }
 
       public void focusLost(FocusEvent e) {
-        setBackground(new Color(175, 175, 175, 0));
-        setForeground(new Color(0, 0, 0, 100));
-        setOpaque(false);
+        setBackground(new Color(175, 175, 175, 95));
         endEditMode();
       }
     });
@@ -96,10 +104,13 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
     setText(content);
 
     if (!content.isEmpty()) {
-      Dimension dimension = new Dimension(200, getLineCount() * getLineHeight());
-      setSize(dimension);
+      int newWidth = getColumns() * getColumnWidth();
+      newWidth = newWidth > maxWidth? maxWidth : newWidth;
+      int newHeight = getLineCount() * getLineHeight();
+      newHeight = newHeight > maxHeight? maxHeight : newHeight;
+      setSize(new Dimension(newWidth, newHeight));
       setLocation(mNode.getLocation().x + (mEditorConfig.sNODEWIDTH / 2)
-              - (dimension.width / 2),
+              - (newWidth / 2),
               mNode.getLocation().y + mEditorConfig.sNODEHEIGHT);
     } else {
       setSize(new Dimension(getWidth(), getHeight()));
@@ -112,6 +123,6 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
 
   @Override
   public void update(EventObject event) {
-    System.out.println("Event happened!!");
+    //System.out.println("Event happened!!");
   }
 }
