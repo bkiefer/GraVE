@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.xml.bind.annotation.*;
+
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
 import de.dfki.vsm.model.sceneflow.chart.graphics.edge.EdgeGraphics;
@@ -16,12 +18,17 @@ import de.dfki.vsm.util.tpl.TPLTuple;
  */
 public abstract class AbstractEdge implements ModelObject {
 
+  @XmlAttribute(name="target")
   protected String mTargetUnid = new String();
+  @XmlAttribute(name="start") // TODO: nonsense
   protected String mSourceUnid = new String();
   protected BasicNode mTargetNode = null;
   protected BasicNode mSourceNode = null;
+  @XmlElement(name="Graphics")
   protected EdgeGraphics mGraphics = null;
-  protected ArrayList<Command> mCmdList = new ArrayList();
+  @XmlElementWrapper(name="Commands")
+  @XmlElement(name="Command")
+  protected ArrayList<Command> mCmdList = new ArrayList<>();
   protected HashMap<
             TPLTuple<String, BasicNode>, TPLTuple<String, BasicNode>> mAltMap = new HashMap();
 

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlType;
+
 import org.w3c.dom.Element;
 
 //~--- non-JDK imports --------------------------------------------------------
@@ -21,6 +23,7 @@ import de.dfki.vsm.util.xml.XMLWriteError;
 /**
  * @author Gregor Mehlmann
  */
+@XmlType(name="EEdge")
 public class EpsilonEdge extends AbstractEdge {
 
   public EpsilonEdge() {

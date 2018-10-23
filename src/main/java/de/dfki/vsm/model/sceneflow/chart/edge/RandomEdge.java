@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 import org.w3c.dom.Element;
 
 //~--- non-JDK imports --------------------------------------------------------
@@ -23,6 +25,7 @@ import de.dfki.vsm.util.xml.XMLWriteError;
  */
 public class RandomEdge extends AbstractEdge {
 
+  @XmlAttribute(name="probability")
   protected int mProbability = Integer.MIN_VALUE;
 
   public RandomEdge() {

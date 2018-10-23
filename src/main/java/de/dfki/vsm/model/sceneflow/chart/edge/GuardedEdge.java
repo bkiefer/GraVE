@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.xml.bind.annotation.*;
+
 import org.w3c.dom.Element;
 
 import de.dfki.vsm.model.sceneflow.chart.BasicNode;
@@ -18,8 +20,10 @@ import de.dfki.vsm.util.xml.XMLWriteError;
 /**
  * @author Gregor Mehlmann
  */
+@XmlType(name="CEdge")
 public class GuardedEdge extends AbstractEdge {
 
+  @XmlElement
   protected Command mCondition = null;
 
   public GuardedEdge() {

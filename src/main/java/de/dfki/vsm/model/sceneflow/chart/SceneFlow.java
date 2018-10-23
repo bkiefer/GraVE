@@ -3,6 +3,8 @@ package de.dfki.vsm.model.sceneflow.chart;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.xml.bind.annotation.*;
+
 import org.w3c.dom.Element;
 
 import de.dfki.vsm.Preferences;
@@ -17,15 +19,23 @@ import de.dfki.vsm.util.xml.XMLWriteError;
 /**
  * @author Gregor Mehlmann
  */
+@XmlType(name="SceneFlow")
+@XmlRootElement(name="SceneFlow")
 public final class SceneFlow extends SuperNode {
 
   protected String mXMLNameSpace = new String();
   protected String mXMLSchemeInstance = new String();
   protected String mXMLSchemeLocation = new String();
+  @XmlAttribute(name="package")
   protected String mPackageName = new String();
+  @XmlElement(name="context")
   protected String mContextClass = new String();
+  @XmlElement(name="InitContext")
   protected String mContextCode = new String();
+  @XmlElementWrapper(name="ClassPath")
+  @XmlElement(name="ClassPathElement")
   protected ArrayList<String> mClassPathList = new ArrayList<String>();
+  @XmlAttribute(name="modifDate")
   protected String mModifDate = new String();
 
   public SceneFlow() {

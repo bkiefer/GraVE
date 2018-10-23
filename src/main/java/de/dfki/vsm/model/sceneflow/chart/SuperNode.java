@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.w3c.dom.Element;
 
 import de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge;
@@ -21,14 +25,44 @@ import de.dfki.vsm.util.xml.XMLWriteError;
 /**
  * @author Gregor Mehlmann
  */
+@XmlType(name="SuperNode")
 public class SuperNode extends BasicNode {
 
+  public static class StartNodeAdapter extends XmlAdapter<String, Map<String, BasicNode>> {
+    @Override
+    public String marshal(Map<String, BasicNode> v) throws Exception {
+      StringBuilder sb = new StringBuilder();
+      for (String s : v.keySet()) {
+        sb.append(s).append(';');
+      }
+      return sb.toString();
+    }
+
+    @Override
+    public Map<String, BasicNode> unmarshal(String v) throws Exception {
+      Map<String, BasicNode> result = new HashMap<>();
+      for (String str : v.split(";")) {
+        if (!str.isEmpty() && !str.equals("null")) {
+          result.put(str, null);
+        }
+      }
+      return result;
+    }
+  }
+
+  @XmlElement(name="Comment")
   protected ArrayList<CommentBadge> mCommentList = new ArrayList<CommentBadge>();
+  @XmlElement(name="Node")
   protected ArrayList<BasicNode> mNodeList = new ArrayList<BasicNode>();
+  @XmlElement(name="SuperNode")
   protected ArrayList<SuperNode> mSuperNodeList = new ArrayList<SuperNode>();
+  @XmlAttribute(name="start")
+  @XmlJavaTypeAdapter(StartNodeAdapter.class)
   protected HashMap<String, BasicNode> mStartNodeMap = new HashMap<String, BasicNode>();
   protected BasicNode mHistoryNode = null;
+  @XmlAttribute(name="hideLocalVar")
   protected boolean mHideLocalVarBadge = false;
+  @XmlAttribute(name="hideGlobalVar")
   protected boolean mHideGlobalVarBadge = false;
 
   public SuperNode() {
@@ -47,6 +81,14 @@ public class SuperNode extends BasicNode {
     mGraphics = node.mGraphics;
     mParentNode = node.mParentNode;
     mIsHistoryNode = node.mIsHistoryNode;
+  }
+
+  public void setComment(String value) {
+    mComment = value;
+  }
+
+  public String getComment() {
+    return mComment;
   }
 
   public void addComment(CommentBadge value) {
@@ -77,6 +119,7 @@ public class SuperNode extends BasicNode {
     return mCommentList;
   }
 
+  @XmlTransient
   public void setHistoryNode(BasicNode value) {
     mHistoryNode = value;
   }
@@ -85,6 +128,7 @@ public class SuperNode extends BasicNode {
     return mHistoryNode;
   }
 
+  @XmlTransient
   public HashMap<String, BasicNode> getStartNodeMap() {
     return mStartNodeMap;
   }

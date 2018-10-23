@@ -1,5 +1,12 @@
 package de.dfki.vsm.model.sceneflow.glue.command;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -14,7 +21,18 @@ import de.dfki.vsm.util.xml.XMLWriteable;
  * @author Gregor Mehlmann
  */
 public class Command implements Copyable, XMLParseable, XMLWriteable {
+  public static class AdapterCDATA extends XmlAdapter<String, String> {
+    @Override
+    public String marshal(String arg0) throws Exception {
+        return "<![CDATA[" + arg0 + "]]>";
+    }
+    @Override
+    public String unmarshal(String arg0) throws Exception {
+        return arg0;
+    }
+  }
 
+  @XmlJavaTypeAdapter(AdapterCDATA.class)
   protected String content;
 
   public Command(String c) {
@@ -25,6 +43,7 @@ public class Command implements Copyable, XMLParseable, XMLWriteable {
 
   }
 
+  @XmlTransient
   public String getContent() {
     return content;
   }

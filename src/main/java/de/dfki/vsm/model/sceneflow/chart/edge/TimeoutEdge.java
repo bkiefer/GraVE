@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.xml.bind.annotation.*;
+
 import org.w3c.dom.Element;
 
 //~--- non-JDK imports --------------------------------------------------------
@@ -20,8 +22,10 @@ import de.dfki.vsm.util.xml.XMLWriteError;
 /**
  * @author Gregor Mehlmann
  */
+@XmlType(name="TEdge")
 public class TimeoutEdge extends AbstractEdge {
 
+  @XmlAttribute(name="timeout")
   protected long mTimeout = Long.MIN_VALUE;
   protected Command mExpression = null;
 

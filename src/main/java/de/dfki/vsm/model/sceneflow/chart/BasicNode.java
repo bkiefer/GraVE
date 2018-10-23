@@ -2,6 +2,8 @@ package de.dfki.vsm.model.sceneflow.chart;
 
 import java.util.ArrayList;
 
+import javax.xml.bind.annotation.*;
+
 import org.w3c.dom.Element;
 
 import de.dfki.vsm.model.ModelObject;
@@ -17,25 +19,44 @@ import de.dfki.vsm.util.xml.XMLWriteError;
 /**
  * @author Gregor Mehlmann
  */
+@XmlType(name="Node")
 public class BasicNode implements ModelObject {
 
+  @XmlAttribute(name="id")
   protected String mNodeId = new String();
+  @XmlAttribute(name="name")
   protected String mNodeName = new String();
+  @XmlAttribute(name="comment")
   protected String mComment = new String();
   //
+  @XmlElementWrapper(name="Commands")
+  @XmlElement(name="Command")
   protected Command mCmdList = new Command("");
-  protected ArrayList<GuardedEdge> mCEdgeList = new ArrayList();
-  protected ArrayList<RandomEdge> mPEdgeList = new ArrayList();
-  protected ArrayList<InterruptEdge> mIEdgeList = new ArrayList();
-  protected ArrayList<ForkingEdge> mFEdgeList = new ArrayList();
+
+  @XmlElement(name="CEdge")
+  protected ArrayList<GuardedEdge> mCEdgeList = new ArrayList<>();
+  @XmlElement(name="PEdge")
+  protected ArrayList<RandomEdge> mPEdgeList = new ArrayList<>();
+  @XmlElement(name="IEdge")
+  protected ArrayList<InterruptEdge> mIEdgeList = new ArrayList<>();
+  @XmlElement(name="FEdge")
+  protected ArrayList<ForkingEdge> mFEdgeList = new ArrayList<>();
+
   //
+  @XmlElement(name="DEdge")
   protected AbstractEdge mDEdge = null;
+  @XmlElement(name="Graphics")
   protected NodeGraphics mGraphics = null;
+  @XmlTransient
   protected SuperNode mParentNode = null;
+  @XmlAttribute(name="history")
   protected boolean mIsHistoryNode = false;
 
+  @XmlTransient
   public Byte hasNone = new Byte("0");
+  @XmlTransient
   public Byte hasOne = new Byte("1");
+  @XmlTransient
   public Byte hasMany = new Byte("2");
 
   public enum FLAVOUR {
@@ -62,6 +83,7 @@ public class BasicNode implements ModelObject {
     return false;
   }
 
+  @XmlTransient
   public void setId(String value) {
     mNodeId = value;
   }
@@ -78,6 +100,7 @@ public class BasicNode implements ModelObject {
     mIsHistoryNode = value;
   }
 
+  @XmlTransient
   public void setName(String value) {
     mNodeName = value;
   }
@@ -91,6 +114,7 @@ public class BasicNode implements ModelObject {
     mNodeName = value;
   }
 
+  @XmlTransient
   public void setComment(String value) {
     mComment = value;
   }
@@ -217,6 +241,7 @@ public class BasicNode implements ModelObject {
     return FLAVOUR.NONE;
   }
 
+  @XmlTransient
   public void setDedge(AbstractEdge value) {
     mDEdge = value;
   }
@@ -229,6 +254,7 @@ public class BasicNode implements ModelObject {
     mDEdge = null;
   }
 
+  @XmlTransient
   public void setGraphics(NodeGraphics value) {
     mGraphics = value;
   }
@@ -237,6 +263,7 @@ public class BasicNode implements ModelObject {
     return mGraphics;
   }
 
+  @XmlTransient
   public void setParentNode(SuperNode value) {
     mParentNode = value;
   }
