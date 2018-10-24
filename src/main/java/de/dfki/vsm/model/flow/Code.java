@@ -1,4 +1,4 @@
-package de.dfki.vsm.model.sceneflow.glue.command;
+package de.dfki.vsm.model.flow;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -13,15 +13,15 @@ import de.dfki.vsm.util.xml.XMLWriteable;
 /**
  * @author Gregor Mehlmann
  */
-public class Command implements Copyable, XMLParseable, XMLWriteable {
+public class Code implements Copyable, XMLParseable, XMLWriteable {
 
   protected String content;
 
-  public Command(String c) {
+  public Code(String c) {
     content = c;
   }
 
-  protected Command() {
+  protected Code() {
 
   }
 
@@ -46,8 +46,8 @@ public class Command implements Copyable, XMLParseable, XMLWriteable {
   }
 
   @Override
-  public Command getCopy() {
-    Command result = null;
+  public Code getCopy() {
+    Code result = null;
     try {
       result = this.getClass().newInstance();
     } catch (Exception ex) {
@@ -57,9 +57,9 @@ public class Command implements Copyable, XMLParseable, XMLWriteable {
     return result;
   }
 
-  public static Command parse(final Element element) throws XMLParseError {
+  public static Code parse(final Element element) throws XMLParseError {
     // The command to parse
-    return new Command(element.getTextContent());
+    return new Code(element.getTextContent());
   }
 
   @Override

@@ -19,9 +19,9 @@ import de.dfki.vsm.editor.event.CEdgeDialogModifiedEvent;
 import de.dfki.vsm.editor.util.AltStartNodeManager;
 import de.dfki.vsm.editor.util.HintTextField;
 import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.Code;
 import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.flow.edge.GuardedEdge;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
@@ -287,7 +287,7 @@ public class ModifyCEdgeDialog extends Dialog implements EventListener {
     String inputString = mInputTextField.getText().trim();
 
     try {
-      final Command exp = new Command(inputString);
+      final Code exp = new Code(inputString);
 
       //LogicalCond log = ChartParser.logResult;
       //Command log = ChartParser.expResult;

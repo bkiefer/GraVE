@@ -9,8 +9,8 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.Code;
 import de.dfki.vsm.model.flow.graphics.edge.EdgeGraphics;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
@@ -28,7 +28,7 @@ public class RandomEdge extends AbstractEdge {
   }
 
   public RandomEdge(String target, String source, BasicNode targetNode, BasicNode sourceNode, EdgeGraphics graphics,
-          ArrayList<Command> cmdList, HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> altStartNodeMap,
+          ArrayList<Code> cmdList, HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> altStartNodeMap,
           int probability) {
     super(target, source, targetNode, sourceNode, graphics, cmdList, altStartNodeMap);
     mProbability = probability;
@@ -126,7 +126,7 @@ public class RandomEdge extends AbstractEdge {
           XMLParseAction.processChildNodes(element, new XMLParseAction() {
             @Override
             public void run(Element element) throws XMLParseError {
-              mCmdList.add(Command.parse(element));
+              mCmdList.add(Code.parse(element));
             }
           });
         } else {

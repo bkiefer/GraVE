@@ -9,8 +9,8 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.Code;
 import de.dfki.vsm.model.flow.graphics.edge.EdgeGraphics;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
@@ -22,23 +22,23 @@ import de.dfki.vsm.util.xml.XMLWriteError;
  */
 public class InterruptEdge extends AbstractEdge {
 
-  protected Command mCondition = null;
+  protected Code mCondition = null;
 
   public InterruptEdge() {
   }
 
   public InterruptEdge(String target, String source, BasicNode targetNode, BasicNode sourceNode, EdgeGraphics graphics,
-          ArrayList<Command> cmdList, HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> altStartNodeMap,
-          Command condition) {
+          ArrayList<Code> cmdList, HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> altStartNodeMap,
+          Code condition) {
     super(target, source, targetNode, sourceNode, graphics, cmdList, altStartNodeMap);
     mCondition = condition;
   }
 
-  public void setCondition(Command value) {
+  public void setCondition(Code value) {
     mCondition = value;
   }
 
-  public Command getCondition() {
+  public Code getCondition() {
     return mCondition;
   }
 
@@ -131,11 +131,11 @@ public class InterruptEdge extends AbstractEdge {
           XMLParseAction.processChildNodes(element, new XMLParseAction() {
             @Override
             public void run(Element element) throws XMLParseError {
-              mCmdList.add(Command.parse(element));
+              mCmdList.add(Code.parse(element));
             }
           });
         } else {
-          mCondition = Command.parse(element);
+          mCondition = Code.parse(element);
         }
       }
     });

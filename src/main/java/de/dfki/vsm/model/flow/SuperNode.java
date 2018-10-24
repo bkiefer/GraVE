@@ -10,7 +10,6 @@ import org.w3c.dom.Element;
 import de.dfki.vsm.model.flow.badge.CommentBadge;
 import de.dfki.vsm.model.flow.edge.*;
 import de.dfki.vsm.model.flow.graphics.node.NodeGraphics;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.cpy.CopyTool;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
@@ -340,7 +339,7 @@ public class SuperNode extends BasicNode {
         if (tag.equals("Commands")) {
           XMLParseAction.processChildNodes(element, new XMLParseAction() {
             public void run(Element element) throws XMLParseError {
-              mCmdList = Command.parse(element);
+              mCmdList = Code.parse(element);
             }
           });
         } else if (tag.equals("LocalVariableBadge")) {

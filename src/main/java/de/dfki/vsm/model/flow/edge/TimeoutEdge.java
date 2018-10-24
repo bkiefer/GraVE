@@ -9,8 +9,8 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.Code;
 import de.dfki.vsm.model.flow.graphics.edge.EdgeGraphics;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
@@ -22,21 +22,21 @@ import de.dfki.vsm.util.xml.XMLWriteError;
 public class TimeoutEdge extends AbstractEdge {
 
   protected long mTimeout = Long.MIN_VALUE;
-  protected Command mExpression = null;
+  protected Code mExpression = null;
 
   public TimeoutEdge() {
   }
 
   // PG: Allow expression for mor flexibility. Consistency check through GUI
   public TimeoutEdge(String target, String source, BasicNode targetNode, BasicNode sourceNode, EdgeGraphics graphics,
-          ArrayList<Command> cmdList, HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> altStartNodeMap,
-          Command expression) {
+          ArrayList<Code> cmdList, HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> altStartNodeMap,
+          Code expression) {
     super(target, source, targetNode, sourceNode, graphics, cmdList, altStartNodeMap);
     mExpression = expression;
   }
 
   public TimeoutEdge(String target, String source, BasicNode targetNode, BasicNode sourceNode, EdgeGraphics graphics,
-          ArrayList<Command> cmdList, HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> altStartNodeMap,
+          ArrayList<Code> cmdList, HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> altStartNodeMap,
           long timeout) {
     super(target, source, targetNode, sourceNode, graphics, cmdList, altStartNodeMap);
     mTimeout = timeout;
@@ -55,11 +55,11 @@ public class TimeoutEdge extends AbstractEdge {
     // mTimeout = value;
   }
 
-  public void setExpression(Command value) {
+  public void setExpression(Code value) {
     mExpression = value;
   }
 
-  public Command getExpression() {
+  public Code getExpression() {
     return mExpression;
   }
 
@@ -144,7 +144,7 @@ public class TimeoutEdge extends AbstractEdge {
         } else if (tag.equals("Commands")) {
           XMLParseAction.processChildNodes(element, new XMLParseAction() {
             public void run(Element element) throws XMLParseError {
-              mCmdList.add(Command.parse(element));
+              mCmdList.add(Code.parse(element));
             }
           });
         } else {

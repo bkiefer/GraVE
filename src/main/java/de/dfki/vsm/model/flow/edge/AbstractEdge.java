@@ -7,8 +7,8 @@ import java.util.Map;
 
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.Code;
 import de.dfki.vsm.model.flow.graphics.edge.EdgeGraphics;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.Pair;
 
 /**
@@ -21,7 +21,7 @@ public abstract class AbstractEdge implements ModelObject {
   protected BasicNode mTargetNode = null;
   protected BasicNode mSourceNode = null;
   protected EdgeGraphics mGraphics = null;
-  protected ArrayList<Command> mCmdList = new ArrayList();
+  protected ArrayList<Code> mCmdList = new ArrayList();
   protected HashMap<
             Pair<String, BasicNode>, Pair<String, BasicNode>> mAltMap = new HashMap();
 
@@ -96,17 +96,17 @@ public abstract class AbstractEdge implements ModelObject {
     mGraphics = value;
   }
 
-  public final ArrayList<Command> getCmdList() {
+  public final ArrayList<Code> getCmdList() {
     return mCmdList;
   }
 
-  public final void setCmdList(final ArrayList<Command> value) {
+  public final void setCmdList(final ArrayList<Code> value) {
     mCmdList = value;
   }
 
-  public final ArrayList<Command> getCopyOfCmdList() {
-    final ArrayList<Command> copy = new ArrayList();
-    for (Command cmd : mCmdList) {
+  public final ArrayList<Code> getCopyOfCmdList() {
+    final ArrayList<Code> copy = new ArrayList();
+    for (Code cmd : mCmdList) {
       copy.add(cmd.getCopy());
     }
     return copy;

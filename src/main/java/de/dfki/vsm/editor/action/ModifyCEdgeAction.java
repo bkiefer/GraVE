@@ -7,8 +7,8 @@ import javax.swing.undo.CannotUndoException;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.dialog.ModifyCEdgeDialog;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.model.flow.Code;
 import de.dfki.vsm.model.flow.edge.GuardedEdge;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 
 /**
  * The action that modifies a conditional edge. This action has to remember the
@@ -22,12 +22,12 @@ public class ModifyCEdgeAction extends ModifyEdgeAction {
   /**
    * The old condition of the conditional edge
    */
-  private Command mOldCondition;
+  private Code mOldCondition;
 
   /**
    * The new condition of the conditional edge
    */
-  private Command mNewCondition;
+  private Code mNewCondition;
 
   /**
    *

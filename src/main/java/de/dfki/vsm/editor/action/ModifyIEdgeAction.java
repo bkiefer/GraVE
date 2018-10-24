@@ -7,8 +7,8 @@ import javax.swing.undo.CannotUndoException;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.dialog.ModifyIEdgeDialog;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.model.flow.Code;
 import de.dfki.vsm.model.flow.edge.InterruptEdge;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 
 /**
  *
@@ -16,8 +16,8 @@ import de.dfki.vsm.model.sceneflow.glue.command.Command;
  */
 public class ModifyIEdgeAction extends ModifyEdgeAction {
 
-  private Command mOldCondition;
-  private Command mNewCondition;
+  private Code mOldCondition;
+  private Code mNewCondition;
 
   public ModifyIEdgeAction(Edge edge, WorkSpacePanel workSpace) {
     super(edge, workSpace);

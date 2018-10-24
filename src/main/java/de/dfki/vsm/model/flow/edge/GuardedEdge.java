@@ -8,8 +8,8 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.Code;
 import de.dfki.vsm.model.flow.graphics.edge.EdgeGraphics;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
@@ -20,23 +20,23 @@ import de.dfki.vsm.util.xml.XMLWriteError;
  */
 public class GuardedEdge extends AbstractEdge {
 
-  protected Command mCondition = null;
+  protected Code mCondition = null;
 
   public GuardedEdge() {
   }
 
   public GuardedEdge(String target, String source, BasicNode targetNode, BasicNode sourceNode, EdgeGraphics graphics,
-          ArrayList<Command> cmdList, HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> altStartNodeMap,
-          Command condition) {
+          ArrayList<Code> cmdList, HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> altStartNodeMap,
+          Code condition) {
     super(target, source, targetNode, sourceNode, graphics, cmdList, altStartNodeMap);
     mCondition = condition;
   }
 
-  public Command getCondition() {
+  public Code getCondition() {
     return mCondition;
   }
 
-  public void setCondition(Command mOldCondition) {
+  public void setCondition(Code mOldCondition) {
     mCondition = mOldCondition;
   }
 
@@ -125,11 +125,11 @@ public class GuardedEdge extends AbstractEdge {
         } else if (tag.equals("Commands")) {
           XMLParseAction.processChildNodes(element, new XMLParseAction() {
             public void run(Element element) throws XMLParseError {
-              mCmdList.add(Command.parse(element));
+              mCmdList.add(Code.parse(element));
             }
           });
         } else {
-          mCondition = Command.parse(element);
+          mCondition = Code.parse(element);
         }
       }
     });
