@@ -2,6 +2,8 @@ package de.dfki.vsm.model.sceneflow.chart.graphics.comment;
 
 import org.w3c.dom.Element;
 
+import javax.xml.bind.annotation.*;
+
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
@@ -10,6 +12,7 @@ import de.dfki.vsm.util.xml.XMLParseError;
 /**
  * @author Gregor Mehlmann
  */
+@XmlType(name="Graphics")
 public final class CommentGraphics implements ModelObject {
 
   private CommentBoundary mRectangle;
@@ -22,6 +25,7 @@ public final class CommentGraphics implements ModelObject {
     mRectangle = rectangle;
   }
 
+  @XmlElement
   public final void setRectangle(final CommentBoundary value) {
     mRectangle = value;
   }

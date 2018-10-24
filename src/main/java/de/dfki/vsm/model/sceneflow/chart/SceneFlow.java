@@ -26,14 +26,13 @@ public final class SceneFlow extends SuperNode {
   protected String mXMLNameSpace = new String();
   protected String mXMLSchemeInstance = new String();
   protected String mXMLSchemeLocation = new String();
-  @XmlAttribute(name="package")
+
   protected String mPackageName = new String();
-  @XmlElement(name="context")
+
   protected String mContextClass = new String();
-  @XmlElement(name="InitContext")
+
   protected String mContextCode = new String();
-  @XmlElementWrapper(name="ClassPath")
-  @XmlElement(name="ClassPathElement")
+
   protected ArrayList<String> mClassPathList = new ArrayList<String>();
   @XmlAttribute(name="modifDate")
   protected String mModifDate = new String();
@@ -41,6 +40,7 @@ public final class SceneFlow extends SuperNode {
   public SceneFlow() {
   }
 
+  @XmlElement(name="InitContext")
   public String getContextCode() {
     return mContextCode;
   }
@@ -49,6 +49,7 @@ public final class SceneFlow extends SuperNode {
     mContextCode = initContext;
   }
 
+  @XmlElement(name="context")
   public String getContextClass() {
     return mContextClass;
   }
@@ -57,6 +58,7 @@ public final class SceneFlow extends SuperNode {
     mContextClass = value;
   }
 
+  @XmlAttribute(name="package")
   public String getPackageName() {
     return mPackageName;
   }
@@ -65,6 +67,9 @@ public final class SceneFlow extends SuperNode {
     mPackageName = value;
   }
 
+  // TODO: CORRECT? We'll not use it, so maybe not relevant
+  @XmlElementWrapper(name="ClassPath")
+  @XmlElement(name="ClassPathElement")
   public ArrayList<String> getClassPathList() {
     return mClassPathList;
   }

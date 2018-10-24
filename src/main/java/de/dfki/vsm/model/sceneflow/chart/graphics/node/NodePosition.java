@@ -1,5 +1,7 @@
 package de.dfki.vsm.model.sceneflow.chart.graphics.node;
 
+import javax.xml.bind.annotation.*;
+
 import org.w3c.dom.Element;
 
 import de.dfki.vsm.model.ModelObject;
@@ -8,6 +10,7 @@ import de.dfki.vsm.util.ios.IOSIndentWriter;
 /**
  * @author Gregor Mehlmann
  */
+@XmlType(name="Position")
 public final class NodePosition implements ModelObject {
 
   // The Y coordinate
@@ -28,6 +31,7 @@ public final class NodePosition implements ModelObject {
   }
 
   // Set the X coordinate
+  @XmlAttribute
   public final void setXPos(final int value) {
     mXPos = value;
   }
@@ -38,6 +42,7 @@ public final class NodePosition implements ModelObject {
   }
 
   // Set the Y coordinate
+  @XmlAttribute
   public final void setYPos(final int value) {
     mYPos = value;
   }

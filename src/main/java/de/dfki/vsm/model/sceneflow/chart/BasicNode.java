@@ -29,7 +29,7 @@ public class BasicNode implements ModelObject {
   @XmlAttribute(name="comment")
   protected String mComment = new String();
   //
-  @XmlElementWrapper(name="Commands")
+  //@XmlElementWrapper(name="Commands")
   @XmlElement(name="Command")
   protected Command mCmdList = new Command("");
 

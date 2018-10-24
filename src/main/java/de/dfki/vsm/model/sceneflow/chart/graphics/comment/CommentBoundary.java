@@ -2,6 +2,8 @@ package de.dfki.vsm.model.sceneflow.chart.graphics.comment;
 
 import org.w3c.dom.Element;
 
+import javax.xml.bind.annotation.*;
+
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseError;
@@ -9,6 +11,7 @@ import de.dfki.vsm.util.xml.XMLParseError;
 /**
  * @author Gregr Mehlmann
  */
+@XmlType(name="Boundary")
 public final class CommentBoundary implements ModelObject {
 
   private int mXPos;
@@ -32,6 +35,7 @@ public final class CommentBoundary implements ModelObject {
     mHeight = height;
   }
 
+  @XmlAttribute
   public final void setXPos(final int value) {
     mXPos = value;
   }
@@ -40,6 +44,7 @@ public final class CommentBoundary implements ModelObject {
     return mXPos;
   }
 
+  @XmlAttribute
   public final void setYPos(final int value) {
     mYPos = value;
   }
@@ -48,6 +53,7 @@ public final class CommentBoundary implements ModelObject {
     return mYPos;
   }
 
+  @XmlAttribute
   public final void setWidth(final int value) {
     mWidth = value;
   }
@@ -56,6 +62,7 @@ public final class CommentBoundary implements ModelObject {
     return mWidth;
   }
 
+  @XmlAttribute
   public final void setHeight(final int value) {
     mHeight = value;
   }

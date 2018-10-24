@@ -1,5 +1,7 @@
 package de.dfki.vsm.model.sceneflow.chart.graphics.node;
 
+import javax.xml.bind.annotation.*;
+
 import org.w3c.dom.Element;
 
 //~--- non-JDK imports --------------------------------------------------------
@@ -11,6 +13,7 @@ import de.dfki.vsm.util.xml.XMLParseError;
 /**
  * @author Gregor Mehlmann
  */
+@XmlType(name="Graphics")
 public final class NodeGraphics implements ModelObject {
 
   // The node position
@@ -32,6 +35,7 @@ public final class NodeGraphics implements ModelObject {
   }
 
   // Get the position
+  @XmlElement
   public final NodePosition getPosition() {
     return mPosition;
   }

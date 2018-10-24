@@ -4,6 +4,7 @@ package de.dfki.vsm.model.sceneflow.chart.badge;
 import java.awt.Font;
 
 import javax.swing.JEditorPane;
+import javax.xml.bind.annotation.*;
 
 import org.w3c.dom.Element;
 
@@ -19,6 +20,7 @@ import de.dfki.vsm.util.xml.XMLParseError;
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
+@XmlType(name="Comment")
 public class CommentBadge implements ModelObject {
 
   protected SuperNode mParentNode = null;
@@ -31,6 +33,7 @@ public class CommentBadge implements ModelObject {
     mParentNode = value;
   }
 
+  @XmlElement
   public CommentGraphics getGraphics() {
     return mGraphics;
   }
