@@ -7,6 +7,8 @@ import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.xml.bind.annotation.*;
+
 //~--- non-JDK imports --------------------------------------------------------
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,8 @@ import de.dfki.vsm.util.xml.XMLUtilities;
  *
  * This class saves project related configurations.
  */
+@XmlRootElement
+@XmlType
 public class EditorConfig {
 
   // The Logger Instance
@@ -36,7 +40,9 @@ public class EditorConfig {
   public int sNODEHEIGHT = 100;
   public int sSUPERNODEWIDTH = sNODEWIDTH;
   public int sSUPERNODEHEIGHT = sNODEWIDTH;
+  @XmlTransient
   public Dimension sNODESIZE = new Dimension(sNODEWIDTH, sNODEHEIGHT);
+  @XmlTransient
   public Dimension sSUPERNODESIZE = new Dimension(sSUPERNODEWIDTH, sSUPERNODEHEIGHT);
   public int sGRID_NODEWIDTH = sNODEWIDTH;
   public int sGRID_NODEHEIGHT = sNODEHEIGHT;

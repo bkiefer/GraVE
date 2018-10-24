@@ -16,6 +16,7 @@ import java.util.*;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.xml.bind.annotation.XmlType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import de.dfki.vsm.util.ios.ResourceLoader;
  *
  * Standard VSM configurations
  */
+@XmlType
 public final class Preferences {
   private static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
   // The editor properties object
