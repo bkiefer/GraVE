@@ -29,7 +29,6 @@ import de.dfki.vsm.editor.event.ProjectChangedEvent;
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-//import de.dfki.vsm.runtime.RunTimeInstance;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
@@ -112,8 +111,6 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
    */
   // The singelton logger instance
   //private final Logger mLogger = LoggerFactory.getLogger(SceneFlowToolBar.class);
-  // The singelton runtime instance
-  //private final RunTimeInstance mRunTime = RunTimeInstance.getInstance();
   // The singelton editor instance
   private final EditorInstance mEditorInstance = EditorInstance.getInstance();
   // The singelton system clipboard
@@ -129,7 +126,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   private final EditorConfig mEditorConfig;
 
   // The button GUI components
-  private JButton mTogglePallete;
+  private JButton mTogglePalette;
   //private JButton mToggleElementEditor;
   private JButton mPlayButton;
   private JButton mStopButton;
@@ -289,20 +286,21 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     /**
      * LESS AND MORE BUTTONS ARE INVERTED TO MATCH WITH THE LEFT SIZE
      */
-    mTogglePallete = add(new AbstractAction("ACTION_SHOW_ELEMENTS",
+    mTogglePalette = add(new AbstractAction("ACTION_SHOW_ELEMENTS",
             Boolean.valueOf(Preferences.getProperty("showelements"))
             ? ICON_MORE_STANDARD
             : ICON_LESS_STANDARD) {
       public void actionPerformed(ActionEvent evt) {
-        mSceneFlowEditor.showElementDisplay();
+        mSceneFlowEditor.toggleElementEditor();
         refreshButtons();
       }
     });
-    mTogglePallete.setRolloverIcon(Boolean.valueOf(Preferences.getProperty("showelements"))
+    mTogglePalette.setRolloverIcon(Boolean.valueOf(Preferences.getProperty("showelements"))
             ? ICON_MORE_ROLLOVER
             : ICON_LESS_ROLLOVER);
-    sanitizeButton(mTogglePallete, tinyButtonDim);
-    add(Box.createHorizontalGlue());
+    sanitizeButton(mTogglePalette, tinyButtonDim);
+    //add(Box.createHorizontalGlue());
+    add(Box.createHorizontalStrut(200));
 
     //EDIT PROJECT SECTION
     //Save project
@@ -534,29 +532,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     b.setToolTipText("Zoom Out");
     b.setRolloverIcon(ICON_ZOOMOUT_ROLLOVER);
     sanitizeButton(b, smallButtonDim);
-
-    //
-    // Property Space
-    //
-    /*
-    add(Box.createHorizontalGlue());
-    mToggleElementEditor = add(new AbstractAction("ACTION_SHOW_ELEMENTPROP",
-            Boolean.valueOf(Preferences.getProperty("showelementproperties"))
-            ? ICON_LESS_STANDARD
-            : ICON_MORE_STANDARD) {
-      public void actionPerformed(ActionEvent evt) {
-        mSceneFlowEditor.toggleElementEditor();
-        updateElementEditorButton();
-
-      }
-    });
-    mToggleElementEditor.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 4));
-    mToggleElementEditor.setRolloverIcon(Boolean.valueOf(Preferences.getProperty("showelementproperties"))
-            ? ICON_LESS_ROLLOVER
-            : ICON_MORE_ROLLOVER);
-    sanitizeButton(mToggleElementEditor, tinyButtonDim);
-    add(Box.createHorizontalStrut(3));
-    */
+    //add(Box.createHorizontalGlue());
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -576,20 +552,12 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
 
     //*************************************
     // Refresh the element display buttons
-    mTogglePallete.setIcon(mSceneFlowEditor.isElementDisplayVisible()
+    mTogglePalette.setIcon(mSceneFlowEditor.isElementDisplayVisible()
             ? ICON_MORE_STANDARD : ICON_LESS_STANDARD);
-    mTogglePallete.setRolloverIcon(Boolean.valueOf(Preferences.getProperty("showelements"))
+    mTogglePalette.setRolloverIcon(Boolean.valueOf(Preferences.getProperty("showelements"))
             ? ICON_MORE_ROLLOVER : ICON_LESS_ROLLOVER);
   }
 
-  /*
-  private void updateElementEditorButton() {
-    mToggleElementEditor.setIcon(mSceneFlowEditor.isElementEditorVisible()
-            ? ICON_LESS_STANDARD : ICON_MORE_STANDARD);
-    mToggleElementEditor.setRolloverIcon(Boolean.valueOf(Preferences.getProperty("showelementproperties"))
-            ? ICON_LESS_ROLLOVER : ICON_MORE_ROLLOVER);
-  }
-*/
   /*
   private void updateShowVarsButtons() {
     mShowVarButton.setIcon(mSceneFlowEditor.getWorkSpace().isVarBadgeVisible()
@@ -614,9 +582,9 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     // mPathDisplay.setBorder(BorderFactory.createEmptyBorder());
     mPathScrollPane = new JScrollPane(mPathDisplay);
     mPathScrollPane.setViewportBorder(BorderFactory.createLineBorder(Color.gray));
-    mPathScrollPane.setMaximumSize(new Dimension(500, 40));
+    mPathScrollPane.setMaximumSize(new Dimension(7000, 40));
     mPathScrollPane.setMinimumSize(new Dimension(300, 30));
-    mPathScrollPane.setPreferredSize(new Dimension(300, 30));
+    mPathScrollPane.setPreferredSize(new Dimension(400, 30));
     mPathScrollPane.setBorder(BorderFactory.createEmptyBorder());
     mPathScrollBar = new JScrollBar(JScrollBar.HORIZONTAL);
     mPathScrollBar.setPreferredSize(new Dimension(300, 10));

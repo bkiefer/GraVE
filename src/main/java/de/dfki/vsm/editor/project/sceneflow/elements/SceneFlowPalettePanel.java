@@ -82,7 +82,7 @@ public class SceneFlowPalettePanel extends JPanel {
     setPreferredSize(new Dimension(paletteDimension, paletteDimension));
     setMinimumSize(new Dimension(paletteDimension, paletteDimension));
     setMaximumSize(new Dimension(paletteDimension, paletteDimension));
-    setBorder(BorderFactory.createEtchedBorder());
+    //setBorder(BorderFactory.createEtchedBorder());
     add(mSuperNodeEntry);
     add(mBasicNodeEntry);
     add(mCommentEntry);

@@ -25,7 +25,7 @@ import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.event.ElementEditorToggledEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.editor.project.sceneflow.attributes.ElementEditor;
+import de.dfki.vsm.editor.project.sceneflow.attributes.NameEditor;
 import de.dfki.vsm.editor.project.sceneflow.elements.SceneFlowElementPanel;
 import de.dfki.vsm.editor.project.sceneflow.elements.SceneFlowPalettePanel;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
@@ -59,8 +59,8 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
   // The GUI components of the editor
   private final WorkSpacePanel mWorkSpacePanel;
   private final SceneFlowToolBar mSceneFlowToolBar;
-  //private final ElementEditor mElementEditor;
   private final SceneFlowPalettePanel mStaticElementsPanel;
+  private final NameEditor mNameEditor;
   private final SceneFlowElementPanel mDynamicElementsPanel;
   private final JPanel mNewElementDisplay;
   private final JLabel mFooterLabel;
@@ -146,7 +146,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     mFooterLabel = new JLabel();
     mDynamicElementsPanel = new SceneFlowElementPanel(mEditorProject);
     mStaticElementsPanel = new SceneFlowPalettePanel();
-    //mElementEditor = new ElementEditor();
+    mNameEditor = new NameEditor();
 
     // TOOLBAR: NORTH ELEMENT
     mSceneFlowToolBar = new SceneFlowToolBar(this, mEditorProject);
@@ -158,37 +158,25 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
 
     mNewElementDisplay = new JPanel();
     mNewElementDisplay.setLayout(new BoxLayout(mNewElementDisplay, BoxLayout.Y_AXIS));
+    mNewElementDisplay.add(mNameEditor);
     mNewElementDisplay.add(mStaticElementsPanel);
-
     // mNewElementDisplay.add(new JSeparator(JSeparator.HORIZONTAL));
     mNewElementDisplay.add(mDynamicElementsPanel);
 
     // PG 17.12.13 - FUTURE FEATURE! mNewElementDisplay.add(new EdgeTypeSelection(), BorderLayout.NORTH);
-    //add(mNewElementDisplay, BorderLayout.WEST);
     mNewElementDisplay.setVisible(Boolean.valueOf(Preferences.getProperty("showelements"))
             ? true
             : false);
-    /*
-    mElementEditor.setVisible(Boolean.valueOf(Preferences.getProperty("showelementproperties"))
-            ? true
-            : false);
-    */
     // INITIALIZE THE SPLIT PANEL WITH WORK SPACE AND ELEMENTEDITOR
     mWorkSpaceScrollPane.setMinimumSize(new Dimension(10, 10));
     mWorkSpaceScrollPane.setMaximumSize(new Dimension(10000, 3000));
     mSplitPane.setRightComponent(mWorkSpaceScrollPane);
-    //mSplitPane.setLeftComponent(mWorkSpaceScrollPane);
-    //mElementEditor.setMinimumSize(new Dimension(260, 500));
-    //mElementEditor.setMaximumSize(new Dimension(10000, 3000));
-    mSplitPane.setResizeWeight(1.0);
-    //mSplitPane.setRightComponent(mElementEditor);
+    mSplitPane.setResizeWeight(0.0);
     mSplitPane.setLeftComponent(mNewElementDisplay);
     if (Boolean.valueOf(Preferences.getProperty("showelements"))) {
-      // TODO:ADAPT
-      mSplitPane.setDividerLocation((int) (230));
-
-      //mSplitPane.setDividerLocation(
-      //    Integer.parseInt(mEditorProject.getEditorConfig().getProperty("propertiesdividerlocation")));
+      mSplitPane.setDividerLocation(
+          Integer.parseInt(mEditorProject.getEditorConfig()
+              .getProperty("propertiesdividerlocation")));
       //THIS EVENT IS CASTED ONLY TO ACTIVATE THE ELEMENT EDITOR WITH THE INFO OF THE CURRENT PROJECT
     } else {
       mSplitPane.setDividerLocation(1.0d);
