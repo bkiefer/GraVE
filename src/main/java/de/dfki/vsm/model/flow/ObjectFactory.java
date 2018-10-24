@@ -3,7 +3,6 @@ package de.dfki.vsm.model.flow;
 import javax.xml.bind.annotation.XmlRegistry;
 
 import de.dfki.vsm.model.flow.edge.*;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 
 @XmlRegistry
 public class ObjectFactory {
@@ -13,7 +12,7 @@ public class ObjectFactory {
 
   public SuperNode getSuperNode() { return new SuperNode(); }
 
-  public Command getCommand() { return new Command(""); }
+  public Code getCommand() { return new Code(""); }
 
   public EpsilonEdge getEEdge() { return new EpsilonEdge(); }
 
