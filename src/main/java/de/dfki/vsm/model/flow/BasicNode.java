@@ -9,7 +9,6 @@ import org.w3c.dom.Element;
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.model.flow.edge.*;
 import de.dfki.vsm.model.flow.graphics.node.NodeGraphics;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.cpy.CopyTool;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
@@ -31,7 +30,7 @@ public class BasicNode implements ModelObject {
   //
   //@XmlElementWrapper(name="Commands")
   @XmlElement(name="Command")
-  protected Command mCmdList = new Command("");
+  protected Code mCmdList = new Code("");
 
   // TODO: MERGE INTO ONE LIST!
   @XmlElement(name="CEdge")
@@ -455,7 +454,7 @@ public class BasicNode implements ModelObject {
     return (BasicNode) CopyTool.copy(this);
   }
 
-  public Command getCmd() {
+  public Code getCmd() {
     return mCmdList;
   }
 
@@ -512,7 +511,7 @@ public class BasicNode implements ModelObject {
           XMLParseAction.processChildNodes(element, new XMLParseAction() {
             @Override
             public void run(Element element) throws XMLParseError {
-              sb.append(Command.parse(element).getContent());
+              sb.append(Code.parse(element).getContent());
             }
           });
         } else if (tag.equals("Graphics")) {

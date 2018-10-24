@@ -12,7 +12,7 @@ import de.dfki.vsm.editor.CancelButton;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.util.HintTextField;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
+import de.dfki.vsm.model.flow.Code;
 
 /**
  *
@@ -21,7 +21,7 @@ import de.dfki.vsm.model.sceneflow.glue.command.Command;
 public class CreateExpDialog extends Dialog {
 
   //
-  private Command mExpression;
+  private Code mExpression;
 
   //
   private HintTextField mInputTextField;
@@ -29,7 +29,7 @@ public class CreateExpDialog extends Dialog {
   private CancelButton mCancelButton;
   private JLabel errorMsg;
 
-  public CreateExpDialog(Command expression) {
+  public CreateExpDialog(Code expression) {
     super(EditorInstance.getInstance(), "Specify Command", true);
     mExpression = expression;
     initComponents();
@@ -97,7 +97,7 @@ public class CreateExpDialog extends Dialog {
     mOkButton.requestFocus();
   }
 
-  public Command run() {
+  public Code run() {
     setVisible(true);
 
     if (mPressedButton == Button.OK) {
@@ -129,7 +129,7 @@ public class CreateExpDialog extends Dialog {
     String inputString = mInputTextField.getText().trim();
 
     try {
-      final Command exp = new Command(inputString);
+      final Code exp = new Code(inputString);
 
       if (exp != null) {
         mExpression = exp;

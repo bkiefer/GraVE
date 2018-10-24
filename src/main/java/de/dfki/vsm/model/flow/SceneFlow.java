@@ -9,7 +9,6 @@ import org.w3c.dom.Element;
 
 import de.dfki.vsm.Preferences;
 import de.dfki.vsm.model.flow.badge.CommentBadge;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.cpy.CopyTool;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
@@ -229,7 +228,7 @@ public final class SceneFlow extends SuperNode {
         } else if (tag.equals("Commands")) {
           XMLParseAction.processChildNodes(element, new XMLParseAction() {
             public void run(Element element) throws XMLParseError {
-              mCmdList = (Command) Command.parse(element);
+              mCmdList = (Code) Code.parse(element);
             }
           });
         } else if (tag.equals("ClassPath")) {

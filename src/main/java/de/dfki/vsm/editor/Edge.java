@@ -38,12 +38,12 @@ import de.dfki.vsm.editor.event.EdgeSelectedEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.EdgeGraphics;
+import de.dfki.vsm.model.flow.Code;
 import de.dfki.vsm.model.flow.edge.GuardedEdge;
 import de.dfki.vsm.model.flow.edge.InterruptEdge;
 import de.dfki.vsm.model.flow.edge.RandomEdge;
 import de.dfki.vsm.model.flow.edge.TimeoutEdge;
 import de.dfki.vsm.model.project.EditorConfig;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
@@ -490,7 +490,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         //ChartParser.parseResultType = ChartParser.LOG;
         //ChartParser.parseResultType = ChartParser.EXP;
 
-        Command log = new Command(input);
+        Code log = new Code(input);
 
         //LogicalCond log = ChartParser.logResult;
         //Command log = ChartParser.expResult;
@@ -509,7 +509,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         //ChartParser.parseResultType = ChartParser.LOG;
         //ChartParser.parseResultType = ChartParser.EXP;
 
-        Command log = new Command(input);
+        Code log = new Code(input);
 
         //LogicalCond log = ChartParser.logResult;
         //Command log = ChartParser.expResult;
