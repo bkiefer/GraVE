@@ -130,7 +130,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
 
   // The button GUI components
   private JButton mTogglePallete;
-  private JButton mToggleElementEditor;
+  //private JButton mToggleElementEditor;
   private JButton mPlayButton;
   private JButton mStopButton;
   //private JButton mShowVarButton;
@@ -187,7 +187,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   @Override
   public void update(EventObject event) {
     if (event instanceof ElementEditorToggledEvent) {
-      updateElementEditorButton();
+      //updateElementEditorButton();
     }
 //        if (event instanceof ExceptionThrownEvent) {
 //            if (mRunTime.isRunning(mEditorProject)) {
@@ -538,6 +538,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     //
     // Property Space
     //
+    /*
     add(Box.createHorizontalGlue());
     mToggleElementEditor = add(new AbstractAction("ACTION_SHOW_ELEMENTPROP",
             Boolean.valueOf(Preferences.getProperty("showelementproperties"))
@@ -555,6 +556,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
             : ICON_MORE_ROLLOVER);
     sanitizeButton(mToggleElementEditor, tinyButtonDim);
     add(Box.createHorizontalStrut(3));
+    */
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -580,13 +582,14 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
             ? ICON_MORE_ROLLOVER : ICON_LESS_ROLLOVER);
   }
 
+  /*
   private void updateElementEditorButton() {
     mToggleElementEditor.setIcon(mSceneFlowEditor.isElementEditorVisible()
             ? ICON_LESS_STANDARD : ICON_MORE_STANDARD);
     mToggleElementEditor.setRolloverIcon(Boolean.valueOf(Preferences.getProperty("showelementproperties"))
             ? ICON_LESS_ROLLOVER : ICON_MORE_ROLLOVER);
   }
-
+*/
   /*
   private void updateShowVarsButtons() {
     mShowVarButton.setIcon(mSceneFlowEditor.getWorkSpace().isVarBadgeVisible()

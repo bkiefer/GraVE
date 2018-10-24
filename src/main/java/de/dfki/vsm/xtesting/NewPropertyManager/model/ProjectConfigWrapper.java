@@ -56,28 +56,6 @@ public class ProjectConfigWrapper {
     project.write(f);
   }
 
-  public void changeAgentName(String oldAgentName, String newAgentName) throws Exception {
-    Iterator it = project.getProjectConfig().getAgentConfigList().iterator();
-    boolean found = false;
-    String newXMLAgent = "";
-    while (it.hasNext() && !found) {
-      AgentConfig agentConfig = (AgentConfig) it.next();
-      if (agentConfig.getAgentName().equals(oldAgentName)) {
-        newXMLAgent = changeNameAgentXML(agentConfig, oldAgentName, newAgentName);
-        if (!newXMLAgent.equals("")) {
-          it.remove();
-          found = true;
-        }
-      }
-    }
-    if (found) {
-      project.parseProjectConfigFromString(newXMLAgent);
-      saveConfig();
-    } else {
-      throw new Exception("Could not change the name of the agent");
-    }
-  }
-
   public void changePluginName(PluginConfig pluginConfig, String oldPluginName, String newPluginName) throws Exception {
     String pluginXML = "<Project name=\"" + project.getProjectName() + "\">"
             + "<Plugins>"
@@ -89,8 +67,6 @@ public class ProjectConfigWrapper {
       removeOldPlugin(oldPluginName);
       project.parseProjectConfigFromString(newXMLPlugin);
       saveConfig();
-      changeDeviceNameToAllAgentsFromPlugin(oldPluginName, newPluginName);
-
     } else {
       throw new Exception("Could not change the name of the plugin");
     }
@@ -109,33 +85,6 @@ public class ProjectConfigWrapper {
     }
   }
 
-  private void changeDeviceNameToAllAgentsFromPlugin(String oldPluginName, String newPluginName) {
-    Iterator it = project.getProjectConfig().getAgentConfigList().iterator();
-    LinkedList<String> agentsToBeSaved = new LinkedList<>();
-    while (it.hasNext()) {
-      String agentXML = changeIndividualAgentName(oldPluginName, newPluginName, it);
-      if (!agentXML.equals("")) {
-        agentsToBeSaved.add(agentXML);
-      }
-    }
-    for (String agentXMl : agentsToBeSaved) {
-      project.parseProjectConfigFromString(agentXMl);
-    }
-    saveConfig();
-  }
-
-  private String changeIndividualAgentName(String oldPluginName, String newPluginName, Iterator it) {
-    String newXMLAgent = "";
-    AgentConfig agentConfig = (AgentConfig) it.next();
-    if (agentConfig.getDeviceName().equals(oldPluginName)) {
-      newXMLAgent = changeAgentDeviceXML(agentConfig, oldPluginName, newPluginName);
-      if (!newXMLAgent.equals("")) {
-        it.remove();
-      }
-    }
-    return newXMLAgent;
-  }
-
   public boolean addNewPlugin(String deviceName, String className) {
     String newPlayer = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
             + "<Project name=\"" + project.getProjectName() + "\">"
@@ -150,30 +99,6 @@ public class ProjectConfigWrapper {
       saveConfig();
     }
     return res;
-  }
-
-  private String changeAgentDeviceXML(AgentConfig agentConfig, String oldPluginName, String newPluginName) {
-    String newXMLAgent;
-    String agentXML = "<Project name=\"" + project.getProjectName() + "\">"
-            + "<Agents>"
-            + agentConfig.toString()
-            + "</Agents>"
-            + "</Project>";
-    newXMLAgent = changeXMLAttributeNode(agentXML, "Agent", "device", oldPluginName, newPluginName);
-
-    return newXMLAgent;
-  }
-
-  private String changeNameAgentXML(AgentConfig agentConfig, String oldPluginName, String newPluginName) {
-    String newXMLAgent;
-    String agentXML = "<Project name=\"" + project.getProjectName() + "\">"
-            + "<Agents>"
-            + agentConfig.toString()
-            + "</Agents>"
-            + "</Project>";
-    newXMLAgent = changeXMLAttributeNode(agentXML, "Agent", "name", oldPluginName, newPluginName);
-
-    return newXMLAgent;
   }
 
   private String changeXMLAttributeNode(String xml, String tagName, String attr, String oldValue, String newValue) {

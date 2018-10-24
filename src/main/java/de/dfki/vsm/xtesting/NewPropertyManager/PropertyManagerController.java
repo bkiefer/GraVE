@@ -265,17 +265,7 @@ public class PropertyManagerController implements Initializable, TreeObserver {
   private void initializePlugins() {
     for (PluginConfig plugin : mProject.getProjectConfig().getPluginConfigList()) {
       EntryPlugin entryPlugin = new EntryPlugin(plugin);
-      addAgentsToPlugin(entryPlugin, plugin.getPluginName());
       entryDevice.addPlugin(entryPlugin);
-    }
-  }
-
-  private void addAgentsToPlugin(EntryPlugin entryPlugin, String pluginName) {
-    for (AgentConfig agent : mProject.getProjectConfig().getAgentConfigList()) {
-      if (agent.getDeviceName().equals(pluginName)) {
-        EntryAgent entryAgent = new EntryAgent(agent);
-        entryPlugin.addAgent(entryAgent);
-      }
     }
   }
 
@@ -642,7 +632,6 @@ public class PropertyManagerController implements Initializable, TreeObserver {
       changeItemName((CellEvent) object);
     } else if (object instanceof DeleteContextEventAgent) {
       removeSelectedItem();
-      deleteAgent(((DeleteContextEventAgent) object).getTreeEntry());
       saveConfig();
     } else if (object instanceof DeleteContextEventPlugin) {
       removeSelectedItem();
@@ -659,11 +648,6 @@ public class PropertyManagerController implements Initializable, TreeObserver {
   private void deletePlugin(AbstractTreeEntry treeEntry) {
     EntryPlugin entry = (EntryPlugin) treeEntry;
     mProject.deletePlugin(entry.getPluginConfig());
-  }
-
-  private void deleteAgent(AbstractTreeEntry treeEntry) {
-    EntryAgent entry = (EntryAgent) treeEntry;
-    mProject.deleteAgent(entry.getAgentConfig());
   }
 
   private void changeItemName(CellEvent event) {

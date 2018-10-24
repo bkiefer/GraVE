@@ -316,21 +316,6 @@ public class RunTimeProject {
   }
 
   public void deletePlugin(PluginConfig plugin) {
-    deleteRelatedAgents(plugin);
     mProjectConfig.deleteDevice(plugin);
-  }
-
-  private void deleteRelatedAgents(PluginConfig plugin) {
-    Iterator<AgentConfig> iterator = getProjectConfig().getAgentConfigList().iterator();
-    while (iterator.hasNext()) {
-      AgentConfig agent = iterator.next();
-      if (agent.getDeviceName().equals(plugin.getPluginName())) {
-        iterator.remove();
-      }
-    }
-  }
-
-  public void deleteAgent(AgentConfig agent) {
-    mProjectConfig.deleteAgent(agent);
   }
 }
