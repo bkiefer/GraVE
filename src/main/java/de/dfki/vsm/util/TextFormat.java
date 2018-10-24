@@ -12,7 +12,6 @@ import java.util.Map;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.util.tpl.TPLTuple;
 
 /**
  * @author Gregor Mehlmann
@@ -22,11 +21,11 @@ public class TextFormat {
   /**
    *
    */
-  public static ArrayList<TPLTuple<String, AttributedString>> getPairList(ArrayList<String> formattedStringList) {
-    ArrayList<TPLTuple<String, AttributedString>> pairList = new ArrayList<TPLTuple<String, AttributedString>>();
+  public static ArrayList<Pair<String, AttributedString>> getPairList(ArrayList<String> formattedStringList) {
+    ArrayList<Pair<String, AttributedString>> pairList = new ArrayList<Pair<String, AttributedString>>();
 
     for (int i = 0; i < formattedStringList.size(); i++) {
-      TPLTuple<String, AttributedString> pair = fillWithAttributes(formattedStringList.get(i));
+      Pair<String, AttributedString> pair = fillWithAttributes(formattedStringList.get(i));
 
       pairList.add(pair);
     }
@@ -37,8 +36,8 @@ public class TextFormat {
   /**
    *
    */
-  public static TPLTuple<String, AttributedString> fillWithAttributes(String inputString) {
-    HashMap<TPLTuple<TextAttribute, Object>, TPLTuple<Integer, Integer>> attributeMap = new HashMap();
+  public static Pair<String, AttributedString> fillWithAttributes(String inputString) {
+    HashMap<Pair<TextAttribute, Object>, Pair<Integer, Integer>> attributeMap = new HashMap();
     String unformattedString = new String();
 
     while (true) {
@@ -78,33 +77,33 @@ public class TextFormat {
       String postString = inputString.substring(i + 3);
 
       //
-      TPLTuple<Integer, Integer> position
-              = new TPLTuple<Integer, Integer>(
+      Pair<Integer, Integer> position
+              = new Pair<Integer, Integer>(
                       unformattedString.length() + preString.length(),
                       unformattedString.length() + preString.length() + subString.length());
 
       if (c == 'b') {
         // Highlight with bold weight
-        TPLTuple attribute
-                = new TPLTuple(
+        Pair attribute
+                = new Pair(
                         TextAttribute.WEIGHT,
                         TextAttribute.WEIGHT_BOLD);
         attributeMap.put(attribute, position);
 
       } else if (c == 'i') {
         // Highlight with italic posture
-        TPLTuple attribute
-                = new TPLTuple(
+        Pair attribute
+                = new Pair(
                         TextAttribute.POSTURE,
                         TextAttribute.POSTURE_OBLIQUE);
         attributeMap.put(attribute, position);
       } else if (c == 'r') {
         // Highlight like reserved word
-        TPLTuple attribute1
-                = new TPLTuple(
+        Pair attribute1
+                = new Pair(
                         TextAttribute.FOREGROUND, Color.BLUE);
-        TPLTuple attribute2
-                = new TPLTuple(
+        Pair attribute2
+                = new Pair(
                         TextAttribute.WEIGHT,
                         TextAttribute.WEIGHT_BOLD);
 
@@ -113,8 +112,8 @@ public class TextFormat {
       } else if (c == 'c') {
 
         // Constant Literals
-        TPLTuple attribute
-                = new TPLTuple(
+        Pair attribute
+                = new Pair(
                         TextAttribute.FOREGROUND,
                         Color.RED.darker());
 
@@ -122,8 +121,8 @@ public class TextFormat {
       } else if (c == 't') {
 
         // User-Defined Type Names
-        TPLTuple attribute
-                = new TPLTuple(
+        Pair attribute
+                = new Pair(
                         TextAttribute.FOREGROUND,
                         Color.MAGENTA.darker());
 
@@ -131,19 +130,19 @@ public class TextFormat {
       } else if (c == 'h') {
 
         // Struct or List Definitions
-        TPLTuple attribute
-                = new TPLTuple(
+        Pair attribute
+                = new Pair(
                         TextAttribute.FOREGROUND, Color.BLACK);
 
         attributeMap.put(attribute, position);
       } else if (c == 'p') {
         // Highlight predefined commands
-        TPLTuple attribute1
-                = new TPLTuple(
+        Pair attribute1
+                = new Pair(
                         TextAttribute.FOREGROUND,
                         Color.GREEN.darker().darker().darker());
-        TPLTuple attribute2
-                = new TPLTuple(
+        Pair attribute2
+                = new Pair(
                         TextAttribute.WEIGHT,
                         TextAttribute.WEIGHT_BOLD);
 
@@ -172,13 +171,13 @@ public class TextFormat {
 
     while (it.hasNext()) {
       Map.Entry entry = (Map.Entry) it.next();
-      TPLTuple<TextAttribute, Object> key = (TPLTuple<TextAttribute, Object>) entry.getKey();
-      TPLTuple<Integer, Integer> value = (TPLTuple<Integer, Integer>) entry.getValue();
+      Pair<TextAttribute, Object> key = (Pair<TextAttribute, Object>) entry.getKey();
+      Pair<Integer, Integer> value = (Pair<Integer, Integer>) entry.getValue();
 
       attributedString.addAttribute(key.getFirst(), key.getSecond(), value.getFirst(), value.getSecond());
     }
 
-    return new TPLTuple<String, AttributedString>(unformattedString, attributedString);
+    return new Pair<String, AttributedString>(unformattedString, attributedString);
   }
 
   public static String formatConstantStringLiteral(String valueString) {

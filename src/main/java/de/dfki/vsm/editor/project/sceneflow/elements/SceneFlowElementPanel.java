@@ -27,7 +27,7 @@ import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.TreeEntry;
 import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
 import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.model.sceneflow.chart.SceneFlow;
+import de.dfki.vsm.model.flow.SceneFlow;
 import de.dfki.vsm.util.evt.EventDispatcher;
 
 /**

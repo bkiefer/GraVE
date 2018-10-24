@@ -18,14 +18,14 @@ import de.dfki.vsm.editor.*;
 import de.dfki.vsm.editor.event.CEdgeDialogModifiedEvent;
 import de.dfki.vsm.editor.util.AltStartNodeManager;
 import de.dfki.vsm.editor.util.HintTextField;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
+import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.flow.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
+import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
-import de.dfki.vsm.util.tpl.TPLTuple;
 
 /**
  *
@@ -312,8 +312,8 @@ public class ModifyCEdgeDialog extends Dialog implements EventListener {
 
       while (it.hasNext()) {
         Map.Entry pairs = (Map.Entry) it.next();
-        TPLTuple<String, BasicNode> startNodePair = (TPLTuple<String, BasicNode>) pairs.getKey();
-        TPLTuple<String, BasicNode> altStartNodePair = (TPLTuple<String, BasicNode>) pairs.getValue();
+        Pair<String, BasicNode> startNodePair = (Pair<String, BasicNode>) pairs.getKey();
+        Pair<String, BasicNode> altStartNodePair = (Pair<String, BasicNode>) pairs.getValue();
 
         ((DefaultListModel) mAltStartNodeList.getModel()).addElement(startNodePair.getFirst() + "/"
                 + altStartNodePair.getFirst());
@@ -346,8 +346,8 @@ public class ModifyCEdgeDialog extends Dialog implements EventListener {
 
     while (it.hasNext()) {
       Map.Entry pairs = (Map.Entry) it.next();
-      TPLTuple<String, BasicNode> startNodePair = (TPLTuple<String, BasicNode>) pairs.getKey();
-      TPLTuple<String, BasicNode> altStartNodePair = (TPLTuple<String, BasicNode>) pairs.getValue();
+      Pair<String, BasicNode> startNodePair = (Pair<String, BasicNode>) pairs.getKey();
+      Pair<String, BasicNode> altStartNodePair = (Pair<String, BasicNode>) pairs.getValue();
 
       ((DefaultListModel) mAltStartNodeList.getModel()).addElement(startNodePair.getFirst() + "/"
               + altStartNodePair.getFirst());

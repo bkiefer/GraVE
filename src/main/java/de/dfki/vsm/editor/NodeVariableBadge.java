@@ -11,8 +11,8 @@ import javax.swing.JComponent;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.TextFormat;
-import de.dfki.vsm.util.tpl.TPLTuple;
 
 /**
  * @author Gregor Mehlmann
@@ -23,13 +23,13 @@ public class NodeVariableBadge extends JComponent {
   LocationType mLocation = LocationType.RIGHT;
   Node mNode = null;
   WorkSpacePanel mWorkSpace = null;
-  de.dfki.vsm.model.sceneflow.chart.BasicNode mDataNode = null;
+  de.dfki.vsm.model.flow.BasicNode mDataNode = null;
   Point mRelPos = null;
-  ArrayList<TPLTuple<String, AttributedString>> mLocalVarDefList = null;
-  ArrayList<TPLTuple<String, AttributedString>> mGlobalVarDefList = null;
-  ArrayList<TPLTuple<String, AttributedString>> mLocalTypeDefList = null;
-  ArrayList<TPLTuple<String, AttributedString>> mGlobalTypeDefList = null;
-  ArrayList<TPLTuple<String, AttributedString>> mCompleteList = new ArrayList<TPLTuple<String, AttributedString>>();
+  ArrayList<Pair<String, AttributedString>> mLocalVarDefList = null;
+  ArrayList<Pair<String, AttributedString>> mGlobalVarDefList = null;
+  ArrayList<Pair<String, AttributedString>> mLocalTypeDefList = null;
+  ArrayList<Pair<String, AttributedString>> mGlobalTypeDefList = null;
+  ArrayList<Pair<String, AttributedString>> mCompleteList = new ArrayList<Pair<String, AttributedString>>();
   int mPositionOffset = 10;
   int mBeautyXOffSet = 0;
   int mBeautyYOffSet = 0;
@@ -180,7 +180,7 @@ public class NodeVariableBadge extends JComponent {
     // Draw Type Definitions and Variable Definition
     int currentDrawingOffset = 0;
 
-    for (TPLTuple<String, AttributedString> pair : mCompleteList) {
+    for (Pair<String, AttributedString> pair : mCompleteList) {
       AttributedString attributedString = pair.getSecond();
       TextLayout textLayout = new TextLayout(attributedString.getIterator(),
               graphics.getFontRenderContext());

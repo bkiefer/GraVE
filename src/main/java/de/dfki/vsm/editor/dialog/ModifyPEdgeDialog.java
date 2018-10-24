@@ -22,11 +22,11 @@ import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
 import de.dfki.vsm.editor.*;
 import de.dfki.vsm.editor.util.AltStartNodeManager;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
+import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.flow.edge.RandomEdge;
+import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.ios.ResourceLoader;
-import de.dfki.vsm.util.tpl.TPLTuple;
 
 /**
  * @author Patrick Gebhard
@@ -552,8 +552,8 @@ public class ModifyPEdgeDialog extends Dialog {
 
       while (it.hasNext()) {
         Map.Entry pairs = (Map.Entry) it.next();
-        TPLTuple<String, BasicNode> startNodePair = (TPLTuple<String, BasicNode>) pairs.getKey();
-        TPLTuple<String, BasicNode> altStartNodePair = (TPLTuple<String, BasicNode>) pairs.getValue();
+        Pair<String, BasicNode> startNodePair = (Pair<String, BasicNode>) pairs.getKey();
+        Pair<String, BasicNode> altStartNodePair = (Pair<String, BasicNode>) pairs.getValue();
 
         ((DefaultListModel) mAltStartNodeList.getModel()).addElement(startNodePair.getFirst() + "/"
                 + altStartNodePair.getFirst());
@@ -586,8 +586,8 @@ public class ModifyPEdgeDialog extends Dialog {
 
     while (it.hasNext()) {
       Map.Entry pairs = (Map.Entry) it.next();
-      TPLTuple<String, BasicNode> startNodePair = (TPLTuple<String, BasicNode>) pairs.getKey();
-      TPLTuple<String, BasicNode> altStartNodePair = (TPLTuple<String, BasicNode>) pairs.getValue();
+      Pair<String, BasicNode> startNodePair = (Pair<String, BasicNode>) pairs.getKey();
+      Pair<String, BasicNode> altStartNodePair = (Pair<String, BasicNode>) pairs.getValue();
 
       ((DefaultListModel) mAltStartNodeList.getModel()).addElement(startNodePair.getFirst() + "/"
               + altStartNodePair.getFirst());
