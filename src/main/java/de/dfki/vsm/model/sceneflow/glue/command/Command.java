@@ -78,19 +78,16 @@ public class Command implements Copyable, XMLParseable, XMLWriteable {
 
   public static Command parse(final Element element) throws XMLParseError {
     // The command to parse
-    Command command = new Command(element.getTextContent());
-    return command;
+    return new Command(element.getTextContent());
   }
 
   @Override
   public void parseXML(Element element) throws XMLParseError {
-    content = "";
-    NodeList l = element.getChildNodes();
+    content = element.getTextContent();
   }
 
   @Override
   public void writeXML(IOSIndentWriter writer) throws XMLWriteError {
-    // TODO Auto-generated method stub
-
+    writer.print("<Command><![CDATA[").printPlain(content).println("]]></Command>");
   }
 }

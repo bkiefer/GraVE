@@ -59,7 +59,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
   // The GUI components of the editor
   private final WorkSpacePanel mWorkSpacePanel;
   private final SceneFlowToolBar mSceneFlowToolBar;
-  private final ElementEditor mElementEditor;
+  //private final ElementEditor mElementEditor;
   private final SceneFlowPalettePanel mStaticElementsPanel;
   private final SceneFlowElementPanel mDynamicElementsPanel;
   private final JPanel mNewElementDisplay;
@@ -77,14 +77,13 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     // Initialize the sceneflow
     mSceneFlow = mEditorProject.getSceneFlow();
 
+    // PREPARE THE VERTICAL SPLIT REGION (NOW USED AS CODE EDITOR)
     final Polygon pUp = new Polygon();
-
     pUp.addPoint(1, 4);
     pUp.addPoint(5, 0);
     pUp.addPoint(9, 4);
 
     final Polygon pDown = new Polygon();
-
     pDown.addPoint(13, 0);
     pDown.addPoint(17, 4);
     pDown.addPoint(21, 0);
@@ -147,15 +146,16 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     mFooterLabel = new JLabel();
     mDynamicElementsPanel = new SceneFlowElementPanel(mEditorProject);
     mStaticElementsPanel = new SceneFlowPalettePanel();
-    mElementEditor = new ElementEditor();
+    //mElementEditor = new ElementEditor();
+
+    // TOOLBAR: NORTH ELEMENT
     mSceneFlowToolBar = new SceneFlowToolBar(this, mEditorProject);
-
     // TODO: adding not explicit but via refresh method
-    mSceneFlowToolBar.addPathComponent(mSceneFlow);
-
+    mSceneFlowToolBar.addPathComponent(mSceneFlow); // ADD FIRST NODE
     //
     setLayout(new BorderLayout());
     add(mSceneFlowToolBar, BorderLayout.NORTH);
+
     mNewElementDisplay = new JPanel();
     mNewElementDisplay.setLayout(new BoxLayout(mNewElementDisplay, BoxLayout.Y_AXIS));
     mNewElementDisplay.add(mStaticElementsPanel);
@@ -164,25 +164,28 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     mNewElementDisplay.add(mDynamicElementsPanel);
 
     // PG 17.12.13 - FUTURE FEATURE! mNewElementDisplay.add(new EdgeTypeSelection(), BorderLayout.NORTH);
-    add(mNewElementDisplay, BorderLayout.WEST);
+    //add(mNewElementDisplay, BorderLayout.WEST);
     mNewElementDisplay.setVisible(Boolean.valueOf(Preferences.getProperty("showelements"))
             ? true
             : false);
+    /*
     mElementEditor.setVisible(Boolean.valueOf(Preferences.getProperty("showelementproperties"))
             ? true
             : false);
-
+    */
     // INITIALIZE THE SPLIT PANEL WITH WORK SPACE AND ELEMENTEDITOR
     mWorkSpaceScrollPane.setMinimumSize(new Dimension(10, 10));
     mWorkSpaceScrollPane.setMaximumSize(new Dimension(10000, 3000));
-    mSplitPane.setLeftComponent(mWorkSpaceScrollPane);
-    mElementEditor.setMinimumSize(new Dimension(260, 500));
-    mElementEditor.setMaximumSize(new Dimension(10000, 3000));
+    mSplitPane.setRightComponent(mWorkSpaceScrollPane);
+    //mSplitPane.setLeftComponent(mWorkSpaceScrollPane);
+    //mElementEditor.setMinimumSize(new Dimension(260, 500));
+    //mElementEditor.setMaximumSize(new Dimension(10000, 3000));
     mSplitPane.setResizeWeight(1.0);
-    mSplitPane.setRightComponent(mElementEditor);
-    if (Boolean.valueOf(Preferences.getProperty("showelementproperties"))) {
-
-      mSplitPane.setDividerLocation((int) (EditorInstance.getInstance().getWidth() - 520));
+    //mSplitPane.setRightComponent(mElementEditor);
+    mSplitPane.setLeftComponent(mNewElementDisplay);
+    if (Boolean.valueOf(Preferences.getProperty("showelements"))) {
+      // TODO:ADAPT
+      mSplitPane.setDividerLocation((int) (230));
 
       //mSplitPane.setDividerLocation(
       //    Integer.parseInt(mEditorProject.getEditorConfig().getProperty("propertiesdividerlocation")));
@@ -197,7 +200,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
       public void propertyChange(PropertyChangeEvent pce) {
 
         // solve issue here
-        if (Preferences.getProperty("showelementproperties").equals("true")) {
+        if (Preferences.getProperty("showelements").equals("true")) {
           mEditorProject.getEditorConfig().setProperty("propertiesdividerlocation", "" + mSplitPane.getDividerLocation());
         }
       }
@@ -230,17 +233,17 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
    *
    */
   public void toggleElementEditor() {
-    if (Boolean.valueOf(Preferences.getProperty("showelementproperties"))) {
-      mElementEditor.setVisible(false);
-      Preferences.setProperty("showelementproperties", "false");
+    if (Boolean.valueOf(Preferences.getProperty("showelements"))) {
+      mNewElementDisplay.setVisible(false);
+      Preferences.setProperty("showelements", "false");
       Preferences.save();
       mSplitPane.setDividerLocation(1d);
     } else {
-      mElementEditor.setVisible(true);
-      Preferences.setProperty("showelementproperties", "true");
+      mNewElementDisplay.setVisible(true);
+      Preferences.setProperty("showelements", "true");
       Preferences.save();
       mSplitPane.setDividerLocation(
-              Integer.parseInt(mEditorProject.getEditorConfig().getProperty("propertiesdividerlocation")));
+          Integer.parseInt(mEditorProject.getEditorConfig().getProperty("propertiesdividerlocation")));
     }
 
   }
@@ -249,8 +252,9 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     mDynamicElementsPanel.expandTree();
   }
 
+
   public boolean isElementEditorVisible() {
-    return mElementEditor.isVisible();
+    return mNewElementDisplay.isVisible();
   }
 
   public void showElementDisplay() {
@@ -346,7 +350,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     mStaticElementsPanel.refresh();
     mDynamicElementsPanel.refresh();
     mWorkSpacePanel.refresh();
-    mElementEditor.refresh();
+    //mElementEditor.refresh();
   }
 
   class SceneFlowImage extends TransferHandler implements Transferable {

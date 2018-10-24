@@ -12,7 +12,6 @@ import de.dfki.vsm.editor.CancelButton;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.util.HintTextField;
-import de.dfki.vsm.model.sceneflow.glue.GlueParser;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
 
 /**
@@ -130,7 +129,7 @@ public class CreateExpDialog extends Dialog {
     String inputString = mInputTextField.getText().trim();
 
     try {
-      final Command exp = (Command) GlueParser.run(inputString);
+      final Command exp = new Command(inputString);
 
       if (exp != null) {
         mExpression = exp;

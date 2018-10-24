@@ -12,9 +12,8 @@ import javax.swing.JPanel;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.dialog.ModifyIEdgeDialog;
 import de.dfki.vsm.editor.event.EdgeSelectedEvent;
-import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge.EdgeType;
-import de.dfki.vsm.model.sceneflow.glue.GlueParser;
+import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
@@ -88,7 +87,7 @@ class InterruptEditor extends JPanel implements EventListener {
     String inputString = mIEdgeDialog.getInputTextField().getText().trim();
 
     try {
-      final Command exp = (Command) GlueParser.run(inputString);
+      final Command exp = new Command(inputString);
       if (exp != null) {
         mDataIEdge.setCondition(exp);
       } else {

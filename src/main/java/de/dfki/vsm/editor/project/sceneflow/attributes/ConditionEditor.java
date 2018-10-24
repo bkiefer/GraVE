@@ -12,9 +12,8 @@ import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.dialog.ModifyCEdgeDialog;
 import de.dfki.vsm.editor.event.CEdgeDialogModifiedEvent;
 import de.dfki.vsm.editor.event.EdgeSelectedEvent;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge.EdgeType;
-import de.dfki.vsm.model.sceneflow.glue.GlueParser;
+import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
@@ -90,7 +89,7 @@ class ConditionEditor extends JPanel implements EventListener {
     try {
       //ChartParser.parseResultType = ChartParser.LOG;
       //ChartParser.parseResultType = ChartParser.EXP;
-      Command log = (Command) GlueParser.run(inputString);
+      Command log = new Command(inputString);
 
       //LogicalCond log = ChartParser.logResult;
       //Expression log = ChartParser.expResult;

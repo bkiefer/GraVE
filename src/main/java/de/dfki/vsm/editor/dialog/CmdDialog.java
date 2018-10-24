@@ -13,7 +13,6 @@ import de.dfki.vsm.editor.CancelButton;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.util.HintTextField;
-import de.dfki.vsm.model.sceneflow.glue.GlueParser;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -132,7 +131,7 @@ public class CmdDialog extends Dialog {
     String inputString = mInputTextField.getText().trim();
 
     try {
-      final Command cmd = (Command) GlueParser.run(inputString);
+      final Command cmd = new Command(inputString);
 
       if (cmd != null) {
         mCommand = cmd;

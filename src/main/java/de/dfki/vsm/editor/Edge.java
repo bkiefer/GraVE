@@ -43,7 +43,6 @@ import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
-import de.dfki.vsm.model.sceneflow.glue.GlueParser;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
@@ -491,7 +490,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         //ChartParser.parseResultType = ChartParser.LOG;
         //ChartParser.parseResultType = ChartParser.EXP;
 
-        Command log = (Command) GlueParser.run(input);
+        Command log = new Command(input);
 
         //LogicalCond log = ChartParser.logResult;
         //Command log = ChartParser.expResult;
@@ -510,7 +509,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         //ChartParser.parseResultType = ChartParser.LOG;
         //ChartParser.parseResultType = ChartParser.EXP;
 
-        Command log = (Command) GlueParser.run(input);
+        Command log = new Command(input);
 
         //LogicalCond log = ChartParser.logResult;
         //Command log = ChartParser.expResult;
