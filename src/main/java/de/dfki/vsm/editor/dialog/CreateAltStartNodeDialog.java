@@ -12,7 +12,7 @@ import de.dfki.vsm.editor.CancelButton;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.util.AltStartNodeManager;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
+import de.dfki.vsm.model.flow.BasicNode;
 
 /**
  * @author Gregor Mehlmann

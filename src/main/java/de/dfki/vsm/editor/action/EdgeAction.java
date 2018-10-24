@@ -19,7 +19,7 @@ import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.grid.*;
 import de.dfki.vsm.editor.util.grid.pathfinding.Path;
-import de.dfki.vsm.model.sceneflow.chart.edge.*;
+import de.dfki.vsm.model.flow.edge.*;
 
 /**
  * @author Gregor Mehlmann

@@ -6,13 +6,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.chart.SceneFlow;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
+import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.SceneFlow;
+import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.flow.edge.GuardedEdge;
+import de.dfki.vsm.model.flow.edge.InterruptEdge;
+import de.dfki.vsm.model.flow.edge.RandomEdge;
 
 /**
  * @author Gregor Mehlmann

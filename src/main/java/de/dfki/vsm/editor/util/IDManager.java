@@ -7,13 +7,12 @@ package de.dfki.vsm.editor.util;
 //~--- JDK imports ------------------------------------------------------------
 import java.util.*;
 
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
+import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.flow.edge.ForkingEdge;
+import de.dfki.vsm.model.flow.edge.GuardedEdge;
+import de.dfki.vsm.model.flow.edge.InterruptEdge;
+import de.dfki.vsm.model.flow.edge.RandomEdge;
 
 /**
  * IDManager provides unique ids for nodes and supernodes
@@ -44,7 +43,7 @@ public class IDManager {
     for (SuperNode sn : supernodes) {
 
       // only scan for supernodes and nodes
-      if (!de.dfki.vsm.model.sceneflow.chart.SceneFlow.class.isInstance(sn)) {
+      if (!de.dfki.vsm.model.flow.SceneFlow.class.isInstance(sn)) {
         mSuperNodeIDs.add(new Integer(sn.getId().substring(1)));
       }
 

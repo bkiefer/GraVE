@@ -12,9 +12,9 @@ import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Node.Type;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.model.sceneflow.chart.graphics.node.NodeGraphics;
+import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.flow.graphics.node.NodeGraphics;
 import de.dfki.vsm.util.evt.EventDispatcher;
 
 /**
@@ -27,7 +27,7 @@ public class CreateNodeAction extends NodeAction {
   private final EventDispatcher mDispatcher
           = EventDispatcher.getInstance();
 
-  public CreateNodeAction(WorkSpacePanel workSpace, de.dfki.vsm.model.sceneflow.chart.BasicNode node) {
+  public CreateNodeAction(WorkSpacePanel workSpace, de.dfki.vsm.model.flow.BasicNode node) {
     mWorkSpace = workSpace;
     mCoordinate = new Point(node.getGraphics().getPosition().getXPos(),
             node.getGraphics().getPosition().getYPos());

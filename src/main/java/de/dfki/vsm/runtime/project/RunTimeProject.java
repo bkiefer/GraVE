@@ -6,10 +6,10 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.vsm.model.flow.SceneFlow;
 import de.dfki.vsm.model.project.AgentConfig;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.model.project.ProjectConfig;
-import de.dfki.vsm.model.sceneflow.chart.SceneFlow;
 import de.dfki.vsm.util.xml.XMLUtilities;
 
 /**

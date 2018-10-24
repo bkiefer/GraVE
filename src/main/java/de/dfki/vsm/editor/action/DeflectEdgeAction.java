@@ -16,7 +16,7 @@ import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.Node.Flavour;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.model.sceneflow.chart.edge.*;
+import de.dfki.vsm.model.flow.edge.*;
 
 /**
  * @author Patrick Gebhard
@@ -85,7 +85,7 @@ public class DeflectEdgeAction extends EdgeAction {
     // Revalidate data node and graphical node types
     switch (mSourceGUINode.getDataNode().getFlavour()) {
       case NONE:
-        de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge dedge = mSourceGUINode.getDataNode().getDedge();
+        de.dfki.vsm.model.flow.edge.AbstractEdge dedge = mSourceGUINode.getDataNode().getDedge();
 
         if (dedge instanceof EpsilonEdge) {
           mSourceGUINode.setFlavour(Flavour.ENode);

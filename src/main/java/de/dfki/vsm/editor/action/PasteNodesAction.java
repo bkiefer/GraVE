@@ -13,9 +13,8 @@ import javax.swing.undo.CannotUndoException;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.IDManager;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.model.sceneflow.chart.edge.*;
+import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.edge.*;
 
 /**
  * @author Patrick Gebhard

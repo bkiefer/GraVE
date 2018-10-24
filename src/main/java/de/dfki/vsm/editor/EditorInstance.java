@@ -24,7 +24,7 @@ import de.dfki.vsm.editor.dialog.QuitDialog;
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.editor.project.ProjectEditor;
 import de.dfki.vsm.editor.project.sceneflow.workspace.ClipBoard;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
+import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;

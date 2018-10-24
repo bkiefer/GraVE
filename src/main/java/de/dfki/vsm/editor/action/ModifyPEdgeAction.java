@@ -11,7 +11,7 @@ import javax.swing.undo.CannotUndoException;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.dialog.ModifyPEdgeDialog;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
+import de.dfki.vsm.model.flow.edge.RandomEdge;
 
 /**
  * @author Gregor Mehlmann

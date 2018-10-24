@@ -8,7 +8,7 @@ import javax.swing.*;
 
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
-import de.dfki.vsm.model.sceneflow.chart.BasicNode;
+import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;

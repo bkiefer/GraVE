@@ -13,9 +13,9 @@ import de.dfki.vsm.editor.dialog.ModifyIEdgeDialog;
 import de.dfki.vsm.editor.dialog.ModifyPEdgeDialog;
 import de.dfki.vsm.editor.dialog.ModifyTEdgeDialog;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.model.sceneflow.chart.edge.EpsilonEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
+import de.dfki.vsm.model.flow.edge.EpsilonEdge;
+import de.dfki.vsm.model.flow.edge.ForkingEdge;
+import de.dfki.vsm.model.flow.edge.RandomEdge;
 
 /**
  * @author Gregor Mehlmann
@@ -35,7 +35,7 @@ public class CreateEdgeAction extends EdgeAction {
   }
 
   public CreateEdgeAction(WorkSpacePanel workSpace, Node sourceNode, Node targetNode,
-          de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge dataEdge, Edge.TYPE type) {
+          de.dfki.vsm.model.flow.edge.AbstractEdge dataEdge, Edge.TYPE type) {
     mWorkSpace = workSpace;
     mTargetGUINode = targetNode;
     mSourceGUINode = sourceNode;

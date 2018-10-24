@@ -13,8 +13,8 @@ import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.model.sceneflow.chart.graphics.node.NodeGraphics;
+import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.flow.graphics.node.NodeGraphics;
 
 /**
  * @author Patrick Gebhard
@@ -75,7 +75,7 @@ public class ChangeNodeTypeAction extends NodeAction {
       }
     }
 
-    de.dfki.vsm.model.sceneflow.chart.BasicNode mHistoryDataNode = new de.dfki.vsm.model.sceneflow.chart.BasicNode();
+    de.dfki.vsm.model.flow.BasicNode mHistoryDataNode = new de.dfki.vsm.model.flow.BasicNode();
 
     mHistoryDataNode.setHistoryNodeFlag(true);
     mHistoryDataNode.setName("History");
@@ -100,7 +100,7 @@ public class ChangeNodeTypeAction extends NodeAction {
     // recreate all edges
     for (Edge edge : mConnectedEdgesVector) {
 
-      de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge newDataEdge = edge.getDataEdge().getCopy();
+      de.dfki.vsm.model.flow.edge.AbstractEdge newDataEdge = edge.getDataEdge().getCopy();
       Edge.TYPE newEdgeType = edge.getType();
       Node newSourceGUINode = (edge.getSourceNode().equals(mOldGUINode)) ? mGUINode : edge.getSourceNode();
       Node newTargetGUINode = (edge.getTargetNode().equals(mOldGUINode)) ? mGUINode : edge.getTargetNode();

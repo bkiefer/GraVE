@@ -30,9 +30,9 @@ import de.dfki.vsm.editor.util.GridManager;
 import de.dfki.vsm.editor.util.SceneFlowLayoutManager;
 import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.dialogact.DialogAct;
+import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.flow.edge.*;
 import de.dfki.vsm.model.project.EditorConfig;
-import de.dfki.vsm.model.sceneflow.chart.SuperNode;
-import de.dfki.vsm.model.sceneflow.chart.edge.*;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
@@ -739,7 +739,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     JMenuItem item = null;
 
     if (!node.getDataNode().isHistoryNode()) {
-      HashMap<String, de.dfki.vsm.model.sceneflow.chart.BasicNode> startNodes
+      HashMap<String, de.dfki.vsm.model.flow.BasicNode> startNodes
               = node.getDataNode().getParentNode().getStartNodeMap();
 
       item = new JMenuItem((startNodes.containsKey(node.getDataNode().getId()))
@@ -752,7 +752,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       pop.add(item);
       pop.add(new JSeparator());
 
-      if (!(node.getDataNode() instanceof de.dfki.vsm.model.sceneflow.chart.SuperNode)) {
+      if (!(node.getDataNode() instanceof de.dfki.vsm.model.flow.SuperNode)) {
         item = new JMenuItem("To Supernode");
 
         ChangeNodeTypeAction changetypeAction = new ChangeNodeTypeAction(this, node);
@@ -1065,10 +1065,10 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   public void showNodesOnWorkSpace() {
-    ArrayList<de.dfki.vsm.model.sceneflow.chart.BasicNode> nodeList
+    ArrayList<de.dfki.vsm.model.flow.BasicNode> nodeList
             = getSceneFlowManager().getCurrentActiveSuperNode().getNodeAndSuperNodeList();
 
-    for (de.dfki.vsm.model.sceneflow.chart.BasicNode n : nodeList) {
+    for (de.dfki.vsm.model.flow.BasicNode n : nodeList) {
       Point p = mGridManager.getNodeLocation(new Point(n.getGraphics().getPosition().getXPos(),
               n.getGraphics().getPosition().getYPos()));
 
@@ -1082,10 +1082,10 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       addCmdBadge(guiNode, cmdBadge);
     }
 
-    ArrayList<de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge> commentList
+    ArrayList<de.dfki.vsm.model.flow.badge.CommentBadge> commentList
             = getSceneFlowManager().getCurrentActiveSuperNode().getCommentList();
 
-    for (de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge n : commentList) {
+    for (de.dfki.vsm.model.flow.badge.CommentBadge n : commentList) {
       add(new Comment(this, n));
     }
   }
@@ -1151,7 +1151,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       }
 
       // Show the DEdge
-      de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge dedge = sourceNode.getDataNode().getDedge();
+      de.dfki.vsm.model.flow.edge.AbstractEdge dedge = sourceNode.getDataNode().getDedge();
       Edge.TYPE dEdgeType = null;
 
       if (dedge != null) {
