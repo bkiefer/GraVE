@@ -20,7 +20,7 @@ import de.dfki.vsm.util.evt.EventObject;
  *
  *
  */
-class NameEditor extends JPanel implements EventListener {
+public class NameEditor extends JPanel implements EventListener {
 
   private JTextField mNameField;
   private BasicNode mDataNode;
@@ -31,12 +31,19 @@ class NameEditor extends JPanel implements EventListener {
   }
 
   private void initComponents() {
-
+    // Init the node name panel
+    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+    setOpaque(false);
+    //setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Edit Node Name:"));
+    JLabel jl = new JLabel("Name:");
+    add(jl);
+    add(Box.createRigidArea(new Dimension(4, 20)));
+    int labelwidth = 48 + 4;
     // Init the node name text field
     mNameField = new JTextField();
-    mNameField.setMinimumSize(new Dimension(200, 20));
+    mNameField.setMinimumSize(new Dimension(230 - labelwidth, 20));
     mNameField.setMaximumSize(new Dimension(1000, 20));
-    mNameField.setPreferredSize(new Dimension(200, 20));
+    mNameField.setPreferredSize(new Dimension(230 - labelwidth, 20));
     mNameField.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent event) {
@@ -45,12 +52,7 @@ class NameEditor extends JPanel implements EventListener {
       }
     });
 
-    // Init the node name panel
-    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-    setOpaque(false);
-    setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Edit Node Name:"));
     add(mNameField);
-    add(Box.createRigidArea(new Dimension(40, 20)));
   }
 
   @Override

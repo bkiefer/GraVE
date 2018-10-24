@@ -16,8 +16,7 @@ import de.dfki.vsm.editor.EditorInstance;
 public final class MainGrave {
 
   // The logger instance of SceneMaker3
-  private final static Logger sLogger
-          = LoggerFactory.getLogger(MainGrave.class);;
+  private final static Logger sLogger = LoggerFactory.getLogger(MainGrave.class);
 
   // Start SceneMaker3 in a specific mode
   public static void main(final String[] args) {
@@ -37,7 +36,7 @@ public final class MainGrave {
             error(file);
           }
         } else {
-          usage();
+          editor();
         }
       }
     });

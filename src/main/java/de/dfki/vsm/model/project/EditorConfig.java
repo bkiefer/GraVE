@@ -114,7 +114,7 @@ public class EditorConfig {
     }
 
     if (!sPROPERTIES.containsKey("propertiesdividerlocation")) {
-      sPROPERTIES.setProperty("propertiesdividerlocation", "790");
+      sPROPERTIES.setProperty("propertiesdividerlocation", "230");
     }
 
     if (!sPROPERTIES.containsKey("showscenefloweditor")) {
@@ -364,7 +364,7 @@ public class EditorConfig {
     }
 
     if (!sPROPERTIES.containsKey("propertiesdividerlocation")) {
-      sPROPERTIES.setProperty("propertiesdividerlocation", "790");
+      sPROPERTIES.setProperty("propertiesdividerlocation", "230");
     }
 
     if (!sPROPERTIES.containsKey("showscenefloweditor")) {

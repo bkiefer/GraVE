@@ -388,7 +388,7 @@ public final class Preferences {
     }
 
     if (!sPROPERTIES.containsKey("propertiesdividerlocation")) {
-      sPROPERTIES.setProperty("propertiesdividerlocation", "790");
+      sPROPERTIES.setProperty("propertiesdividerlocation", "230");
     }
 
     if (!sPROPERTIES.containsKey("showscenefloweditor")) {
