@@ -12,9 +12,8 @@ import javax.swing.JPanel;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.dialog.ModifyIEdgeDialog;
 import de.dfki.vsm.editor.event.EdgeSelectedEvent;
-import de.dfki.vsm.model.flow.Code;
-import de.dfki.vsm.model.flow.edge.InterruptEdge;
 import de.dfki.vsm.model.flow.edge.AbstractEdge.EdgeType;
+import de.dfki.vsm.model.flow.edge.InterruptEdge;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
@@ -87,9 +86,8 @@ class InterruptEditor extends JPanel implements EventListener {
     String inputString = mIEdgeDialog.getInputTextField().getText().trim();
 
     try {
-      final Code exp = new Code(inputString);
-      if (exp != null) {
-        mDataIEdge.setCondition(exp);
+      if (inputString != null) {
+        mDataIEdge.setCondition(inputString);
       } else {
         // Do nothing
       }

@@ -16,6 +16,7 @@ import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.DockingManager;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
@@ -106,8 +107,8 @@ public final class Node extends JComponent implements EventListener, Observer {
     }
 
     // Set initial position
-    Point pos = new Point(mDataNode.getGraphics().getPosition().getXPos(),
-            mDataNode.getGraphics().getPosition().getYPos());
+    Point pos = new Point(mDataNode.getPosition().getXPos(),
+            mDataNode.getPosition().getYPos());
 
     setBounds(pos.x, pos.y, mEditorConfig.sNODEWIDTH, mEditorConfig.sNODEHEIGHT);
 
@@ -351,10 +352,9 @@ public final class Node extends JComponent implements EventListener, Observer {
   private void updateDataModel() {
 
 //      mDataNode.getGraphics().setPosition(getLocation().x, getLocation().y);
-    de.dfki.vsm.model.flow.graphics.node.NodeGraphics g
-            = new de.dfki.vsm.model.flow.graphics.node.NodeGraphics(getLocation().x, getLocation().y);
+    Position g = new Position(getLocation().x, getLocation().y);
 
-    mDataNode.setGraphics(g);
+    mDataNode.setPosition(g);
   }
 
   /**

@@ -1,38 +1,37 @@
 package de.dfki.vsm.model.flow.edge;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 
-import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.model.flow.BasicNode;
-import de.dfki.vsm.model.flow.Code;
-import de.dfki.vsm.model.flow.graphics.edge.EdgeGraphics;
+import de.dfki.vsm.model.flow.graphics.edge.EdgeArrow;
 import de.dfki.vsm.util.Pair;
+import de.dfki.vsm.util.cpy.Copyable;
 
 /**
  * @author Gregor Mehlmann
  */
-public abstract class AbstractEdge implements ModelObject {
+public abstract class AbstractEdge implements Copyable {
 
   @XmlAttribute(name="target")
   protected String mTargetUnid = new String();
-  @XmlAttribute(name="start") // TODO: nonsense
+  //@XmlAttribute(name="start") // TODO: nonsense
   protected String mSourceUnid = new String();
   protected BasicNode mTargetNode = null;
   protected BasicNode mSourceNode = null;
-  @XmlElement(name="Graphics")
-  protected EdgeGraphics mGraphics = null;
-  @XmlElementWrapper(name="Commands")
-  @XmlElement(name="Command")
-  protected ArrayList<Code> mCmdList = new ArrayList<>();
+  protected EdgeArrow mArrow = null;
+  @XmlElement(name="Commands")
+  protected String mCmdList = null;
   protected HashMap<
-            Pair<String, BasicNode>, Pair<String, BasicNode>> mAltMap = new HashMap();
+            Pair<String, BasicNode>, Pair<String, BasicNode>> mAltMap = new HashMap<>();
 
   // The edge type
+  @XmlTransient
   public enum EdgeType {
 
     GuardedEdge,
@@ -51,18 +50,19 @@ public abstract class AbstractEdge implements ModelObject {
           final String sourceUnid,
           final BasicNode targetNode,
           final BasicNode sourceNode,
-          final EdgeGraphics graphics,
-          final ArrayList cmdList,
+          final EdgeArrow graphics,
+          final String cmdList,
           final HashMap altMap) {
     mTargetUnid = targetUnid;
     mSourceUnid = sourceUnid;
     mTargetNode = targetNode;
     mSourceNode = sourceNode;
-    mGraphics = graphics;
+    mArrow = graphics;
     mCmdList = cmdList;
     mAltMap = altMap;
   }
 
+  @XmlTransient
   public final String getTargetUnid() {
     return mTargetUnid;
   }
@@ -71,6 +71,7 @@ public abstract class AbstractEdge implements ModelObject {
     mTargetUnid = value;
   }
 
+  @XmlTransient
   public final String getSourceUnid() {
     return mSourceUnid;
   }
@@ -79,6 +80,7 @@ public abstract class AbstractEdge implements ModelObject {
     mSourceUnid = value;
   }
 
+  @XmlTransient
   public final BasicNode getTargetNode() {
     return mTargetNode;
   }
@@ -87,6 +89,7 @@ public abstract class AbstractEdge implements ModelObject {
     mTargetNode = value;
   }
 
+  @XmlTransient
   public final BasicNode getSourceNode() {
     return mSourceNode;
   }
@@ -95,27 +98,26 @@ public abstract class AbstractEdge implements ModelObject {
     mSourceNode = value;
   }
 
-  public final EdgeGraphics getGraphics() {
-    return mGraphics;
+  @XmlElement(name="Connection")
+  public final EdgeArrow getArrow() {
+    return mArrow;
   }
 
-  public final void setGraphics(final EdgeGraphics value) {
-    mGraphics = value;
+  public final void setArrow(final EdgeArrow value) {
+    mArrow = value;
   }
 
-  public final ArrayList<Code> getCmdList() {
+  @XmlTransient
+  public final String getCmdList() {
     return mCmdList;
   }
 
-  public final void setCmdList(final ArrayList<Code> value) {
+  public final void setCmdList(final String value) {
     mCmdList = value;
   }
 
-  public final ArrayList<Code> getCopyOfCmdList() {
-    final ArrayList<Code> copy = new ArrayList();
-    for (Code cmd : mCmdList) {
-      copy.add(cmd.getCopy());
-    }
+  public final String getCopyOfCmdList() {
+    final String copy = new String(this.mCmdList);
     return copy;
   }
 
@@ -128,6 +130,7 @@ public abstract class AbstractEdge implements ModelObject {
         return altList;
     }
    */
+  @XmlTransient
   public final HashMap<
         Pair<String, BasicNode>, Pair<String, BasicNode>> getAltMap() {
     return mAltMap;

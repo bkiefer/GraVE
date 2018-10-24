@@ -32,6 +32,7 @@ import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.dialogact.DialogAct;
 import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.flow.edge.*;
+import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
@@ -143,7 +144,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       Point p = mGridManager.getNodeLocation(node.getLocation());
 
       node.resetLocation(p);
-      node.getDataNode().getGraphics().setPosition(p.x, p.y);
+      node.getDataNode().setPosition(new Position(p.x, p.y));
     }
 
     revalidate();
@@ -1069,10 +1070,10 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
             = getSceneFlowManager().getCurrentActiveSuperNode().getNodeAndSuperNodeList();
 
     for (de.dfki.vsm.model.flow.BasicNode n : nodeList) {
-      Point p = mGridManager.getNodeLocation(new Point(n.getGraphics().getPosition().getXPos(),
-              n.getGraphics().getPosition().getYPos()));
+      Point p = mGridManager.getNodeLocation(new Point(n.getPosition().getXPos(),
+              n.getPosition().getYPos()));
 
-      n.getGraphics().setPosition(p.x, p.y);
+      n.setPosition(new Position(p.x, p.y));
 
       Node guiNode = new Node(this, n);
       CmdBadge cmdBadge = new CmdBadge(guiNode);
@@ -1657,7 +1658,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
         mSelectedNode.resetLocation(mGridManager.getNodeLocation(p));
 
         // Update sceneflow with new node position
-        mSelectedNode.getDataNode().getGraphics().setPosition(mSelectedNode.getX(), mSelectedNode.getY());
+        mSelectedNode.getDataNode().setPosition(new Position(mSelectedNode.getX(), mSelectedNode.getY()));
 
         // update workspace area - if dragged beyond current borders
         // sWorkSpaceDrawArea = getSize();

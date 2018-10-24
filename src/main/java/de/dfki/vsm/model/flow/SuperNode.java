@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -13,7 +16,7 @@ import org.w3c.dom.Element;
 
 import de.dfki.vsm.model.flow.badge.CommentBadge;
 import de.dfki.vsm.model.flow.edge.*;
-import de.dfki.vsm.model.flow.graphics.node.NodeGraphics;
+import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.cpy.CopyTool;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
@@ -27,6 +30,7 @@ import de.dfki.vsm.util.xml.XMLWriteError;
 @XmlType(name="SuperNode")
 public class SuperNode extends BasicNode {
 
+  @XmlTransient
   public static class StartNodeAdapter extends XmlAdapter<String, Map<String, BasicNode>> {
     @Override
     public String marshal(Map<String, BasicNode> v) throws Exception {
@@ -77,7 +81,7 @@ public class SuperNode extends BasicNode {
     mIEdgeList = node.mIEdgeList;
     mFEdgeList = node.mFEdgeList;
     mDEdge = node.mDEdge;
-    mGraphics = node.mGraphics;
+    mPosition = node.mPosition;
     mParentNode = node.mParentNode;
     mIsHistoryNode = node.mIsHistoryNode;
   }
@@ -250,6 +254,19 @@ public class SuperNode extends BasicNode {
     return null;
   }
 
+  public void establishParentNodes() {
+    for (BasicNode node : mNodeList) {
+      node.setParentNode(this);
+    }
+    for (SuperNode node : mSuperNodeList) {
+      node.setParentNode(this);
+      node.establishParentNodes();
+    }
+    for (CommentBadge c : mCommentList) {
+      c.setParentNode(this);
+    }
+  }
+
   @Override
   public void establishTargetNodes() {
     super.establishTargetNodes();
@@ -301,181 +318,12 @@ public class SuperNode extends BasicNode {
   }
 
   @Override
-  public void writeXML(IOSIndentWriter out) throws XMLWriteError {
-    String start = "";
-
-    for (String id : mStartNodeMap.keySet()) {
-      start += id + ";";
-    }
-
-    out.println("<SuperNode id=\"" + mNodeId + "\" name=\"" + mNodeName + "\" comment=\"" + mComment + "\" hideLocalVar=\"" + mHideLocalVarBadge
-            + "\" hideGlobalVar=\"" + mHideGlobalVarBadge + "\" start=\"" + start + "\">").push();
-
-    int i = 0;
-
-    out.println("<Commands>").push();
-
-    mCmdList.writeXML(out);
-
-    out.pop().println("</Commands>");
-
-    for (i = 0; i < mCEdgeList.size(); i++) {
-      mCEdgeList.get(i).writeXML(out);
-    }
-
-    if (mDEdge != null) {
-      mDEdge.writeXML(out);
-    }
-
-    for (i = 0; i < mPEdgeList.size(); i++) {
-      mPEdgeList.get(i).writeXML(out);
-    }
-
-    for (i = 0; i < mFEdgeList.size(); i++) {
-      mFEdgeList.get(i).writeXML(out);
-    }
-
-    for (i = 0; i < mIEdgeList.size(); i++) {
-      mIEdgeList.get(i).writeXML(out);
-    }
-
-    if (mGraphics != null) {
-      mGraphics.writeXML(out);
-    }
-
-    for (i = 0; i < mCommentList.size(); i++) {
-      mCommentList.get(i).writeXML(out);
-    }
-
-    for (i = 0; i < mNodeList.size(); i++) {
-      mNodeList.get(i).writeXML(out);
-    }
-
-    for (i = 0; i < mSuperNodeList.size(); i++) {
-      mSuperNodeList.get(i).writeXML(out);
-    }
-
-    out.pop().println("</SuperNode>");
-  }
-
-  @Override
-  public void parseXML(Element element) throws XMLParseError {
-    mNodeId = element.getAttribute("id");
-    mNodeName = element.getAttribute("name");
-    mComment = element.getAttribute("comment");
-    mHideLocalVarBadge = Boolean.valueOf(element.getAttribute("hideLocalVar"));
-    mHideGlobalVarBadge = Boolean.valueOf(element.getAttribute("hideGlobalVar"));
-
-    String[] arr = element.getAttribute("start").split(";");
-
-    for (String str : arr) {
-      if (!str.isEmpty() && !str.equals("null")) {
-        mStartNodeMap.put(str, null);
-      }
-    }
-
-    final SuperNode superNode = this;
-
-    XMLParseAction.processChildNodes(element, new XMLParseAction() {
-      public void run(Element element) throws XMLParseError {
-        java.lang.String tag = element.getTagName();
-
-        if (tag.equals("Commands")) {
-          XMLParseAction.processChildNodes(element, new XMLParseAction() {
-            public void run(Element element) throws XMLParseError {
-              mCmdList = Code.parse(element);
-            }
-          });
-        } else if (tag.equals("LocalVariableBadge")) {
-
-        } else if (tag.equals("GlobalVariableBadge")) {
-
-        } else if (tag.equals("VariableBadge")) {
-
-          // do nothing (left for old project's compatibility)
-        } else if (tag.equals("Comment")) {
-          CommentBadge comment = new CommentBadge();
-
-          comment.parseXML(element);
-          comment.setParentNode(superNode);
-          mCommentList.add(comment);
-        } else if (tag.equals("Node")) {
-          BasicNode node = new BasicNode();
-
-          node.parseXML(element);
-          node.setParentNode(superNode);
-          mNodeList.add(node);
-
-          if (node.isHistoryNode()) {
-            mHistoryNode = node;
-          }
-        } else if (tag.equals("SuperNode")) {
-          SuperNode node = new SuperNode();
-
-          node.parseXML(element);
-          node.setParentNode(superNode);
-          mSuperNodeList.add(node);
-        } else if (tag.equals("Graphics")) {
-          mGraphics = new NodeGraphics();
-          mGraphics.parseXML(element);
-        } else if (tag.equals("CEdge")) {
-          GuardedEdge edge = new GuardedEdge();
-
-          edge.parseXML(element);
-          edge.setSourceNode(superNode);
-          edge.setSourceUnid(superNode.getId());
-          mCEdgeList.add(edge);
-        } else if (tag.equals("PEdge")) {
-          RandomEdge edge = new RandomEdge();
-
-          edge.parseXML(element);
-          edge.setSourceNode(superNode);
-          edge.setSourceUnid(superNode.getId());
-          mPEdgeList.add(edge);
-        } else if (tag.equals("FEdge")) {
-          ForkingEdge edge = new ForkingEdge();
-
-          edge.parseXML(element);
-          edge.setSourceNode(superNode);
-          edge.setSourceUnid(superNode.getId());
-          mFEdgeList.add(edge);
-        } else if (tag.equals("IEdge")) {
-          InterruptEdge edge = new InterruptEdge();
-
-          edge.parseXML(element);
-          edge.setSourceNode(superNode);
-          edge.setSourceUnid(superNode.getId());
-          mIEdgeList.add(edge);
-        } else if (tag.equals("EEdge")) {
-          EpsilonEdge edge = new EpsilonEdge();
-
-          edge.parseXML(element);
-          edge.setSourceNode(superNode);
-          edge.setSourceUnid(superNode.getId());
-          mDEdge = edge;
-        } else if (tag.equals("TEdge")) {
-          TimeoutEdge edge = new TimeoutEdge();
-
-          edge.parseXML(element);
-          edge.setSourceNode(superNode);
-          edge.setSourceUnid(superNode.getId());
-          mDEdge = edge;
-        } else {
-          throw new XMLParseError(null,
-                  "Cannot parse the element with the tag \"" + tag
-                  + "\" into a supernode child!");
-        }
-      }
-    });
-  }
-
-  @Override
   public int getHashCode() {
 
     // Add hash of General Attributes
     int hashCode = ((mNodeName == null) ? 0 : mNodeName.hashCode())
             + ((mComment == null) ? 0 : mComment.hashCode())
-            + ((mGraphics == null) ? 0 : mGraphics.toString().hashCode())
+            + ((mPosition == null) ? 0 : mPosition.toString().hashCode())
             + ((mHistoryNode == null) ? 0 : mHistoryNode.hashCode())
             + ((mHideLocalVarBadge == true) ? 1 : 0) + ((mHideGlobalVarBadge == true) ? 1 : 0);
 
@@ -488,7 +336,7 @@ public class SuperNode extends BasicNode {
 
     // Epsilon and Time Edges
     for (int cntEdge = 0; cntEdge < getEdgeList().size(); cntEdge++) {
-      hashCode += getEdgeList().get(cntEdge).hashCode() + getEdgeList().get(cntEdge).getGraphics().getHashCode();
+      hashCode += getEdgeList().get(cntEdge).hashCode() + getEdgeList().get(cntEdge).getArrow().hashCode();
 
       // TODO: find a way to parse the TEDGE mDEGE to take timeout into accout
     }
@@ -497,7 +345,7 @@ public class SuperNode extends BasicNode {
     for (int cntEdge = 0; cntEdge < getSizeOfCEdgeList(); cntEdge++) {
 
       hashCode += mCEdgeList.get(cntEdge).hashCode()
-              + mCEdgeList.get(cntEdge).getGraphics().getHashCode()
+              + mCEdgeList.get(cntEdge).getArrow().hashCode()
               + mCEdgeList.get(cntEdge).getCondition().hashCode()
               + mCEdgeList.get(cntEdge).getSourceUnid().hashCode()
               + mCEdgeList.get(cntEdge).getTargetUnid().hashCode();
@@ -506,7 +354,7 @@ public class SuperNode extends BasicNode {
     for (int cntEdge = 0; cntEdge < getSizeOfPEdgeList(); cntEdge++) {
 
       hashCode += mPEdgeList.get(cntEdge).hashCode()
-              + mPEdgeList.get(cntEdge).getGraphics().getHashCode()
+              + mPEdgeList.get(cntEdge).getArrow().hashCode()
               + mPEdgeList.get(cntEdge).getProbability()
               + mPEdgeList.get(cntEdge).getSourceUnid().hashCode()
               + mPEdgeList.get(cntEdge).getTargetUnid().hashCode();
@@ -516,7 +364,7 @@ public class SuperNode extends BasicNode {
     for (int cntEdge = 0; cntEdge < mFEdgeList.size(); cntEdge++) {
 
       hashCode += mFEdgeList.get(cntEdge).hashCode()
-              + mFEdgeList.get(cntEdge).getGraphics().getHashCode()
+              + mFEdgeList.get(cntEdge).getArrow().hashCode()
               + mFEdgeList.get(cntEdge).getSourceUnid().hashCode()
               + mFEdgeList.get(cntEdge).getTargetUnid().hashCode();
     }
@@ -524,7 +372,7 @@ public class SuperNode extends BasicNode {
     // Add hash of all Interruptive Edges
     for (int cntEdge = 0; cntEdge < getSizeOfIEdgeList(); cntEdge++) {
       hashCode += mIEdgeList.get(cntEdge).hashCode()
-              + mIEdgeList.get(cntEdge).getGraphics().getHashCode()
+              + mIEdgeList.get(cntEdge).getArrow().hashCode()
               + mIEdgeList.get(cntEdge).getCondition().hashCode()
               + mIEdgeList.get(cntEdge).getSourceUnid().hashCode()
               + mIEdgeList.get(cntEdge).getTargetUnid().hashCode();
@@ -537,7 +385,7 @@ public class SuperNode extends BasicNode {
 
     // Add hash of all comments on workspace
     for (int cntComment = 0; cntComment < getCommentList().size(); cntComment++) {
-      hashCode += mCommentList.get(cntComment).getGraphics().getRectangle().hashCode();
+      hashCode += mCommentList.get(cntComment).getBoundary().hashCode();
       //hashCode += mCommentList.get(cntComment).getHTMLText().hashCode();
     }
 

@@ -19,7 +19,6 @@ import de.dfki.vsm.editor.event.CEdgeDialogModifiedEvent;
 import de.dfki.vsm.editor.util.AltStartNodeManager;
 import de.dfki.vsm.editor.util.HintTextField;
 import de.dfki.vsm.model.flow.BasicNode;
-import de.dfki.vsm.model.flow.Code;
 import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.flow.edge.GuardedEdge;
 import de.dfki.vsm.util.Pair;
@@ -81,7 +80,7 @@ public class ModifyCEdgeDialog extends Dialog implements EventListener {
 
     // Init GUI-Components
     initComponents();
-    mInputTextField.setText(mCEdge.getCondition().getConcreteSyntax());
+    mInputTextField.setText(mCEdge.getCondition());
 
     loadAltStartNodeMap();
     initEvents();
@@ -287,12 +286,11 @@ public class ModifyCEdgeDialog extends Dialog implements EventListener {
     String inputString = mInputTextField.getText().trim();
 
     try {
-      final Code exp = new Code(inputString);
 
       //LogicalCond log = ChartParser.logResult;
       //Command log = ChartParser.expResult;
-      if (exp != null) {
-        mCEdge.setCondition(exp);
+      if (inputString != null) {
+        mCEdge.setCondition(inputString);
         mAltStartNodeManager.saveAltStartNodeMap();
         return true;
       } else {

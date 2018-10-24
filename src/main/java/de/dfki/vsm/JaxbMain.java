@@ -9,20 +9,22 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import de.dfki.vsm.model.flow.SceneFlow;
 import de.dfki.vsm.model.project.EditorConfig;
 
 public class JaxbMain {
 
   public static void main(String[] args) throws JAXBException, FileNotFoundException {
-    JAXBContext jc = JAXBContext.newInstance( EditorConfig.class );
+    JAXBContext jc = JAXBContext.newInstance( SceneFlow.class );
     Marshaller m = jc.createMarshaller();
     m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-    m.marshal(new EditorConfig(), new FileOutputStream("editorconfig.xml"));
+    //m.marshal(new EditorConfig(), new FileOutputStream("demo/.xml"));
 
     Unmarshaller u = jc.createUnmarshaller();
-    EditorConfig flow = (EditorConfig)
-        u.unmarshal(new FileInputStream("editorconfig.xml"));
+    SceneFlow flow = (SceneFlow)
+        u.unmarshal(new FileInputStream("demo/scf.xml"));
 
     m.marshal(flow, new FileOutputStream("test.xml"));
+    System.out.println("Done");
   }
 }

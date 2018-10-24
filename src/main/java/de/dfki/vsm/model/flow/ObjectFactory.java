@@ -12,8 +12,6 @@ public class ObjectFactory {
 
   public SuperNode getSuperNode() { return new SuperNode(); }
 
-  public Code getCommand() { return new Code(""); }
-
   public EpsilonEdge getEEdge() { return new EpsilonEdge(); }
 
   public GuardedEdge getCEdge() { return new GuardedEdge(); }

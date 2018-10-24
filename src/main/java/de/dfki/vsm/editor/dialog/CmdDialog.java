@@ -13,7 +13,6 @@ import de.dfki.vsm.editor.CancelButton;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.util.HintTextField;
-import de.dfki.vsm.model.flow.Code;
 
 //~--- JDK imports ------------------------------------------------------------
 /**
@@ -23,7 +22,7 @@ import de.dfki.vsm.model.flow.Code;
 public class CmdDialog extends Dialog {
 
   // The command  that has to be maintained
-  private Code mCommand;
+  private String mCommand;
 
   // GUI-Components
   private HintTextField mInputTextField;
@@ -31,13 +30,13 @@ public class CmdDialog extends Dialog {
   private CancelButton mCancelButton;
   private JLabel errorMsg;
 
-  public CmdDialog(Code command) {
+  public CmdDialog(String command) {
     super(EditorInstance.getInstance(), "Specify Command", true);
     mCommand = command;
     initComponents();
 
     if (mCommand != null) {
-      mInputTextField.setText(mCommand.getConcreteSyntax());
+      mInputTextField.setText(mCommand);
     }
   }
 
@@ -99,7 +98,7 @@ public class CmdDialog extends Dialog {
     mOkButton.requestFocus();
   }
 
-  public Code run() {
+  public String run() {
     setVisible(true);
 
     if (mPressedButton == Button.OK) {
@@ -131,7 +130,7 @@ public class CmdDialog extends Dialog {
     String inputString = mInputTextField.getText().trim();
 
     try {
-      final Code cmd = new Code(inputString);
+      final String cmd = new String(inputString);
 
       if (cmd != null) {
         mCommand = cmd;

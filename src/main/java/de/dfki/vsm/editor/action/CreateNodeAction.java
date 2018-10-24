@@ -14,7 +14,7 @@ import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.graphics.node.NodeGraphics;
+import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.util.evt.EventDispatcher;
 
 /**
@@ -29,8 +29,8 @@ public class CreateNodeAction extends NodeAction {
 
   public CreateNodeAction(WorkSpacePanel workSpace, de.dfki.vsm.model.flow.BasicNode node) {
     mWorkSpace = workSpace;
-    mCoordinate = new Point(node.getGraphics().getPosition().getXPos(),
-            node.getGraphics().getPosition().getYPos());
+    mCoordinate = new Point(node.getPosition().getXPos(),
+            node.getPosition().getYPos());
     mGUINodeType = (SuperNode.class.isInstance(node))
             ? de.dfki.vsm.editor.Node.Type.SuperNode
             : de.dfki.vsm.editor.Node.Type.BasicNode;
@@ -65,13 +65,13 @@ public class CreateNodeAction extends NodeAction {
       mDataNodeId = mIDManager.getNextFreeNodeID();
       mDataNode = new BasicNode();
       mDataNode.setNameAndId(mDataNodeId);
-      mDataNode.setGraphics(new NodeGraphics(mCoordinate.x, mCoordinate.y));
+      mDataNode.setPosition(new Position(mCoordinate.x, mCoordinate.y));
       mParentDataNode = mSceneFlowManager.getCurrentActiveSuperNode();
     } else if (mGUINodeType == SuperNode) {
       mDataNodeId = mIDManager.getNextFreeSuperNodeID();
       mDataNode = new SuperNode();
       mDataNode.setNameAndId(mDataNodeId);
-      mDataNode.setGraphics(new NodeGraphics(mCoordinate.x, mCoordinate.y));
+      mDataNode.setPosition(new Position(mCoordinate.x, mCoordinate.y));
       mParentDataNode = mSceneFlowManager.getCurrentActiveSuperNode();
 
       //////////////////
@@ -80,7 +80,7 @@ public class CreateNodeAction extends NodeAction {
       mHistoryDataNode.setHistoryNodeFlag(true);
       mHistoryDataNode.setName("History");
       mHistoryDataNode.setId(mIDManager.getNextFreeNodeID());
-      mHistoryDataNode.setGraphics(new NodeGraphics(0, 0));
+      mHistoryDataNode.setPosition(new Position(0, 0));
       mHistoryDataNode.setParentNode((SuperNode) mDataNode);
       ((SuperNode) mDataNode).addNode(mHistoryDataNode);
       ((SuperNode) mDataNode).setHistoryNode(mHistoryDataNode);

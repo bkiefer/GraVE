@@ -13,8 +13,7 @@ import de.dfki.vsm.editor.Comment;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.graphics.comment.CommentBoundary;
-import de.dfki.vsm.model.flow.graphics.comment.CommentGraphics;
+import de.dfki.vsm.model.flow.geom.Boundary;
 
 /**
  * @author Gregor Mehlmann
@@ -36,7 +35,7 @@ public class CreateCommentAction extends EditorAction {
     mCoordinate = coordinate;
     mUndoManager = mWorkSpace.getSceneFlowEditor().getUndoManager();
     mComment = new de.dfki.vsm.model.flow.badge.CommentBadge();
-    mComment.setGraphics(new CommentGraphics(new CommentBoundary(coordinate.x, coordinate.y, 100, 100)));
+    mComment.setBoundary(new Boundary(coordinate.x, coordinate.y, 100, 100));
     mParentDataNode = mWorkSpace.getSceneFlowManager().getCurrentActiveSuperNode();
     mSceneFlowManager = mWorkSpace.getSceneFlowManager();
     mSuperNode = mSceneFlowManager.getCurrentActiveSuperNode();

@@ -4,22 +4,16 @@ import java.util.ArrayList;
 
 import javax.xml.bind.annotation.*;
 
-import org.w3c.dom.Element;
-
-import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.model.flow.edge.*;
-import de.dfki.vsm.model.flow.graphics.node.NodeGraphics;
+import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.util.cpy.CopyTool;
-import de.dfki.vsm.util.ios.IOSIndentWriter;
-import de.dfki.vsm.util.xml.XMLParseAction;
-import de.dfki.vsm.util.xml.XMLParseError;
-import de.dfki.vsm.util.xml.XMLWriteError;
+import de.dfki.vsm.util.cpy.Copyable;
 
 /**
  * @author Gregor Mehlmann
  */
 @XmlType(name="Node")
-public class BasicNode implements ModelObject {
+public class BasicNode implements Copyable {
 
   @XmlAttribute(name="id")
   protected String mNodeId = new String();
@@ -27,10 +21,7 @@ public class BasicNode implements ModelObject {
   protected String mNodeName = new String();
   @XmlAttribute(name="comment")
   protected String mComment = new String();
-  //
-  //@XmlElementWrapper(name="Commands")
-  @XmlElement(name="Command")
-  protected Code mCmdList = new Code("");
+  protected String mCmdList = new String();
 
   // TODO: MERGE INTO ONE LIST!
   @XmlElement(name="CEdge")
@@ -42,11 +33,9 @@ public class BasicNode implements ModelObject {
   @XmlElement(name="FEdge")
   protected ArrayList<ForkingEdge> mFEdgeList = new ArrayList<>();
 
-  //
-  @XmlElement(name="DEdge")
   protected AbstractEdge mDEdge = null;
-  @XmlElement(name="Graphics")
-  protected NodeGraphics mGraphics = null;
+  @XmlElement(name="Position")
+  protected Position mPosition = null;
   @XmlTransient
   protected SuperNode mParentNode = null;
   @XmlAttribute(name="history")
@@ -59,6 +48,7 @@ public class BasicNode implements ModelObject {
   @XmlTransient
   public Byte hasMany = new Byte("2");
 
+  @XmlTransient
   public enum FLAVOUR {
 
     NONE, ENODE, TNODE, CNODE, PNODE, INODE, FNODE
@@ -207,6 +197,7 @@ public class BasicNode implements ModelObject {
     return (mDEdge != null);
   }
 
+  @XmlTransient
   public FLAVOUR getFlavour() {
     if (mCEdgeList != null) {
       if (mCEdgeList.size() > 0) {
@@ -254,13 +245,23 @@ public class BasicNode implements ModelObject {
     mDEdge = null;
   }
 
+  /** Not to be used! */
+  @XmlElement(name="TEdge")
+  public void setTEdge(TimeoutEdge value) { mDEdge = value; }
+  public TimeoutEdge getTEdge() { return (TimeoutEdge)mDEdge; }
+
+  /** Not to be used! */
+  @XmlElement(name="EEdge")
+  protected void setEEdge(EpsilonEdge value) { mDEdge = value; }
+  protected EpsilonEdge getEEdge() { return (EpsilonEdge)mDEdge; }
+
   @XmlTransient
-  public void setGraphics(NodeGraphics value) {
-    mGraphics = value;
+  public void setPosition(Position value) {
+    mPosition = value;
   }
 
-  public NodeGraphics getGraphics() {
-    return mGraphics;
+  public Position getPosition() {
+    return mPosition;
   }
 
   @XmlTransient
@@ -415,6 +416,8 @@ public class BasicNode implements ModelObject {
   protected void establishTargetNodes() {
     for (AbstractEdge edge : getEdgeList()) {
       edge.setTargetNode(mParentNode.getChildNodeById(edge.getTargetUnid()));
+      edge.setSourceNode(this);
+      edge.setSourceUnid(getId());
     }
   }
 
@@ -454,118 +457,13 @@ public class BasicNode implements ModelObject {
     return (BasicNode) CopyTool.copy(this);
   }
 
-  public Code getCmd() {
+  @XmlElement(name="Commands")
+  public String getCmd() {
     return mCmdList;
   }
 
-  public void writeXML(IOSIndentWriter out) throws XMLWriteError {
-    out.println("<Node id=\"" + mNodeId + "\" name=\"" + mNodeName + "\" history=\"" + mIsHistoryNode + "\">").push();
-
-    int i = 0;
-
-    out.println("<Commands>").push();
-
-    mCmdList.writeXML(out);
-
-    out.pop().println("</Commands>");
-
-    for (i = 0; i < mCEdgeList.size(); i++) {
-      mCEdgeList.get(i).writeXML(out);
-    }
-
-    if (mDEdge != null) {
-      mDEdge.writeXML(out);
-    }
-
-    for (i = 0; i < mPEdgeList.size(); i++) {
-      mPEdgeList.get(i).writeXML(out);
-    }
-
-    for (i = 0; i < mFEdgeList.size(); i++) {
-      mFEdgeList.get(i).writeXML(out);
-    }
-
-    for (i = 0; i < mIEdgeList.size(); i++) {
-      mIEdgeList.get(i).writeXML(out);
-    }
-
-    if (mGraphics != null) {
-      mGraphics.writeXML(out);
-    }
-
-    out.pop().println("</Node>");
-  }
-
-  public void parseXML(Element element) throws XMLParseError {
-    mNodeId = element.getAttribute("id");
-    mNodeName = element.getAttribute("name");
-    mIsHistoryNode = Boolean.valueOf(element.getAttribute("history"));
-
-    final BasicNode node = this;
-    StringBuilder sb = new StringBuilder();
-    XMLParseAction.processChildNodes(element, new XMLParseAction() {
-      public void run(Element element) throws XMLParseError {
-        String tag = element.getTagName();
-
-        if (tag.equals("Commands")) {
-          XMLParseAction.processChildNodes(element, new XMLParseAction() {
-            @Override
-            public void run(Element element) throws XMLParseError {
-              sb.append(Code.parse(element).getContent());
-            }
-          });
-        } else if (tag.equals("Graphics")) {
-          mGraphics = new NodeGraphics();
-          mGraphics.parseXML(element);
-        } else if (tag.equals("CEdge")) {
-          GuardedEdge edge = new GuardedEdge();
-
-          edge.parseXML(element);
-          edge.setSourceNode(node);
-          edge.setSourceUnid(node.getId());
-          mCEdgeList.add(edge);
-        } else if (tag.equals("PEdge")) {
-          RandomEdge edge = new RandomEdge();
-
-          edge.parseXML(element);
-          edge.setSourceNode(node);
-          edge.setSourceUnid(node.getId());
-          mPEdgeList.add(edge);
-        } else if (tag.equals("FEdge")) {
-          ForkingEdge edge = new ForkingEdge();
-
-          edge.parseXML(element);
-          edge.setSourceNode(node);
-          edge.setSourceUnid(node.getId());
-          mFEdgeList.add(edge);
-        } else if (tag.equals("IEdge")) {
-          InterruptEdge edge = new InterruptEdge();
-
-          edge.parseXML(element);
-          edge.setSourceNode(node);
-          edge.setSourceUnid(node.getId());
-          mIEdgeList.add(edge);
-        } else if (tag.equals("EEdge")) {
-          EpsilonEdge edge = new EpsilonEdge();
-
-          edge.parseXML(element);
-          edge.setSourceNode(node);
-          edge.setSourceUnid(node.getId());
-          mDEdge = edge;
-        } else if (tag.equals("TEdge")) {
-          TimeoutEdge edge = new TimeoutEdge();
-
-          edge.parseXML(element);
-          edge.setSourceNode(node);
-          edge.setSourceUnid(node.getId());
-          mDEdge = edge;
-        } else {
-          throw new XMLParseError(null,
-                  "Cannot parse the element with the tag \"" + tag + "\" into a node child!");
-        }
-      }
-    });
-    mCmdList.setContent(sb.toString());
+  public void setCmd(String s) {
+    mCmdList = s;
   }
 
   public int getHashCode() {
@@ -575,16 +473,16 @@ public class BasicNode implements ModelObject {
             ? 0
             : mNodeName.hashCode()) + ((mComment == null)
             ? 0
-            : mComment.hashCode()) + ((mGraphics == null)
+            : mComment.hashCode()) + ((mPosition == null)
             ? 0
-            : mGraphics.getPosition().hashCode());
+            : mPosition.hashCode());
 
     // Add hash of all commands inside BasicNode
     hashCode += mCmdList.hashCode();
 
     // Epsilon and Time Edges
     for (int cntEdge = 0; cntEdge < getEdgeList().size(); cntEdge++) {
-      hashCode += getEdgeList().get(cntEdge).hashCode() + getEdgeList().get(cntEdge).getGraphics().getHashCode();
+      hashCode += getEdgeList().get(cntEdge).hashCode() + getEdgeList().get(cntEdge).getArrow().hashCode();
 
       // TODO: find a way to parse the TEDGE mDEGE to take timeout into accout
     }
@@ -592,7 +490,7 @@ public class BasicNode implements ModelObject {
     // Add hash of all Conditional Edges
     for (int cntEdge = 0; cntEdge < getSizeOfCEdgeList(); cntEdge++) {
       hashCode += mCEdgeList.get(cntEdge).hashCode()
-              + mCEdgeList.get(cntEdge).getGraphics().getHashCode()
+              + mCEdgeList.get(cntEdge).getArrow().hashCode()
               + mCEdgeList.get(cntEdge).getCondition().hashCode()
               + mCEdgeList.get(cntEdge).getSourceUnid().hashCode()
               + mCEdgeList.get(cntEdge).getTargetUnid().hashCode();
@@ -602,7 +500,7 @@ public class BasicNode implements ModelObject {
     for (int cntEdge = 0; cntEdge < getSizeOfPEdgeList(); cntEdge++) {
 
       hashCode += mPEdgeList.get(cntEdge).hashCode()
-              + mPEdgeList.get(cntEdge).getGraphics().getHashCode()
+              + mPEdgeList.get(cntEdge).getArrow().hashCode()
               + mPEdgeList.get(cntEdge).getProbability()
               + mPEdgeList.get(cntEdge).getSourceUnid().hashCode()
               + mPEdgeList.get(cntEdge).getTargetUnid().hashCode();
@@ -610,7 +508,7 @@ public class BasicNode implements ModelObject {
 
     // Add hash of all Fork Edges
     for (int cntEdge = 0; cntEdge < mFEdgeList.size(); cntEdge++) {
-      hashCode += mFEdgeList.get(cntEdge).hashCode() + mFEdgeList.get(cntEdge).getGraphics().getHashCode()
+      hashCode += mFEdgeList.get(cntEdge).hashCode() + mFEdgeList.get(cntEdge).getArrow().hashCode()
               + mFEdgeList.get(cntEdge).getSourceUnid().hashCode() + mFEdgeList.get(cntEdge).getTargetUnid().hashCode();
     }
 

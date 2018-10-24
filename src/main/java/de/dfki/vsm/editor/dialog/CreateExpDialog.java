@@ -12,7 +12,6 @@ import de.dfki.vsm.editor.CancelButton;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.util.HintTextField;
-import de.dfki.vsm.model.flow.Code;
 
 /**
  *
@@ -21,7 +20,7 @@ import de.dfki.vsm.model.flow.Code;
 public class CreateExpDialog extends Dialog {
 
   //
-  private Code mExpression;
+  private String mExpression;
 
   //
   private HintTextField mInputTextField;
@@ -29,7 +28,7 @@ public class CreateExpDialog extends Dialog {
   private CancelButton mCancelButton;
   private JLabel errorMsg;
 
-  public CreateExpDialog(Code expression) {
+  public CreateExpDialog(String expression) {
     super(EditorInstance.getInstance(), "Specify Command", true);
     mExpression = expression;
     initComponents();
@@ -97,7 +96,7 @@ public class CreateExpDialog extends Dialog {
     mOkButton.requestFocus();
   }
 
-  public Code run() {
+  public String run() {
     setVisible(true);
 
     if (mPressedButton == Button.OK) {
@@ -129,10 +128,8 @@ public class CreateExpDialog extends Dialog {
     String inputString = mInputTextField.getText().trim();
 
     try {
-      final Code exp = new Code(inputString);
-
-      if (exp != null) {
-        mExpression = exp;
+      if (inputString != null) {
+        mExpression = inputString;
         return true;
       } else {
         return false;

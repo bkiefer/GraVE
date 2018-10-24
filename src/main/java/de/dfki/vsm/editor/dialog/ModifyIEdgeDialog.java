@@ -18,7 +18,6 @@ import de.dfki.vsm.editor.event.IEdgeDialogModifiedEvent;
 import de.dfki.vsm.editor.util.AltStartNodeManager;
 import de.dfki.vsm.editor.util.HintTextField;
 import de.dfki.vsm.model.flow.BasicNode;
-import de.dfki.vsm.model.flow.Code;
 import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.flow.edge.InterruptEdge;
 import de.dfki.vsm.util.Pair;
@@ -63,7 +62,7 @@ public class ModifyIEdgeDialog extends Dialog implements EventListener {
     mAltStartNodeManager = new AltStartNodeManager(mIEdge);
     // Init GUI-Components
     initComponents();
-    mInputTextField.setText(mIEdge.getCondition().getConcreteSyntax());
+    mInputTextField.setText(mIEdge.getCondition());
     loadAltStartNodeMap();
     initEvents();
   }
@@ -280,10 +279,8 @@ public class ModifyIEdgeDialog extends Dialog implements EventListener {
     String inputString = mInputTextField.getText().trim();
 
     try {
-      final Code exp = new Code (inputString);
-
-      if (exp != null) {
-        mIEdge.setCondition(exp);
+      if (inputString!= null) {
+        mIEdge.setCondition(inputString);
         //
         mAltStartNodeManager.saveAltStartNodeMap();
         //

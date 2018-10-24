@@ -14,7 +14,7 @@ import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.graphics.node.NodeGraphics;
+import de.dfki.vsm.model.flow.geom.Position;
 
 /**
  * @author Patrick Gebhard
@@ -80,7 +80,7 @@ public class ChangeNodeTypeAction extends NodeAction {
     mHistoryDataNode.setHistoryNodeFlag(true);
     mHistoryDataNode.setName("History");
     mHistoryDataNode.setId(mWorkSpace.getSceneFlowManager().getIDManager().getNextFreeNodeID());
-    mHistoryDataNode.setGraphics(new NodeGraphics(0, 0));
+    mHistoryDataNode.setPosition(new Position(0, 0));
     mHistoryDataNode.setParentNode((SuperNode) mDataNode);
     ((SuperNode) mDataNode).addNode(mHistoryDataNode);
     ((SuperNode) mDataNode).setHistoryNode(mHistoryDataNode);

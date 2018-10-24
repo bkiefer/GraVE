@@ -57,9 +57,9 @@ public final class EdgeGraphics {
     mEditorConfig = mSourceNode.getWorkSpace().getEditorConfig();
 
     // check if edge has already graphic information in data model
-    if (mDataEdge.getGraphics() != null) {
-      ArrayList<de.dfki.vsm.model.flow.graphics.edge.EdgePoint> curvePoints
-              = mDataEdge.getGraphics().getConnection().getPointList();
+    if (mDataEdge.getArrow() != null) {
+      ArrayList<de.dfki.vsm.model.flow.geom.ControlPoint> curvePoints
+              = mDataEdge.getArrow().getPointList();
 
       // if curve's data model isn't consistent on graphical data, init edge!
       if (curvePoints.size() != 2) {
@@ -478,22 +478,20 @@ public final class EdgeGraphics {
   public void updateDataModel() {
 
     // add the graphic information to the sceneflow!
-    de.dfki.vsm.model.flow.graphics.edge.EdgeGraphics g
-            = new de.dfki.vsm.model.flow.graphics.edge.EdgeGraphics();
     de.dfki.vsm.model.flow.graphics.edge.EdgeArrow arrow
             = new de.dfki.vsm.model.flow.graphics.edge.EdgeArrow();
-    ArrayList<de.dfki.vsm.model.flow.graphics.edge.EdgePoint> xmlEdgePoints
+    ArrayList<de.dfki.vsm.model.flow.geom.ControlPoint> xmlEdgePoints
             = new ArrayList<>();
-    de.dfki.vsm.model.flow.graphics.edge.EdgePoint startPoint
-            = new de.dfki.vsm.model.flow.graphics.edge.EdgePoint();
+    de.dfki.vsm.model.flow.geom.ControlPoint startPoint
+            = new de.dfki.vsm.model.flow.geom.ControlPoint();
 
     startPoint.setXPos((int) mCurve.x1);
     startPoint.setYPos((int) mCurve.y1);
     startPoint.setCtrlXPos((int) mCurve.ctrlx1);
     startPoint.setCtrlYPos((int) mCurve.ctrly1);
 
-    de.dfki.vsm.model.flow.graphics.edge.EdgePoint endPoint
-            = new de.dfki.vsm.model.flow.graphics.edge.EdgePoint();
+    de.dfki.vsm.model.flow.geom.ControlPoint endPoint
+            = new de.dfki.vsm.model.flow.geom.ControlPoint();
 
     endPoint.setXPos((int) mCurve.x2);
     endPoint.setYPos((int) mCurve.y2);
@@ -502,8 +500,7 @@ public final class EdgeGraphics {
     xmlEdgePoints.add(startPoint);
     xmlEdgePoints.add(endPoint);
     arrow.setPointList(xmlEdgePoints);
-    g.setConnection(arrow);
-    mDataEdge.setGraphics(g);
+    mDataEdge.setArrow(arrow);
     mDataEdge.setTargetUnid(mTargetNode.getDataNode().getId());
 
     // TODO: straigthen edge, if source/targets node location has changed

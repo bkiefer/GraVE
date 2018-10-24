@@ -1,13 +1,19 @@
 package de.dfki.vsm.runtime.project;
 
 import java.io.*;
-import java.util.Iterator;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.model.flow.SceneFlow;
-import de.dfki.vsm.model.project.AgentConfig;
+import de.dfki.vsm.model.flow.edge.AbstractEdge;
+import de.dfki.vsm.model.flow.edge.EpsilonEdge;
+import de.dfki.vsm.model.flow.edge.TimeoutEdge;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.model.project.ProjectConfig;
 import de.dfki.vsm.util.xml.XMLUtilities;
@@ -25,7 +31,7 @@ public class RunTimeProject {
   // The project Path (added PG 11.4.2016);
   private String mProjectPath = "";
   // The sceneflow of the project
-  private final SceneFlow mSceneFlow = new SceneFlow();
+  private SceneFlow mSceneFlow = null;
   // The project configuration of the project
   private final ProjectConfig mProjectConfig = new ProjectConfig();
 
@@ -253,12 +259,16 @@ public class RunTimeProject {
       }
 
     }
-
-    if (!XMLUtilities.parseFromXMLStream(mSceneFlow, inputStream)) {
-      mLogger.error("Error: Cannot parse sceneflow file  in path" + path);
-      return false;
+    try {
+      JAXBContext jc = JAXBContext.newInstance( SceneFlow.class, AbstractEdge.class, TimeoutEdge.class, EpsilonEdge.class );
+      Unmarshaller u = jc.createUnmarshaller();
+      mSceneFlow = (SceneFlow) u.unmarshal(inputStream);
+    } catch (JAXBException e) {
+      mLogger.error("Error: Cannot parse sceneflow file " + path+ " : " + e);
     }
+
     // Perform all the postprocessing steps
+    mSceneFlow.establishParentNodes();
     mSceneFlow.establishStartNodes();
     mSceneFlow.establishTargetNodes();
     mSceneFlow.establishAltStartNodes();
@@ -291,11 +301,17 @@ public class RunTimeProject {
       }
     }
     // Write the sceneflow configuration file
-    if (!XMLUtilities.writeToXMLFile(mSceneFlow, file, "UTF-8")) {
-      // Print an error message in this case
-      mLogger.error("Error: Cannot write sceneflow configuration file '" + file + "'");
-      // Return failure if it does not exist
-      return false;
+    try {
+      JAXBContext jc = JAXBContext.newInstance( SceneFlow.class );
+      Marshaller m = jc.createMarshaller();
+      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+
+      m.marshal(mSceneFlow, new FileOutputStream(file));
+    } catch (JAXBException e) {
+      mLogger.error("Error: Cannot write sceneflow file " + file + " : " + e);
+    } catch (FileNotFoundException e) {
+      mLogger.error("Error: Cannot write sceneflow file " + file + " : " + e);
     }
     // Print an information message in this case
     //mLogger.message("Saved sceneflow configuration file '" + file + "':\n" + mSceneFlow);

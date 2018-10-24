@@ -38,7 +38,6 @@ import de.dfki.vsm.editor.event.EdgeSelectedEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.EdgeGraphics;
-import de.dfki.vsm.model.flow.Code;
 import de.dfki.vsm.model.flow.edge.GuardedEdge;
 import de.dfki.vsm.model.flow.edge.InterruptEdge;
 import de.dfki.vsm.model.flow.edge.RandomEdge;
@@ -274,7 +273,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
           mColor = sCEDGE_COLOR;
 
           if (((GuardedEdge) mDataEdge).getCondition() != null) {
-            mDescription = ((GuardedEdge) mDataEdge).getCondition().getConcreteSyntax();
+            mDescription = ((GuardedEdge) mDataEdge).getCondition();
           } else {
             mDescription = "";
           }
@@ -293,7 +292,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
           mColor = sIEDGE_COLOR;
 
           if (((InterruptEdge) mDataEdge).getCondition() != null) {
-            mDescription = ((InterruptEdge) mDataEdge).getCondition().getConcreteSyntax();
+            mDescription = ((InterruptEdge) mDataEdge).getCondition();
           } else {
             mDescription = "";
           }
@@ -490,12 +489,10 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         //ChartParser.parseResultType = ChartParser.LOG;
         //ChartParser.parseResultType = ChartParser.EXP;
 
-        Code log = new Code(input);
-
         //LogicalCond log = ChartParser.logResult;
         //Command log = ChartParser.expResult;
-        if (log != null) {
-          ((GuardedEdge) mDataEdge).setCondition(log);
+        if (input != null) {
+          ((GuardedEdge) mDataEdge).setCondition(input);
         } else {
           EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().setMessageLabelText(
                   "Remember to wrap condition in parenthesis");
@@ -509,12 +506,10 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         //ChartParser.parseResultType = ChartParser.LOG;
         //ChartParser.parseResultType = ChartParser.EXP;
 
-        Code log = new Code(input);
-
         //LogicalCond log = ChartParser.logResult;
         //Command log = ChartParser.expResult;
-        if (log != null) {
-          ((InterruptEdge) mDataEdge).setCondition(log);
+        if (input != null) {
+          ((InterruptEdge) mDataEdge).setCondition(input);
         } else {
         }
       } catch (Exception e) {

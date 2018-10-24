@@ -1,4 +1,4 @@
-package de.dfki.vsm.model.flow.graphics.comment;
+package de.dfki.vsm.model.flow.geom;
 
 import org.w3c.dom.Element;
 
@@ -12,21 +12,21 @@ import de.dfki.vsm.util.xml.XMLParseError;
  * @author Gregr Mehlmann
  */
 @XmlType(name="Boundary")
-public final class CommentBoundary implements ModelObject {
+public final class Boundary implements ModelObject {
 
   private int mXPos;
   private int mYPos;
   private int mWidth;
   private int mHeight;
 
-  public CommentBoundary() {
+  public Boundary() {
     mXPos = Integer.MIN_VALUE;
     mYPos = Integer.MIN_VALUE;
     mWidth = Integer.MIN_VALUE;
     mHeight = Integer.MIN_VALUE;
   }
 
-  public CommentBoundary(
+  public Boundary(
           final int xPos, final int yPos,
           final int width, final int height) {
     mXPos = xPos;
@@ -72,8 +72,8 @@ public final class CommentBoundary implements ModelObject {
   }
 
   @Override
-  public final CommentBoundary getCopy() {
-    return new CommentBoundary(mXPos, mYPos, mWidth, mHeight);
+  public final Boundary getCopy() {
+    return new Boundary(mXPos, mYPos, mWidth, mHeight);
   }
 
   @Override

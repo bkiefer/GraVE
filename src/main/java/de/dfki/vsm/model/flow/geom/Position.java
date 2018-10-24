@@ -1,17 +1,18 @@
-package de.dfki.vsm.model.flow.graphics.node;
+package de.dfki.vsm.model.flow.geom;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
 import org.w3c.dom.Element;
 
-import de.dfki.vsm.model.ModelObject;
+import de.dfki.vsm.util.cpy.Copyable;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 
 /**
  * @author Gregor Mehlmann
  */
 @XmlType(name="Position")
-public final class NodePosition implements ModelObject {
+public final class Position implements Copyable {
 
   // The Y coordinate
   private int mXPos;
@@ -19,13 +20,13 @@ public final class NodePosition implements ModelObject {
   private int mYPos;
 
   // Create a node position
-  public NodePosition() {
+  public Position() {
     mXPos = Integer.MIN_VALUE;
     mYPos = Integer.MIN_VALUE;
   }
 
   // Create a node position
-  public NodePosition(final int xPos, final int yPos) {
+  public Position(final int xPos, final int yPos) {
     mXPos = xPos;
     mYPos = yPos;
   }
@@ -53,18 +54,7 @@ public final class NodePosition implements ModelObject {
   }
 
   @Override
-  public final NodePosition getCopy() {
-    return new NodePosition(mXPos, mYPos);
-  }
-
-  @Override
-  public final void writeXML(IOSIndentWriter out) {
-    out.println("<Position xPos=\"" + mXPos + "\" yPos=\"" + mYPos + "\"/>");
-  }
-
-  @Override
-  public final void parseXML(Element element) {
-    mXPos = Integer.valueOf(element.getAttribute("xPos"));
-    mYPos = Integer.valueOf(element.getAttribute("yPos"));
+  public final Position getCopy() {
+    return new Position(mXPos, mYPos);
   }
 }

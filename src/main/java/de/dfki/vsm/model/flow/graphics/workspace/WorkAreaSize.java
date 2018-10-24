@@ -56,14 +56,14 @@ public abstract class WorkAreaSize {
   }
 
   private void updateHeight(BasicNode n) {
-    if (n.getGraphics().getPosition().getYPos() > height) {
-      height = n.getGraphics().getPosition().getYPos() + nodeHeight;
+    if (n.getPosition().getYPos() > height) {
+      height = n.getPosition().getYPos() + nodeHeight;
     }
   }
 
   private void updateWidth(BasicNode n) {
-    if (n.getGraphics().getPosition().getXPos() > width) {
-      width = n.getGraphics().getPosition().getXPos() + nodeWidth;
+    if (n.getPosition().getXPos() > width) {
+      width = n.getPosition().getXPos() + nodeWidth;
     }
   }
 }

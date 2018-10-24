@@ -38,14 +38,14 @@ public class WorkSpaceSuperNode extends WorkAreaSize {
   }
 
   private void updateHeight(BasicNode childNode) {
-    if (childNode.getGraphics().getPosition().getYPos() > height) {
-      height = childNode.getGraphics().getPosition().getYPos() + nodeHeight;
+    if (childNode.getPosition().getYPos() > height) {
+      height = childNode.getPosition().getYPos() + nodeHeight;
     }
   }
 
   private void updateWidth(BasicNode childNode) {
-    if (childNode.getGraphics().getPosition().getXPos() > width) {
-      width = childNode.getGraphics().getPosition().getXPos() + nodeWidth;
+    if (childNode.getPosition().getXPos() > width) {
+      width = childNode.getPosition().getXPos() + nodeWidth;
     }
   }
 

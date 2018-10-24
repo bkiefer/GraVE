@@ -4,28 +4,25 @@ package de.dfki.vsm.model.flow.badge;
 import java.awt.Font;
 
 import javax.swing.JEditorPane;
-import javax.xml.bind.annotation.*;
-
-import org.w3c.dom.Element;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.graphics.comment.CommentGraphics;
-import de.dfki.vsm.util.ios.IOSIndentWriter;
-import de.dfki.vsm.util.xml.XMLParseAction;
-import de.dfki.vsm.util.xml.XMLParseError;
+import de.dfki.vsm.model.flow.geom.Boundary;
+import de.dfki.vsm.util.cpy.Copyable;
 
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
 @XmlType(name="Comment")
-public class CommentBadge implements ModelObject {
+public class CommentBadge implements Copyable {
 
   protected SuperNode mParentNode = null;
   protected String mHTMLText = "";
-  protected CommentGraphics mGraphics;
+  protected Boundary mBoundary;
   protected int mFontSize;
   JEditorPane mTextEditor;
 
@@ -33,19 +30,20 @@ public class CommentBadge implements ModelObject {
     mParentNode = value;
   }
 
-  @XmlElement
-  public CommentGraphics getGraphics() {
-    return mGraphics;
+  @XmlElement(name="Boundary")
+  public Boundary getBoundary() {
+    return mBoundary;
   }
 
-  public void setGraphics(CommentGraphics value) {
-    mGraphics = value;
+  public void setBoundary(Boundary value) {
+    mBoundary = value;
   }
 
   public void setFontSize(int value) {
     mFontSize = value;
   }
 
+  @XmlElement(name="Text")
   public String getHTMLText() {
     return mHTMLText.trim();
   }
@@ -71,39 +69,6 @@ public class CommentBadge implements ModelObject {
     // ((HTMLDocument) mTextEditor.getDocument()).getStyleSheet().addRule(bodyRule);
     mTextEditor.setText(mHTMLText);
     mHTMLText = mTextEditor.getText();
-  }
-
-  public void parseXML(Element element) throws XMLParseError {
-    XMLParseAction.processChildNodes(element, new XMLParseAction() {
-      public void run(Element element) throws XMLParseError {
-        String tag = element.getTagName();
-
-        if (tag.equals("Graphics")) {
-          mGraphics = new CommentGraphics();
-          mGraphics.parseXML(element);
-        } else if (tag.equals("Text")) {
-          mHTMLText = element.getTextContent();
-        } else {
-          throw new XMLParseError(null,
-                  "Cannot parse the element with the tag \"" + tag
-                  + "\" into a comment child!");
-        }
-      }
-    });
-  }
-
-  public void writeXML(IOSIndentWriter out) {
-    out.println("<Comment>").push();
-
-    if (mGraphics != null) {
-      mGraphics.writeXML(out);
-    }
-
-    out.println("<Text style=\"color:blue\">").push();
-    formatHTML();
-    out.println(mHTMLText.trim());
-    out.pop().println("</Text>");
-    out.pop().println("</Comment>");
   }
 
   @Override

@@ -1,4 +1,6 @@
-package de.dfki.vsm.model.flow.graphics.edge;
+package de.dfki.vsm.model.flow.geom;
+
+import javax.xml.bind.annotation.*;
 
 import org.w3c.dom.Element;
 
@@ -8,27 +10,60 @@ import de.dfki.vsm.util.ios.IOSIndentWriter;
 /**
  * @author Gregor Mehlmann
  */
-public final class EdgePoint implements ModelObject {
+@XmlType(name="ControlPoint")
+public final class ControlPoint implements ModelObject {
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + mCtrlXPos;
+    result = prime * result + mCtrlYPos;
+    result = prime * result + mXPpos;
+    result = prime * result + mYPos;
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    ControlPoint other = (ControlPoint) obj;
+    if (mCtrlXPos != other.mCtrlXPos)
+      return false;
+    if (mCtrlYPos != other.mCtrlYPos)
+      return false;
+    if (mXPpos != other.mXPpos)
+      return false;
+    if (mYPos != other.mYPos)
+      return false;
+    return true;
+  }
 
   private int mXPpos;
   private int mCtrlXPos;
   private int mYPos;
   private int mCtrlYPos;
 
-  public EdgePoint() {
+  public ControlPoint() {
     mXPpos = Integer.MIN_VALUE;
     mYPos = Integer.MIN_VALUE;
     mCtrlXPos = Integer.MIN_VALUE;
     mCtrlYPos = Integer.MIN_VALUE;
   }
 
-  public EdgePoint(int xPos, int ctrlXPos, int yPos, int ctrlYPos) {
+  public ControlPoint(int xPos, int ctrlXPos, int yPos, int ctrlYPos) {
     mXPpos = xPos;
     mYPos = yPos;
     mCtrlXPos = ctrlXPos;
     mCtrlYPos = ctrlYPos;
   }
 
+  @XmlAttribute
   public final int getXPos() {
     return mXPpos;
   }
@@ -37,6 +72,7 @@ public final class EdgePoint implements ModelObject {
     mXPpos = value;
   }
 
+  @XmlAttribute
   public final int getCtrlXPos() {
     return mCtrlXPos;
   }
@@ -45,6 +81,7 @@ public final class EdgePoint implements ModelObject {
     mCtrlXPos = value;
   }
 
+  @XmlAttribute
   public final int getYPos() {
     return mYPos;
   }
@@ -53,6 +90,7 @@ public final class EdgePoint implements ModelObject {
     mYPos = value;
   }
 
+  @XmlAttribute
   public final int getCtrlYPos() {
     return mCtrlYPos;
   }
@@ -62,8 +100,8 @@ public final class EdgePoint implements ModelObject {
   }
 
   @Override
-  public final EdgePoint getCopy() {
-    return new EdgePoint(mXPpos, mCtrlXPos, mYPos, mCtrlYPos);
+  public final ControlPoint getCopy() {
+    return new ControlPoint(mXPpos, mCtrlXPos, mYPos, mCtrlYPos);
   }
 
   @Override

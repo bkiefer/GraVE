@@ -44,12 +44,12 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
     //setBackground(new Color(255, 255, 255, 90));
     setBackground(new Color(175, 175, 175, 95));
     this.setMaximumSize(new Dimension(maxWidth, maxHeight));
-    
+
     // Get rid of annoying yellow line
     setHighlighter(null);
     setHighlightCurrentLine(false);
     setHighlightSecondaryLanguages(false);
-    
+
     addFocusListener(new FocusListener() {
       public void focusGained(FocusEvent e) {
         setBackground(new Color(255, 255, 255, 100));
@@ -76,7 +76,7 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
    * Resets badge to its default visual behavior
    */
   public synchronized void endEditMode() {
-    mNode.getDataNode().getCmd().setContent(getText());
+    mNode.getDataNode().setCmd(getText());
     mDispatcher.convey(new ProjectChangedEvent(this));
     mDispatcher.convey(new NodeSelectedEvent(this, mNode.getDataNode()));
     update();
@@ -97,7 +97,7 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
   }
 
   private void update() {
-    String content = mNode.getDataNode().getCmd().getContent();
+    String content = mNode.getDataNode().getCmd();
 
     // Sets visibility of the component to true only if there is something to display
     setVisible(!content.isEmpty());
