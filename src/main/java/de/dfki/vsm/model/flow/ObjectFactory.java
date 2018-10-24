@@ -1,8 +1,8 @@
-package de.dfki.vsm.model.sceneflow.chart;
+package de.dfki.vsm.model.flow;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
-import de.dfki.vsm.model.sceneflow.chart.edge.*;
+import de.dfki.vsm.model.flow.edge.*;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
 
 @XmlRegistry

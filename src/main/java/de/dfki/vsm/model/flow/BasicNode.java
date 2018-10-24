@@ -33,6 +33,7 @@ public class BasicNode implements ModelObject {
   @XmlElement(name="Command")
   protected Command mCmdList = new Command("");
 
+  // TODO: MERGE INTO ONE LIST!
   @XmlElement(name="CEdge")
   protected ArrayList<GuardedEdge> mCEdgeList = new ArrayList<>();
   @XmlElement(name="PEdge")
@@ -274,10 +275,6 @@ public class BasicNode implements ModelObject {
 
   public void addCEdge(GuardedEdge value) {
     mCEdgeList.add(value);
-  }
-
-  public GuardedEdge getCEdgeAt(int index) {
-    return mCEdgeList.get(index);
   }
 
   public void removeCEdge(GuardedEdge value) {
