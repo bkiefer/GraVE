@@ -1,6 +1,7 @@
 package de.dfki.vsm;
 
 //~--- JDK imports ------------------------------------------------------------
+import de.dfki.vsm.model.project.EditorConfig;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -255,6 +256,19 @@ public final class Preferences {
   //BACKGROUND WELCOME
   public static final Image BACKGROUND_IMAGE = ResourceLoader.loadImageIcon("img/icon_big.png").getImage();   // Background for the welcome screen
 
+  public String FRAME_TITLE = "Visual SceneMaker";
+  public String FRAME_NAME = "SceneFlowEditor";
+  public String ICON_FILE = "res/img/icon.png";
+  public int FRAME_POS_X = 0;
+  public int FRAME_POS_Y = 0;
+  public int FRAME_WIDTH = 800;
+  public int FRAME_HEIGHT = 600;
+  public String XMLNS = "xml.sceneflow.dfki.de";
+  public String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
+  public String XSI_SCHEMELOCATION = "res/xsd/sceneflow.xsd";
+
+  public EditorConfig editorConfig = new EditorConfig();
+
   /**
    *
    */
@@ -285,26 +299,6 @@ public final class Preferences {
     init();
   }
 
-  // TODO: This should actually be private
-  public static synchronized String getProperty(String key) {
-    return sPROPERTIES.getProperty(key);
-  }
-
-  // TODO: This should actually be private
-  public static synchronized Object setProperty(String key, String value) {
-    return sPROPERTIES.setProperty(key, value);
-  }
-
-  // TODO: This should actually be private
-  public static synchronized Object removeProperty(String key) {
-    return sPROPERTIES.remove(key);
-  }
-
-  // TODO: This should actually be private
-  public static synchronized SortedSet<Object> getKeySet() {
-    return new TreeSet<>(sPROPERTIES.keySet());
-  }
-
   private static synchronized void parseConfigFile() {
     if ((new File(sCONFIG_FILE)).canRead()) {
       try {
@@ -314,124 +308,6 @@ public final class Preferences {
       } catch (IOException e) {
         mLogger.error("Error: " + e.getMessage());
       }
-    }
-
-    if (!sPROPERTIES.containsKey("frame_title")) {
-      sPROPERTIES.setProperty("frame_title", "Visual SceneMaker");
-    }
-
-    if (!sPROPERTIES.containsKey("frame_name")) {
-      sPROPERTIES.setProperty("frame_name", "SceneFlowEditor");
-    }
-
-    if (!sPROPERTIES.containsKey("icon_file")) {
-      sPROPERTIES.setProperty("icon_file", "res/img/icon.png");
-    }
-
-    if (!sPROPERTIES.containsKey("frame_posx")) {
-      sPROPERTIES.setProperty("frame_posx", "0");
-    }
-
-    if (!sPROPERTIES.containsKey("frame_posy")) {
-      sPROPERTIES.setProperty("frame_posy", "0");
-    }
-
-    if (!sPROPERTIES.containsKey("frame_width")) {
-      sPROPERTIES.setProperty("frame_width", "800");
-    }
-
-    if (!sPROPERTIES.containsKey("frame_height")) {
-      sPROPERTIES.setProperty("frame_height", "600");
-    }
-
-    if (!sPROPERTIES.containsKey("node_width")) {
-      sPROPERTIES.setProperty("node_width", "90");
-    }
-
-    if (!sPROPERTIES.containsKey("node_height")) {
-      sPROPERTIES.setProperty("node_height", "90");
-    }
-
-    if (!sPROPERTIES.containsKey("grid_x")) {
-      sPROPERTIES.setProperty("grid_x", "1");
-    }
-
-    if (!sPROPERTIES.containsKey("grid_y")) {
-      sPROPERTIES.setProperty("grid_y", "1");
-    }
-
-    if (!sPROPERTIES.containsKey("visualization")) {
-      sPROPERTIES.setProperty("visualization", "false");
-    }
-
-    if (!sPROPERTIES.containsKey("visualizationtrace")) {
-      sPROPERTIES.setProperty("visualizationtrace", "false");
-    }
-
-    if (!sPROPERTIES.containsKey("shownodeid")) {
-      sPROPERTIES.setProperty("shownodeid", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("showvariables")) {
-      sPROPERTIES.setProperty("showvariables", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("showsmartpathcalculations")) {
-      sPROPERTIES.setProperty("showsmartpathcalculations", "false");
-    }
-
-    // default values for editor appearance
-    if (!sPROPERTIES.containsKey("showelements")) {
-      sPROPERTIES.setProperty("showelements", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("showelementproperties")) {
-      sPROPERTIES.setProperty("showelementproperties", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("propertiesdividerlocation")) {
-      sPROPERTIES.setProperty("propertiesdividerlocation", "230");
-    }
-
-    if (!sPROPERTIES.containsKey("showscenefloweditor")) {
-      sPROPERTIES.setProperty("showscenefloweditor", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("showsceneeditor")) {
-      sPROPERTIES.setProperty("showsceneeditor", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("sceneflow_sceneeditor_ratio")) {
-      sPROPERTIES.setProperty("sceneflow_sceneeditor_ratio", "0.75");
-    }
-
-    if (!sPROPERTIES.containsKey("showgestures")) {
-      sPROPERTIES.setProperty("showgestures", "true");
-    }
-
-    // visual appearance of workspace and its elements
-    if (!sPROPERTIES.containsKey("grid")) {
-      sPROPERTIES.setProperty("grid", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("num_magnets")) {
-      sPROPERTIES.setProperty("num_magnets", "8");
-    }
-
-    if (!sPROPERTIES.containsKey("xmlns")) {
-      sPROPERTIES.setProperty("xmlns", "xml.sceneflow.dfki.de");
-    }
-
-    if (!sPROPERTIES.containsKey("xmlns_xsi")) {
-      sPROPERTIES.setProperty("xmlns_xsi", "http://www.w3.org/2001/XMLSchema-instance");
-    }
-
-    if (!sPROPERTIES.containsKey("xsi_schemeLocation")) {
-      sPROPERTIES.setProperty("xsi_schemeLocation", "res/xsd/sceneflow.xsd");
-    }
-
-    if (!sPROPERTIES.containsKey("workspace_fontsize")) {
-      sPROPERTIES.setProperty("workspace_fontsize", "11");
     }
   }
 
