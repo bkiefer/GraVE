@@ -7,8 +7,6 @@ import javax.swing.JEditorPane;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.model.flow.geom.Boundary;
 import de.dfki.vsm.util.cpy.Copyable;
 
@@ -71,8 +69,11 @@ public class CommentBadge implements Copyable {
   }
 
   @Override
-  public ModelObject getCopy() {
-    // TODO: REACTIVATE
-    return null;
+  public CommentBadge getCopy() {
+    CommentBadge result = new CommentBadge();
+    result.mBoundary = mBoundary;
+    result.mFontSize = mFontSize;
+    result.mHTMLText = mHTMLText;
+    return result;
   }
 }

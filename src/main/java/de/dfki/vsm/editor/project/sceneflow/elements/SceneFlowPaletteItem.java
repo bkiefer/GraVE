@@ -1,5 +1,7 @@
 package de.dfki.vsm.editor.project.sceneflow.elements;
 
+import static de.dfki.vsm.Preferences.*;
+
 import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.Point;
@@ -48,9 +50,9 @@ public final class SceneFlowPaletteItem extends JLabel implements Transferable {
     setTransferHandler(mTransferHandler);
     setHorizontalAlignment(JLabel.CENTER);
     setToolTipText(mToolTipText + ": " + info);
-    setPreferredSize(Preferences.SF_PALETTEITEM_SIZE);
-    setMinimumSize(Preferences.SF_PALETTEITEM_SIZE);
-    setMaximumSize(Preferences.SF_PALETTEITEM_SIZE);
+    setPreferredSize(getPrefs().SF_PALETTEITEM_SIZE);
+    setMinimumSize(getPrefs().SF_PALETTEITEM_SIZE);
+    setMaximumSize(getPrefs().SF_PALETTEITEM_SIZE);
     setIcon(mStandardIcon);
     addMouseListener(new MouseAdapter() {
 

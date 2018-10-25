@@ -2,11 +2,6 @@ package de.dfki.vsm.runtime.project;
 
 import java.io.*;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,9 +9,8 @@ import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.model.flow.EpsilonEdge;
 import de.dfki.vsm.model.flow.SceneFlow;
 import de.dfki.vsm.model.flow.TimeoutEdge;
-import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.model.project.ProjectConfig;
-import de.dfki.vsm.util.xml.XMLUtilities;
+import de.dfki.vsm.util.JaxbUtilities;
 
 /**
  * @author Gregor Mehlmann
@@ -24,28 +18,24 @@ import de.dfki.vsm.util.xml.XMLUtilities;
 public class RunTimeProject {
 
   protected boolean isNewProject = false;
-  // The singelton logger instance
+  // The singleton logger instance
   protected final Logger mLogger
-          = LoggerFactory.getLogger(RunTimeProject.class);;
+          = LoggerFactory.getLogger(RunTimeProject.class);
 
   // The project Path (added PG 11.4.2016);
   private String mProjectPath = "";
   // The sceneflow of the project
   private SceneFlow mSceneFlow = null;
   // The project configuration of the project
-  private final ProjectConfig mProjectConfig = new ProjectConfig();
+  private ProjectConfig mProjectConfig = null;
 
-  // Construct an empty runtime project
-  public RunTimeProject() {
-    // Do nothing
-  }
+  /** To load the project config afterwards */
+  protected RunTimeProject() { }
 
-  // Construct a project from a directory
-  public RunTimeProject(final File file) {
-    // Remember Path
-    mProjectPath = file.getPath();
-    // Call the local parsing method
-    parse(mProjectPath);
+  // Construct an empty runtime project: For newProject
+  public RunTimeProject(ProjectConfig config) {
+    mProjectConfig = config;
+    mSceneFlow = new SceneFlow();
   }
 
   public boolean isNewProject() {
@@ -71,11 +61,6 @@ public class RunTimeProject {
     mProjectConfig.setProjectName(name);
   }
 
-  // Get a specific config from the map of plugins
-  public final PluginConfig getPluginConfig(final String name) {
-    return mProjectConfig.getPluginConfig(name);
-  }
-
   // Get the sceneflow of the project
   public final SceneFlow getSceneFlow() {
     return mSceneFlow;
@@ -90,7 +75,7 @@ public class RunTimeProject {
     // Check if the file is null
     if (file == null) {
       // Print an error message
-      mLogger.error("Error: Cannot parse runtime project from a bad file");
+      mLogger.error("Error: Cannot parse project: bad file");
       // Return false at error
       return false;
     }
@@ -99,33 +84,7 @@ public class RunTimeProject {
     mProjectPath = file;
 
     // Parse the project from file
-    if (parseProjectConfig(file)) {
-      // Initialize the scene player
-
-      //
-      return parseSceneFlow(file);
-    } else {
-      return false;
-    }
-
-  }
-
-  // First attempt to parse Visual SceneMaker project files for information only
-  // added PG 14.4.2016
-  public boolean parseForInformation(final String file) {
-    // Check if the file is null
-    if (file == null) {
-      // Print an error message
-      mLogger.error("Error: Cannot parse for information a runtime project from a bad file");
-      // Return false at error
-      return false;
-    }
-    // remember Path (e.g. EditorProject calls this without instantiation of
-    // the RunTimeProject class, so mProjectPath is (re)set her (PG 11.4.2016)
-    mProjectPath = file;
-
-    // Parse the project from file
-    return (parseProjectConfig(file) && parseSceneFlow(file));
+    return parseProjectConfig(file) && parseSceneFlow(file);
   }
 
   // Write the project data to a directory
@@ -185,7 +144,8 @@ public class RunTimeProject {
 
     }
 
-    if (!XMLUtilities.parseFromXMLStream(mProjectConfig, inputStream)) {
+    if ((mProjectConfig =
+        (ProjectConfig)JaxbUtilities.unmarshal(inputStream, path, ProjectConfig.class)) == null) {
       mLogger.error("Error: Cannot parse project configuration file  in path" + path);
       return false;
     }
@@ -198,11 +158,9 @@ public class RunTimeProject {
   public boolean parseProjectConfigFromString(String xml) {
     //Parse the config file for project from a string
     InputStream stream = new ByteArrayInputStream(xml.getBytes());
-    if (!XMLUtilities.parseFromXMLStream(mProjectConfig, stream)) {
-      mLogger.error("Error: Cannot parse agent");
-      return false;
-    }
-    return true;
+    mProjectConfig = (ProjectConfig)
+        JaxbUtilities.unmarshal(stream, "", ProjectConfig.class);
+    return (mProjectConfig != null);
   }
 
   private boolean writeProjectConfig(final File base) {
@@ -227,9 +185,9 @@ public class RunTimeProject {
       }
     }
     // Write the project configuration file
-    if (!XMLUtilities.writeToXMLFile(mProjectConfig, file, "UTF-8")) {
+    if (JaxbUtilities.marshal(file, mProjectConfig, ProjectConfig.class)) {
       // Print an error message in this case
-      mLogger.error("Error: Cannot write project configuration file '" + file + "'");
+      //mLogger.error("Error: Cannot write project configuration file '" + file + "'");
       // Return failure if it does not exist
       return false;
     }
@@ -259,13 +217,8 @@ public class RunTimeProject {
       }
 
     }
-    try {
-      JAXBContext jc = JAXBContext.newInstance( SceneFlow.class, AbstractEdge.class, TimeoutEdge.class, EpsilonEdge.class );
-      Unmarshaller u = jc.createUnmarshaller();
-      mSceneFlow = (SceneFlow) u.unmarshal(inputStream);
-    } catch (JAXBException e) {
-      mLogger.error("Error: Cannot parse sceneflow file " + path+ " : " + e);
-    }
+    mSceneFlow = (SceneFlow) JaxbUtilities.unmarshal(inputStream, path,
+        SceneFlow.class, AbstractEdge.class, TimeoutEdge.class, EpsilonEdge.class );
 
     // Perform all the postprocessing steps
     mSceneFlow.establishParentNodes();
@@ -301,18 +254,7 @@ public class RunTimeProject {
       }
     }
     // Write the sceneflow configuration file
-    try {
-      JAXBContext jc = JAXBContext.newInstance( SceneFlow.class );
-      Marshaller m = jc.createMarshaller();
-      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-
-      m.marshal(mSceneFlow, new FileOutputStream(file));
-    } catch (JAXBException e) {
-      mLogger.error("Error: Cannot write sceneflow file " + file + " : " + e);
-    } catch (FileNotFoundException e) {
-      mLogger.error("Error: Cannot write sceneflow file " + file + " : " + e);
-    }
+    JaxbUtilities.marshal(file, mSceneFlow, SceneFlow.class);
     // Print an information message in this case
     //mLogger.message("Saved sceneflow configuration file '" + file + "':\n" + mSceneFlow);
     // Return success if the project was saved
@@ -327,9 +269,5 @@ public class RunTimeProject {
     // Hash And Not Based Also On The
     // Other Project Data Structures?
     return hashCode;
-  }
-
-  public void deletePlugin(PluginConfig plugin) {
-    mProjectConfig.deleteDevice(plugin);
   }
 }

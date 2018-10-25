@@ -1,38 +1,34 @@
 package de.dfki.vsm;
 
-//~--- JDK imports ------------------------------------------------------------
-import de.dfki.vsm.model.flow.SceneFlow;
-import de.dfki.vsm.model.flow.edge.AbstractEdge;
-import de.dfki.vsm.model.flow.edge.EpsilonEdge;
-import de.dfki.vsm.model.flow.edge.TimeoutEdge;
-import de.dfki.vsm.model.project.EditorConfig;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.xml.bind.annotation.XmlType;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.dfki.vsm.util.ios.ResourceLoader;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+//~--- JDK imports ------------------------------------------------------------
+import de.dfki.vsm.model.flow.SceneFlow;
+import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
  * @author Gregor Mehlmann
@@ -40,7 +36,9 @@ import javax.xml.bind.Unmarshaller;
  *
  * Standard VSM configurations
  */
-@XmlType
+@XmlRootElement(name="Preferences")
+@XmlType(name="Preferences")
+@XmlAccessorType(XmlAccessType.FIELD)
 public final class Preferences {
   private static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
 
@@ -132,25 +130,23 @@ public final class Preferences {
   //////////////////////////////////////////////////////////////////////////////
   // APPEARANCE CONFIGURATION
   //////////////////////////////////////////////////////////////////////////////
-  public static boolean sSHOW_ELEMENTS = true;
-  public static boolean sSHOW_ELEMENT_PROPERTIES = true;
-  public static boolean sSHOW_SCENEEDITOR = true;
-  public static boolean sSHOW_SCENEFLOWEDITOR = true;
-  public static float sSCENEFLOW_SCENE_EDITOR_RATIO = 0.75f;
-  public static boolean sSHOW_GESTURES = true;
   // The Screen Size
-  public static Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
-  public static int SCREEN_HORIZONTAL = SCREEN_SIZE.width;
-  public static int SCREEN_VERTICAL = SCREEN_SIZE.height;
+  @XmlTransient
+  public final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
+  @XmlTransient
+  public final int SCREEN_HORIZONTAL = SCREEN_SIZE.width;
+  @XmlTransient
+  public final int SCREEN_VERTICAL = SCREEN_SIZE.height;
   //Components dimensions
-  public static Dimension SF_PALETTEITEM_SIZE = new Dimension(61, 65);
+  @XmlTransient
+  public Dimension SF_PALETTEITEM_SIZE = new Dimension(61, 65);
 
   //////////////////////////////////////////////////////////////////////////////
   // RECENT FILES
   //////////////////////////////////////////////////////////////////////////////
-  public static final int sMAX_RECENT_FILE_COUNT = 8;
-  public static final int sMAX_RECENT_PROJECTS = 8;
-  public static final ArrayList<Integer> sDYNAMIC_KEYS = new ArrayList<>(Arrays.asList(KeyEvent.VK_1,
+  public final int sMAX_RECENT_FILE_COUNT = 8;
+  public final int sMAX_RECENT_PROJECTS = 8;
+  public final ArrayList<Integer> sDYNAMIC_KEYS = new ArrayList<>(Arrays.asList(KeyEvent.VK_1,
           KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4,
           KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7,
           KeyEvent.VK_8, KeyEvent.VK_9));
@@ -265,33 +261,34 @@ public final class Preferences {
   //BACKGROUND WELCOME
   public static final Image BACKGROUND_IMAGE = ResourceLoader.loadImageIcon("img/icon_big.png").getImage();   // Background for the welcome screen
 
-  public static String FRAME_TITLE = "Visual SceneMaker";
-  public static String FRAME_NAME = "SceneFlowEditor";
-  public static String ICON_FILE = "res/img/icon.png";
-  public static int FRAME_POS_X = 0;
-  public static int FRAME_POS_Y = 0;
-  public static int FRAME_WIDTH = 800;
-  public static int FRAME_HEIGHT = 600;
-  public static String XMLNS = "xml.sceneflow.dfki.de";
-  public static String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
-  public static String XSI_SCHEMELOCATION = "res/xsd/sceneflow.xsd";
+  public String FRAME_TITLE = "Visual SceneMaker";
+  public String FRAME_NAME = "SceneFlowEditor";
+  public String ICON_FILE = "res/img/icon.png";
+  public int FRAME_POS_X = 0;
+  public int FRAME_POS_Y = 0;
+  public int FRAME_WIDTH = 800;
+  public int FRAME_HEIGHT = 600;
+  public String XMLNS = "xml.sceneflow.dfki.de";
+  public String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
+  public String XSI_SCHEMELOCATION = "res/xsd/sceneflow.xsd";
 
-  public static boolean sSHOWELEMENTS = true;
-  public static boolean sSHOWELEMENT_PROPERTIES = true;
-  public static int sPROPERTIES_DIVIDER_LOCATION = 230;
-  public static boolean sSHOWSCENEFLOW_EDITOR = true;
-  public static boolean sSHOWSCENE_EDITOR = true;
-  public static double sSCENEFLOW_SCENEEDITOR_RATIO = 0.75;
-  public static boolean SHOWGESTURES = true;
-  public static int NUM_MAGNETS = 8;
+  public boolean sSHOW_ELEMENTS = true;
+  public boolean sSHOW_ELEMENT_PROPERTIES = true;
+  public int sPROPERTIES_DIVIDER_LOCATION = 230;
+  public boolean sSHOW_SCENEFLOWEDITOR = true;
+  public boolean sSHOW_SCENEEDITOR = true;
+  public double sSCENEFLOW_SCENE_EDITOR_RATIO = 0.75;
+  public boolean sSHOW_GESTURES = true;
+  public int NUM_MAGNETS = 8;
 
-  public static ArrayList<String> recentProjectPaths = new ArrayList<>();
-  public static ArrayList<String> recentProjectNames = new ArrayList<>();
-  public static ArrayList<String> recentProjectDates = new ArrayList<>();
-  public static EditorConfig editorConfig = new EditorConfig();
+  public ArrayList<String> recentProjectPaths = new ArrayList<>();
+  public ArrayList<String> recentProjectNames = new ArrayList<>();
+  public ArrayList<String> recentProjectDates = new ArrayList<>();
 
+  public EditorConfig editorConfig = new EditorConfig();
+
+  @XmlTransient
   private static Preferences single_instance = null;
-
 
   private Preferences() {}
 
@@ -301,45 +298,29 @@ public final class Preferences {
     return single_instance;
   }
 
+
   public static synchronized void save() {
     // write the Preferences file
     try {
-      JAXBContext jc = JAXBContext.newInstance( SceneFlow.class );
+      JAXBContext jc = JAXBContext.newInstance(Preferences.class);
       Marshaller m = jc.createMarshaller();
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 
-      m.marshal(single_instance, new FileOutputStream(sCONFIG_FILE));
-    } catch (JAXBException e) {
-      mLogger.error("Error: Cannot write sceneflow file "
-              + sCONFIG_FILE + " : " + e);
-    } catch (FileNotFoundException e) {
-      mLogger.error("Error: Cannot write sceneflow file "
+      m.marshal(getPrefs(), new FileOutputStream(sCONFIG_FILE));
+    } catch (JAXBException|FileNotFoundException e) {
+      mLogger.error("Error: Cannot write preferences file "
               + sCONFIG_FILE + " : " + e);
     }
   }
 
   public static synchronized void load() {
-    parseConfigFile();
-  }
-
-  private static synchronized void parseConfigFile() {
-    if ((new File(sCONFIG_FILE)).canRead()) {
-      try {
-        try (FileInputStream in = new FileInputStream(sCONFIG_FILE)) {
-          try {
-            JAXBContext jc = JAXBContext.newInstance(Preferences.class);
-            Unmarshaller u = jc.createUnmarshaller();
-            single_instance = (Preferences) u.unmarshal(in);
-          } catch (JAXBException e) {
-            mLogger.error("Cannot find VSM preference file: " + sCONFIG_FILE
-                    + " :\n" + e);
-          }
-        }
-      } catch (IOException e) {
-        mLogger.error("Cannot find VSM preference file: " + sCONFIG_FILE + " :\n"
-                + e);
-      }
+    try (FileInputStream in = new FileInputStream(sCONFIG_FILE)) {
+      JAXBContext jc = JAXBContext.newInstance(Preferences.class);
+      Unmarshaller u = jc.createUnmarshaller();
+      single_instance = (Preferences) u.unmarshal(in);
+    } catch (JAXBException|IOException e) {
+      mLogger.error("Cannot read preference file: " + sCONFIG_FILE + " :\n" + e);
     }
   }
 

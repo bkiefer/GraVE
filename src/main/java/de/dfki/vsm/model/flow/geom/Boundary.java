@@ -1,18 +1,15 @@
 package de.dfki.vsm.model.flow.geom;
 
-import org.w3c.dom.Element;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
-import javax.xml.bind.annotation.*;
-
-import de.dfki.vsm.model.ModelObject;
-import de.dfki.vsm.util.ios.IOSIndentWriter;
-import de.dfki.vsm.util.xml.XMLParseError;
+import de.dfki.vsm.util.cpy.Copyable;
 
 /**
  * @author Gregr Mehlmann
  */
 @XmlType(name="Boundary")
-public final class Boundary implements ModelObject {
+public final class Boundary implements Copyable {
 
   private int mXPos;
   private int mYPos;
@@ -74,22 +71,5 @@ public final class Boundary implements ModelObject {
   @Override
   public final Boundary getCopy() {
     return new Boundary(mXPos, mYPos, mWidth, mHeight);
-  }
-
-  @Override
-  public final void writeXML(final IOSIndentWriter out) {
-    out.println("<Boundary "
-            + "xPos=\"" + mXPos + "\" "
-            + "yPos=\"" + mYPos + "\" "
-            + "width=\"" + mWidth + "\" "
-            + "height=\"" + mHeight + "\"/>");
-  }
-
-  @Override
-  public final void parseXML(final Element element) throws XMLParseError {
-    mXPos = Integer.valueOf(element.getAttribute("xPos"));
-    mYPos = Integer.valueOf(element.getAttribute("yPos"));
-    mWidth = Integer.valueOf(element.getAttribute("width"));
-    mHeight = Integer.valueOf(element.getAttribute("height"));
   }
 }

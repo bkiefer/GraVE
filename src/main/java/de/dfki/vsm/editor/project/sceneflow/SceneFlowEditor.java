@@ -1,5 +1,7 @@
 package de.dfki.vsm.editor.project.sceneflow;
 
+import static de.dfki.vsm.Preferences.*;
+
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -50,7 +52,6 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
   private UndoManager mUndoManager = null;
 
   //
-  private final SceneFlow mSceneFlow;
   private final EditorProject mEditorProject;
 
   // TODO: remove sceneflow manager
@@ -73,9 +74,6 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
 
     // Initialize the editor project
     mEditorProject = project;
-
-    // Initialize the sceneflow
-    mSceneFlow = mEditorProject.getSceneFlow();
 
     // PREPARE THE VERTICAL SPLIT REGION (NOW USED AS CODE EDITOR)
     /*
@@ -133,7 +131,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
       }
     });
     mUndoManager = new UndoManager();
-    mSceneFlowManager = new SceneFlowManager(mSceneFlow);
+    mSceneFlowManager = new SceneFlowManager(getSceneFlow());
 
     // The center component is the workspace
     mWorkSpacePanel = new WorkSpacePanel(this, mEditorProject);
@@ -153,7 +151,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     // TOOLBAR: NORTH ELEMENT
     mSceneFlowToolBar = new SceneFlowToolBar(this, mEditorProject);
     // TODO: adding not explicit but via refresh method
-    mSceneFlowToolBar.addPathComponent(mSceneFlow); // ADD FIRST NODE
+    mSceneFlowToolBar.addPathComponent(getSceneFlow()); // ADD FIRST NODE
     //
     setLayout(new BorderLayout());
     add(mSceneFlowToolBar, BorderLayout.NORTH);
@@ -166,15 +164,15 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     mNewElementDisplay.add(mDynamicElementsPanel);
 
     // PG 17.12.13 - FUTURE FEATURE! mNewElementDisplay.add(new EdgeTypeSelection(), BorderLayout.NORTH);
-    mNewElementDisplay.setVisible(Preferences.sSHOW_ELEMENTS);
+    mNewElementDisplay.setVisible(getPrefs().sSHOW_ELEMENTS);
     // INITIALIZE THE SPLIT PANEL WITH WORK SPACE AND ELEMENTEDITOR
     mWorkSpaceScrollPane.setMinimumSize(new Dimension(10, 10));
     mWorkSpaceScrollPane.setMaximumSize(new Dimension(10000, 3000));
     mSplitPane.setRightComponent(mWorkSpaceScrollPane);
     mSplitPane.setResizeWeight(0.0);
     mSplitPane.setLeftComponent(mNewElementDisplay);
-    if (Preferences.sSHOW_ELEMENTS) {
-      mSplitPane.setDividerLocation(Preferences.sPROPERTIES_DIVIDER_LOCATION);
+    if (getPrefs().sSHOW_ELEMENTS) {
+      mSplitPane.setDividerLocation(getPrefs().sPROPERTIES_DIVIDER_LOCATION);
       //THIS EVENT IS CASTED ONLY TO ACTIVATE THE ELEMENT EDITOR WITH THE INFO OF THE CURRENT PROJECT
     } else {
       mSplitPane.setDividerLocation(1.0d);
@@ -186,8 +184,8 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
       public void propertyChange(PropertyChangeEvent pce) {
 
         // solve issue here
-        if (Preferences.sSHOW_ELEMENTS) {
-          Preferences.sPROPERTIES_DIVIDER_LOCATION = mSplitPane.getDividerLocation();
+        if (getPrefs().sSHOW_ELEMENTS) {
+          getPrefs().sPROPERTIES_DIVIDER_LOCATION = mSplitPane.getDividerLocation();
         }
       }
     });
@@ -219,16 +217,16 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
    *
    */
   public void toggleElementEditor() {
-    if (Preferences.sSHOW_ELEMENTS) {
+    if (getPrefs().sSHOW_ELEMENTS) {
       mNewElementDisplay.setVisible(false);
-      Preferences.sSHOW_ELEMENTS = false;
-      Preferences.save();
+      getPrefs().sSHOW_ELEMENTS = false;
+      getPrefs().save();
       mSplitPane.setDividerLocation(1d);
     } else {
       mNewElementDisplay.setVisible(true);
-      Preferences.sSHOW_ELEMENTS = true;
-      Preferences.save();
-      mSplitPane.setDividerLocation(Preferences.sPROPERTIES_DIVIDER_LOCATION);
+      getPrefs().sSHOW_ELEMENTS = true;
+      getPrefs().save();
+      mSplitPane.setDividerLocation(getPrefs().sPROPERTIES_DIVIDER_LOCATION);
     }
 
   }
@@ -245,12 +243,11 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
   public void showElementDisplay() {
     if (mNewElementDisplay.isVisible()) {
       mNewElementDisplay.setVisible(false);
-      Preferences.sSHOW_ELEMENTS = false;
-      Preferences.save();
+      getPrefs().sSHOW_ELEMENTS = false;
+      getPrefs().save();
     } else {
       mNewElementDisplay.setVisible(true);
-      Preferences.sSHOW_ELEMENTS = true;
-      Preferences.save();
+      getPrefs().sSHOW_ELEMENTS = true;
       Preferences.save();
     }
   }
@@ -268,7 +265,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
   }
 
   public SceneFlow getSceneFlow() {
-    return mSceneFlow;
+    return mEditorProject.getSceneFlow();
   }
 
   public WorkSpacePanel getWorkSpace() {

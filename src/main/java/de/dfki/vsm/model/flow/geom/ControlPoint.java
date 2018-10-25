@@ -1,17 +1,15 @@
 package de.dfki.vsm.model.flow.geom;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
-import org.w3c.dom.Element;
-
-import de.dfki.vsm.model.ModelObject;
-import de.dfki.vsm.util.ios.IOSIndentWriter;
+import de.dfki.vsm.util.cpy.Copyable;
 
 /**
  * @author Gregor Mehlmann
  */
 @XmlType(name="ControlPoint")
-public final class ControlPoint implements ModelObject {
+public final class ControlPoint implements Copyable {
 
   @Override
   public int hashCode() {
@@ -102,22 +100,5 @@ public final class ControlPoint implements ModelObject {
   @Override
   public final ControlPoint getCopy() {
     return new ControlPoint(mXPpos, mCtrlXPos, mYPos, mCtrlYPos);
-  }
-
-  @Override
-  public final void writeXML(final IOSIndentWriter out) {
-    out.println("<ControlPoint "
-            + "xPos=\"" + mXPpos + "\" "
-            + "yPos=\"" + mYPos + "\" "
-            + "ctrlXPos=\"" + mCtrlXPos + "\" "
-            + "ctrlYPos=\"" + mCtrlYPos + "\"/>");
-  }
-
-  @Override
-  public final void parseXML(final Element element) {
-    mXPpos = Integer.valueOf(element.getAttribute("xPos"));
-    mYPos = Integer.valueOf(element.getAttribute("yPos"));
-    mCtrlXPos = Integer.valueOf(element.getAttribute("ctrlXPos"));
-    mCtrlYPos = Integer.valueOf(element.getAttribute("ctrlYPos"));
   }
 }

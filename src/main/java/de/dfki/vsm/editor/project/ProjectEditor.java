@@ -1,5 +1,7 @@
 package de.dfki.vsm.editor.project;
 
+import static de.dfki.vsm.Preferences.*;
+
 import java.awt.Color;
 import java.awt.Dimension;
 
@@ -52,10 +54,6 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     initComponents();
   }
 
-  public ProjectEditor(boolean isNewProject) {
-    this(new EditorProject(isNewProject));
-  }
-
   public void expandTree() {
     mSceneFlowEditor.expandTree();
 
@@ -91,7 +89,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
     setOneTouchExpandable(true);
 
-    setResizeWeight(Float.valueOf(Preferences.sSCENEFLOW_SCENE_EDITOR_RATIO));
+    setResizeWeight(getPrefs().sSCENEFLOW_SCENE_EDITOR_RATIO);
 
     setUI(new BasicSplitPaneUI() {
 
@@ -114,19 +112,19 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
     // setting size
 
-    if (!Preferences.sSHOWSCENEFLOW_EDITOR) {
+    if (!getPrefs().sSHOW_SCENEFLOWEDITOR) {
       setDividerLocation(1d);
     }
 
-    if (Preferences.sSHOWSCENE_EDITOR && Preferences.sSHOWSCENEFLOW_EDITOR) {
-      setDividerLocation(Preferences.sPROPERTIES_DIVIDER_LOCATION);
+    if (getPrefs().sSHOW_SCENEEDITOR && getPrefs().sSHOW_SCENEFLOWEDITOR) {
+      setDividerLocation(getPrefs().sPROPERTIES_DIVIDER_LOCATION);
     }
 
   }
 
   // Show the bottom part of the project editor
   private void showAuxiliaryEditor() {
-    setDividerLocation(Preferences.sPROPERTIES_DIVIDER_LOCATION);
+    setDividerLocation(getPrefs().sPROPERTIES_DIVIDER_LOCATION);
   }
 
   // Hides the bottom part of the project editor

@@ -1,6 +1,6 @@
 package de.dfki.vsm.editor.project.sceneflow;
 
-import static de.dfki.vsm.Preferences.SCREEN_HORIZONTAL;
+import static de.dfki.vsm.Preferences.getPrefs;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -13,12 +13,8 @@ import java.util.LinkedList;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
-import de.dfki.vsm.Preferences;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.action.RedoAction;
 import de.dfki.vsm.editor.action.UndoAction;
@@ -33,7 +29,6 @@ import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.ios.ResourceLoader;
-import de.dfki.vsm.xtesting.NewPropertyManager.PropertyManagerGUI;
 
 /**
  * @author Gregor Mehlmann
@@ -162,9 +157,9 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     // Create a horizontal toolbar
     super("SceneFlowToolBar", JToolBar.HORIZONTAL);
     //Set maximum size
-    setMinimumSize(new Dimension((int) (SCREEN_HORIZONTAL * 0.6), 40));
+    setMinimumSize(new Dimension((int) (getPrefs().SCREEN_HORIZONTAL * 0.6), 40));
     //setPreferredSize(new Dimension(SCREEN_HORIZONTAL, 40));
-    setMaximumSize(new Dimension(SCREEN_HORIZONTAL, 40));
+    setMaximumSize(new Dimension(getPrefs().SCREEN_HORIZONTAL, 40));
     // Initialize the sceneflow editor
     mSceneFlowEditor = editor;
     // Initialize the editor project
@@ -203,7 +198,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     if (mEditorInstance.getSelectedProjectEditor() != null) {
       mNodeSize = Integer.valueOf(mEditorConfig.sNODEWIDTH);
     } else {
-      mNodeSize = Integer.valueOf(Preferences.editorConfig.sNODEWIDTH);
+      mNodeSize = Integer.valueOf(getPrefs().editorConfig.sNODEWIDTH);
     }
   }
 
@@ -275,14 +270,14 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
      * LESS AND MORE BUTTONS ARE INVERTED TO MATCH WITH THE LEFT SIZE
      */
     mTogglePalette = add(new AbstractAction("ACTION_SHOW_ELEMENTS",
-            Preferences.sSHOWELEMENTS ? ICON_MORE_STANDARD
+            getPrefs().sSHOW_ELEMENTS ? ICON_MORE_STANDARD
             : ICON_LESS_STANDARD) {
       public void actionPerformed(ActionEvent evt) {
         mSceneFlowEditor.toggleElementEditor();
         refreshButtons();
       }
     });
-    mTogglePalette.setRolloverIcon(Preferences.sSHOWELEMENTS ? ICON_MORE_ROLLOVER
+    mTogglePalette.setRolloverIcon(getPrefs().sSHOW_ELEMENTS ? ICON_MORE_ROLLOVER
             : ICON_LESS_ROLLOVER);
     sanitizeButton(mTogglePalette, tinyButtonDim);
     //add(Box.createHorizontalGlue());
@@ -321,9 +316,11 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (mEditorProject.getProjectFile() != null) {
+          /*
           PropertyManagerGUI gui = new PropertyManagerGUI();
           gui.init(mEditorProject);
           gui.setVisible(true);
+          */
         } else {
           mProjectSettings.setEnabled(false);
         }
@@ -540,7 +537,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     // Refresh the element display buttons
     mTogglePalette.setIcon(mSceneFlowEditor.isElementDisplayVisible()
             ? ICON_MORE_STANDARD : ICON_LESS_STANDARD);
-    mTogglePalette.setRolloverIcon(Preferences.sSHOWELEMENTS
+    mTogglePalette.setRolloverIcon(getPrefs().sSHOW_ELEMENTS
             ? ICON_MORE_ROLLOVER : ICON_LESS_ROLLOVER);
   }
 

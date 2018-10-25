@@ -98,7 +98,7 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
 
   private void update() {
     String content = mNode.getDataNode().getCmd();
-
+    if (content == null) return;
     // Sets visibility of the component to true only if there is something to display
     setVisible(!content.isEmpty());
     setText(content);

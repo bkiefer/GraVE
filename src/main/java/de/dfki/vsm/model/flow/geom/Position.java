@@ -3,10 +3,7 @@ package de.dfki.vsm.model.flow.geom;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
-import org.w3c.dom.Element;
-
 import de.dfki.vsm.util.cpy.Copyable;
-import de.dfki.vsm.util.ios.IOSIndentWriter;
 
 /**
  * @author Gregor Mehlmann

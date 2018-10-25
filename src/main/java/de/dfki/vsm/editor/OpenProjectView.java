@@ -6,6 +6,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileView;
 
+import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.runtime.project.RunTimeProject;
 
 public final class OpenProjectView extends FileView {
@@ -32,8 +33,8 @@ public final class OpenProjectView extends FileView {
 
   public String getName(File f) {
     if (OpenProjectView.isVSMProject(f)) {
-      RunTimeProject project = new RunTimeProject();
-      project.parseForInformation(f.getPath());
+      RunTimeProject project = new EditorProject();
+      project.parse(f.getPath());
       return project.getProjectName() + " (Dir: " + f.getName() + ")";
     }
     return f.getName();

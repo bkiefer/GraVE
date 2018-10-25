@@ -95,7 +95,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   // The parent SceneFlowEditor (TODO: remove)
   private final SceneFlowEditor mSceneFlowEditor;
   private final EditorProject mProject;
-  private final EditorConfig mEditorConfig;
 
   /**
    *
@@ -104,7 +103,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   public WorkSpacePanel(SceneFlowEditor sceneFlowEditor, EditorProject project) {
     mSceneFlowEditor = sceneFlowEditor;
     mProject = project;
-    mEditorConfig = mProject.getEditorConfig();
     mGridManager = new GridManager(this);
 
     // Add the mouse listeners
@@ -199,7 +197,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   }
 
   public EditorConfig getEditorConfig() {
-    return mEditorConfig;
+    return mProject.getEditorConfig();
   }
 
   public SceneFlowManager getSceneFlowManager() {
@@ -380,8 +378,8 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   public void createNode(Point point, Node.Type type) {
-    Point correctedPoint = new Point(point.x - mEditorConfig.sGRID_NODEWIDTH / 2,
-            point.y - mEditorConfig.sGRID_NODEWIDTH / 2);
+    Point correctedPoint = new Point(point.x - getEditorConfig().sGRID_NODEWIDTH / 2,
+            point.y - getEditorConfig().sGRID_NODEWIDTH / 2);
 
     new CreateNodeAction(this, mGridManager.getNodeLocation(correctedPoint), type).run();
   }
@@ -2202,18 +2200,18 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
         g2d.setStroke(new BasicStroke(0.5f));
         g2d.drawLine(mSelectNodePoint.x, mSelectNodePoint.y, mSelectNodePoint.x,
-                mSelectNodePoint.y - (mEditorConfig.sNODEHEIGHT / 2) + (height / 2));
+                mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) + (height / 2));
         g2d.setColor(new Color(100, 100, 100, 100));
         g2d.fillRoundRect(mSelectNodePoint.x - (width / 2) - 5,
-                mSelectNodePoint.y - (mEditorConfig.sNODEHEIGHT / 2) - (height / 2) - 6, width + 10,
+                mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) - (height / 2) - 6, width + 10,
                 height + 5, 5, 5);
         g2d.setColor(Color.WHITE);
         g2d.setStroke(new BasicStroke(2.0f));
         g2d.drawRoundRect(mSelectNodePoint.x - (width / 2) - 5,
-                mSelectNodePoint.y - (mEditorConfig.sNODEHEIGHT / 2) - (height / 2) - 6, width + 10,
+                mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) - (height / 2) - 6, width + 10,
                 height + 5, 5, 5);
         g2d.drawString(sEdgeCreationHint.getIterator(), mSelectNodePoint.x - (width / 2),
-                mSelectNodePoint.y - (mEditorConfig.sNODEHEIGHT / 2) + 1);
+                mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) + 1);
       }
     }
   }

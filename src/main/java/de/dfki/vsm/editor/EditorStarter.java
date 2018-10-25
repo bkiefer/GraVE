@@ -1,5 +1,7 @@
 package de.dfki.vsm.editor;
 
+import static de.dfki.vsm.Preferences.getPrefs;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -23,11 +25,10 @@ import org.slf4j.LoggerFactory;
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
 import de.dfki.vsm.MainGrave;
-import de.dfki.vsm.Preferences;
 import de.dfki.vsm.editor.dialog.NewProjectDialog;
+import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.runtime.project.RunTimeProject;
 import de.dfki.vsm.util.ios.ResourceLoader;
-import de.dfki.vsm.xtesting.NewPropertyManager.PropertyManagerGUI;
 
 /**
  *
@@ -51,8 +52,8 @@ public class EditorStarter extends JPanel {
   private final static Font sMENUITEMFONT = new Font("Helvetica", Font.PLAIN, 18);
   // Welcome Stickman
 
-  private final File SampleProjFolder = new File(Preferences.sSAMPLE_PROJECTS);
-  private final File TutorialsProjFolder = new File(Preferences.sTUTORIALS_PROJECTS);
+  private final File SampleProjFolder = new File(getPrefs().sSAMPLE_PROJECTS);
+  private final File TutorialsProjFolder = new File(getPrefs().sTUTORIALS_PROJECTS);
 
   private final EditorInstance mEditorInstance;
   private final Box mCenterProjectBox;
@@ -157,7 +158,7 @@ public class EditorStarter extends JPanel {
     // acquire the build details
     try {
       Properties vProp;
-      try (InputStream versionInfo = Preferences.sVSM_VERSIONURL.openStream()) {
+      try (InputStream versionInfo = getPrefs().sVSM_VERSIONURL.openStream()) {
         vProp = new Properties();
         vProp.load(versionInfo);
       }
@@ -219,7 +220,7 @@ public class EditorStarter extends JPanel {
     Graphics2D g2 = (Graphics2D) graphics;
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-    graphics.drawImage(Preferences.BACKGROUND_IMAGE, -550, -20, null);
+    graphics.drawImage(getPrefs().BACKGROUND_IMAGE, -550, -20, null);
 
     g2.setColor(new Color(0, 0, 0, 64));
     g2.fillRect(0, getBounds().height - 30, getBounds().width, getBounds().height);
@@ -337,7 +338,7 @@ public class EditorStarter extends JPanel {
     // *********************************************************************
     // LIST OF RECENT PROJECTS
     // *********************************************************************
-    JLabel titleMenu = new JLabel((Preferences.sMAX_RECENT_FILE_COUNT > 1) ? " Recent Projects" : " Recent Project");
+    JLabel titleMenu = new JLabel((getPrefs().sMAX_RECENT_FILE_COUNT > 1) ? " Recent Projects" : " Recent Project");
 
     titleMenu.setBorder(null);
     titleMenu.setFont(sMENUHEADLINEFONT);
@@ -348,16 +349,16 @@ public class EditorStarter extends JPanel {
     titleMenu.setMaximumSize(new Dimension(buttonSize));
     titleMenu.setPreferredSize(new Dimension(buttonSize));
 
-    JLabel[] projectList = new JLabel[Preferences.sMAX_RECENT_FILE_COUNT];
+    JLabel[] projectList = new JLabel[getPrefs().sMAX_RECENT_FILE_COUNT];
     JPanel recentPanel = new JPanel();
 
     recentPanel.setOpaque(false);
     recentPanel.setLayout(new BoxLayout(recentPanel, BoxLayout.Y_AXIS));
 
-    int filesConsidered = (Preferences.sMAX_RECENT_FILE_COUNT < 5) ? Preferences.sMAX_RECENT_FILE_COUNT : 4;
-    for (int i = 0; i <= filesConsidered && i < Preferences.recentProjectPaths.size(); i++) {
-      String projectDirName = Preferences.recentProjectPaths.get(i);
-      String projectName = Preferences.recentProjectNames.get(i);
+    int filesConsidered = (getPrefs().sMAX_RECENT_FILE_COUNT < 5) ? getPrefs().sMAX_RECENT_FILE_COUNT : 4;
+    for (int i = 0; i <= filesConsidered && i < getPrefs().recentProjectPaths.size(); i++) {
+      String projectDirName = getPrefs().recentProjectPaths.get(i);
+      String projectName = getPrefs().recentProjectNames.get(i);
 
       if (projectDirName != null) {
         final File projectDir = new File(projectDirName);
@@ -367,7 +368,7 @@ public class EditorStarter extends JPanel {
             continue;
           }
 
-          String modified = Preferences.recentProjectDates.get(i);
+          String modified = getPrefs().recentProjectDates.get(i);
 
           if (modified == null) {
             modified = "Not saved yet";
@@ -387,11 +388,11 @@ public class EditorStarter extends JPanel {
             @Override
             public void mouseClicked(MouseEvent me) {
               if (SwingUtilities.isRightMouseButton(me)) {
-                RunTimeProject project = new RunTimeProject();
-                project.parseForInformation(projectDir.getPath());
-                PropertyManagerGUI gui = new PropertyManagerGUI();
+                RunTimeProject project = new EditorProject();
+                project.parse(projectDir.getPath());
+                /*PropertyManagerGUI gui = new PropertyManagerGUI();
                 gui.init(project);
-                gui.setVisible(true);
+                gui.setVisible(true);*/
               } else {
                 mEditorInstance.openProject(projectDir.getPath());
               }
@@ -472,15 +473,13 @@ public class EditorStarter extends JPanel {
 
       if (tutorialProj.exists()) {
         //File projectPath = new File(sampleDir.getPath() + "project.xml" );
-        RunTimeProject project = new RunTimeProject();
+        RunTimeProject project = new EditorProject();
 
-        project.parseForInformation(tutorialProj.getPath());
+        project.parse(tutorialProj.getPath());
         JLabel newTutorialProj = new JLabel(project.getProjectName() + " ["
                 + project.getSceneFlow().getNodeAndSuperNodeList().size()
-                + " global nodes, "
-                + project.getProjectConfig().getPluginConfigList().size()
-                + " plugins]");// + ", last edited: "
-        // + Preferences.sDATE_FORMAT.format(tutorialProj.lastModified()));
+                + " global nodes]");// + ", last edited: "
+        // + getPrefs().sDATE_FORMAT.format(tutorialProj.lastModified()));
 
         newTutorialProj.setLayout(new BoxLayout(newTutorialProj, BoxLayout.X_AXIS));
         newTutorialProj.setMaximumSize(new Dimension(buttonSize));
@@ -495,9 +494,11 @@ public class EditorStarter extends JPanel {
           public void mouseClicked(MouseEvent me) {
 
             if (SwingUtilities.isRightMouseButton(me)) {
+              /*
               PropertyManagerGUI gui = new PropertyManagerGUI();
               gui.init(project);
               gui.setVisible(true);
+              */
             } else {
               mEditorInstance.openProject(tutorialProj.getPath());
             }
@@ -610,9 +611,9 @@ public class EditorStarter extends JPanel {
     mScrollPanel.setAlignmentX(LEFT_ALIGNMENT);
 
     for (final String sampleDir : listDirs) {
-      RunTimeProject project = new RunTimeProject();
+      RunTimeProject project = new EditorProject();
 
-      project.parseForInformation(sampleDir);
+      project.parse(sampleDir);
 
       JLabel newSampleProj = new JLabel(project.getProjectName() + "                         ");
 

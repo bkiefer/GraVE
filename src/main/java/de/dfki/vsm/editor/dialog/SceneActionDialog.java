@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import de.dfki.vsm.Preferences;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.util.HintTextField;
-import de.dfki.vsm.model.acticon.ActiconAction;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
@@ -295,21 +294,6 @@ public class SceneActionDialog extends JDialog {
     mDocuTextArea.setText("");
     mArgument.setText("");
     mListModel.clear();
-  }
-
-  public void editAction(ActiconAction a, int pos) {
-
-    /*
-         * mActionName.setText(a.getActionName());
-         * if (a.() != null) {
-         * mDocuTextArea.setText(a.getDocumentation());
-         * }
-         * mArgument.setText("");
-         * mListModel.clear();
-         * for (SM3SceneMember arg : a.getParamList()) {
-         * mListModel.insertElementAt(arg.getText(), pos);
-         * }
-     */
   }
 
   private void saveActions() {

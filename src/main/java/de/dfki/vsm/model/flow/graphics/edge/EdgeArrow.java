@@ -2,21 +2,18 @@ package de.dfki.vsm.model.flow.graphics.edge;
 
 import java.util.ArrayList;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
-import org.w3c.dom.Element;
-
-import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.model.flow.geom.ControlPoint;
-import de.dfki.vsm.util.ios.IOSIndentWriter;
-import de.dfki.vsm.util.xml.XMLParseAction;
-import de.dfki.vsm.util.xml.XMLParseError;
+import de.dfki.vsm.util.cpy.Copyable;
 
 /**
  * @author Gregor Mehlmann
  */
 @XmlType(name="Connection")
-public class EdgeArrow implements ModelObject {
+public class EdgeArrow implements Copyable {
 
   @Override
   public int hashCode() {
@@ -82,27 +79,5 @@ public class EdgeArrow implements ModelObject {
   @Override
   public final EdgeArrow getCopy() {
     return new EdgeArrow(getCopyOfPointList());
-  }
-
-  // Write the connection
-  @Override
-  public final void writeXML(final IOSIndentWriter out) {
-    out.println("<Connection>").push();
-    for (int i = 0; i < mPointList.size(); i++) {
-      mPointList.get(i).writeXML(out);
-    }
-    out.pop().println("</Connection>");
-  }
-
-  @Override
-  public final void parseXML(final Element element) throws XMLParseError {
-    XMLParseAction.processChildNodes(element, "ControlPoint", new XMLParseAction() {
-      @Override
-      public void run(final Element element) {
-        final ControlPoint point = new ControlPoint();
-        point.parseXML(element);
-        mPointList.add(point);
-      }
-    });
   }
 }

@@ -15,14 +15,13 @@ import de.dfki.vsm.model.project.EditorConfig;
 public class JaxbMain {
 
   public static void main(String[] args) throws JAXBException, FileNotFoundException {
-    JAXBContext jc = JAXBContext.newInstance( SceneFlow.class );
+    JAXBContext jc = JAXBContext.newInstance( Preferences.class );
     Marshaller m = jc.createMarshaller();
     m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-    //m.marshal(new EditorConfig(), new FileOutputStream("demo/.xml"));
+    m.marshal(Preferences.getPrefs(), new FileOutputStream("prefs.xml"));
 
     Unmarshaller u = jc.createUnmarshaller();
-    SceneFlow flow = (SceneFlow)
-        u.unmarshal(new FileInputStream("demo/scf.xml"));
+    Object flow = u.unmarshal(new FileInputStream("prefs.xml"));
 
     m.marshal(flow, new FileOutputStream("test.xml"));
     System.out.println("Done");

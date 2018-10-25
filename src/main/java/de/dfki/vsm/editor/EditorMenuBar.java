@@ -1,5 +1,7 @@
 package de.dfki.vsm.editor;
 
+import static de.dfki.vsm.Preferences.*;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -101,9 +103,9 @@ public final class EditorMenuBar extends JMenuBar {
 
     boolean hasEntries = false;
 
-    for (int i = 0; i < Preferences.recentProjectPaths.size(); i++) {
-      String projectDirName = Preferences.recentProjectNames.get(i);
-      String projectName = Preferences.recentProjectPaths.get(i);
+    for (int i = 0; i < getPrefs().recentProjectPaths.size(); i++) {
+      String projectDirName = getPrefs().recentProjectNames.get(i);
+      String projectName = getPrefs().recentProjectPaths.get(i);
 
       if (projectDirName != null) {
         final File projectDir = new File(projectDirName);
@@ -113,7 +115,7 @@ public final class EditorMenuBar extends JMenuBar {
 
           JMenuItem recentFileMenuItem = new JMenuItem(projectName);
 
-          recentFileMenuItem.setAccelerator(KeyStroke.getKeyStroke(Preferences.sDYNAMIC_KEYS.get(i),
+          recentFileMenuItem.setAccelerator(KeyStroke.getKeyStroke(getPrefs().sDYNAMIC_KEYS.get(i),
                   Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
           recentFileMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

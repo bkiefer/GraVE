@@ -1,28 +1,21 @@
 package de.dfki.vsm.model.project;
 
-//~--- JDK imports ------------------------------------------------------------
-import de.dfki.vsm.model.flow.SceneFlow;
-import de.dfki.vsm.model.flow.edge.AbstractEdge;
-import de.dfki.vsm.model.flow.edge.EpsilonEdge;
-import de.dfki.vsm.model.flow.edge.TimeoutEdge;
 import java.awt.Dimension;
 import java.io.*;
-import java.util.Properties;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
 //~--- non-JDK imports --------------------------------------------------------
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.vsm.util.xml.XMLUtilities;
-import java.util.logging.Level;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import de.dfki.vsm.util.JaxbUtilities;
 
 /**
  * @author Patrick Gebhard
@@ -106,20 +99,7 @@ public class EditorConfig {
         return false;
       }
     }
-    String conf = this.toString();
-    if (conf != null) {
-      try {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        writer.write(conf);
-        return true;
-      } catch (IOException ex) {
-        mLogger.error("Error: Cannot write project editor configuration file '"
-                + file + "'\n" + ex);
-        return false;
-      }
-    }
-    return false;
-
+    return JaxbUtilities.marshal(file, this, EditorConfig.class);
   }
 
   public static synchronized EditorConfig load(final String path) {
@@ -133,7 +113,8 @@ public class EditorConfig {
         mLogger.error("Error: Cannot find sproject configuration file '" + file + "'");
       }
     } else {
-      inputStream = ClassLoader.getSystemResourceAsStream(path + System.getProperty("file.separator") + "editorconfig.xml");
+      inputStream = ClassLoader.getSystemResourceAsStream(
+          path + System.getProperty("file.separator") + "editorconfig.xml");
       if (inputStream == null) {
         // Print an error message in this case
         mLogger.error("Error: Cannot find project configuration file  " + file);
@@ -142,35 +123,31 @@ public class EditorConfig {
       }
     }
 
-    try {
-      JAXBContext jc = JAXBContext.newInstance(EditorConfig.class);
-      Unmarshaller u = jc.createUnmarshaller();
-      EditorConfig config = (EditorConfig) u.unmarshal(inputStream);
-      return config;
-    } catch (JAXBException e) {
-      mLogger.error("Error: Cannot parse sceneflow file " + path+ " : " + e);
-    }
-
-    return null;
+    return (EditorConfig)JaxbUtilities.unmarshal(
+        inputStream, file.getAbsolutePath(), EditorConfig.class);
   }
 
+
   // Get the string representation of the configuration
-  @Override
-  public final String toString() {
+  public final EditorConfig copy() {
 
     // Create a new byte array buffer stream
     final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
+    EditorConfig result = null;
     try {
-      JAXBContext jc = JAXBContext.newInstance( SceneFlow.class );
+      JAXBContext jc = JAXBContext.newInstance( EditorConfig.class );
       Marshaller m = jc.createMarshaller();
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 
       m.marshal(this, buffer);
+      Unmarshaller u = jc.createUnmarshaller();
+
+      result = (EditorConfig)u.unmarshal(
+          new ByteArrayInputStream(buffer.toByteArray()));
     } catch (JAXBException e) {
       mLogger.error("Error: Cannot convert editor configuration to string: " + e);
     }
-    return buffer.toString();
+    return result;
   }
 }

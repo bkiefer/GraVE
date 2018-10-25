@@ -2,7 +2,9 @@ package de.dfki.vsm.editor.project;
 
 import java.io.File;
 
+import de.dfki.vsm.Preferences;
 import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.model.project.ProjectConfig;
 import de.dfki.vsm.runtime.project.RunTimeProject;
 
 /**
@@ -18,14 +20,18 @@ public class EditorProject extends RunTimeProject {
   private int mInitialHash;
   // Construct an editor project
 
+  /** To load an existing project */
   public EditorProject() {
     // Initialize the project file
     mProjectFile = null;
     isNewProject = false;
   }
 
-  public EditorProject(boolean isNewProject) {
-    this.isNewProject = isNewProject;
+  /** Create brand new project */
+  public EditorProject(ProjectConfig config) {
+    super(config);
+    this.isNewProject = true;
+    this.mEditorConfig = Preferences.getPrefs().editorConfig.copy();
   }
 
   @Override
@@ -115,7 +121,7 @@ public class EditorProject extends RunTimeProject {
     }
     // Load the project data
     if (super.parse(mProjectFile.getPath())
-            && loadEditorConfig(mProjectFile.getPath())) {
+        && loadEditorConfig(mProjectFile.getPath())) {
       // Set the initial hash code
       mInitialHash = getHashCode();
       // Return true if project is saved
@@ -127,10 +133,10 @@ public class EditorProject extends RunTimeProject {
   }
 
   public boolean loadEditorConfig(String path) {
-    EditorConfig c = EditorConfig.load(path);
-    if (c == null) return false;
-    mEditorConfig = c;
-    return true;
+    mEditorConfig = EditorConfig.load(path);
+    if (mEditorConfig == null)
+      mEditorConfig = Preferences.getPrefs().editorConfig.copy();
+    return mEditorConfig != null;
   }
 
   // Save the project data

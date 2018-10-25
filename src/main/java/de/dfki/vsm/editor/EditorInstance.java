@@ -1,9 +1,10 @@
 package de.dfki.vsm.editor;
 
+import static de.dfki.vsm.Preferences.getPrefs;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.*;
@@ -25,6 +26,7 @@ import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.editor.project.ProjectEditor;
 import de.dfki.vsm.editor.project.sceneflow.workspace.ClipBoard;
 import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.project.ProjectConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
@@ -92,16 +94,16 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
   private ComponentListener mComponentListener = new ComponentListener() {
     @Override
     public void componentResized(ComponentEvent e) {
-      Preferences.FRAME_HEIGHT = getHeight();
-      Preferences.FRAME_WIDTH = getWidth();
-      Preferences.save();
+      getPrefs().FRAME_HEIGHT = getHeight();
+      getPrefs().FRAME_WIDTH = getWidth();
+      getPrefs().save();
     }
 
     @Override
     public void componentMoved(ComponentEvent e) {
-      Preferences.FRAME_POS_X = getX();
-      Preferences.FRAME_POS_Y = getY();
-      Preferences.save();
+      getPrefs().FRAME_POS_X = getX();
+      getPrefs().FRAME_POS_Y = getY();
+      getPrefs().save();
     }
 
     @Override
@@ -165,14 +167,14 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
 
     // Init the editor application frame
     // TODO: static property fields
-    Dimension editorSize = new Dimension(Preferences.FRAME_WIDTH,
-            Preferences.FRAME_WIDTH);
+    Dimension editorSize = new Dimension(getPrefs().FRAME_WIDTH,
+            getPrefs().FRAME_WIDTH);
 
     setPreferredSize(editorSize);
     setSize(editorSize);
     checkAndSetLocation();
-    setTitle(Preferences.FRAME_TITLE);
-    setName(Preferences.FRAME_NAME);
+    setTitle(getPrefs().FRAME_TITLE);
+    setName(getPrefs().FRAME_NAME);
     setJMenuBar(mEditorMenuBar);
     // setContentPane(jsWelcome);
     // add(mProjectEditorList); // COMMENTED BY M.FALLAS
@@ -248,10 +250,10 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
 
   private void checkAndSetLocation() {
     Point finalPos = new Point(0, 0);
-    Point editorPosition = new Point(Preferences.FRAME_POS_X,
-            Preferences.FRAME_POS_Y);
-    Dimension editorSize = new Dimension(Preferences.FRAME_WIDTH,
-            Preferences.FRAME_HEIGHT);
+    Point editorPosition = new Point(getPrefs().FRAME_POS_X,
+            getPrefs().FRAME_POS_Y);
+    Dimension editorSize = new Dimension(getPrefs().FRAME_WIDTH,
+            getPrefs().FRAME_HEIGHT);
 
     // check systems monitor setup
     Rectangle virtualBounds = new Rectangle();
@@ -293,8 +295,11 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
   }
 
   public final boolean newProject(String projectName) {
+    // Create a new project config, and new EditorProject
+    EditorProject epj = new EditorProject(new ProjectConfig(projectName));
+
     // Create a new project editor
-    final ProjectEditor editor = new ProjectEditor(true);
+    final ProjectEditor editor = new ProjectEditor(epj);
 
     // Set default name  main superNode
     editor.getSceneFlowEditor().getSceneFlow().setName(editor.getEditorProject().getEditorConfig().sMAINSUPERNODENAME);
@@ -490,18 +495,18 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
 
     // Create an AddButton
     final AddButton mCloseButton = new AddButton();
-    mCloseButton.setIcon(Preferences.ICON_CANCEL_STANDARD_TINY);
+    mCloseButton.setIcon(getPrefs().ICON_CANCEL_STANDARD_TINY);
     mCloseButton.setTabPos(mProjectEditors.getTabCount() - 1);
     mCloseButton.removeMouseListener(mCloseButton.getMouseListeners()[1]);
     mCloseButton.addMouseListener(new java.awt.event.MouseAdapter() {
       @Override
       public void mouseEntered(MouseEvent me) {
-        mCloseButton.setIcon(Preferences.ICON_CANCEL_ROLLOVER_TINY);
+        mCloseButton.setIcon(getPrefs().ICON_CANCEL_ROLLOVER_TINY);
       }
 
       @Override
       public void mouseExited(MouseEvent me) {
-        mCloseButton.setIcon(Preferences.ICON_CANCEL_STANDARD_TINY);
+        mCloseButton.setIcon(getPrefs().ICON_CANCEL_STANDARD_TINY);
       }
 
       @Override
@@ -704,11 +709,11 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
      // Create the list of recent projects
      final ArrayList<TPLTriple<String, String, Date>> projects = new ArrayList<>();
      // Get all remembered recent projects
-     for (int i = 0; i <= Preferences.sMAX_RECENT_PROJECTS; i++) {
-     final String path = Preferences.getProperty("recentproject." + i + ".path");
-     final String name = Preferences.getProperty("recentproject." + i + ".name");
+     for (int i = 0; i <= getPrefs().sMAX_RECENT_PROJECTS; i++) {
+     final String path = getPrefs().getProperty("recentproject." + i + ".path");
+     final String name = getPrefs().getProperty("recentproject." + i + ".name");
      final Date date = new SimpleDateFormat("dd.MM.yyyy").parse(
-     Preferences.getProperty("recentproject." + i + ".date"));
+     getPrefs().getProperty("recentproject." + i + ".date"));
      // Create the current recent project
      TPLTriple<String, String, Date> recent = new TPLTriple(name, path, date);
      //
@@ -727,52 +732,52 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
   public void updateRecentProjects(final EditorProject project) {
     String projectPath = project.getProjectPath();
     String projectName = project.getProjectName();
-    String projectDate = Preferences.sDATE_FORMAT.format(new Date());
+    String projectDate = getPrefs().sDATE_FORMAT.format(new Date());
 
-    if (Preferences.recentProjectPaths.contains(projectPath)) {
-      int index = Preferences.recentProjectPaths.indexOf(projectPath);
+    if (getPrefs().recentProjectPaths.contains(projectPath)) {
+      int index = getPrefs().recentProjectPaths.indexOf(projectPath);
       // case: project in recent list
-      if (Preferences.recentProjectNames.contains(projectName)) {
+      if (getPrefs().recentProjectNames.contains(projectName)) {
         // case: project is on list - has now to be at first pos
-        //Preferences.setProperty("recentproject." + index + ".date", Preferences.sDATE_FORMAT.format(new Date()));
+        //getPrefs().setProperty("recentproject." + index + ".date", getPrefs().sDATE_FORMAT.format(new Date()));
         //if (index != 0) {
-          Preferences.recentProjectPaths.add(0, projectPath);
-          Preferences.recentProjectNames.add(0, projectName);
-          Preferences.recentProjectDates.add(0, projectDate);
-          Preferences.recentProjectNames.remove(index + 1);
-          Preferences.recentProjectPaths.remove(index + 1);
-          Preferences.recentProjectDates.remove(index + 1);
+          getPrefs().recentProjectPaths.add(0, projectPath);
+          getPrefs().recentProjectNames.add(0, projectName);
+          getPrefs().recentProjectDates.add(0, projectDate);
+          getPrefs().recentProjectNames.remove(index + 1);
+          getPrefs().recentProjectPaths.remove(index + 1);
+          getPrefs().recentProjectDates.remove(index + 1);
         //}
       /* TODO: Isn't this wrong anyways?
       } else {
-        //Preferences.setProperty("recentproject." + index + ".date", Preferences.sDATE_FORMAT.format(new Date()));
-        Preferences.recentProjectNames.remove(index);
-        Preferences.recentProjectNames.add(index, projectName); */
+        //getPrefs().setProperty("recentproject." + index + ".date", getPrefs().sDATE_FORMAT.format(new Date()));
+        getPrefs().recentProjectNames.remove(index);
+        getPrefs().recentProjectNames.add(index, projectName); */
       }
-    } else if (projectPath != null && !projectPath.contains(Preferences.sSAMPLE_PROJECTS) && !projectPath.contains(Preferences.sTUTORIALS_PROJECTS)) {
+    } else if (projectPath != null && !projectPath.contains(getPrefs().sSAMPLE_PROJECTS) && !projectPath.contains(getPrefs().sTUTORIALS_PROJECTS)) {
       // case: project not in recent list
-      Preferences.recentProjectPaths.add(0, projectPath);
-      Preferences.recentProjectNames.add(0, projectName);
-      Preferences.recentProjectDates.add(0, projectDate);
+      getPrefs().recentProjectPaths.add(0, projectPath);
+      getPrefs().recentProjectNames.add(0, projectName);
+      getPrefs().recentProjectDates.add(0, projectDate);
     }
-    int si = Preferences.recentProjectPaths.size();
-    if (si > Preferences.sMAX_RECENT_PROJECTS) {
-      Preferences.recentProjectPaths.remove(si);
-      Preferences.recentProjectNames.remove(si);
+    int si = getPrefs().recentProjectPaths.size();
+    if (si > getPrefs().sMAX_RECENT_PROJECTS) {
+      getPrefs().recentProjectPaths.remove(si);
+      getPrefs().recentProjectNames.remove(si);
     }
 
     /* set properties
     String dir = null;
     String name = null;
-    int maxCnt = ((recentProjectPaths.size() <= Preferences.sMAX_RECENT_PROJECTS) ? recentProjectPaths.size() : Preferences.sMAX_RECENT_PROJECTS);
+    int maxCnt = ((recentProjectPaths.size() <= getPrefs().sMAX_RECENT_PROJECTS) ? recentProjectPaths.size() : getPrefs().sMAX_RECENT_PROJECTS);
     for (int i = 0; i < maxCnt; i++) {
       dir = recentProjectPaths.get(i);
       name = recentProjectNames.get(i);
 
       if ((dir != null) && (name != null)) {
-        Preferences.setProperty("recentproject." + i + ".path", dir);
-        Preferences.setProperty("recentproject." + i + ".name", name);
-        //Preferences.setProperty("recentproject." + i + ".date", Preferences.sDATE_FORMAT.format(new Date()));
+        getPrefs().setProperty("recentproject." + i + ".path", dir);
+        getPrefs().setProperty("recentproject." + i + ".name", name);
+        //getPrefs().setProperty("recentproject." + i + ".date", getPrefs().sDATE_FORMAT.format(new Date()));
       } else {
         break;
       }
