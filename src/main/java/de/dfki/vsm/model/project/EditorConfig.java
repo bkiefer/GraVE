@@ -137,7 +137,7 @@ public class EditorConfig {
     try {
       JAXBContext jc = JAXBContext.newInstance( EditorConfig.class );
       Marshaller m = jc.createMarshaller();
-      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
       m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 
       m.marshal(this, buffer);
