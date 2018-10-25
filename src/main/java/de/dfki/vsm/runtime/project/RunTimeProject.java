@@ -10,10 +10,10 @@ import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.vsm.model.flow.AbstractEdge;
+import de.dfki.vsm.model.flow.EpsilonEdge;
 import de.dfki.vsm.model.flow.SceneFlow;
-import de.dfki.vsm.model.flow.edge.AbstractEdge;
-import de.dfki.vsm.model.flow.edge.EpsilonEdge;
-import de.dfki.vsm.model.flow.edge.TimeoutEdge;
+import de.dfki.vsm.model.flow.TimeoutEdge;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.model.project.ProjectConfig;
 import de.dfki.vsm.util.xml.XMLUtilities;
@@ -321,9 +321,7 @@ public class RunTimeProject {
 
   // Get the hash code of the project
   protected synchronized int getHashCode() {
-    int hashCode = ((mSceneFlow == null)
-            ? 0
-            : mSceneFlow.getHashCode());
+    int hashCode = ((mSceneFlow == null) ? 0 : mSceneFlow.hashCode());
     // TODO: Why Is The Hash Computed
     // Only Based On The SceneFlow's
     // Hash And Not Based Also On The

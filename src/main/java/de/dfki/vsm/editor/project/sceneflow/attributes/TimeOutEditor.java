@@ -11,8 +11,7 @@ import javax.swing.JPanel;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.dialog.ModifyTEdgeDialog;
 import de.dfki.vsm.editor.event.EdgeSelectedEvent;
-import de.dfki.vsm.model.flow.edge.TimeoutEdge;
-import de.dfki.vsm.model.flow.edge.AbstractEdge.EdgeType;
+import de.dfki.vsm.model.flow.TimeoutEdge;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
@@ -43,7 +42,7 @@ class TimeOutEditor extends JPanel implements EventListener {
   @Override
   public void update(EventObject event) {
     if (event instanceof EdgeSelectedEvent) {
-      if (((EdgeSelectedEvent) event).getEdge().getEdgeType().equals(EdgeType.TimeoutEdge)) {
+      if (((EdgeSelectedEvent) event).getEdge().isTimeoutEdge()) {
         mDataTEdge = (TimeoutEdge) ((EdgeSelectedEvent) event).getEdge();
         mTEdgeDialog = new ModifyTEdgeDialog(mDataTEdge);
         removeAll();

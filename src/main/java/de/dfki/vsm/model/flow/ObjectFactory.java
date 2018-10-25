@@ -2,8 +2,6 @@ package de.dfki.vsm.model.flow;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
-import de.dfki.vsm.model.flow.edge.*;
-
 @XmlRegistry
 public class ObjectFactory {
   public SceneFlow getSceneFlow() { return new SceneFlow(); }
@@ -22,4 +20,5 @@ public class ObjectFactory {
 
   public TimeoutEdge getTEdge() { return new TimeoutEdge(); }
 
+  public CommentBadge getComment() { return new CommentBadge(); }
 }

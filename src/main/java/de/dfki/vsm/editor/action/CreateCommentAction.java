@@ -25,7 +25,7 @@ public class CreateCommentAction extends EditorAction {
   private WorkSpacePanel mWorkSpace = null;
   private Point mCoordinate = null;
   private Comment mGUIComment;
-  private de.dfki.vsm.model.flow.badge.CommentBadge mComment;
+  private de.dfki.vsm.model.flow.CommentBadge mComment;
   private de.dfki.vsm.model.flow.SuperNode mParentDataNode;
   private SuperNode mSuperNode;
   private SceneFlowManager mSceneFlowManager;
@@ -34,7 +34,7 @@ public class CreateCommentAction extends EditorAction {
     mWorkSpace = workSpace;
     mCoordinate = coordinate;
     mUndoManager = mWorkSpace.getSceneFlowEditor().getUndoManager();
-    mComment = new de.dfki.vsm.model.flow.badge.CommentBadge();
+    mComment = new de.dfki.vsm.model.flow.CommentBadge();
     mComment.setBoundary(new Boundary(coordinate.x, coordinate.y, 100, 100));
     mParentDataNode = mWorkSpace.getSceneFlowManager().getCurrentActiveSuperNode();
     mSceneFlowManager = mWorkSpace.getSceneFlowManager();

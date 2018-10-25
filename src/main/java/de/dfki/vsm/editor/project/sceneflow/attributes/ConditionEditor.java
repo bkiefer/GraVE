@@ -12,8 +12,7 @@ import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.dialog.ModifyCEdgeDialog;
 import de.dfki.vsm.editor.event.CEdgeDialogModifiedEvent;
 import de.dfki.vsm.editor.event.EdgeSelectedEvent;
-import de.dfki.vsm.model.flow.edge.AbstractEdge.EdgeType;
-import de.dfki.vsm.model.flow.edge.GuardedEdge;
+import de.dfki.vsm.model.flow.GuardedEdge;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
@@ -44,7 +43,7 @@ class ConditionEditor extends JPanel implements EventListener {
   public void update(EventObject event) {
     if (event instanceof EdgeSelectedEvent) {
       if (event instanceof EdgeSelectedEvent) {
-        if (((EdgeSelectedEvent) event).getEdge().getEdgeType().equals(EdgeType.GuardedEdge)) {
+        if (((EdgeSelectedEvent) event).getEdge().isGuardedEdge()) {
           mDataCEdge = (GuardedEdge) ((EdgeSelectedEvent) event).getEdge();
           createNewDialog();
           removeAll();

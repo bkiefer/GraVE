@@ -100,7 +100,7 @@ public class ChangeNodeTypeAction extends NodeAction {
     // recreate all edges
     for (Edge edge : mConnectedEdgesVector) {
 
-      de.dfki.vsm.model.flow.edge.AbstractEdge newDataEdge = edge.getDataEdge().getCopy();
+      de.dfki.vsm.model.flow.AbstractEdge newDataEdge = edge.getDataEdge().getCopy();
       Edge.TYPE newEdgeType = edge.getType();
       Node newSourceGUINode = (edge.getSourceNode().equals(mOldGUINode)) ? mGUINode : edge.getSourceNode();
       Node newTargetGUINode = (edge.getTargetNode().equals(mOldGUINode)) ? mGUINode : edge.getTargetNode();

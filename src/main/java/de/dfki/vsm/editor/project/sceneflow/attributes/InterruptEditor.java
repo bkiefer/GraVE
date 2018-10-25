@@ -12,8 +12,7 @@ import javax.swing.JPanel;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.dialog.ModifyIEdgeDialog;
 import de.dfki.vsm.editor.event.EdgeSelectedEvent;
-import de.dfki.vsm.model.flow.edge.AbstractEdge.EdgeType;
-import de.dfki.vsm.model.flow.edge.InterruptEdge;
+import de.dfki.vsm.model.flow.InterruptEdge;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
@@ -45,7 +44,7 @@ class InterruptEditor extends JPanel implements EventListener {
   public void update(EventObject event) {
     if (event instanceof EdgeSelectedEvent) {
       if (event instanceof EdgeSelectedEvent) {
-        if (((EdgeSelectedEvent) event).getEdge().getEdgeType().equals(EdgeType.InterruptEdge)) {
+        if (((EdgeSelectedEvent) event).getEdge().isInterruptEdge()) {
           mDataIEdge = (InterruptEdge) ((EdgeSelectedEvent) event).getEdge();
           createNewDialog();
           removeAll();

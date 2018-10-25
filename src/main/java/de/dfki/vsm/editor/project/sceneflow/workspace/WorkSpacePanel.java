@@ -30,8 +30,7 @@ import de.dfki.vsm.editor.util.GridManager;
 import de.dfki.vsm.editor.util.SceneFlowLayoutManager;
 import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.dialogact.DialogAct;
-import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.edge.*;
+import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
@@ -1083,10 +1082,10 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       addCmdBadge(guiNode, cmdBadge);
     }
 
-    ArrayList<de.dfki.vsm.model.flow.badge.CommentBadge> commentList
+    ArrayList<de.dfki.vsm.model.flow.CommentBadge> commentList
             = getSceneFlowManager().getCurrentActiveSuperNode().getCommentList();
 
-    for (de.dfki.vsm.model.flow.badge.CommentBadge n : commentList) {
+    for (de.dfki.vsm.model.flow.CommentBadge n : commentList) {
       add(new Comment(this, n));
     }
   }
@@ -1152,7 +1151,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       }
 
       // Show the DEdge
-      de.dfki.vsm.model.flow.edge.AbstractEdge dedge = sourceNode.getDataNode().getDedge();
+      de.dfki.vsm.model.flow.AbstractEdge dedge = sourceNode.getDataNode().getDedge();
       Edge.TYPE dEdgeType = null;
 
       if (dedge != null) {

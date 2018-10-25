@@ -7,7 +7,7 @@ import javax.swing.undo.CannotUndoException;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.dialog.ModifyCEdgeDialog;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
-import de.dfki.vsm.model.flow.edge.GuardedEdge;
+import de.dfki.vsm.model.flow.GuardedEdge;
 
 /**
  * The action that modifies a conditional edge. This action has to remember the

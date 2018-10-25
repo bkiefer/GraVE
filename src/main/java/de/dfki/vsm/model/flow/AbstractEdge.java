@@ -1,14 +1,11 @@
-package de.dfki.vsm.model.flow.edge;
+package de.dfki.vsm.model.flow;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.*;
 
-import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.graphics.edge.EdgeArrow;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.cpy.Copyable;
@@ -16,51 +13,70 @@ import de.dfki.vsm.util.cpy.Copyable;
 /**
  * @author Gregor Mehlmann
  */
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class AbstractEdge implements Copyable {
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((mAltMap == null) ? 0 : mAltMap.hashCode());
+    result = prime * result + ((mArrow == null) ? 0 : mArrow.hashCode());
+    result = prime * result + ((mCmdList == null) ? 0 : mCmdList.hashCode());
+    result = prime * result
+        + ((mSourceUnid == null) ? 0 : mSourceUnid.hashCode());
+    result = prime * result
+        + ((mTargetUnid == null) ? 0 : mTargetUnid.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    AbstractEdge other = (AbstractEdge) obj;
+    if (mAltMap == null) {
+      if (other.mAltMap != null)
+        return false;
+    } else if (!mAltMap.equals(other.mAltMap))
+      return false;
+    if (mArrow == null) {
+      if (other.mArrow != null)
+        return false;
+    } else if (!mArrow.equals(other.mArrow))
+      return false;
+    if (mCmdList == null) {
+      if (other.mCmdList != null)
+        return false;
+    } else if (!mCmdList.equals(other.mCmdList))
+      return false;
+    if (mSourceUnid == null) {
+      if (other.mSourceUnid != null)
+        return false;
+    } else if (!mSourceUnid.equals(other.mSourceUnid))
+      return false;
+    if (mTargetUnid == null) {
+      if (other.mTargetUnid != null)
+        return false;
+    } else if (!mTargetUnid.equals(other.mTargetUnid))
+      return false;
+    return true;
+  }
 
   @XmlAttribute(name="target")
   protected String mTargetUnid = new String();
-  //@XmlAttribute(name="start") // TODO: nonsense
   protected String mSourceUnid = new String();
   protected BasicNode mTargetNode = null;
   protected BasicNode mSourceNode = null;
   protected EdgeArrow mArrow = null;
   @XmlElement(name="Commands")
   protected String mCmdList = null;
-  protected HashMap<
-            Pair<String, BasicNode>, Pair<String, BasicNode>> mAltMap = new HashMap<>();
-
-  // The edge type
-  @XmlTransient
-  public enum EdgeType {
-
-    GuardedEdge,
-    EpsilonEdge,
-    InterruptEdge,
-    RandomEdge,
-    TimeoutEdge,
-    ForkingEdge
-  }
-
-  public AbstractEdge() {
-  }
-
-  public AbstractEdge(
-          final String targetUnid,
-          final String sourceUnid,
-          final BasicNode targetNode,
-          final BasicNode sourceNode,
-          final EdgeArrow graphics,
-          final String cmdList,
-          final HashMap altMap) {
-    mTargetUnid = targetUnid;
-    mSourceUnid = sourceUnid;
-    mTargetNode = targetNode;
-    mSourceNode = sourceNode;
-    mArrow = graphics;
-    mCmdList = cmdList;
-    mAltMap = altMap;
-  }
+  protected HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> mAltMap =
+      new HashMap<>();
 
   @XmlTransient
   public final String getTargetUnid() {
@@ -136,7 +152,8 @@ public abstract class AbstractEdge implements Copyable {
     return mAltMap;
   }
 
-  public final void setAltMap(final HashMap value) {
+  public final void setAltMap(final
+      HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> value) {
     mAltMap = value;
   }
 
@@ -163,21 +180,37 @@ public abstract class AbstractEdge implements Copyable {
   // TODO: do this over the list of strings
   public String getAltStartNodesAsString() {
     String result = "";
-    Iterator it = mAltMap.entrySet().iterator();
+    Iterator<Map.Entry<Pair<String, BasicNode>,Pair<String, BasicNode>>> it =
+        mAltMap.entrySet().iterator();
 
     while (it.hasNext()) {
-      Map.Entry pairs = (Map.Entry) it.next();
-      Pair<String, BasicNode> start = (Pair<String, BasicNode>) pairs.getKey();
-      Pair<String, BasicNode> alt = (Pair<String, BasicNode>) pairs.getValue();
-
+      Map.Entry<Pair<String, BasicNode>,Pair<String, BasicNode>> pairs = it.next();
+      Pair<String, BasicNode> start = pairs.getKey();
+      Pair<String, BasicNode> alt = pairs.getValue();
       result += start.getFirst() + "/" + alt.getFirst() + ";";
     }
 
     return result;
   }
 
-  public abstract EdgeType getEdgeType();
+  public boolean isGuardedEdge() { return this instanceof GuardedEdge; }
+  public boolean isInterruptEdge() { return this instanceof InterruptEdge; }
+  public boolean isRandomEdge() { return this instanceof RandomEdge; }
+  public boolean isTimeoutEdge() { return this instanceof TimeoutEdge; }
 
   @Override
   public abstract AbstractEdge getCopy();
+
+  /** Copy helper. TODO: deep copy */
+  protected <T extends AbstractEdge> T copyFieldsTo(T e) {
+    mTargetUnid = e.mTargetUnid;
+    mSourceUnid = e.mSourceUnid;
+    mTargetNode = e.mTargetNode;
+    mSourceNode = e.mSourceNode;
+    mArrow = e.mArrow;
+    mCmdList = e.mCmdList;
+    mAltMap = e.getCopyOfAltStartNodeMap();
+    return e;
+  }
+
 }

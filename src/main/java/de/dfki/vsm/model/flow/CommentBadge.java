@@ -1,4 +1,4 @@
-package de.dfki.vsm.model.flow.badge;
+package de.dfki.vsm.model.flow;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Font;
@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlType;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.model.ModelObject;
-import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.flow.geom.Boundary;
 import de.dfki.vsm.util.cpy.Copyable;
 

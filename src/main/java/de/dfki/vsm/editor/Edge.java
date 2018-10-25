@@ -38,10 +38,10 @@ import de.dfki.vsm.editor.event.EdgeSelectedEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.EdgeGraphics;
-import de.dfki.vsm.model.flow.edge.GuardedEdge;
-import de.dfki.vsm.model.flow.edge.InterruptEdge;
-import de.dfki.vsm.model.flow.edge.RandomEdge;
-import de.dfki.vsm.model.flow.edge.TimeoutEdge;
+import de.dfki.vsm.model.flow.GuardedEdge;
+import de.dfki.vsm.model.flow.InterruptEdge;
+import de.dfki.vsm.model.flow.RandomEdge;
+import de.dfki.vsm.model.flow.TimeoutEdge;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
@@ -60,7 +60,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   private TYPE mType = null;
 
   // Reference to data model edges and nodes
-  private de.dfki.vsm.model.flow.edge.AbstractEdge mDataEdge = null;
+  private de.dfki.vsm.model.flow.AbstractEdge mDataEdge = null;
 
   // The two graphical nodes to which this edge is connected
   private Node mSourceNode = null;
@@ -168,7 +168,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     initEditBox();
   }
 
-  public Edge(WorkSpacePanel ws, de.dfki.vsm.model.flow.edge.AbstractEdge edge, TYPE type, Node sourceNode, Node targetNode) {
+  public Edge(WorkSpacePanel ws, de.dfki.vsm.model.flow.AbstractEdge edge, TYPE type, Node sourceNode, Node targetNode) {
     mDataEdge = edge;
     mWorkSpace = ws;
     mEditorConfig = mWorkSpace.getEditorConfig();
@@ -189,7 +189,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   }
 
   // TODO: Neuer Konstruktor, der Source und Target dockpoint "mitbekommt"
-  public Edge(WorkSpacePanel ws, de.dfki.vsm.model.flow.edge.AbstractEdge edge, TYPE type, Node sourceNode, Node targetNode,
+  public Edge(WorkSpacePanel ws, de.dfki.vsm.model.flow.AbstractEdge edge, TYPE type, Node sourceNode, Node targetNode,
           Point sourceDockPoint, Point targetDockpoint) {
     mDataEdge = edge;
     mWorkSpace = ws;
@@ -217,7 +217,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     update();
   }
 
-  public de.dfki.vsm.model.flow.edge.AbstractEdge getDataEdge() {
+  public de.dfki.vsm.model.flow.AbstractEdge getDataEdge() {
     return mDataEdge;
   }
 

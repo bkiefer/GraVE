@@ -16,7 +16,7 @@ import de.dfki.vsm.editor.util.AltStartNodeManager;
 import de.dfki.vsm.editor.util.HintTextField;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.edge.TimeoutEdge;
+import de.dfki.vsm.model.flow.TimeoutEdge;
 import de.dfki.vsm.util.Pair;
 
 /**

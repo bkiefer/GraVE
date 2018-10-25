@@ -83,39 +83,4 @@ public final class SceneFlow extends SuperNode {
     return (SceneFlow) CopyTool.copy(this);
   }
 
-  @Override
-  public int getHashCode() {
-
-    // Add hash of General Attributes
-    int hashCode = ((mNodeName == null) ? 0 : mNodeName.hashCode())
-        + ((mComment == null) ? 0 : mComment.hashCode())
-        + ((mPosition == null) ? 0 : mPosition.hashCode())
-        + ((mParentNode == null) ? 0 : mParentNode.hashCode())
-        + ((mHistoryNode == null) ? 0 : mHistoryNode.hashCode())
-        + ((mStartNodeMap == null) ? 0 : mStartNodeMap.hashCode())
-        + ((mIsHistoryNode == true) ? 1 : 0)
-        + ((mHideLocalVarBadge == true) ? 1 : 0)
-        + ((mHideGlobalVarBadge == true) ? 1 : 0);
-
-    // Add hash of all nodes on workspace
-    for (int cntNode = 0; cntNode < mNodeList.size(); cntNode++) {
-      hashCode += getNodeAt(cntNode).getHashCode();
-    }
-
-    // Add hash of all superNodes on workspace
-    for (int cntSNode = 0; cntSNode < mSuperNodeList.size(); cntSNode++) {
-      hashCode += getSuperNodeAt(cntSNode).getHashCode();
-    }
-
-    // Add hash of all commands on workspace
-    hashCode += mCmdList.hashCode();
-
-    // Add hash of all comments on workspace
-    for (int cntComment = 0; cntComment < getCommentList().size(); cntComment++) {
-      hashCode += mCommentList.get(cntComment).getBoundary().hashCode();
-      hashCode += mCommentList.get(cntComment).getHTMLText().hashCode();
-    }
-
-    return hashCode;
-  }
 }

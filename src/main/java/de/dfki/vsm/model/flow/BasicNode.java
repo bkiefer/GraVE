@@ -1,10 +1,14 @@
 package de.dfki.vsm.model.flow;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import javax.xml.bind.annotation.*;
 
-import de.dfki.vsm.model.flow.edge.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.util.cpy.CopyTool;
 import de.dfki.vsm.util.cpy.Copyable;
@@ -13,7 +17,10 @@ import de.dfki.vsm.util.cpy.Copyable;
  * @author Gregor Mehlmann
  */
 @XmlType(name="Node")
+@XmlAccessorType(XmlAccessType.NONE)
 public class BasicNode implements Copyable {
+
+  public static final Logger logger = LoggerFactory.getLogger(BasicNode.class);
 
   @XmlAttribute(name="id")
   protected String mNodeId = new String();
@@ -21,7 +28,9 @@ public class BasicNode implements Copyable {
   protected String mNodeName = new String();
   @XmlAttribute(name="comment")
   protected String mComment = new String();
-  protected String mCmdList = new String();
+  @XmlElement(name="Commands")
+  protected Code mCmdList = new Code();
+
 
   // TODO: MERGE INTO ONE LIST!
   @XmlElement(name="CEdge")
@@ -36,21 +45,16 @@ public class BasicNode implements Copyable {
   protected AbstractEdge mDEdge = null;
   @XmlElement(name="Position")
   protected Position mPosition = null;
-  @XmlTransient
+
   protected SuperNode mParentNode = null;
   @XmlAttribute(name="history")
   protected boolean mIsHistoryNode = false;
 
-  @XmlTransient
   public Byte hasNone = new Byte("0");
-  @XmlTransient
   public Byte hasOne = new Byte("1");
-  @XmlTransient
   public Byte hasMany = new Byte("2");
 
-  @XmlTransient
   public enum FLAVOUR {
-
     NONE, ENODE, TNODE, CNODE, PNODE, INODE, FNODE
   };
 
@@ -73,7 +77,6 @@ public class BasicNode implements Copyable {
     return false;
   }
 
-  @XmlTransient
   public void setId(String value) {
     mNodeId = value;
   }
@@ -90,7 +93,6 @@ public class BasicNode implements Copyable {
     mIsHistoryNode = value;
   }
 
-  @XmlTransient
   public void setName(String value) {
     mNodeName = value;
   }
@@ -104,7 +106,6 @@ public class BasicNode implements Copyable {
     mNodeName = value;
   }
 
-  @XmlTransient
   public void setComment(String value) {
     mComment = value;
   }
@@ -197,7 +198,6 @@ public class BasicNode implements Copyable {
     return (mDEdge != null);
   }
 
-  @XmlTransient
   public FLAVOUR getFlavour() {
     if (mCEdgeList != null) {
       if (mCEdgeList.size() > 0) {
@@ -232,7 +232,6 @@ public class BasicNode implements Copyable {
     return FLAVOUR.NONE;
   }
 
-  @XmlTransient
   public void setDedge(AbstractEdge value) {
     mDEdge = value;
   }
@@ -245,17 +244,18 @@ public class BasicNode implements Copyable {
     mDEdge = null;
   }
 
-  /** Not to be used! */
   @XmlElement(name="TEdge")
   public void setTEdge(TimeoutEdge value) { mDEdge = value; }
-  public TimeoutEdge getTEdge() { return (TimeoutEdge)mDEdge; }
+  public TimeoutEdge getTEdge() {
+    return mDEdge instanceof TimeoutEdge ? (TimeoutEdge)mDEdge : null;
+  }
 
-  /** Not to be used! */
   @XmlElement(name="EEdge")
   protected void setEEdge(EpsilonEdge value) { mDEdge = value; }
-  protected EpsilonEdge getEEdge() { return (EpsilonEdge)mDEdge; }
+  protected EpsilonEdge getEEdge() {
+    return mDEdge instanceof EpsilonEdge ? (EpsilonEdge)mDEdge : null;
+  }
 
-  @XmlTransient
   public void setPosition(Position value) {
     mPosition = value;
   }
@@ -264,7 +264,6 @@ public class BasicNode implements Copyable {
     return mPosition;
   }
 
-  @XmlTransient
   public void setParentNode(SuperNode value) {
     mParentNode = value;
   }
@@ -387,35 +386,58 @@ public class BasicNode implements Copyable {
     return copy;
   }
 
-  public ArrayList<AbstractEdge> getEdgeList() {
-    ArrayList<AbstractEdge> edgeList = new ArrayList<AbstractEdge>();
+  private class EdgeIterable implements Iterable<AbstractEdge> {
 
-    for (GuardedEdge edge : mCEdgeList) {
-      edgeList.add(edge);
+    private LinkedList<Iterator<? extends AbstractEdge>> iterators;
+    private AbstractEdge dEdge = null;
+
+    private class EdgeIterator implements Iterator<AbstractEdge> {
+      @Override
+      public boolean hasNext() {
+        while (! iterators.isEmpty() && ! iterators.getFirst().hasNext()) {
+          iterators.removeFirst();
+        }
+        return ! iterators.isEmpty() || dEdge != null;
+      }
+
+      @Override
+      public AbstractEdge next() {
+        if (! hasNext()) throw new IllegalStateException("No next Element");
+        if (iterators.isEmpty()) {
+          AbstractEdge e = dEdge;
+          dEdge = null;
+          return e;
+        }
+        return iterators.getFirst().next();
+      }
     }
 
-    for (InterruptEdge edge : mIEdgeList) {
-      edgeList.add(edge);
+    @Override
+    public Iterator<AbstractEdge> iterator() {
+      iterators = new LinkedList<>();
+      iterators.add(mCEdgeList.iterator());
+      iterators.add(mIEdgeList.iterator());
+      iterators.add(mPEdgeList.iterator());
+      iterators.add(mFEdgeList.iterator());
+      dEdge = mDEdge;
+      return new EdgeIterator();
     }
 
-    for (RandomEdge edge : mPEdgeList) {
-      edgeList.add(edge);
-    }
+  }
 
-    for (ForkingEdge edge : mFEdgeList) {
-      edgeList.add(edge);
-    }
-
-    if (mDEdge != null) {
-      edgeList.add(mDEdge);
-    }
-
-    return edgeList;
+  public Iterable<AbstractEdge> getEdgeList() {
+    return new EdgeIterable();
   }
 
   protected void establishTargetNodes() {
     for (AbstractEdge edge : getEdgeList()) {
-      edge.setTargetNode(mParentNode.getChildNodeById(edge.getTargetUnid()));
+      BasicNode n = mParentNode.getChildNodeById(edge.getTargetUnid());
+      if (n == null) {
+        logger.error("There is no node with ID {} in SuperNode {}",
+            edge.getTargetUnid(), this.getId());
+      } else {
+        edge.setTargetNode(n);
+      }
       edge.setSourceNode(this);
       edge.setSourceUnid(getId());
     }
@@ -441,77 +463,20 @@ public class BasicNode implements Copyable {
     }
   }
 
-  public String getAbstractSyntax() {
-    return null;
-  }
-
-  public String getConcreteSyntax() {
-    return this.mNodeName;
-  }
-
-  public String getFormattedSyntax() {
-    return null;
-  }
-
   public BasicNode getCopy() {
     return (BasicNode) CopyTool.copy(this);
   }
 
-  @XmlElement(name="Commands")
   public String getCmd() {
-    return mCmdList;
+    return mCmdList.getContent();
   }
 
   public void setCmd(String s) {
-    mCmdList = s;
+    mCmdList.setContent(s);
   }
 
-  public int getHashCode() {
-
-    // Add hash of General Attributes
-    int hashCode = ((mNodeName == null)
-            ? 0
-            : mNodeName.hashCode()) + ((mComment == null)
-            ? 0
-            : mComment.hashCode()) + ((mPosition == null)
-            ? 0
-            : mPosition.hashCode());
-
-    // Add hash of all commands inside BasicNode
-    hashCode += mCmdList.hashCode();
-
-    // Epsilon and Time Edges
-    for (int cntEdge = 0; cntEdge < getEdgeList().size(); cntEdge++) {
-      hashCode += getEdgeList().get(cntEdge).hashCode() + getEdgeList().get(cntEdge).getArrow().hashCode();
-
-      // TODO: find a way to parse the TEDGE mDEGE to take timeout into accout
-    }
-
-    // Add hash of all Conditional Edges
-    for (int cntEdge = 0; cntEdge < getSizeOfCEdgeList(); cntEdge++) {
-      hashCode += mCEdgeList.get(cntEdge).hashCode()
-              + mCEdgeList.get(cntEdge).getArrow().hashCode()
-              + mCEdgeList.get(cntEdge).getCondition().hashCode()
-              + mCEdgeList.get(cntEdge).getSourceUnid().hashCode()
-              + mCEdgeList.get(cntEdge).getTargetUnid().hashCode();
-    }
-
-    // Add hash of all Probability Edges
-    for (int cntEdge = 0; cntEdge < getSizeOfPEdgeList(); cntEdge++) {
-
-      hashCode += mPEdgeList.get(cntEdge).hashCode()
-              + mPEdgeList.get(cntEdge).getArrow().hashCode()
-              + mPEdgeList.get(cntEdge).getProbability()
-              + mPEdgeList.get(cntEdge).getSourceUnid().hashCode()
-              + mPEdgeList.get(cntEdge).getTargetUnid().hashCode();
-    }
-
-    // Add hash of all Fork Edges
-    for (int cntEdge = 0; cntEdge < mFEdgeList.size(); cntEdge++) {
-      hashCode += mFEdgeList.get(cntEdge).hashCode() + mFEdgeList.get(cntEdge).getArrow().hashCode()
-              + mFEdgeList.get(cntEdge).getSourceUnid().hashCode() + mFEdgeList.get(cntEdge).getTargetUnid().hashCode();
-    }
-
-    return hashCode;
+  public int hashCode() {
+    // the id is unique, so it's absolutely OK to just use the id's hashcode
+    return mNodeId.hashCode() + 91;
   }
 }

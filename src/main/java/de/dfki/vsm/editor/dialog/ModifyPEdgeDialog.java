@@ -23,8 +23,8 @@ import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 import de.dfki.vsm.editor.*;
 import de.dfki.vsm.editor.util.AltStartNodeManager;
 import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.RandomEdge;
 import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.edge.RandomEdge;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.ios.ResourceLoader;
 

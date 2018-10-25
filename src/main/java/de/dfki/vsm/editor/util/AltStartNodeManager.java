@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.edge.AbstractEdge;
 import de.dfki.vsm.util.Pair;
 
 /**

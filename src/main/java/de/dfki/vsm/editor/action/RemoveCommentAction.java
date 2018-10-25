@@ -29,7 +29,7 @@ public class RemoveCommentAction extends EditorAction {
   private SuperNode mSuperNode;
   private Comment mGUIComment;
   private Point mLocation;
-  private de.dfki.vsm.model.flow.badge.CommentBadge mDataComment;
+  private de.dfki.vsm.model.flow.CommentBadge mDataComment;
 
   public RemoveCommentAction(WorkSpacePanel workSpace, Comment c) {
     mWorkSpace = workSpace;

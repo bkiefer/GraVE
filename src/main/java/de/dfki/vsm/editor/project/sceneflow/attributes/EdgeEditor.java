@@ -7,7 +7,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import de.dfki.vsm.editor.event.EdgeSelectedEvent;
-import de.dfki.vsm.model.flow.edge.*;
+import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;

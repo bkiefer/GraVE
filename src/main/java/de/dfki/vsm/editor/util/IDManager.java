@@ -7,12 +7,7 @@ package de.dfki.vsm.editor.util;
 //~--- JDK imports ------------------------------------------------------------
 import java.util.*;
 
-import de.dfki.vsm.model.flow.BasicNode;
-import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.edge.ForkingEdge;
-import de.dfki.vsm.model.flow.edge.GuardedEdge;
-import de.dfki.vsm.model.flow.edge.InterruptEdge;
-import de.dfki.vsm.model.flow.edge.RandomEdge;
+import de.dfki.vsm.model.flow.*;
 
 /**
  * IDManager provides unique ids for nodes and supernodes

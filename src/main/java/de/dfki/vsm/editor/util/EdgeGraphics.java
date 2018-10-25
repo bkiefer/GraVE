@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.model.flow.edge.AbstractEdge;
+import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.model.project.EditorConfig;
 
 /**

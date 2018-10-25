@@ -1,6 +1,6 @@
 package de.dfki.vsm.editor.event;
 
-import de.dfki.vsm.model.flow.edge.AbstractEdge;
+import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.util.evt.EventObject;
 
 /**

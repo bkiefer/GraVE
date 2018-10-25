@@ -78,6 +78,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     mSceneFlow = mEditorProject.getSceneFlow();
 
     // PREPARE THE VERTICAL SPLIT REGION (NOW USED AS CODE EDITOR)
+    /*
     final Polygon pUp = new Polygon();
     pUp.addPoint(1, 4);
     pUp.addPoint(5, 0);
@@ -87,6 +88,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     pDown.addPoint(13, 0);
     pDown.addPoint(17, 4);
     pDown.addPoint(21, 0);
+    */
     mSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     mSplitPane.setBorder(BorderFactory.createEmptyBorder());
     mSplitPane.setContinuousLayout(true);
