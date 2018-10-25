@@ -355,9 +355,9 @@ public class EditorStarter extends JPanel {
     recentPanel.setLayout(new BoxLayout(recentPanel, BoxLayout.Y_AXIS));
 
     int filesConsidered = (Preferences.sMAX_RECENT_FILE_COUNT < 5) ? Preferences.sMAX_RECENT_FILE_COUNT : 4;
-    for (int i = 0; i <= filesConsidered; i++) {
-      String projectDirName = Preferences.getProperty("recentproject." + i + ".path");
-      String projectName = Preferences.getProperty("recentproject." + i + ".name");
+    for (int i = 0; i <= filesConsidered && i < Preferences.recentProjectPaths.size(); i++) {
+      String projectDirName = Preferences.recentProjectPaths.get(i);
+      String projectName = Preferences.recentProjectNames.get(i);
 
       if (projectDirName != null) {
         final File projectDir = new File(projectDirName);
@@ -367,7 +367,7 @@ public class EditorStarter extends JPanel {
             continue;
           }
 
-          String modified = Preferences.getProperty("recentproject." + i + ".date");
+          String modified = Preferences.recentProjectDates.get(i);
 
           if (modified == null) {
             modified = "Not saved yet";

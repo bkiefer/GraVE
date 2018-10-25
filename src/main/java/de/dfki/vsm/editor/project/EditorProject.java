@@ -11,8 +11,7 @@ import de.dfki.vsm.runtime.project.RunTimeProject;
 public class EditorProject extends RunTimeProject {
 
   // The editor configuration
-  private final EditorConfig mEditorConfig
-          = new EditorConfig();
+  private EditorConfig mEditorConfig;
   // The file of the project
   private File mProjectFile;
   // The hash of the project
@@ -55,7 +54,7 @@ public class EditorProject extends RunTimeProject {
       }
     } else {
       try {
-        if (super.parse(path) && mEditorConfig.load(path)) {
+        if (super.parse(path) && loadEditorConfig(path)) {
           return true;
         }
       } catch (Exception e) {
@@ -116,7 +115,7 @@ public class EditorProject extends RunTimeProject {
     }
     // Load the project data
     if (super.parse(mProjectFile.getPath())
-            && mEditorConfig.load(mProjectFile.getPath())) {
+            && loadEditorConfig(mProjectFile.getPath())) {
       // Set the initial hash code
       mInitialHash = getHashCode();
       // Return true if project is saved
@@ -125,6 +124,13 @@ public class EditorProject extends RunTimeProject {
       // Return false when saving failed
       return false;
     }
+  }
+
+  public boolean loadEditorConfig(String path) {
+    EditorConfig c = EditorConfig.load(path);
+    if (c == null) return false;
+    mEditorConfig = c;
+    return true;
   }
 
   // Save the project data

@@ -91,7 +91,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
     setOneTouchExpandable(true);
 
-    setResizeWeight(Float.valueOf(Preferences.getProperty("sceneflow_sceneeditor_ratio")));
+    setResizeWeight(Float.valueOf(Preferences.sSCENEFLOW_SCENE_EDITOR_RATIO));
 
     setUI(new BasicSplitPaneUI() {
 
@@ -113,24 +113,20 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     setTopComponent(mSceneFlowEditor);
 
     // setting size
-    boolean showSceneFlowEditor = Boolean.valueOf(Preferences.getProperty("showscenefloweditor"));
-    boolean showSceneDocEditor = Boolean.valueOf(Preferences.getProperty("showsceneeditor"));
 
-    if (!showSceneFlowEditor) {
+    if (!Preferences.sSHOWSCENEFLOW_EDITOR) {
       setDividerLocation(1d);
     }
 
-    if (showSceneDocEditor && showSceneFlowEditor) {
-      setDividerLocation(Integer.parseInt(Preferences.getProperty("propertiesdividerlocation")));
+    if (Preferences.sSHOWSCENE_EDITOR && Preferences.sSHOWSCENEFLOW_EDITOR) {
+      setDividerLocation(Preferences.sPROPERTIES_DIVIDER_LOCATION);
     }
 
   }
 
   // Show the bottom part of the project editor
   private void showAuxiliaryEditor() {
-    setDividerLocation(
-            // TODO: Do we really need to parse this every time here?
-            Integer.parseInt(Preferences.getProperty("propertiesdividerlocation")));
+    setDividerLocation(Preferences.sPROPERTIES_DIVIDER_LOCATION);
   }
 
   // Hides the bottom part of the project editor

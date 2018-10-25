@@ -1,6 +1,11 @@
 package de.dfki.vsm;
 
 //~--- JDK imports ------------------------------------------------------------
+import de.dfki.vsm.model.flow.SceneFlow;
+import de.dfki.vsm.model.flow.edge.AbstractEdge;
+import de.dfki.vsm.model.flow.edge.EpsilonEdge;
+import de.dfki.vsm.model.flow.edge.TimeoutEdge;
+import de.dfki.vsm.model.project.EditorConfig;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -22,6 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.util.ios.ResourceLoader;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 /**
  * @author Gregor Mehlmann
@@ -32,8 +43,7 @@ import de.dfki.vsm.util.ios.ResourceLoader;
 @XmlType
 public final class Preferences {
   private static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
-  // The editor properties object
-  private static final Properties sPROPERTIES = new Properties();
+
   // The global properties file
   private static final String sCONFIG_FILE
           = System.getProperty("user.home")
@@ -255,183 +265,81 @@ public final class Preferences {
   //BACKGROUND WELCOME
   public static final Image BACKGROUND_IMAGE = ResourceLoader.loadImageIcon("img/icon_big.png").getImage();   // Background for the welcome screen
 
-  /**
-   *
-   */
-  private static synchronized void init() {
+  public static String FRAME_TITLE = "Visual SceneMaker";
+  public static String FRAME_NAME = "SceneFlowEditor";
+  public static String ICON_FILE = "res/img/icon.png";
+  public static int FRAME_POS_X = 0;
+  public static int FRAME_POS_Y = 0;
+  public static int FRAME_WIDTH = 800;
+  public static int FRAME_HEIGHT = 600;
+  public static String XMLNS = "xml.sceneflow.dfki.de";
+  public static String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
+  public static String XSI_SCHEMELOCATION = "res/xsd/sceneflow.xsd";
 
-    // load visual appearance settings
-    sSHOW_ELEMENTS = Boolean.valueOf(sPROPERTIES.getProperty("showelements"));
-    sSHOW_ELEMENT_PROPERTIES = Boolean.valueOf(sPROPERTIES.getProperty("showelementproperties"));
-    sSHOW_SCENEEDITOR = Boolean.valueOf(sPROPERTIES.getProperty("showsceneeditor"));
-    sSHOW_SCENEFLOWEDITOR = Boolean.valueOf(sPROPERTIES.getProperty("showscenefloweditor"));
-    // sSCENEFLOW_SCENE_EDITOR_RATIO = Float.valueOf(sPROPERTIES.getProperty("sceneflow_sceneeditor_ratio"));
-    sSHOW_GESTURES = Boolean.valueOf(sPROPERTIES.getProperty("showgestures"));
+  public static boolean sSHOWELEMENTS = true;
+  public static boolean sSHOWELEMENT_PROPERTIES = true;
+  public static int sPROPERTIES_DIVIDER_LOCATION = 230;
+  public static boolean sSHOWSCENEFLOW_EDITOR = true;
+  public static boolean sSHOWSCENE_EDITOR = true;
+  public static double sSCENEFLOW_SCENEEDITOR_RATIO = 0.75;
+  public static boolean SHOWGESTURES = true;
+  public static int NUM_MAGNETS = 8;
+
+  public static ArrayList<String> recentProjectPaths = new ArrayList<>();
+  public static ArrayList<String> recentProjectNames = new ArrayList<>();
+  public static ArrayList<String> recentProjectDates = new ArrayList<>();
+  public static EditorConfig editorConfig = new EditorConfig();
+
+  private static Preferences single_instance = null;
+
+
+  private Preferences() {}
+
+  public static Preferences getPrefs() {
+    if (single_instance == null)
+        single_instance = new Preferences();
+    return single_instance;
   }
 
   public static synchronized void save() {
+    // write the Preferences file
     try {
-      try (FileOutputStream fileOutputStream = new FileOutputStream(sCONFIG_FILE)) {
-        sPROPERTIES.storeToXML(fileOutputStream, "Properties for the Sceneflow Editor", "ISO8859_1");
-      }
-    } catch (IOException e) {
-      mLogger.error("Error: " + e.getMessage());
+      JAXBContext jc = JAXBContext.newInstance( SceneFlow.class );
+      Marshaller m = jc.createMarshaller();
+      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+
+      m.marshal(single_instance, new FileOutputStream(sCONFIG_FILE));
+    } catch (JAXBException e) {
+      mLogger.error("Error: Cannot write sceneflow file "
+              + sCONFIG_FILE + " : " + e);
+    } catch (FileNotFoundException e) {
+      mLogger.error("Error: Cannot write sceneflow file "
+              + sCONFIG_FILE + " : " + e);
     }
-    init();
   }
 
   public static synchronized void load() {
     parseConfigFile();
-    init();
-  }
-
-  // TODO: This should actually be private
-  public static synchronized String getProperty(String key) {
-    return sPROPERTIES.getProperty(key);
-  }
-
-  // TODO: This should actually be private
-  public static synchronized Object setProperty(String key, String value) {
-    return sPROPERTIES.setProperty(key, value);
-  }
-
-  // TODO: This should actually be private
-  public static synchronized Object removeProperty(String key) {
-    return sPROPERTIES.remove(key);
-  }
-
-  // TODO: This should actually be private
-  public static synchronized SortedSet<Object> getKeySet() {
-    return new TreeSet<>(sPROPERTIES.keySet());
   }
 
   private static synchronized void parseConfigFile() {
     if ((new File(sCONFIG_FILE)).canRead()) {
       try {
         try (FileInputStream in = new FileInputStream(sCONFIG_FILE)) {
-          sPROPERTIES.loadFromXML(in);
+          try {
+            JAXBContext jc = JAXBContext.newInstance(Preferences.class);
+            Unmarshaller u = jc.createUnmarshaller();
+            single_instance = (Preferences) u.unmarshal(in);
+          } catch (JAXBException e) {
+            mLogger.error("Cannot find VSM preference file: " + sCONFIG_FILE
+                    + " :\n" + e);
+          }
         }
       } catch (IOException e) {
-        mLogger.error("Error: " + e.getMessage());
+        mLogger.error("Cannot find VSM preference file: " + sCONFIG_FILE + " :\n"
+                + e);
       }
-    }
-
-    if (!sPROPERTIES.containsKey("frame_title")) {
-      sPROPERTIES.setProperty("frame_title", "Visual SceneMaker");
-    }
-
-    if (!sPROPERTIES.containsKey("frame_name")) {
-      sPROPERTIES.setProperty("frame_name", "SceneFlowEditor");
-    }
-
-    if (!sPROPERTIES.containsKey("icon_file")) {
-      sPROPERTIES.setProperty("icon_file", "res/img/icon.png");
-    }
-
-    if (!sPROPERTIES.containsKey("frame_posx")) {
-      sPROPERTIES.setProperty("frame_posx", "0");
-    }
-
-    if (!sPROPERTIES.containsKey("frame_posy")) {
-      sPROPERTIES.setProperty("frame_posy", "0");
-    }
-
-    if (!sPROPERTIES.containsKey("frame_width")) {
-      sPROPERTIES.setProperty("frame_width", "800");
-    }
-
-    if (!sPROPERTIES.containsKey("frame_height")) {
-      sPROPERTIES.setProperty("frame_height", "600");
-    }
-
-    if (!sPROPERTIES.containsKey("node_width")) {
-      sPROPERTIES.setProperty("node_width", "90");
-    }
-
-    if (!sPROPERTIES.containsKey("node_height")) {
-      sPROPERTIES.setProperty("node_height", "90");
-    }
-
-    if (!sPROPERTIES.containsKey("grid_x")) {
-      sPROPERTIES.setProperty("grid_x", "1");
-    }
-
-    if (!sPROPERTIES.containsKey("grid_y")) {
-      sPROPERTIES.setProperty("grid_y", "1");
-    }
-
-    if (!sPROPERTIES.containsKey("visualization")) {
-      sPROPERTIES.setProperty("visualization", "false");
-    }
-
-    if (!sPROPERTIES.containsKey("visualizationtrace")) {
-      sPROPERTIES.setProperty("visualizationtrace", "false");
-    }
-
-    if (!sPROPERTIES.containsKey("shownodeid")) {
-      sPROPERTIES.setProperty("shownodeid", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("showvariables")) {
-      sPROPERTIES.setProperty("showvariables", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("showsmartpathcalculations")) {
-      sPROPERTIES.setProperty("showsmartpathcalculations", "false");
-    }
-
-    // default values for editor appearance
-    if (!sPROPERTIES.containsKey("showelements")) {
-      sPROPERTIES.setProperty("showelements", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("showelementproperties")) {
-      sPROPERTIES.setProperty("showelementproperties", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("propertiesdividerlocation")) {
-      sPROPERTIES.setProperty("propertiesdividerlocation", "230");
-    }
-
-    if (!sPROPERTIES.containsKey("showscenefloweditor")) {
-      sPROPERTIES.setProperty("showscenefloweditor", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("showsceneeditor")) {
-      sPROPERTIES.setProperty("showsceneeditor", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("sceneflow_sceneeditor_ratio")) {
-      sPROPERTIES.setProperty("sceneflow_sceneeditor_ratio", "0.75");
-    }
-
-    if (!sPROPERTIES.containsKey("showgestures")) {
-      sPROPERTIES.setProperty("showgestures", "true");
-    }
-
-    // visual appearance of workspace and its elements
-    if (!sPROPERTIES.containsKey("grid")) {
-      sPROPERTIES.setProperty("grid", "true");
-    }
-
-    if (!sPROPERTIES.containsKey("num_magnets")) {
-      sPROPERTIES.setProperty("num_magnets", "8");
-    }
-
-    if (!sPROPERTIES.containsKey("xmlns")) {
-      sPROPERTIES.setProperty("xmlns", "xml.sceneflow.dfki.de");
-    }
-
-    if (!sPROPERTIES.containsKey("xmlns_xsi")) {
-      sPROPERTIES.setProperty("xmlns_xsi", "http://www.w3.org/2001/XMLSchema-instance");
-    }
-
-    if (!sPROPERTIES.containsKey("xsi_schemeLocation")) {
-      sPROPERTIES.setProperty("xsi_schemeLocation", "res/xsd/sceneflow.xsd");
-    }
-
-    if (!sPROPERTIES.containsKey("workspace_fontsize")) {
-      sPROPERTIES.setProperty("workspace_fontsize", "11");
     }
   }
 
@@ -462,6 +370,12 @@ public final class Preferences {
     } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException exc) {
       mLogger.error("Error: " + exc.getMessage());
     }
+  }
+
+  public static void clearRecentProjects(){
+    single_instance.recentProjectPaths.clear();
+    single_instance.recentProjectNames.clear();
+    single_instance.recentProjectDates.clear();
   }
 
   // Check if we are on a WINDOWS system

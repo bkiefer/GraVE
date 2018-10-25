@@ -166,19 +166,15 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     mNewElementDisplay.add(mDynamicElementsPanel);
 
     // PG 17.12.13 - FUTURE FEATURE! mNewElementDisplay.add(new EdgeTypeSelection(), BorderLayout.NORTH);
-    mNewElementDisplay.setVisible(Boolean.valueOf(Preferences.getProperty("showelements"))
-            ? true
-            : false);
+    mNewElementDisplay.setVisible(Preferences.sSHOW_ELEMENTS);
     // INITIALIZE THE SPLIT PANEL WITH WORK SPACE AND ELEMENTEDITOR
     mWorkSpaceScrollPane.setMinimumSize(new Dimension(10, 10));
     mWorkSpaceScrollPane.setMaximumSize(new Dimension(10000, 3000));
     mSplitPane.setRightComponent(mWorkSpaceScrollPane);
     mSplitPane.setResizeWeight(0.0);
     mSplitPane.setLeftComponent(mNewElementDisplay);
-    if (Boolean.valueOf(Preferences.getProperty("showelements"))) {
-      mSplitPane.setDividerLocation(
-          Integer.parseInt(mEditorProject.getEditorConfig()
-              .getProperty("propertiesdividerlocation")));
+    if (Preferences.sSHOW_ELEMENTS) {
+      mSplitPane.setDividerLocation(Preferences.sPROPERTIES_DIVIDER_LOCATION);
       //THIS EVENT IS CASTED ONLY TO ACTIVATE THE ELEMENT EDITOR WITH THE INFO OF THE CURRENT PROJECT
     } else {
       mSplitPane.setDividerLocation(1.0d);
@@ -190,8 +186,8 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
       public void propertyChange(PropertyChangeEvent pce) {
 
         // solve issue here
-        if (Preferences.getProperty("showelements").equals("true")) {
-          mEditorProject.getEditorConfig().setProperty("propertiesdividerlocation", "" + mSplitPane.getDividerLocation());
+        if (Preferences.sSHOW_ELEMENTS) {
+          Preferences.sPROPERTIES_DIVIDER_LOCATION = mSplitPane.getDividerLocation();
         }
       }
     });
@@ -223,17 +219,16 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
    *
    */
   public void toggleElementEditor() {
-    if (Boolean.valueOf(Preferences.getProperty("showelements"))) {
+    if (Preferences.sSHOW_ELEMENTS) {
       mNewElementDisplay.setVisible(false);
-      Preferences.setProperty("showelements", "false");
+      Preferences.sSHOW_ELEMENTS = false;
       Preferences.save();
       mSplitPane.setDividerLocation(1d);
     } else {
       mNewElementDisplay.setVisible(true);
-      Preferences.setProperty("showelements", "true");
+      Preferences.sSHOW_ELEMENTS = true;
       Preferences.save();
-      mSplitPane.setDividerLocation(
-          Integer.parseInt(mEditorProject.getEditorConfig().getProperty("propertiesdividerlocation")));
+      mSplitPane.setDividerLocation(Preferences.sPROPERTIES_DIVIDER_LOCATION);
     }
 
   }
@@ -250,11 +245,11 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
   public void showElementDisplay() {
     if (mNewElementDisplay.isVisible()) {
       mNewElementDisplay.setVisible(false);
-      Preferences.setProperty("showelements", "false");
+      Preferences.sSHOW_ELEMENTS = false;
       Preferences.save();
     } else {
       mNewElementDisplay.setVisible(true);
-      Preferences.setProperty("showelements", "true");
+      Preferences.sSHOW_ELEMENTS = true;
       Preferences.save();
       Preferences.save();
     }

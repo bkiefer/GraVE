@@ -101,9 +101,9 @@ public final class EditorMenuBar extends JMenuBar {
 
     boolean hasEntries = false;
 
-    for (int i = 0; i <= Preferences.sMAX_RECENT_FILE_COUNT; i++) {
-      String projectDirName = Preferences.getProperty("recentproject." + i + ".path");
-      String projectName = Preferences.getProperty("recentproject." + i + ".name");
+    for (int i = 0; i < Preferences.recentProjectPaths.size(); i++) {
+      String projectDirName = Preferences.recentProjectNames.get(i);
+      String projectName = Preferences.recentProjectPaths.get(i);
 
       if (projectDirName != null) {
         final File projectDir = new File(projectDirName);
@@ -166,16 +166,7 @@ public final class EditorMenuBar extends JMenuBar {
     mClearRecentFileMenuItem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        for (int i = 0; i <= Preferences.sMAX_RECENT_FILE_COUNT; i++) {
-          String projectDirName = Preferences.getProperty("recentproject." + i + ".path");
-          String projectName = Preferences.getProperty("recentproject." + i + ".name");
-
-          if (projectDirName != null) {
-            Preferences.removeProperty("recentproject." + i + ".path");
-            Preferences.removeProperty("recentproject." + i + ".date");
-            Preferences.removeProperty("recentproject." + i + ".name");
-          }
-        }
+        Preferences.clearRecentProjects();
         mEditorInstance.clearRecentProjects();
         Preferences.save();
         refreshRecentFileMenu();
