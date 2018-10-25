@@ -92,15 +92,15 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
   private ComponentListener mComponentListener = new ComponentListener() {
     @Override
     public void componentResized(ComponentEvent e) {
-      Preferences.setProperty("frame_height", Integer.toString(getHeight()));
-      Preferences.setProperty("frame_width", Integer.toString(getWidth()));
+      Preferences.FRAME_HEIGHT = getHeight();
+      Preferences.FRAME_WIDTH = getWidth();
       Preferences.save();
     }
 
     @Override
     public void componentMoved(ComponentEvent e) {
-      Preferences.setProperty("frame_posx", Integer.toString(getX()));
-      Preferences.setProperty("frame_posy", Integer.toString(getY()));
+      Preferences.FRAME_POS_X = getX();
+      Preferences.FRAME_POS_Y = getY();
       Preferences.save();
     }
 
@@ -165,14 +165,14 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
 
     // Init the editor application frame
     // TODO: static property fields
-    Dimension editorSize = new Dimension(Integer.valueOf(Preferences.getProperty("frame_width")),
-            Integer.valueOf(Preferences.getProperty("frame_height")));
+    Dimension editorSize = new Dimension(Preferences.FRAME_WIDTH,
+            Preferences.FRAME_WIDTH);
 
     setPreferredSize(editorSize);
     setSize(editorSize);
     checkAndSetLocation();
-    setTitle(Preferences.getProperty("frame_title"));
-    setName(Preferences.getProperty("frame_name"));
+    setTitle(Preferences.FRAME_TITLE);
+    setName(Preferences.FRAME_NAME);
     setJMenuBar(mEditorMenuBar);
     // setContentPane(jsWelcome);
     // add(mProjectEditorList); // COMMENTED BY M.FALLAS
@@ -248,10 +248,10 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
 
   private void checkAndSetLocation() {
     Point finalPos = new Point(0, 0);
-    Point editorPosition = new Point(Integer.valueOf(Preferences.getProperty("frame_posx")),
-            Integer.valueOf(Preferences.getProperty("frame_posy")));
-    Dimension editorSize = new Dimension(Integer.valueOf(Preferences.getProperty("frame_width")),
-            Integer.valueOf(Preferences.getProperty("frame_height")));
+    Point editorPosition = new Point(Preferences.FRAME_POS_X,
+            Preferences.FRAME_POS_Y);
+    Dimension editorSize = new Dimension(Preferences.FRAME_WIDTH,
+            Preferences.FRAME_HEIGHT);
 
     // check systems monitor setup
     Rectangle virtualBounds = new Rectangle();
@@ -727,57 +727,41 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
   public void updateRecentProjects(final EditorProject project) {
     String projectPath = project.getProjectPath();
     String projectName = project.getProjectName();
-//            DeviceConfig currentPlayer = project.getCurrentPlayer();
-//            if (currentPlayer != null)
-//            {
-//                String playerClass = currentPlayer.getClassName();
-//                projectName += "   {" + playerClass.substring(playerClass.lastIndexOf(".")+1) + "}";
-//            }
-    // Print some info message
-    //mLogger.message("Updating recent projects with '" + projectPath + "' '" + projectName + "'");
-    //
-    ArrayList<String> recentProjectPaths = new ArrayList<>();
-    ArrayList<String> recentProjectNames = new ArrayList<>();
-    // Load the list of recent projects
-    for (int i = 0; i <= Preferences.sMAX_RECENT_PROJECTS; i++) {
-      String path = Preferences.getProperty("recentproject." + i + ".path");
-      String pName = Preferences.getProperty("recentproject." + i + ".name");
-      if (path != null && pName != null && !path.startsWith(Preferences.sSAMPLE_PROJECTS) && !path.startsWith(Preferences.sTUTORIALS_PROJECTS)) {
-        recentProjectPaths.add(Preferences.getProperty("recentproject." + i + ".path"));
-        recentProjectNames.add(Preferences.getProperty("recentproject." + i + ".name"));
-      }
-    }
-    if (recentProjectPaths.contains(projectPath)) {
+    String projectDate = Preferences.sDATE_FORMAT.format(new Date());
 
+    if (Preferences.recentProjectPaths.contains(projectPath)) {
+      int index = Preferences.recentProjectPaths.indexOf(projectPath);
       // case: project in recent list
-      if (recentProjectNames.contains(projectName)) {
-
+      if (Preferences.recentProjectNames.contains(projectName)) {
         // case: project is on list - has now to be at first pos
-        int index = recentProjectPaths.indexOf(projectPath);
-        Preferences.setProperty("recentproject." + index + ".date", Preferences.sDATE_FORMAT.format(new Date()));
-        if (index != 0) {
-          recentProjectPaths.add(0, projectPath);
-          recentProjectNames.add(0, projectName);
-          recentProjectNames.remove(index + 1);
-          recentProjectPaths.remove(index + 1);
-        }
+        //Preferences.setProperty("recentproject." + index + ".date", Preferences.sDATE_FORMAT.format(new Date()));
+        //if (index != 0) {
+          Preferences.recentProjectPaths.add(0, projectPath);
+          Preferences.recentProjectNames.add(0, projectName);
+          Preferences.recentProjectDates.add(0, projectDate);
+          Preferences.recentProjectNames.remove(index + 1);
+          Preferences.recentProjectPaths.remove(index + 1);
+          Preferences.recentProjectDates.remove(index + 1);
+        //}
+      /* TODO: Isn't this wrong anyways?
       } else {
-
-        // dir is the same, but name changed
-        int index = recentProjectPaths.indexOf(projectPath);
-
-        Preferences.setProperty("recentproject." + index + ".name", projectName);
-        Preferences.setProperty("recentproject." + index + ".date", Preferences.sDATE_FORMAT.format(new Date()));
-        recentProjectNames.remove(index);
-        recentProjectNames.add(index, projectName);
+        //Preferences.setProperty("recentproject." + index + ".date", Preferences.sDATE_FORMAT.format(new Date()));
+        Preferences.recentProjectNames.remove(index);
+        Preferences.recentProjectNames.add(index, projectName); */
       }
     } else if (projectPath != null && !projectPath.contains(Preferences.sSAMPLE_PROJECTS) && !projectPath.contains(Preferences.sTUTORIALS_PROJECTS)) {
       // case: project not in recent list
-      recentProjectPaths.add(0, projectPath);
-      recentProjectNames.add(0, projectName);
+      Preferences.recentProjectPaths.add(0, projectPath);
+      Preferences.recentProjectNames.add(0, projectName);
+      Preferences.recentProjectDates.add(0, projectDate);
+    }
+    int si = Preferences.recentProjectPaths.size();
+    if (si > Preferences.sMAX_RECENT_PROJECTS) {
+      Preferences.recentProjectPaths.remove(si);
+      Preferences.recentProjectNames.remove(si);
     }
 
-    // set properties
+    /* set properties
     String dir = null;
     String name = null;
     int maxCnt = ((recentProjectPaths.size() <= Preferences.sMAX_RECENT_PROJECTS) ? recentProjectPaths.size() : Preferences.sMAX_RECENT_PROJECTS);
@@ -792,7 +776,7 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
       } else {
         break;
       }
-    }
+    }*/
 
     // save properties
     Preferences.save();

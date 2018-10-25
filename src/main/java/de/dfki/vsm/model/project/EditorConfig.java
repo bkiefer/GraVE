@@ -1,6 +1,10 @@
 package de.dfki.vsm.model.project;
 
 //~--- JDK imports ------------------------------------------------------------
+import de.dfki.vsm.model.flow.SceneFlow;
+import de.dfki.vsm.model.flow.edge.AbstractEdge;
+import de.dfki.vsm.model.flow.edge.EpsilonEdge;
+import de.dfki.vsm.model.flow.edge.TimeoutEdge;
 import java.awt.Dimension;
 import java.io.*;
 import java.util.Properties;
@@ -14,6 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.util.xml.XMLUtilities;
+import java.util.logging.Level;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 /**
  * @author Patrick Gebhard
@@ -26,7 +35,7 @@ import de.dfki.vsm.util.xml.XMLUtilities;
 public class EditorConfig {
 
   // The Logger Instance
-  private final Logger mLogger = LoggerFactory.getLogger(EditorConfig.class);;
+  private static final Logger mLogger = LoggerFactory.getLogger(EditorConfig.class);;
 
   ////////////////////////////////////////////////////////////////////////////
   // VARIABLE FIELDS
@@ -56,7 +65,7 @@ public class EditorConfig {
   public boolean sLAUNCHPLAYER = false;
   public boolean sSHOWGRID = true;
   public boolean sVISUALISATION = true;
-  public boolean sACTIVITYTRACE = true;
+  public boolean sVISUALIZATIONTRACE = true;
   public int sVISUALISATIONTIME = 15;    // 25 = 1 second
   public boolean sSHOW_VARIABLE_BADGE_ON_WORKSPACE = true;
   public boolean sSHOW_SMART_PATH_DEBUG = false;
@@ -67,19 +76,7 @@ public class EditorConfig {
   public boolean sAUTOHIDE_BOTTOMPANEL = true; // Saves the pricked pin of the bottom panel of the editor
   public String sMAINSUPERNODENAME = "default";
 
-  public boolean sSHOWELEMENTS = true;
-  public boolean sSHOWELEMENT_PROPERTIES = true;
-  public int sPROPERTIES_DIVIDER_LOCATION = 230;
-  public boolean sSHOWSCENEFLOW_EDITOR = true;
-  public boolean sSHOWSCENE_EDITOR = true;
-  public double sSCENEFLOW_SCENEEDITOR_RATIO = 0.75;
-  public boolean SHOWGESTURES = true;
-  public int NUM_MAGNETS = 8;
-
   public EditorConfig() {
-  }
-
-  private synchronized void init() {
   }
 
   public boolean save(final File base) {
@@ -89,49 +86,43 @@ public class EditorConfig {
 
     // Check if the configuration does exist
     if (!file.exists()) {
-
       // Print a warning message if this case
-      mLogger.warn("Warning: Creating the new project editor configuration file '" + file + "'");
+      mLogger.warn("Warning: Creating the new project editor configuration "
+              + "file '" + file + "'");
 
       // Create a new configuration file now
       try {
-
         // Try to create a new configuration file
         if (!file.createNewFile()) {
-
           // Print an error message if this case
-          mLogger.warn("Warning: There already exists a project editor configuration file '" + file + "'");
+          mLogger.warn("Warning: There already exists a project editor"
+                  + " configuration file '" + file + "'");
         }
       } catch (final IOException exc) {
-
         // Print an error message if this case
-        mLogger.error("Failure: Cannot create the new project editor configuration file '" + file + "'");
-
+        mLogger.error("Failure: Cannot create the new project editor"
+                + " configuration file '" + file + "'");
         // Return failure if it does not exist
         return false;
       }
     }
-
-    // Write the project configuration file
-    if (!XMLUtilities.writeToXMLFile(sPROPERTIES, file)) {
-
-      // Print an error message if this case
-      mLogger.error("Error: Cannot write project editor configuration file '" + file + "'");
-
-      // Return failure if it does not exist
-      return false;
+    String conf = this.toString();
+    if (conf != null) {
+      try {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        writer.write(conf);
+        return true;
+      } catch (IOException ex) {
+        mLogger.error("Error: Cannot write project editor configuration file '"
+                + file + "'\n" + ex);
+        return false;
+      }
     }
-
-    init();
-
-    // Print an information message if this case
-    //mLogger.message("Saved project configuration file '" + file + "':\n" + sPROPERTIES);
-    // Return success if the project was saved
-    return true;
+    return false;
 
   }
 
-  public synchronized boolean load(final String path) {
+  public static synchronized EditorConfig load(final String path) {
     InputStream inputStream = null;
     final File file = new File(path, "editorconfig.xml");
     // Check if the configuration file does exist
@@ -147,34 +138,20 @@ public class EditorConfig {
         // Print an error message in this case
         mLogger.error("Error: Cannot find project configuration file  " + file);
         // Return failure if it does not exist
-        return false;
+        return null;
       }
     }
 
-    // TODO: unmarshal?
-
-    if (!XMLUtilities.parseFromXMLStream(sPROPERTIES, inputStream)) {
-      mLogger.error("Error: Cannot parse project configuration file  in path" + path);
-      return false;
+    try {
+      JAXBContext jc = JAXBContext.newInstance(EditorConfig.class);
+      Unmarshaller u = jc.createUnmarshaller();
+      EditorConfig config = (EditorConfig) u.unmarshal(inputStream);
+      return config;
+    } catch (JAXBException e) {
+      mLogger.error("Error: Cannot parse sceneflow file " + path+ " : " + e);
     }
 
-    //
-    init();
-
-    // Print an information message if this case
-    mLogger.info("Loaded project editor configuration file in path'" + path + "':\n");
-    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    if (XMLUtilities.writeToXMLStream(sPROPERTIES, stream)) {
-      try {
-        // mLogger.message(stream.toString("UTF-8"));
-        mLogger.info("Configuration File Loaded: " + path);
-      } catch (Exception exc) {
-        mLogger.error(exc.getMessage());
-      }
-    }
-
-    // Return success if the project was loaded
-    return true;
+    return null;
   }
 
   // Get the string representation of the configuration
@@ -184,17 +161,16 @@ public class EditorConfig {
     // Create a new byte array buffer stream
     final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-    // Try to write the project into the stream
-    XMLUtilities.writeToXMLStream(sPROPERTIES, buffer);
-
-    // Return the stream string representation
     try {
-      //return buffer.toString("UTF-8");
-      return buffer.toString();
-    } catch (final Exception exc) {
-      exc.printStackTrace();
-      //
-      return null;
+      JAXBContext jc = JAXBContext.newInstance( SceneFlow.class );
+      Marshaller m = jc.createMarshaller();
+      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+
+      m.marshal(this, buffer);
+    } catch (JAXBException e) {
+      mLogger.error("Error: Cannot convert editor configuration to string: " + e);
     }
+    return buffer.toString();
   }
 }

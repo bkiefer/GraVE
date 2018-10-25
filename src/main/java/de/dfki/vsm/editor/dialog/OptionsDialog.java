@@ -476,28 +476,19 @@ public class OptionsDialog extends JDialog {
 
   private void saveEditorConfig(boolean dispose) {
 
-    mEditorConfig.setProperty(
-            "node_width", Integer.toString(((SpinnerNumberModel) mNodeSizeSpinner.getModel()).getNumber().intValue()));
-    mEditorConfig.setProperty(
-            "node_height", Integer.toString(((SpinnerNumberModel) mNodeSizeSpinner.getModel()).getNumber().intValue()));
-    mEditorConfig.setProperty(
-            "grid_x", Integer.toString(((SpinnerNumberModel) mGridScaleSpinner.getModel()).getNumber().intValue()));
-    mEditorConfig.setProperty(
-            "grid_y", Integer.toString(((SpinnerNumberModel) mGridScaleSpinner.getModel()).getNumber().intValue()));
-    mEditorConfig.setProperty(
-            "workspace_fontsize",
-            Integer.toString(((SpinnerNumberModel) mWorkspaceFontSizeSpinner.getModel()).getNumber().intValue()));
-    mEditorConfig.setProperty("grid", Boolean.toString(mGridCheckBox.isSelected()));
-    mEditorConfig.setProperty("visualization", Boolean.toString(mVisualizationCheckBox.isSelected()));
-    mEditorConfig.setProperty("visualizationtrace", Boolean.toString(mVisualizationTraceCheckBox.isSelected()));
-    mEditorConfig.setProperty("shownodeid", Boolean.toString(mShowNodeIDCheckBox.isSelected()));
-    mEditorConfig.setProperty("showvariables", Boolean.toString(mShowVariablesCheckBox.isSelected()));
-    mEditorConfig.setProperty("showsmartpathcalculations",
-            Boolean.toString(mShowSmartPathDebugCheckBox.isSelected()));
-    mEditorConfig.setProperty(
-            "scriptfonsize",
-            Integer.toString(((SpinnerNumberModel) mScriptFontSizeSpinner.getModel()).getNumber().intValue()));
-    mEditorConfig.setProperty("scriptfonttype", mScriptFontComboBox.getSelectedItem().toString());
+    mEditorConfig.sNODEWIDTH = ((SpinnerNumberModel) mNodeSizeSpinner.getModel()).getNumber().intValue();
+    mEditorConfig.sNODEHEIGHT = ((SpinnerNumberModel) mNodeSizeSpinner.getModel()).getNumber().intValue();
+    mEditorConfig.sGRID_XSPACE = ((SpinnerNumberModel) mGridScaleSpinner.getModel()).getNumber().intValue();
+    mEditorConfig.sGRID_YSPACE = ((SpinnerNumberModel) mGridScaleSpinner.getModel()).getNumber().intValue();
+    mEditorConfig.sWORKSPACEFONTSIZE = ((SpinnerNumberModel) mWorkspaceFontSizeSpinner.getModel()).getNumber().intValue();
+    mEditorConfig.sSHOWGRID = mGridCheckBox.isSelected();
+    mEditorConfig.sVISUALISATION = mVisualizationCheckBox.isSelected();
+    mEditorConfig.sVISUALIZATIONTRACE = mVisualizationTraceCheckBox.isSelected();
+    mEditorConfig.sSHOWIDSOFNODES = mShowNodeIDCheckBox.isSelected();
+    mEditorConfig.sSHOW_VARIABLE_BADGE_ON_WORKSPACE = mShowVariablesCheckBox.isSelected();
+    mEditorConfig.sSHOW_SMART_PATH_DEBUG = mShowSmartPathDebugCheckBox.isSelected();
+    mEditorConfig.sSCRIPT_FONT_SIZE = ((SpinnerNumberModel) mScriptFontSizeSpinner.getModel()).getNumber().intValue();
+    mEditorConfig.sSCRIPT_FONT_TYPE = mScriptFontComboBox.getSelectedItem().toString();
 
     mEditorConfig.save(mEditor.getSelectedProjectEditor().getEditorProject().getProjectFile());
 
@@ -509,49 +500,28 @@ public class OptionsDialog extends JDialog {
   }
 
   private void initEditorConfig() {
+      // TODO: isn't the second time overriding the first?
+      ((SpinnerNumberModel) mNodeSizeSpinner.getModel()).setValue(
+              mEditorConfig.sNODEWIDTH);
+      ((SpinnerNumberModel) mNodeSizeSpinner.getModel()).setValue(
+              mEditorConfig.sNODEHEIGHT);
+      ((SpinnerNumberModel) mGridScaleSpinner.getModel()).setValue(
+              mEditorConfig.sGRID_XSPACE);
+      ((SpinnerNumberModel) mGridScaleSpinner.getModel()).setValue(
+              mEditorConfig.sGRID_YSPACE);
 
-    for (Object keyObj : mEditorConfig.getKeySet()) {
-      String key = (String) keyObj;
+      mGridCheckBox.setSelected(mEditorConfig.sSHOWGRID);
+      ((SpinnerNumberModel) mScriptFontSizeSpinner.getModel()).setValue(
+              mEditorConfig.sSCRIPT_FONT_SIZE);
+      mScriptFontComboBox.setSelectedItem(mEditorConfig.sSCRIPT_FONT_TYPE);
+      mVisualizationTraceCheckBox.setSelected(mEditorConfig.sVISUALIZATIONTRACE);
+      //mLaunchDefaultPlayerCheckBox.setSelected(Boolean.valueOf(mEditorConfig.getProperty(key)));
+      mShowNodeIDCheckBox.setSelected(mEditorConfig.sSHOWIDSOFNODES);
+      mShowVariablesCheckBox.setSelected(mEditorConfig.sSHOW_VARIABLE_BADGE_ON_WORKSPACE);
+      mShowSmartPathDebugCheckBox.setSelected(mEditorConfig.sSHOW_SMART_PATH_DEBUG);
+      ((SpinnerNumberModel) mWorkspaceFontSizeSpinner.getModel()).setValue(
+              mEditorConfig.sWORKSPACEFONTSIZE);
 
-      if (key.startsWith("recentfile")) {
-        ((DefaultListModel) mRecentFileList.getModel()).addElement(mEditorConfig.getProperty(key));
-      } else if (key.equals("node_width")) {
-        ((SpinnerNumberModel) mNodeSizeSpinner.getModel()).setValue(
-                Integer.valueOf(mEditorConfig.getProperty(key)));
-      } else if (key.equals("node_height")) {
-        ((SpinnerNumberModel) mNodeSizeSpinner.getModel()).setValue(
-                Integer.valueOf(mEditorConfig.getProperty(key)));
-      } else if (key.equals("grid_x")) {
-        ((SpinnerNumberModel) mGridScaleSpinner.getModel()).setValue(
-                Integer.valueOf(mEditorConfig.getProperty(key)));
-      } else if (key.equals("grid_y")) {
-        ((SpinnerNumberModel) mGridScaleSpinner.getModel()).setValue(
-                Integer.valueOf(mEditorConfig.getProperty(key)));
-      } else if (key.equals("grid")) {
-        mGridCheckBox.setSelected(Boolean.valueOf(mEditorConfig.getProperty(key)));
-      } else if (key.equals("scriptfontype")) {
-        mVisualizationCheckBox.setSelected(Boolean.valueOf(mEditorConfig.getProperty(key)));
-      } else if (key.equals("scriptfonsize")) {
-        ((SpinnerNumberModel) mScriptFontSizeSpinner.getModel()).setValue(
-                Integer.valueOf(mEditorConfig.getProperty(key)));
-      } else if (key.equals("scriptfonttype")) {
-        mScriptFontComboBox.setSelectedItem(mEditorConfig.getProperty(key));
-      } else if (key.equals("visualizationtrace")) {
-        mVisualizationTraceCheckBox.setSelected(Boolean.valueOf(mEditorConfig.getProperty(key)));
-      } else if (key.equals("launchPlayer")) {
-        //mLaunchDefaultPlayerCheckBox.setSelected(Boolean.valueOf(mEditorConfig.getProperty(key)));
-      } else if (key.equals("shownodeid")) {
-        mShowNodeIDCheckBox.setSelected(Boolean.valueOf(mEditorConfig.getProperty(key)));
-      } else if (key.equals("showvariables")) {
-        mShowVariablesCheckBox.setSelected(Boolean.valueOf(mEditorConfig.getProperty(key)));
-      } else if (key.equals("showsmartpathcalculations")) {
-        mShowSmartPathDebugCheckBox.setSelected(Boolean.valueOf(mEditorConfig.getProperty(key)));
-      } else if (key.equals("workspace_fontsize")) {
-        ((SpinnerNumberModel) mWorkspaceFontSizeSpinner.getModel()).setValue(
-                Integer.valueOf(mEditorConfig.getProperty(key)));
-      }
-
-    }
     // Add specific listeners
     mNodeSizeSpinner.addChangeListener(new ChangeListener() {
       @Override

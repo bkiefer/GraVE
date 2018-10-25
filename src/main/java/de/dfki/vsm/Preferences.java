@@ -1,6 +1,10 @@
 package de.dfki.vsm;
 
 //~--- JDK imports ------------------------------------------------------------
+import de.dfki.vsm.model.flow.SceneFlow;
+import de.dfki.vsm.model.flow.edge.AbstractEdge;
+import de.dfki.vsm.model.flow.edge.EpsilonEdge;
+import de.dfki.vsm.model.flow.edge.TimeoutEdge;
 import de.dfki.vsm.model.project.EditorConfig;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -23,6 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.util.ios.ResourceLoader;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 /**
  * @author Gregor Mehlmann
@@ -33,8 +43,7 @@ import de.dfki.vsm.util.ios.ResourceLoader;
 @XmlType
 public final class Preferences {
   private static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
-  // The editor properties object
-  private static final Properties sPROPERTIES = new Properties();
+
   // The global properties file
   private static final String sCONFIG_FILE
           = System.getProperty("user.home")
@@ -256,57 +265,80 @@ public final class Preferences {
   //BACKGROUND WELCOME
   public static final Image BACKGROUND_IMAGE = ResourceLoader.loadImageIcon("img/icon_big.png").getImage();   // Background for the welcome screen
 
-  public String FRAME_TITLE = "Visual SceneMaker";
-  public String FRAME_NAME = "SceneFlowEditor";
-  public String ICON_FILE = "res/img/icon.png";
-  public int FRAME_POS_X = 0;
-  public int FRAME_POS_Y = 0;
-  public int FRAME_WIDTH = 800;
-  public int FRAME_HEIGHT = 600;
-  public String XMLNS = "xml.sceneflow.dfki.de";
-  public String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
-  public String XSI_SCHEMELOCATION = "res/xsd/sceneflow.xsd";
+  public static String FRAME_TITLE = "Visual SceneMaker";
+  public static String FRAME_NAME = "SceneFlowEditor";
+  public static String ICON_FILE = "res/img/icon.png";
+  public static int FRAME_POS_X = 0;
+  public static int FRAME_POS_Y = 0;
+  public static int FRAME_WIDTH = 800;
+  public static int FRAME_HEIGHT = 600;
+  public static String XMLNS = "xml.sceneflow.dfki.de";
+  public static String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
+  public static String XSI_SCHEMELOCATION = "res/xsd/sceneflow.xsd";
 
-  public EditorConfig editorConfig = new EditorConfig();
+  public static boolean sSHOWELEMENTS = true;
+  public static boolean sSHOWELEMENT_PROPERTIES = true;
+  public static int sPROPERTIES_DIVIDER_LOCATION = 230;
+  public static boolean sSHOWSCENEFLOW_EDITOR = true;
+  public static boolean sSHOWSCENE_EDITOR = true;
+  public static double sSCENEFLOW_SCENEEDITOR_RATIO = 0.75;
+  public static boolean SHOWGESTURES = true;
+  public static int NUM_MAGNETS = 8;
 
-  /**
-   *
-   */
-  private static synchronized void init() {
+  public static ArrayList<String> recentProjectPaths = new ArrayList<>();
+  public static ArrayList<String> recentProjectNames = new ArrayList<>();
+  public static ArrayList<String> recentProjectDates = new ArrayList<>();
+  public static EditorConfig editorConfig = new EditorConfig();
 
-    // load visual appearance settings
-    sSHOW_ELEMENTS = Boolean.valueOf(sPROPERTIES.getProperty("showelements"));
-    sSHOW_ELEMENT_PROPERTIES = Boolean.valueOf(sPROPERTIES.getProperty("showelementproperties"));
-    sSHOW_SCENEEDITOR = Boolean.valueOf(sPROPERTIES.getProperty("showsceneeditor"));
-    sSHOW_SCENEFLOWEDITOR = Boolean.valueOf(sPROPERTIES.getProperty("showscenefloweditor"));
-    // sSCENEFLOW_SCENE_EDITOR_RATIO = Float.valueOf(sPROPERTIES.getProperty("sceneflow_sceneeditor_ratio"));
-    sSHOW_GESTURES = Boolean.valueOf(sPROPERTIES.getProperty("showgestures"));
+  private static Preferences single_instance = null;
+
+
+  private Preferences() {}
+
+  public static Preferences getPrefs() {
+    if (single_instance == null)
+        single_instance = new Preferences();
+    return single_instance;
   }
 
   public static synchronized void save() {
+    // write the Preferences file
     try {
-      try (FileOutputStream fileOutputStream = new FileOutputStream(sCONFIG_FILE)) {
-        sPROPERTIES.storeToXML(fileOutputStream, "Properties for the Sceneflow Editor", "ISO8859_1");
-      }
-    } catch (IOException e) {
-      mLogger.error("Error: " + e.getMessage());
+      JAXBContext jc = JAXBContext.newInstance( SceneFlow.class );
+      Marshaller m = jc.createMarshaller();
+      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+
+      m.marshal(single_instance, new FileOutputStream(sCONFIG_FILE));
+    } catch (JAXBException e) {
+      mLogger.error("Error: Cannot write sceneflow file "
+              + sCONFIG_FILE + " : " + e);
+    } catch (FileNotFoundException e) {
+      mLogger.error("Error: Cannot write sceneflow file "
+              + sCONFIG_FILE + " : " + e);
     }
-    init();
   }
 
   public static synchronized void load() {
     parseConfigFile();
-    init();
   }
 
   private static synchronized void parseConfigFile() {
     if ((new File(sCONFIG_FILE)).canRead()) {
       try {
         try (FileInputStream in = new FileInputStream(sCONFIG_FILE)) {
-          sPROPERTIES.loadFromXML(in);
+          try {
+            JAXBContext jc = JAXBContext.newInstance(Preferences.class);
+            Unmarshaller u = jc.createUnmarshaller();
+            single_instance = (Preferences) u.unmarshal(in);
+          } catch (JAXBException e) {
+            mLogger.error("Cannot find VSM preference file: " + sCONFIG_FILE
+                    + " :\n" + e);
+          }
         }
       } catch (IOException e) {
-        mLogger.error("Error: " + e.getMessage());
+        mLogger.error("Cannot find VSM preference file: " + sCONFIG_FILE + " :\n"
+                + e);
       }
     }
   }
@@ -338,6 +370,12 @@ public final class Preferences {
     } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException exc) {
       mLogger.error("Error: " + exc.getMessage());
     }
+  }
+
+  public static void clearRecentProjects(){
+    single_instance.recentProjectPaths.clear();
+    single_instance.recentProjectNames.clear();
+    single_instance.recentProjectDates.clear();
   }
 
   // Check if we are on a WINDOWS system

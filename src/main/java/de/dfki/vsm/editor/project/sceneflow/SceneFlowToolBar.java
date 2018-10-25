@@ -201,27 +201,15 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
 
   private void initPreferences() {
     if (mEditorInstance.getSelectedProjectEditor() != null) {
-      for (Object keyObj : mEditorConfig.getKeySet()) {
-        String key = (String) keyObj;
-
-        if (key.equals("node_width")) {
-          mNodeSize = Integer.valueOf(mEditorConfig.getProperty(key));
-        }
-      }
+      mNodeSize = Integer.valueOf(mEditorConfig.sNODEWIDTH);
     } else {
-      for (Object keyObj : Preferences.getKeySet()) {
-        String key = (String) keyObj;
-
-        if (key.equals("node_width")) {
-          mNodeSize = Integer.valueOf(Preferences.getProperty(key));
-        }
-      }
+      mNodeSize = Integer.valueOf(Preferences.editorConfig.sNODEWIDTH);
     }
   }
 
   private void saveEditorConfig() {
-    mEditorConfig.setProperty("node_width", Integer.toString(mNodeSize));
-    mEditorConfig.setProperty("node_height", Integer.toString(mNodeSize));
+    mEditorConfig.sNODEWIDTH = mNodeSize;
+    mEditorConfig.sNODEHEIGHT = mNodeSize;
 
     mEditorConfig.save(mEditorInstance.getSelectedProjectEditor().getEditorProject().getProjectFile());
 
@@ -287,16 +275,14 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
      * LESS AND MORE BUTTONS ARE INVERTED TO MATCH WITH THE LEFT SIZE
      */
     mTogglePalette = add(new AbstractAction("ACTION_SHOW_ELEMENTS",
-            Boolean.valueOf(Preferences.getProperty("showelements"))
-            ? ICON_MORE_STANDARD
+            Preferences.sSHOWELEMENTS ? ICON_MORE_STANDARD
             : ICON_LESS_STANDARD) {
       public void actionPerformed(ActionEvent evt) {
         mSceneFlowEditor.toggleElementEditor();
         refreshButtons();
       }
     });
-    mTogglePalette.setRolloverIcon(Boolean.valueOf(Preferences.getProperty("showelements"))
-            ? ICON_MORE_ROLLOVER
+    mTogglePalette.setRolloverIcon(Preferences.sSHOWELEMENTS ? ICON_MORE_ROLLOVER
             : ICON_LESS_ROLLOVER);
     sanitizeButton(mTogglePalette, tinyButtonDim);
     //add(Box.createHorizontalGlue());
@@ -554,7 +540,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     // Refresh the element display buttons
     mTogglePalette.setIcon(mSceneFlowEditor.isElementDisplayVisible()
             ? ICON_MORE_STANDARD : ICON_LESS_STANDARD);
-    mTogglePalette.setRolloverIcon(Boolean.valueOf(Preferences.getProperty("showelements"))
+    mTogglePalette.setRolloverIcon(Preferences.sSHOWELEMENTS
             ? ICON_MORE_ROLLOVER : ICON_LESS_ROLLOVER);
   }
 
