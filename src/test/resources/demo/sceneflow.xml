@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SceneFlow id="Quiz" name="Quiz" comment="" hideLocalVar="false" hideGlobalVar="false" modifDate="Wed, 24 Oct 2018 16:34:50" start="N16;" context="" package="" xmlns="xml.sceneflow.dfki.de" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="xml.sceneflow.dfki.de res/xsd/sceneflow.xsd">
-  <Commands>
-    <![CDATA[provideSolution( ArgumentDefinition(boolean Arg0) ):de.dfki.lt.sminterface.IntegratedSmInterface.provideSolution;
+<SceneFlow id="Quiz" name="Quiz" comment="" hideLocalVar="false" hideGlobalVar="false" modifDate="Wed, 24 Oct 2018 16:34:50" start="N16;" context="" package="" xmlns="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="xml.sceneflow.dfki.de res/xsd/sceneflow.xsd">
+  <Commands><![CDATA[provideSolution( ArgumentDefinition(boolean Arg0) ):de.dfki.lt.sminterface.IntegratedSmInterface.provideSolution;
 robotIsMoving(  ):de.dfki.lt.sminterface.IntegratedSmInterface.robotIsMoving;
 nextMove(  ):de.dfki.lt.sminterface.IntegratedSmInterface.nextMove;
 startSorting(  ):de.dfki.lt.sminterface.IntegratedSmInterface.startSorting;
@@ -52,14 +51,12 @@ emitDialogueAct( ArgumentDefinition([[Ljava.lang.Object; Arg0) ):de.dfki.lt.smin
 getSystemSignal(  ):de.dfki.lt.sminterface.IntegratedSmInterface.systemSignal;
 getNumberOfQuestions( ArgumentDefinition(java.lang.String asker) ):de.dfki.lt.sminterface.IntegratedSmInterface.getNumberOfQuestions;
 tableEmpty(  ):de.dfki.lt.sminterface.IntegratedSmInterface.tableEmpty;
-resetRobotMoved(  ):de.dfki.lt.sminterface.IntegratedSmInterface.resetRobotMoved;]]>
-    <![CDATA[StructTypeDefinition(DialogueAct);
+resetRobotMoved(  ):de.dfki.lt.sminterface.IntegratedSmInterface.resetRobotMoved;]]><![CDATA[StructTypeDefinition(DialogueAct);
 StructTypeDefinition(Params);
 StructTypeDefinition(SystemFlags);
 StructTypeDefinition(StatusEnum);
 StructTypeDefinition(ActorEnum);
-StructTypeDefinition(SystemSignalEnum);]]>
-    <![CDATA[SystemSignalEnum Signal = { start = "start" , stop = "stop" , shutDown = "shutDown" , continue = "continue" };
+StructTypeDefinition(SystemSignalEnum);]]><![CDATA[SystemSignalEnum Signal = { start = "start" , stop = "stop" , shutDown = "shutDown" , continue = "continue" };
 StatusEnum StatE = { started = "started" , stopped = "stopped" , idle = "idle" , shuttingDown = "shuttingDown" , interrupted = "interrupted" , startQuiz = "startQuiz" , startSorting = "startSorting" , continue = "continue" , startClosing = "startClosing" };
 ActorEnum AE = { robot = "robot" , user = "user" };
 SystemFlags flag = { status = StatE.idle , shutDownRequested = false };
@@ -69,8 +66,7 @@ String situation = "";
 String asker = "";
 Bool roleChanged = false;
 String tabletOrientation = "unknown";
-Bool autonomous = true;]]>
-  </Commands>
+Bool autonomous = true;]]></Commands>
   <Comment>
     <Boundary xPos="-2147483648" yPos="-2147483648" width="-2147483648" height="-2147483648"/>
     <Text style="color:blue">
@@ -79,13 +75,11 @@ Bool autonomous = true;]]>
     </Text>
   </Comment>
   <Node id="N1" name="Done" history="false">
-    <Commands>
-    </Commands>
+    <Commands/>
     <Position xPos="660" yPos="210"/>
   </Node>
   <Node id="N16" name="Initialize" history="false">
-    <Commands>
-    </Commands>
+    <Commands/>
     <FEdge target="S10" start="">
       <Connection>
         <ControlPoint xPos="208" yPos="243" ctrlXPos="320" ctrlYPos="211"/>
@@ -113,8 +107,7 @@ Bool autonomous = true;]]>
     <Position xPos="120" yPos="210"/>
   </Node>
   <SuperNode id="S10" name="ListenToOutsideWorld" comment="" hideLocalVar="false" hideGlobalVar="false" start="N3;">
-    <Commands>
-    </Commands>
+    <Commands/>
     <EEdge target="N1" start ="">
       <Connection>
         <ControlPoint xPos="570" yPos="191" ctrlXPos="603" ctrlYPos="210"/>
@@ -123,14 +116,11 @@ Bool autonomous = true;]]>
     </EEdge>
     <Position xPos="480" yPos="120"/>
     <Node id="N7" name="History" history="true">
-      <Commands>
-      </Commands>
+      <Commands/>
       <Position xPos="30" yPos="210"/>
     </Node>
     <Node id="N2" name="Listen" history="false">
-      <Commands>
-        <![CDATA[lastReaction = listen (  );]]>
-      </Commands>
+      <Commands><![CDATA[lastReaction = listen (  );]]></Commands>
       <EEdge target="N3" start ="">
         <Connection>
           <ControlPoint xPos="537" yPos="662" ctrlXPos="555" ctrlYPos="597"/>
@@ -140,8 +130,7 @@ Bool autonomous = true;]]>
       <Position xPos="480" yPos="660"/>
     </Node>
     <Node id="N3" name="DecideIfListen" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <CEdge target="N2" start="">
         <Connection>
           <ControlPoint xPos="525" yPos="480" ctrlXPos="525" ctrlYPos="547"/>
@@ -165,14 +154,11 @@ Bool autonomous = true;]]>
       <Position xPos="480" yPos="390"/>
     </Node>
     <Node id="N8" name="Done" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <Position xPos="480" yPos="210"/>
     </Node>
     <Node id="N41" name="DisposeOfUnusedInput" history="false">
-      <Commands>
-        <![CDATA[lastReaction = emptyReaction (  );]]>
-      </Commands>
+      <Commands><![CDATA[lastReaction = emptyReaction (  );]]></Commands>
       <EEdge target="N3" start ="">
         <Connection>
           <ControlPoint xPos="662" yPos="447" ctrlXPos="640" ctrlYPos="453"/>
@@ -183,8 +169,7 @@ Bool autonomous = true;]]>
     </Node>
   </SuperNode>
   <SuperNode id="S14" name="ListenToSystemSignals" comment="" hideLocalVar="false" hideGlobalVar="false" start="N69;">
-    <Commands>
-    </Commands>
+    <Commands/>
     <EEdge target="N1" start ="">
       <Connection>
         <ControlPoint xPos="570" yPos="255" ctrlXPos="592" ctrlYPos="255"/>
@@ -193,13 +178,11 @@ Bool autonomous = true;]]>
     </EEdge>
     <Position xPos="480" yPos="210"/>
     <Node id="N67" name="History" history="true">
-      <Commands>
-      </Commands>
+      <Commands/>
       <Position xPos="30" yPos="570"/>
     </Node>
     <Node id="N69" name="DecideIfListen" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <CEdge target="N88" start="">
         <Connection>
           <ControlPoint xPos="435" yPos="480" ctrlXPos="435" ctrlYPos="502"/>
@@ -223,9 +206,7 @@ Bool autonomous = true;]]>
       <Position xPos="390" yPos="390"/>
     </Node>
     <Node id="N87" name="Listen" history="false">
-      <Commands>
-        <![CDATA[lastSignal = getSystemSignal (  );]]>
-      </Commands>
+      <Commands><![CDATA[lastSignal = getSystemSignal (  );]]></Commands>
       <EEdge target="N69" start ="">
         <Connection>
           <ControlPoint xPos="750" yPos="525" ctrlXPos="631" ctrlYPos="525"/>
@@ -235,15 +216,12 @@ Bool autonomous = true;]]>
       <Position xPos="750" yPos="480"/>
     </Node>
     <Node id="N88" name="Done" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <Position xPos="390" yPos="570"/>
     </Node>
     <Node id="N68" name="DisposeOfUnusedInput" history="false">
-      <Commands>
-        <![CDATA[print ( "disposing of lastSignal" );
-lastSignal = "";]]>
-      </Commands>
+      <Commands><![CDATA[print ( "disposing of lastSignal" );
+lastSignal = "";]]></Commands>
       <EEdge target="N69" start ="">
         <Connection>
           <ControlPoint xPos="294" yPos="278" ctrlXPos="345" ctrlYPos="308"/>
@@ -254,8 +232,7 @@ lastSignal = "";]]>
     </Node>
   </SuperNode>
   <SuperNode id="S12" name="ReactToSystemSignalsAndInterrupts" comment="" hideLocalVar="false" hideGlobalVar="false" start="N54;">
-    <Commands>
-    </Commands>
+    <Commands/>
     <EEdge target="N1" start ="">
       <Connection>
         <ControlPoint xPos="570" yPos="319" ctrlXPos="603" ctrlYPos="299"/>
@@ -264,15 +241,12 @@ lastSignal = "";]]>
     </EEdge>
     <Position xPos="480" yPos="300"/>
     <Node id="N49" name="History" history="true">
-      <Commands>
-      </Commands>
+      <Commands/>
       <Position xPos="30" yPos="210"/>
     </Node>
     <Node id="N52" name="N97" history="false">
-      <Commands>
-        <![CDATA[flag.status = StatE.continue;
-lastSignal = "";]]>
-      </Commands>
+      <Commands><![CDATA[flag.status = StatE.continue;
+lastSignal = "";]]></Commands>
       <EEdge target="N58" start ="">
         <Connection>
           <ControlPoint xPos="907" yPos="846" ctrlXPos="1002" ctrlYPos="677"/>
@@ -282,10 +256,8 @@ lastSignal = "";]]>
       <Position xPos="840" yPos="840"/>
     </Node>
     <Node id="N53" name="ConsumeLastSignal" history="false">
-      <Commands>
-        <![CDATA[lastSignal = "";
-flag.status = StatE.idle;]]>
-      </Commands>
+      <Commands><![CDATA[lastSignal = "";
+flag.status = StatE.idle;]]></Commands>
       <EEdge target="N58" start ="">
         <Connection>
           <ControlPoint xPos="838" yPos="333" ctrlXPos="950" ctrlYPos="301"/>
@@ -295,8 +267,7 @@ flag.status = StatE.idle;]]>
       <Position xPos="750" yPos="297"/>
     </Node>
     <Node id="N54" name="WaitForSignalOrInterrupt" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <CEdge target="N57" start="">
         <Connection>
           <ControlPoint xPos="435" yPos="390" ctrlXPos="435" ctrlYPos="457"/>
@@ -348,10 +319,8 @@ flag.status = StatE.idle;]]>
       <Position xPos="390" yPos="300"/>
     </Node>
     <Node id="N55" name="N97" history="false">
-      <Commands>
-        <![CDATA[flag.status = StatE.started;
-lastSignal = "";]]>
-      </Commands>
+      <Commands><![CDATA[flag.status = StatE.started;
+lastSignal = "";]]></Commands>
       <EEdge target="N58" start ="">
         <Connection>
           <ControlPoint xPos="917" yPos="673" ctrlXPos="1004" ctrlYPos="585"/>
@@ -361,9 +330,7 @@ lastSignal = "";]]>
       <Position xPos="840" yPos="660"/>
     </Node>
     <Node id="N56" name="ChangeStatus" history="false">
-      <Commands>
-        <![CDATA[flag.status = StatE.stopped;]]>
-      </Commands>
+      <Commands><![CDATA[flag.status = StatE.stopped;]]></Commands>
       <EEdge target="N58" start ="">
         <Connection>
           <ControlPoint xPos="1087" yPos="294" ctrlXPos="1103" ctrlYPos="322"/>
@@ -373,13 +340,11 @@ lastSignal = "";]]>
       <Position xPos="1020" yPos="210"/>
     </Node>
     <Node id="N57" name="Done" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <Position xPos="390" yPos="570"/>
     </Node>
     <Node id="N58" name="ReturnToWait" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <EEdge target="N54" start ="">
         <Connection>
           <ControlPoint xPos="1110" yPos="435" ctrlXPos="814" ctrlYPos="435"/>
@@ -389,9 +354,7 @@ lastSignal = "";]]>
       <Position xPos="1110" yPos="390"/>
     </Node>
     <Node id="N59" name="ConsumeLastReaction" history="false">
-      <Commands>
-        <![CDATA[lastReaction = emptyReaction (  );]]>
-      </Commands>
+      <Commands><![CDATA[lastReaction = emptyReaction (  );]]></Commands>
       <EEdge target="N56" start ="">
         <Connection>
           <ControlPoint xPos="838" yPos="177" ctrlXPos="909" ctrlYPos="196"/>
@@ -401,10 +364,8 @@ lastSignal = "";]]>
       <Position xPos="750" yPos="120"/>
     </Node>
     <Node id="N60" name="RaiseFlag" history="false">
-      <Commands>
-        <![CDATA[flag.shutDownRequested = true;
-lastSignal = "";]]>
-      </Commands>
+      <Commands><![CDATA[flag.shutDownRequested = true;
+lastSignal = "";]]></Commands>
       <EEdge target="N56" start ="">
         <Connection>
           <ControlPoint xPos="907" yPos="486" ctrlXPos="953" ctrlYPos="403"/>
@@ -415,10 +376,7 @@ lastSignal = "";]]>
     </Node>
   </SuperNode>
   <SuperNode id="S45" name="S45" comment="" hideLocalVar="false" hideGlobalVar="false" start="S72;">
-    <Commands>
-      <![CDATA[StructTypeDefinition(SituationEnum);]]>
-      <![CDATA[SituationEnum SE = { startIntroduction = "startIntroduction" , startClosing = "startClosing" , startSorting = "startSorting" , startQuiz = "startQuiz" , gameTurn = "gameTurn" , switchRole = "switchRole" , turnFinished = "turnFinished" , gameFinished = "gameFinished" , stopPlaying = "stopPlaying" };]]>
-    </Commands>
+    <Commands><![CDATA[StructTypeDefinition(SituationEnum);]]><![CDATA[SituationEnum SE = { startIntroduction = "startIntroduction" , startClosing = "startClosing" , startSorting = "startSorting" , startQuiz = "startQuiz" , gameTurn = "gameTurn" , switchRole = "switchRole" , turnFinished = "turnFinished" , gameFinished = "gameFinished" , stopPlaying = "stopPlaying" };]]></Commands>
     <EEdge target="S1" start ="">
       <Connection>
         <ControlPoint xPos="750" yPos="423" ctrlXPos="637" ctrlYPos="393"/>
@@ -434,13 +392,11 @@ lastSignal = "";]]>
     </IEdge>
     <Position xPos="750" yPos="390"/>
     <Node id="N229" name="History" history="true">
-      <Commands>
-      </Commands>
+      <Commands/>
       <Position xPos="30" yPos="210"/>
     </Node>
     <SuperNode id="S2" name="SortingGameActivity" comment="" hideLocalVar="false" hideGlobalVar="false" start="N233;">
-      <Commands>
-      </Commands>
+      <Commands/>
       <EEdge target="S49" start ="">
         <Connection>
           <ControlPoint xPos="840" yPos="447" ctrlXPos="727" ctrlYPos="477"/>
@@ -449,19 +405,15 @@ lastSignal = "";]]>
       </EEdge>
       <Position xPos="840" yPos="390"/>
       <Node id="N230" name="History" history="true">
-        <Commands>
-        </Commands>
+        <Commands/>
         <Position xPos="930" yPos="210"/>
       </Node>
       <Node id="N231" name="N9" history="false">
-        <Commands>
-          <![CDATA[stopSorting (  );]]>
-        </Commands>
+        <Commands><![CDATA[stopSorting (  );]]></Commands>
         <Position xPos="570" yPos="210"/>
       </Node>
       <Node id="N233" name="N14" history="false">
-        <Commands>
-        </Commands>
+        <Commands/>
         <FEdge target="S5" start="">
           <Connection>
             <ControlPoint xPos="165" yPos="300" ctrlXPos="165" ctrlYPos="322"/>
@@ -477,9 +429,7 @@ lastSignal = "";]]>
         <Position xPos="120" yPos="210"/>
       </Node>
       <SuperNode id="S3" name="CloseGame" comment="" hideLocalVar="false" hideGlobalVar="false" start="N321;">
-        <Commands>
-          <![CDATA[Int userQuestions = 0;]]>
-        </Commands>
+        <Commands><![CDATA[Int userQuestions = 0;]]></Commands>
         <EEdge target="N231" start ="">
           <Connection>
             <ControlPoint xPos="615" yPos="390" ctrlXPos="615" ctrlYPos="367"/>
@@ -488,15 +438,12 @@ lastSignal = "";]]>
         </EEdge>
         <Position xPos="570" yPos="390"/>
         <Node id="N234" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="30" yPos="120"/>
         </Node>
         <Node id="N321" name="N117" history="false">
-          <Commands>
-            <![CDATA[emitDA ( "request(fun)" );
-sysCall ( "expectDAs" , "provide.*fun" );]]>
-          </Commands>
+          <Commands><![CDATA[emitDA ( "request(fun)" );
+sysCall ( "expectDAs" , "provide.*fun" );]]></Commands>
           <EEdge target="N322" start ="">
             <Connection>
               <ControlPoint xPos="480" yPos="255" ctrlXPos="502" ctrlYPos="255"/>
@@ -506,8 +453,7 @@ sysCall ( "expectDAs" , "provide.*fun" );]]>
           <Position xPos="390" yPos="210"/>
         </Node>
         <Node id="N322" name="WaitForFunReaction" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N325" start="">
             <Connection>
               <ControlPoint xPos="615" yPos="300" ctrlXPos="615" ctrlYPos="412"/>
@@ -524,11 +470,8 @@ sysCall ( "expectDAs" , "provide.*fun" );]]>
           <Position xPos="570" yPos="210"/>
         </Node>
         <Node id="N323" name="DoSomething" history="false">
-          <Commands>
-            <![CDATA[String fun = "";]]>
-            <![CDATA[lastReaction.type = "acknowledgement";
-emitDialogueAct ( lastReaction );]]>
-          </Commands>
+          <Commands><![CDATA[String fun = "";]]><![CDATA[lastReaction.type = "acknowledgement";
+emitDialogueAct ( lastReaction );]]></Commands>
           <EEdge target="N324" start ="">
             <Connection>
               <ControlPoint xPos="975" yPos="300" ctrlXPos="975" ctrlYPos="412"/>
@@ -538,16 +481,13 @@ emitDialogueAct ( lastReaction );]]>
           <Position xPos="930" yPos="210"/>
         </Node>
         <Node id="N324" name="N118" history="false">
-          <Commands>
-            <![CDATA[lastReaction = emptyReaction (  );
+          <Commands><![CDATA[lastReaction = emptyReaction (  );
 situation = SE.gameFinished;
-flag.status = StatE.stopped;]]>
-          </Commands>
+flag.status = StatE.stopped;]]></Commands>
           <Position xPos="930" yPos="570"/>
         </Node>
         <Node id="N325" name="N121" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N323" start="">
             <Connection>
               <ControlPoint xPos="647" yPos="583" ctrlXPos="780" ctrlYPos="449"/>
@@ -565,8 +505,7 @@ flag.status = StatE.stopped;]]>
         </Node>
       </SuperNode>
       <SuperNode id="S5" name="InitSortingGame" comment="" hideLocalVar="false" hideGlobalVar="false" start="N327;">
-        <Commands>
-        </Commands>
+        <Commands/>
         <EEdge target="S9" start ="">
           <Connection>
             <ControlPoint xPos="210" yPos="435" ctrlXPos="232" ctrlYPos="435"/>
@@ -575,15 +514,12 @@ flag.status = StatE.stopped;]]>
         </EEdge>
         <Position xPos="120" yPos="390"/>
         <Node id="N326" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="750" yPos="120"/>
         </Node>
         <Node id="N327" name="DecideOnInstructions" history="false">
-          <Commands>
-            <![CDATA[setActivity ( "Sorting" );
-sysCall ( "flowStarted" , "Sorting" );]]>
-          </Commands>
+          <Commands><![CDATA[setActivity ( "Sorting" );
+sysCall ( "flowStarted" , "Sorting" );]]></Commands>
           <CEdge target="N329" start="">
             <Connection>
               <ControlPoint xPos="474" yPos="502" ctrlXPos="556" ctrlYPos="453"/>
@@ -600,17 +536,12 @@ sysCall ( "flowStarted" , "Sorting" );]]>
           <Position xPos="390" yPos="480"/>
         </Node>
         <Node id="N328" name="StartPlayingQuiz" history="false">
-          <Commands>
-            <![CDATA[situation = SE.startSorting;
-startSorting (  );]]>
-          </Commands>
+          <Commands><![CDATA[situation = SE.startSorting;
+startSorting (  );]]></Commands>
           <Position xPos="660" yPos="570"/>
         </Node>
         <Node id="N329" name="SayInstructions" history="false">
-          <Commands>
-            <![CDATA[Int try = 0;]]>
-            <![CDATA[emitDA ( "provide(instructions)" );]]>
-          </Commands>
+          <Commands><![CDATA[Int try = 0;]]><![CDATA[emitDA ( "provide(instructions)" );]]></Commands>
           <EEdge target="N328" start ="">
             <Connection>
               <ControlPoint xPos="705" yPos="390" ctrlXPos="705" ctrlYPos="457"/>
@@ -621,10 +552,7 @@ startSorting (  );]]>
         </Node>
       </SuperNode>
       <SuperNode id="S9" name="PlaySorting" comment="" hideLocalVar="false" hideGlobalVar="false" start="N334;">
-        <Commands>
-          <![CDATA[Int userMoves = 0;]]>
-          <![CDATA[lastReaction = emptyReaction (  );]]>
-        </Commands>
+        <Commands><![CDATA[Int userMoves = 0;]]><![CDATA[lastReaction = emptyReaction (  );]]></Commands>
         <CEdge target="S3" start="">
           <Connection>
             <ControlPoint xPos="390" yPos="435" ctrlXPos="457" ctrlYPos="435"/>
@@ -647,13 +575,11 @@ startSorting (  );]]>
         </EEdge>
         <Position xPos="300" yPos="390"/>
         <Node id="N330" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="930" yPos="30"/>
         </Node>
         <Node id="N331" name="N166" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N342" start="">
             <Connection>
               <ControlPoint xPos="615" yPos="570" ctrlXPos="615" ctrlYPos="637"/>
@@ -698,9 +624,7 @@ startSorting (  );]]>
           <Position xPos="570" yPos="480"/>
         </Node>
         <Node id="N334" name="N177" history="false">
-          <Commands>
-            <![CDATA[sysCall ( "expectDAs" , "XXX" );]]>
-          </Commands>
+          <Commands><![CDATA[sysCall ( "expectDAs" , "XXX" );]]></Commands>
           <CEdge target="N339" start="">
             <Connection>
               <ControlPoint xPos="165" yPos="480" ctrlXPos="165" ctrlYPos="502"/>
@@ -717,9 +641,7 @@ startSorting (  );]]>
           <Position xPos="120" yPos="390"/>
         </Node>
         <Node id="N336" name="N181" history="false">
-          <Commands>
-            <![CDATA[lastReaction = emptyReaction (  );]]>
-          </Commands>
+          <Commands><![CDATA[lastReaction = emptyReaction (  );]]></Commands>
           <CEdge target="S11" start="">
             <Connection>
               <ControlPoint xPos="570" yPos="255" ctrlXPos="502" ctrlYPos="255"/>
@@ -736,15 +658,12 @@ startSorting (  );]]>
           <Position xPos="570" yPos="210"/>
         </Node>
         <Node id="N337" name="N170" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="30" yPos="210"/>
         </Node>
         <Node id="N338" name="N189" history="false">
-          <Commands>
-            <![CDATA[newRoundSorting (  );
-situation = SE.gameTurn;]]>
-          </Commands>
+          <Commands><![CDATA[newRoundSorting (  );
+situation = SE.gameTurn;]]></Commands>
           <EEdge target="N331" start ="">
             <Connection>
               <ControlPoint xPos="480" yPos="525" ctrlXPos="502" ctrlYPos="525"/>
@@ -754,9 +673,7 @@ situation = SE.gameTurn;]]>
           <Position xPos="390" yPos="480"/>
         </Node>
         <Node id="N339" name="N190" history="false">
-          <Commands>
-            <![CDATA[emitDA ( "acknowledgement(delight, what=game)" );]]>
-          </Commands>
+          <Commands><![CDATA[emitDA ( "acknowledgement(delight, what=game)" );]]></Commands>
           <EEdge target="N338" start ="">
             <Connection>
               <ControlPoint xPos="208" yPos="603" ctrlXPos="279" ctrlYPos="583"/>
@@ -766,11 +683,8 @@ situation = SE.gameTurn;]]>
           <Position xPos="120" yPos="570"/>
         </Node>
         <Node id="N342" name="N4" history="false">
-          <Commands>
-            <![CDATA[String st = "";]]>
-            <![CDATA[st = lastReaction.subtype;
-lastReaction = emptyReaction (  );]]>
-          </Commands>
+          <Commands><![CDATA[String st = "";]]><![CDATA[st = lastReaction.subtype;
+lastReaction = emptyReaction (  );]]></Commands>
           <CEdge target="N338" start="">
             <Connection>
               <ControlPoint xPos="593" yPos="756" ctrlXPos="546" ctrlYPos="673"/>
@@ -787,11 +701,8 @@ lastReaction = emptyReaction (  );]]>
           <Position xPos="570" yPos="750"/>
         </Node>
         <Node id="N344" name="N4" history="false">
-          <Commands>
-            <![CDATA[String st = "";]]>
-            <![CDATA[nextMove (  );
-lastReaction = emptyReaction (  );]]>
-          </Commands>
+          <Commands><![CDATA[String st = "";]]><![CDATA[nextMove (  );
+lastReaction = emptyReaction (  );]]></Commands>
           <EEdge target="N331" start ="">
             <Connection>
               <ControlPoint xPos="1020" yPos="615" ctrlXPos="858" ctrlYPos="615"/>
@@ -801,8 +712,7 @@ lastReaction = emptyReaction (  );]]>
           <Position xPos="1020" yPos="570"/>
         </Node>
         <Node id="N29" name="N29" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N344" start="">
             <Connection>
               <ControlPoint xPos="1065" yPos="480" ctrlXPos="1065" ctrlYPos="502"/>
@@ -819,10 +729,8 @@ lastReaction = emptyReaction (  );]]>
           <Position xPos="1020" yPos="390"/>
         </Node>
         <Node id="N32" name="N32" history="false">
-          <Commands>
-            <![CDATA[toggleRobotInitiative (  );
-lastReaction = emptyReaction (  );]]>
-          </Commands>
+          <Commands><![CDATA[toggleRobotInitiative (  );
+lastReaction = emptyReaction (  );]]></Commands>
           <EEdge target="N331" start ="">
             <Connection>
               <ControlPoint xPos="842" yPos="693" ctrlXPos="655" ctrlYPos="641"/>
@@ -832,9 +740,7 @@ lastReaction = emptyReaction (  );]]>
           <Position xPos="840" yPos="660"/>
         </Node>
         <SuperNode id="S11" name="FinishGame" comment="" hideLocalVar="false" hideGlobalVar="false" start="N347;">
-          <Commands>
-            <![CDATA[print ( "tafel leeg" );]]>
-          </Commands>
+          <Commands><![CDATA[print ( "tafel leeg" );]]></Commands>
           <CEdge target="N337" start="">
             <Connection>
               <ControlPoint xPos="300" yPos="255" ctrlXPos="232" ctrlYPos="255"/>
@@ -850,14 +756,11 @@ lastReaction = emptyReaction (  );]]>
           </EEdge>
           <Position xPos="300" yPos="210"/>
           <Node id="N345" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="30" yPos="120"/>
           </Node>
           <Node id="N346" name="N56" history="false">
-            <Commands>
-              <![CDATA[situation = SE.stopPlaying;]]>
-            </Commands>
+            <Commands><![CDATA[situation = SE.stopPlaying;]]></Commands>
             <EEdge target="N351" start ="">
               <Connection>
                 <ControlPoint xPos="165" yPos="480" ctrlXPos="165" ctrlYPos="502"/>
@@ -867,9 +770,7 @@ lastReaction = emptyReaction (  );]]>
             <Position xPos="120" yPos="390"/>
           </Node>
           <Node id="N347" name="N57" history="false">
-            <Commands>
-              <![CDATA[emitDA ( "request(continue, what=game)" );]]>
-            </Commands>
+            <Commands><![CDATA[emitDA ( "request(continue, what=game)" );]]></Commands>
             <EEdge target="N350" start ="">
               <Connection>
                 <ControlPoint xPos="210" yPos="255" ctrlXPos="367" ctrlYPos="255"/>
@@ -879,9 +780,7 @@ lastReaction = emptyReaction (  );]]>
             <Position xPos="120" yPos="210"/>
           </Node>
           <Node id="N348" name="DoSomething" history="false">
-            <Commands>
-              <![CDATA[situation = SE.switchRole;]]>
-            </Commands>
+            <Commands><![CDATA[situation = SE.switchRole;]]></Commands>
             <EEdge target="N351" start ="">
               <Connection>
                 <ControlPoint xPos="570" yPos="615" ctrlXPos="412" ctrlYPos="615"/>
@@ -891,8 +790,7 @@ lastReaction = emptyReaction (  );]]>
             <Position xPos="570" yPos="570"/>
           </Node>
           <Node id="N349" name="WaitForInterruptIReaction" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N348" start="">
               <Connection>
                 <ControlPoint xPos="615" yPos="480" ctrlXPos="615" ctrlYPos="502"/>
@@ -916,9 +814,7 @@ lastReaction = emptyReaction (  );]]>
             <Position xPos="570" yPos="390"/>
           </Node>
           <Node id="N350" name="N112" history="false">
-            <Commands>
-              <![CDATA[sysCall ( "expectDAs" , "(confirm|reject).*repeat" );]]>
-            </Commands>
+            <Commands><![CDATA[sysCall ( "expectDAs" , "(confirm|reject).*repeat" );]]></Commands>
             <CEdge target="N349" start="">
               <Connection>
                 <ControlPoint xPos="615" yPos="300" ctrlXPos="615" ctrlYPos="322"/>
@@ -935,15 +831,12 @@ lastReaction = emptyReaction (  );]]>
             <Position xPos="570" yPos="210"/>
           </Node>
           <Node id="N351" name="N113" history="false">
-            <Commands>
-              <![CDATA[lastReaction = emptyReaction (  );]]>
-            </Commands>
+            <Commands><![CDATA[lastReaction = emptyReaction (  );]]></Commands>
             <Position xPos="120" yPos="570"/>
           </Node>
         </SuperNode>
         <SuperNode id="S4" name="TreatMove" comment="" hideLocalVar="false" hideGlobalVar="false" start="N27;">
-          <Commands>
-          </Commands>
+          <Commands/>
           <EEdge target="N336" start ="">
             <Connection>
               <ControlPoint xPos="840" yPos="255" ctrlXPos="772" ctrlYPos="255"/>
@@ -958,16 +851,13 @@ lastReaction = emptyReaction (  );]]>
             </Text>
           </Comment>
           <Node id="N23" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="1020" yPos="210"/>
           </Node>
           <Node id="N24" name="N19" history="false">
-            <Commands>
-              <![CDATA[emitDA ( "request(turn)" );
+            <Commands><![CDATA[emitDA ( "request(turn)" );
 userMoves = 0;
-nextMove (  );]]>
-            </Commands>
+nextMove (  );]]></Commands>
             <EEdge target="N28" start ="">
               <Connection>
                 <ControlPoint xPos="705" yPos="300" ctrlXPos="705" ctrlYPos="322"/>
@@ -977,10 +867,7 @@ nextMove (  );]]>
             <Position xPos="660" yPos="210"/>
           </Node>
           <Node id="N25" name="N178" history="false">
-            <Commands>
-              <![CDATA[DialogueAct da = { type = "express" , subtype = "success" , value = lastReaction.value };]]>
-              <![CDATA[emitDialogueAct ( da );]]>
-            </Commands>
+            <Commands><![CDATA[DialogueAct da = { type = "express" , subtype = "success" , value = lastReaction.value };]]><![CDATA[emitDialogueAct ( da );]]></Commands>
             <EEdge target="N28" start ="">
               <Connection>
                 <ControlPoint xPos="705" yPos="570" ctrlXPos="705" ctrlYPos="547"/>
@@ -990,9 +877,7 @@ nextMove (  );]]>
             <Position xPos="660" yPos="570"/>
           </Node>
           <Node id="N26" name="N124" history="false">
-            <Commands>
-              <![CDATA[userMoves = 0;]]>
-            </Commands>
+            <Commands><![CDATA[userMoves = 0;]]></Commands>
             <CEdge target="N25" start="">
               <Connection>
                 <ControlPoint xPos="480" yPos="615" ctrlXPos="547" ctrlYPos="615"/>
@@ -1009,8 +894,7 @@ nextMove (  );]]>
             <Position xPos="390" yPos="570"/>
           </Node>
           <Node id="N27" name="N167" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N30" start="">
               <Connection>
                 <ControlPoint xPos="165" yPos="570" ctrlXPos="165" ctrlYPos="547"/>
@@ -1027,15 +911,11 @@ nextMove (  );]]>
             <Position xPos="120" yPos="570"/>
           </Node>
           <Node id="N28" name="N181" history="false">
-            <Commands>
-              <![CDATA[lastReaction = emptyReaction (  );]]>
-            </Commands>
+            <Commands><![CDATA[lastReaction = emptyReaction (  );]]></Commands>
             <Position xPos="660" yPos="390"/>
           </Node>
           <Node id="N30" name="N77" history="false">
-            <Commands>
-              <![CDATA[userMoves = userMoves + 1;]]>
-            </Commands>
+            <Commands><![CDATA[userMoves = userMoves + 1;]]></Commands>
             <CEdge target="N31" start="">
               <Connection>
                 <ControlPoint xPos="210" yPos="435" ctrlXPos="277" ctrlYPos="435"/>
@@ -1052,10 +932,7 @@ nextMove (  );]]>
             <Position xPos="120" yPos="390"/>
           </Node>
           <Node id="N31" name="N168" history="false">
-            <Commands>
-              <![CDATA[DialogueAct da = { type = "acknowledgement" , subtype = "correctness" , value = lastReaction.value };]]>
-              <![CDATA[emitDialogueAct ( da );]]>
-            </Commands>
+            <Commands><![CDATA[DialogueAct da = { type = "acknowledgement" , subtype = "correctness" , value = lastReaction.value };]]><![CDATA[emitDialogueAct ( da );]]></Commands>
             <EEdge target="N22" start ="">
               <Connection>
                 <ControlPoint xPos="435" yPos="390" ctrlXPos="435" ctrlYPos="367"/>
@@ -1065,8 +942,7 @@ nextMove (  );]]>
             <Position xPos="390" yPos="390"/>
           </Node>
           <Node id="N22" name="N22" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N24" start="">
               <Connection>
                 <ControlPoint xPos="480" yPos="255" ctrlXPos="547" ctrlYPos="255"/>
@@ -1085,8 +961,7 @@ nextMove (  );]]>
         </SuperNode>
       </SuperNode>
       <SuperNode id="S28" name="ReactToUserEvents" comment="" hideLocalVar="false" hideGlobalVar="false" start="N354;">
-        <Commands>
-        </Commands>
+        <Commands/>
         <EEdge target="N231" start ="">
           <Connection>
             <ControlPoint xPos="480" yPos="255" ctrlXPos="502" ctrlYPos="255"/>
@@ -1095,15 +970,12 @@ nextMove (  );]]>
         </EEdge>
         <Position xPos="390" yPos="210"/>
         <Node id="N352" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="30" yPos="390"/>
         </Node>
         <Node id="N353" name="ConsumeLastReaction" history="false">
-          <Commands>
-            <![CDATA[lastReaction = emptyReaction (  );
-situation = SE.stopPlaying;]]>
-          </Commands>
+          <Commands><![CDATA[lastReaction = emptyReaction (  );
+situation = SE.stopPlaying;]]></Commands>
           <EEdge target="N354" start ="">
             <Connection>
               <ControlPoint xPos="403" yPos="313" ctrlXPos="360" ctrlYPos="270"/>
@@ -1113,8 +985,7 @@ situation = SE.stopPlaying;]]>
           <Position xPos="390" yPos="300"/>
         </Node>
         <Node id="N354" name="WaitForSignalOrInterrupt" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N359" start="">
             <Connection>
               <ControlPoint xPos="298" yPos="177" ctrlXPos="465" ctrlYPos="223"/>
@@ -1145,8 +1016,7 @@ situation = SE.stopPlaying;]]>
           <Position xPos="210" yPos="120"/>
         </Node>
         <Node id="N355" name="N134" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N357" start="">
             <Connection>
               <ControlPoint xPos="662" yPos="603" ctrlXPos="549" ctrlYPos="571"/>
@@ -1163,9 +1033,7 @@ situation = SE.stopPlaying;]]>
           <Position xPos="660" yPos="570"/>
         </Node>
         <Node id="N356" name="N138" history="false">
-          <Commands>
-            <![CDATA[situation = SE.switchRole;]]>
-          </Commands>
+          <Commands><![CDATA[situation = SE.switchRole;]]></Commands>
           <EEdge target="N358" start ="">
             <Connection>
               <ControlPoint xPos="165" yPos="570" ctrlXPos="165" ctrlYPos="502"/>
@@ -1175,9 +1043,7 @@ situation = SE.stopPlaying;]]>
           <Position xPos="120" yPos="570"/>
         </Node>
         <Node id="N357" name="N137" history="false">
-          <Commands>
-            <![CDATA[situation = SE.stopPlaying;]]>
-          </Commands>
+          <Commands><![CDATA[situation = SE.stopPlaying;]]></Commands>
           <EEdge target="N358" start ="">
             <Connection>
               <ControlPoint xPos="313" yPos="493" ctrlXPos="270" ctrlYPos="450"/>
@@ -1187,10 +1053,8 @@ situation = SE.stopPlaying;]]>
           <Position xPos="300" yPos="480"/>
         </Node>
         <Node id="N358" name="N139" history="false">
-          <Commands>
-            <![CDATA[flag.status = StatE.interrupted;
-lastReaction = emptyReaction (  );]]>
-          </Commands>
+          <Commands><![CDATA[flag.status = StatE.interrupted;
+lastReaction = emptyReaction (  );]]></Commands>
           <EEdge target="N354" start ="">
             <Connection>
               <ControlPoint xPos="187" yPos="306" ctrlXPos="203" ctrlYPos="277"/>
@@ -1200,8 +1064,7 @@ lastReaction = emptyReaction (  );]]>
           <Position xPos="120" yPos="300"/>
         </Node>
         <Node id="N359" name="N142" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N355" start="">
             <Connection>
               <ControlPoint xPos="705" yPos="390" ctrlXPos="705" ctrlYPos="457"/>
@@ -1218,25 +1081,20 @@ lastReaction = emptyReaction (  );]]>
           <Position xPos="660" yPos="300"/>
         </Node>
         <Node id="N360" name="N13" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="660" yPos="120"/>
         </Node>
         <Node id="N37" name="N37" history="false">
-          <Commands>
-            <![CDATA[situation = SE.gameFinished;
-emitDA ( "acknowledgement(game)" );]]>
-          </Commands>
+          <Commands><![CDATA[situation = SE.gameFinished;
+emitDA ( "acknowledgement(game)" );]]></Commands>
           <Position xPos="1033" yPos="305"/>
         </Node>
       </SuperNode>
     </SuperNode>
     <SuperNode id="S46" name="DoCLosing" comment="" hideLocalVar="false" hideGlobalVar="false" start="N40;">
-      <Commands>
-        <![CDATA[DialogueAct return = { type = "" , subtype = "" };
+      <Commands><![CDATA[DialogueAct return = { type = "" , subtype = "" };
 String lastTime = "";
-String waitFor = "";]]>
-      </Commands>
+String waitFor = "";]]></Commands>
       <Position xPos="840" yPos="210"/>
       <Comment>
         <Boundary xPos="-2147483648" yPos="-2147483648" width="-2147483648" height="-2147483648"/>
@@ -1246,24 +1104,19 @@ String waitFor = "";]]>
         </Text>
       </Comment>
       <Node id="N361" name="History" history="true">
-        <Commands>
-        </Commands>
+        <Commands/>
         <Position xPos="1380" yPos="214"/>
       </Node>
       <Node id="N364" name="N11" history="false">
-        <Commands>
-          <![CDATA[return = { type = "salutation" , subtype = "closing" };
+        <Commands><![CDATA[return = { type = "salutation" , subtype = "closing" };
 emitDialogueAct ( return );
-flag.status = StatE.stopped;]]>
-        </Commands>
+flag.status = StatE.stopped;]]></Commands>
         <Position xPos="666" yPos="763"/>
       </Node>
       <Node id="N365" name="DidYouLikeIt" history="false">
-        <Commands>
-          <![CDATA[return = { type = "request" , subtype = waitFor };
+        <Commands><![CDATA[return = { type = "request" , subtype = waitFor };
 emitDialogueAct ( return );
-sysCall ( "expectDAs" , "provide\(" + waitFor );]]>
-        </Commands>
+sysCall ( "expectDAs" , "provide\(" + waitFor );]]></Commands>
         <EEdge target="N17" start ="">
           <Connection>
             <ControlPoint xPos="165" yPos="480" ctrlXPos="165" ctrlYPos="502"/>
@@ -1273,8 +1126,7 @@ sysCall ( "expectDAs" , "provide\(" + waitFor );]]>
         <Position xPos="120" yPos="435"/>
       </Node>
       <Node id="N368" name="N10" history="false">
-        <Commands>
-        </Commands>
+        <Commands/>
         <EEdge target="N365" start ="">
           <Connection>
             <ControlPoint xPos="662" yPos="357" ctrlXPos="464" ctrlYPos="411"/>
@@ -1284,9 +1136,7 @@ sysCall ( "expectDAs" , "provide\(" + waitFor );]]>
         <Position xPos="641" yPos="276"/>
       </Node>
       <Node id="N369" name="N11" history="false">
-        <Commands>
-          <![CDATA[lastTime = "yes";]]>
-        </Commands>
+        <Commands><![CDATA[lastTime = "yes";]]></Commands>
         <EEdge target="N368" start ="">
           <Connection>
             <ControlPoint xPos="647" yPos="287" ctrlXPos="655" ctrlYPos="295"/>
@@ -1296,9 +1146,7 @@ sysCall ( "expectDAs" , "provide\(" + waitFor );]]>
         <Position xPos="551" yPos="208"/>
       </Node>
       <Node id="N370" name="N17" history="false">
-        <Commands>
-          <![CDATA[lastTime = "no";]]>
-        </Commands>
+        <Commands><![CDATA[lastTime = "no";]]></Commands>
         <EEdge target="N368" start ="">
           <Connection>
             <ControlPoint xPos="480" yPos="345" ctrlXPos="547" ctrlYPos="345"/>
@@ -1308,8 +1156,7 @@ sysCall ( "expectDAs" , "provide\(" + waitFor );]]>
         <Position xPos="392" yPos="325"/>
       </Node>
       <Node id="N371" name="N20" history="false">
-        <Commands>
-        </Commands>
+        <Commands/>
         <CEdge target="N370" start="">
           <Connection>
             <ControlPoint xPos="377" yPos="287" ctrlXPos="385" ctrlYPos="295"/>
@@ -1326,10 +1173,8 @@ sysCall ( "expectDAs" , "provide\(" + waitFor );]]>
         <Position xPos="302" yPos="227"/>
       </Node>
       <Node id="N373" name="HadeNoFun" history="false">
-        <Commands>
-          <![CDATA[return = { type = "acknowledgement" , subtype = waitFor , value = lastReaction.value , LastTime = lastTime };
-emitDialogueAct ( return );]]>
-        </Commands>
+        <Commands><![CDATA[return = { type = "acknowledgement" , subtype = waitFor , value = lastReaction.value , LastTime = lastTime };
+emitDialogueAct ( return );]]></Commands>
         <CEdge target="N364" start="">
           <Connection>
             <ControlPoint xPos="705" yPos="660" ctrlXPos="705" ctrlYPos="682"/>
@@ -1346,8 +1191,7 @@ emitDialogueAct ( return );]]>
         <Position xPos="666" yPos="581"/>
       </Node>
       <Node id="N17" name="CheckShutDown" history="false">
-        <Commands>
-        </Commands>
+        <Commands/>
         <CEdge target="N373" start="">
           <Connection>
             <ControlPoint xPos="210" yPos="615" ctrlXPos="412" ctrlYPos="615"/>
@@ -1371,9 +1215,7 @@ emitDialogueAct ( return );]]>
         <Position xPos="120" yPos="615"/>
       </Node>
       <Node id="N40" name="N40" history="false">
-        <Commands>
-          <![CDATA[waitFor = "meetagain";]]>
-        </Commands>
+        <Commands><![CDATA[waitFor = "meetagain";]]></Commands>
         <EEdge target="N371" start ="">
           <Connection>
             <ControlPoint xPos="210" yPos="255" ctrlXPos="232" ctrlYPos="255"/>
@@ -1383,10 +1225,8 @@ emitDialogueAct ( return );]]>
         <Position xPos="116" yPos="231"/>
       </Node>
       <Node id="N367" name="N5" history="false">
-        <Commands>
-          <![CDATA[lastReaction = emptyReaction (  );
-waitFor = "meetagain";]]>
-        </Commands>
+        <Commands><![CDATA[lastReaction = emptyReaction (  );
+waitFor = "meetagain";]]></Commands>
         <EEdge target="N365" start ="">
           <Connection>
             <ControlPoint xPos="660" yPos="435" ctrlXPos="457" ctrlYPos="435"/>
@@ -1397,8 +1237,7 @@ waitFor = "meetagain";]]>
       </Node>
     </SuperNode>
     <SuperNode id="S49" name="ActivitySelection" comment="" hideLocalVar="false" hideGlobalVar="false" start="N395;">
-      <Commands>
-      </Commands>
+      <Commands/>
       <CEdge target="S50" start="">
         <Connection>
           <ControlPoint xPos="480" yPos="447" ctrlXPos="367" ctrlYPos="477"/>
@@ -1421,20 +1260,16 @@ waitFor = "meetagain";]]>
       </EEdge>
       <Position xPos="480" yPos="390"/>
       <Node id="N388" name="History" history="true">
-        <Commands>
-        </Commands>
+        <Commands/>
         <Position xPos="1110" yPos="120"/>
       </Node>
       <Node id="N389" name="ConsumeLastReaction" history="false">
-        <Commands>
-          <![CDATA[lastReaction = emptyReaction (  );
-situation = SE.startClosing;]]>
-        </Commands>
+        <Commands><![CDATA[lastReaction = emptyReaction (  );
+situation = SE.startClosing;]]></Commands>
         <Position xPos="390" yPos="570"/>
       </Node>
       <Node id="N390" name="WaitForSignalOrInterrupt" history="false">
-        <Commands>
-        </Commands>
+        <Commands/>
         <CEdge target="N391" start="">
           <Connection>
             <ControlPoint xPos="654" yPos="278" ctrlXPos="736" ctrlYPos="326"/>
@@ -1465,8 +1300,7 @@ situation = SE.startClosing;]]>
         <Position xPos="570" yPos="210"/>
       </Node>
       <Node id="N391" name="N85" history="false">
-        <Commands>
-        </Commands>
+        <Commands/>
         <CEdge target="N18" start="">
           <Connection>
             <ControlPoint xPos="853" yPos="467" ctrlXPos="837" ctrlYPos="483"/>
@@ -1490,24 +1324,18 @@ situation = SE.startClosing;]]>
         <Position xPos="840" yPos="390"/>
       </Node>
       <Node id="N393" name="N97" history="false">
-        <Commands>
-          <![CDATA[situation = SE.startSorting;
-lastReaction = emptyReaction (  );]]>
-        </Commands>
+        <Commands><![CDATA[situation = SE.startSorting;
+lastReaction = emptyReaction (  );]]></Commands>
         <Position xPos="1110" yPos="750"/>
       </Node>
       <Node id="N394" name="N120" history="false">
-        <Commands>
-          <![CDATA[situation = SE.startQuiz;
-lastReaction = emptyReaction (  );]]>
-        </Commands>
+        <Commands><![CDATA[situation = SE.startQuiz;
+lastReaction = emptyReaction (  );]]></Commands>
         <Position xPos="750" yPos="750"/>
       </Node>
       <Node id="N395" name="N227" history="false">
-        <Commands>
-          <![CDATA[setActivity ( "Switch" );
-sysCall ( "flowStarted" , "INTEGRATED" );]]>
-        </Commands>
+        <Commands><![CDATA[setActivity ( "Switch" );
+sysCall ( "flowStarted" , "INTEGRATED" );]]></Commands>
         <CEdge target="N390" start="">
           <Connection>
             <ControlPoint xPos="294" yPos="502" ctrlXPos="430" ctrlYPos="421"/>
@@ -1524,9 +1352,7 @@ sysCall ( "flowStarted" , "INTEGRATED" );]]>
         <Position xPos="210" yPos="480"/>
       </Node>
       <Node id="N396" name="N228" history="false">
-        <Commands>
-          <![CDATA[emitDA ( "apologize(play)" );]]>
-        </Commands>
+        <Commands><![CDATA[emitDA ( "apologize(play)" );]]></Commands>
         <EEdge target="N390" start ="">
           <Connection>
             <ControlPoint xPos="1020" yPos="255" ctrlXPos="862" ctrlYPos="255"/>
@@ -1536,10 +1362,8 @@ sysCall ( "flowStarted" , "INTEGRATED" );]]>
         <Position xPos="1020" yPos="210"/>
       </Node>
       <Node id="N19" name="N19" history="false">
-        <Commands>
-          <![CDATA[sysCall ( "expectDAs" , "request\(play|stop\)" );
-emitDialogueAct ( { type = "request" , subtype = "play" , what = gameToPropose (  ) } );]]>
-        </Commands>
+        <Commands><![CDATA[sysCall ( "expectDAs" , "request\(play|stop\)" );
+emitDialogueAct ( { type = "request" , subtype = "play" , what = gameToPropose (  ) } );]]></Commands>
         <EEdge target="N390" start ="">
           <Connection>
             <ControlPoint xPos="300" yPos="255" ctrlXPos="412" ctrlYPos="255"/>
@@ -1549,9 +1373,7 @@ emitDialogueAct ( { type = "request" , subtype = "play" , what = gameToPropose (
         <Position xPos="210" yPos="210"/>
       </Node>
       <Node id="N18" name="N18" history="false">
-        <Commands>
-          <![CDATA[emitDA ( "request(placing, where=quiz)" );]]>
-        </Commands>
+        <Commands><![CDATA[emitDA ( "request(placing, where=quiz)" );]]></Commands>
         <TEdge target="N394" start="" timeout="10000">
           <Connection>
             <ControlPoint xPos="795" yPos="660" ctrlXPos="795" ctrlYPos="682"/>
@@ -1561,9 +1383,7 @@ emitDialogueAct ( { type = "request" , subtype = "play" , what = gameToPropose (
         <Position xPos="750" yPos="570"/>
       </Node>
       <Node id="N42" name="N42" history="false">
-        <Commands>
-          <![CDATA[emitDA ( "request(placing, where=sorting)" );]]>
-        </Commands>
+        <Commands><![CDATA[emitDA ( "request(placing, where=sorting)" );]]></Commands>
         <TEdge target="N393" start="" timeout="10000">
           <Connection>
             <ControlPoint xPos="1155" yPos="660" ctrlXPos="1155" ctrlYPos="682"/>
@@ -1574,9 +1394,7 @@ emitDialogueAct ( { type = "request" , subtype = "play" , what = gameToPropose (
       </Node>
     </SuperNode>
     <SuperNode id="S50" name="QuizActivity" comment="" hideLocalVar="false" hideGlobalVar="false" start="N400;">
-      <Commands>
-        <![CDATA[String stopRequest = "";]]>
-      </Commands>
+      <Commands><![CDATA[String stopRequest = "";]]></Commands>
       <EEdge target="S49" start ="">
         <Connection>
           <ControlPoint xPos="210" yPos="435" ctrlXPos="322" ctrlYPos="435"/>
@@ -1585,18 +1403,15 @@ emitDialogueAct ( { type = "request" , subtype = "play" , what = gameToPropose (
       </EEdge>
       <Position xPos="120" yPos="390"/>
       <Node id="N397" name="History" history="true">
-        <Commands>
-        </Commands>
+        <Commands/>
         <Position xPos="1290" yPos="210"/>
       </Node>
       <Node id="N398" name="N9" history="false">
-        <Commands>
-        </Commands>
+        <Commands/>
         <Position xPos="660" yPos="210"/>
       </Node>
       <Node id="N399" name="stopRound" history="false">
-        <Commands>
-        </Commands>
+        <Commands/>
         <EEdge target="S59" start ="">
           <Connection>
             <ControlPoint xPos="525" yPos="570" ctrlXPos="525" ctrlYPos="547"/>
@@ -1606,8 +1421,7 @@ emitDialogueAct ( { type = "request" , subtype = "play" , what = gameToPropose (
         <Position xPos="480" yPos="570"/>
       </Node>
       <Node id="N400" name="N43" history="false">
-        <Commands>
-        </Commands>
+        <Commands/>
         <FEdge target="S69" start="">
           <Connection>
             <ControlPoint xPos="114" yPos="278" ctrlXPos="142" ctrlYPos="294"/>
@@ -1623,11 +1437,9 @@ emitDialogueAct ( { type = "request" , subtype = "play" , what = gameToPropose (
         <Position xPos="30" yPos="210"/>
       </Node>
       <SuperNode id="S51" name="UserAsks" comment="" hideLocalVar="false" hideGlobalVar="false" start="S57;">
-        <Commands>
-          <![CDATA[DialogueAct questionReaction = emptyReaction (  );
+        <Commands><![CDATA[DialogueAct questionReaction = emptyReaction (  );
 DialogueAct possibleAnswerReaction = emptyReaction (  );
-DialogueAct feedbackReaction = emptyReaction (  );]]>
-        </Commands>
+DialogueAct feedbackReaction = emptyReaction (  );]]></Commands>
         <EEdge target="S59" start ="">
           <Connection>
             <ControlPoint xPos="120" yPos="409" ctrlXPos="277" ctrlYPos="318"/>
@@ -1662,15 +1474,12 @@ DialogueAct feedbackReaction = emptyReaction (  );]]>
           </Text>
         </Comment>
         <Node id="N401" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="840" yPos="120"/>
         </Node>
         <Node id="N402" name="AskForQuestion" history="false">
-          <Commands>
-            <![CDATA[newTurn (  );
-emitDA ( "request(question)" );]]>
-          </Commands>
+          <Commands><![CDATA[newTurn (  );
+emitDA ( "request(question)" );]]></Commands>
           <EEdge target="S52" start ="">
             <Connection>
               <ControlPoint xPos="233" yPos="294" ctrlXPos="216" ctrlYPos="322"/>
@@ -1680,9 +1489,7 @@ emitDA ( "request(question)" );]]>
           <Position xPos="210" yPos="210"/>
         </Node>
         <Node id="N403" name="AskForPossibleAnswers" history="false">
-          <Commands>
-            <![CDATA[emitDA ( "request(answers)" );]]>
-          </Commands>
+          <Commands><![CDATA[emitDA ( "request(answers)" );]]></Commands>
           <EEdge target="S53" start ="">
             <Connection>
               <ControlPoint xPos="480" yPos="255" ctrlXPos="502" ctrlYPos="255"/>
@@ -1692,9 +1499,7 @@ emitDA ( "request(question)" );]]>
           <Position xPos="390" yPos="210"/>
         </Node>
         <Node id="N404" name="Answer" history="false">
-          <Commands>
-            <![CDATA[provideAnswer (  );]]>
-          </Commands>
+          <Commands><![CDATA[provideAnswer (  );]]></Commands>
           <EEdge target="S54" start ="">
             <Connection>
               <ControlPoint xPos="1065" yPos="300" ctrlXPos="1065" ctrlYPos="322"/>
@@ -1704,9 +1509,7 @@ emitDA ( "request(question)" );]]>
           <Position xPos="1020" yPos="210"/>
         </Node>
         <Node id="N405" name="Done" history="false">
-          <Commands>
-            <![CDATA[situation = SE.turnFinished;]]>
-          </Commands>
+          <Commands><![CDATA[situation = SE.turnFinished;]]></Commands>
           <CEdge target="N413" start="">
             <Connection>
               <ControlPoint xPos="737" yPos="737" ctrlXPos="745" ctrlYPos="745"/>
@@ -1723,9 +1526,7 @@ emitDA ( "request(question)" );]]>
           <Position xPos="660" yPos="660"/>
         </Node>
         <Node id="N406" name="N100" history="false">
-          <Commands>
-            <![CDATA[emitDA ( "express(success, value=no)" );]]>
-          </Commands>
+          <Commands><![CDATA[emitDA ( "express(success, value=no)" );]]></Commands>
           <CEdge target="N411" start="">
             <Connection>
               <ControlPoint xPos="662" yPos="537" ctrlXPos="590" ctrlYPos="556"/>
@@ -1749,9 +1550,7 @@ emitDA ( "request(question)" );]]>
           <Position xPos="660" yPos="480"/>
         </Node>
         <Node id="N407" name="N99" history="false">
-          <Commands>
-            <![CDATA[emitDA ( "express(success, value=yes)" );]]>
-          </Commands>
+          <Commands><![CDATA[emitDA ( "express(success, value=yes)" );]]></Commands>
           <EEdge target="N405" start ="">
             <Connection>
               <ControlPoint xPos="930" yPos="705" ctrlXPos="862" ctrlYPos="705"/>
@@ -1761,8 +1560,7 @@ emitDA ( "request(question)" );]]>
           <Position xPos="930" yPos="660"/>
         </Node>
         <Node id="N408" name="N98" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N407" start="">
             <Connection>
               <ControlPoint xPos="975" yPos="570" ctrlXPos="975" ctrlYPos="592"/>
@@ -1779,8 +1577,7 @@ emitDA ( "request(question)" );]]>
           <Position xPos="930" yPos="480"/>
         </Node>
         <Node id="N409" name="N109" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N403" start="">
             <Connection>
               <ControlPoint xPos="525" yPos="480" ctrlXPos="525" ctrlYPos="412"/>
@@ -1797,9 +1594,7 @@ emitDA ( "request(question)" );]]>
           <Position xPos="480" yPos="480"/>
         </Node>
         <Node id="N410" name="N110" history="false">
-          <Commands>
-            <![CDATA[emitDialogueAct ( questionReaction );]]>
-          </Commands>
+          <Commands><![CDATA[emitDialogueAct ( questionReaction );]]></Commands>
           <EEdge target="S52" start ="">
             <Connection>
               <ControlPoint xPos="165" yPos="660" ctrlXPos="165" ctrlYPos="592"/>
@@ -1809,9 +1604,7 @@ emitDA ( "request(question)" );]]>
           <Position xPos="120" yPos="660"/>
         </Node>
         <Node id="N411" name="N136" history="false">
-          <Commands>
-            <![CDATA[emitDA ( "request(solution)" );]]>
-          </Commands>
+          <Commands><![CDATA[emitDA ( "request(solution)" );]]></Commands>
           <EEdge target="S55" start ="">
             <Connection>
               <ControlPoint xPos="396" yPos="637" ctrlXPos="367" ctrlYPos="653"/>
@@ -1821,9 +1614,7 @@ emitDA ( "request(question)" );]]>
           <Position xPos="390" yPos="570"/>
         </Node>
         <Node id="N412" name="Pretent thinking" history="false">
-          <Commands>
-            <![CDATA[emitDialogueAct ( { type = "provide" , subtype = "convfilling" } );]]>
-          </Commands>
+          <Commands><![CDATA[emitDialogueAct ( { type = "provide" , subtype = "convfilling" } );]]></Commands>
           <EEdge target="N404" start ="">
             <Connection>
               <ControlPoint xPos="838" yPos="333" ctrlXPos="909" ctrlYPos="313"/>
@@ -1833,14 +1624,11 @@ emitDA ( "request(question)" );]]>
           <Position xPos="750" yPos="300"/>
         </Node>
         <Node id="N413" name="N140" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="930" yPos="840"/>
         </Node>
         <Node id="N414" name="N141" history="false">
-          <Commands>
-            <![CDATA[turnTablet (  );]]>
-          </Commands>
+          <Commands><![CDATA[turnTablet (  );]]></Commands>
           <EEdge target="N413" start ="">
             <Connection>
               <ControlPoint xPos="750" yPos="885" ctrlXPos="761" ctrlYPos="885"/>
@@ -1850,8 +1638,7 @@ emitDA ( "request(question)" );]]>
           <Position xPos="660" yPos="840"/>
         </Node>
         <SuperNode id="S52" name="WaitForQuestion" comment="" hideLocalVar="false" hideGlobalVar="false" start="N418;">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N409" start="">
             <Connection>
               <ControlPoint xPos="210" yPos="447" ctrlXPos="328" ctrlYPos="478"/>
@@ -1867,13 +1654,11 @@ emitDA ( "request(question)" );]]>
           </EEdge>
           <Position xPos="120" yPos="390"/>
           <Node id="N415" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="938" yPos="221"/>
           </Node>
           <Node id="N416" name="WaitForQuestionReaction" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N417" start="">
               <Connection>
                 <ControlPoint xPos="388" yPos="267" ctrlXPos="500" ctrlYPos="298"/>
@@ -1890,16 +1675,12 @@ emitDA ( "request(question)" );]]>
             <Position xPos="300" yPos="210"/>
           </Node>
           <Node id="N417" name="DoSomething" history="false">
-            <Commands>
-              <![CDATA[questionReaction = questionProvided ( lastReaction );
-lastReaction = emptyReaction (  );]]>
-            </Commands>
+            <Commands><![CDATA[questionReaction = questionProvided ( lastReaction );
+lastReaction = emptyReaction (  );]]></Commands>
             <Position xPos="660" yPos="300"/>
           </Node>
           <Node id="N418" name="N167" history="false">
-            <Commands>
-              <![CDATA[sysCall ( "expectDAs" , "provide\((free)?question" );]]>
-            </Commands>
+            <Commands><![CDATA[sysCall ( "expectDAs" , "provide\((free)?question" );]]></Commands>
             <EEdge target="N34" start ="">
               <Connection>
                 <ControlPoint xPos="143" yPos="294" ctrlXPos="126" ctrlYPos="322"/>
@@ -1909,9 +1690,7 @@ lastReaction = emptyReaction (  );]]>
             <Position xPos="120" yPos="210"/>
           </Node>
           <Node id="N33" name="N33" history="false">
-            <Commands>
-              <![CDATA[lastReaction = { type = "provide" , subtype = "question" , id = "-1" , answersProvided = true };]]>
-            </Commands>
+            <Commands><![CDATA[lastReaction = { type = "provide" , subtype = "question" , id = "-1" , answersProvided = true };]]></Commands>
             <EEdge target="N417" start ="">
               <Connection>
                 <ControlPoint xPos="478" yPos="423" ctrlXPos="549" ctrlYPos="403"/>
@@ -1921,8 +1700,7 @@ lastReaction = emptyReaction (  );]]>
             <Position xPos="390" yPos="390"/>
           </Node>
           <Node id="N34" name="N34" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N416" start="">
               <Connection>
                 <ControlPoint xPos="114" yPos="412" ctrlXPos="196" ctrlYPos="363"/>
@@ -1940,8 +1718,7 @@ lastReaction = emptyReaction (  );]]>
           </Node>
         </SuperNode>
         <SuperNode id="S53" name="WaitForAnswers" comment="" hideLocalVar="false" hideGlobalVar="false" start="N422;">
-          <Commands>
-          </Commands>
+          <Commands/>
           <EEdge target="S58" start ="">
             <Connection>
               <ControlPoint xPos="660" yPos="255" ctrlXPos="671" ctrlYPos="255"/>
@@ -1950,20 +1727,16 @@ lastReaction = emptyReaction (  );]]>
           </EEdge>
           <Position xPos="570" yPos="210"/>
           <Node id="N419" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="544" yPos="200"/>
           </Node>
           <Node id="N420" name="DoSomething" history="false">
-            <Commands>
-              <![CDATA[possibleAnswerReaction = lastReaction;
-lastReaction = emptyReaction (  );]]>
-            </Commands>
+            <Commands><![CDATA[possibleAnswerReaction = lastReaction;
+lastReaction = emptyReaction (  );]]></Commands>
             <Position xPos="286" yPos="458"/>
           </Node>
           <Node id="N421" name="WaitForAnswersReaction" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N420" start="">
               <Connection>
                 <ControlPoint xPos="329" yPos="372" ctrlXPos="329" ctrlYPos="436"/>
@@ -1980,9 +1753,7 @@ lastReaction = emptyReaction (  );]]>
             <Position xPos="286" yPos="286"/>
           </Node>
           <Node id="N422" name="N166" history="false">
-            <Commands>
-              <![CDATA[sysCall ( "expectDAs" , "provide\(answers\)" );]]>
-            </Commands>
+            <Commands><![CDATA[sysCall ( "expectDAs" , "provide\(answers\)" );]]></Commands>
             <EEdge target="N421" start ="">
               <Connection>
                 <ControlPoint xPos="200" yPos="329" ctrlXPos="264" ctrlYPos="329"/>
@@ -1993,8 +1764,7 @@ lastReaction = emptyReaction (  );]]>
           </Node>
         </SuperNode>
         <SuperNode id="S54" name="WaitForFeedback" comment="" hideLocalVar="false" hideGlobalVar="false" start="N426;">
-          <Commands>
-          </Commands>
+          <Commands/>
           <EEdge target="N408" start ="">
             <Connection>
               <ControlPoint xPos="1020" yPos="480" ctrlXPos="1008" ctrlYPos="491"/>
@@ -2003,20 +1773,16 @@ lastReaction = emptyReaction (  );]]>
           </EEdge>
           <Position xPos="1020" yPos="390"/>
           <Node id="N423" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="27" yPos="194"/>
           </Node>
           <Node id="N424" name="DoSomething" history="false">
-            <Commands>
-              <![CDATA[questionReaction = lastReaction;
-lastReaction = emptyReaction (  );]]>
-            </Commands>
+            <Commands><![CDATA[questionReaction = lastReaction;
+lastReaction = emptyReaction (  );]]></Commands>
             <Position xPos="286" yPos="458"/>
           </Node>
           <Node id="N425" name="WaitForFeedbackReaction" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N424" start="">
               <Connection>
                 <ControlPoint xPos="329" yPos="372" ctrlXPos="329" ctrlYPos="479"/>
@@ -2033,9 +1799,7 @@ lastReaction = emptyReaction (  );]]>
             <Position xPos="285" yPos="286"/>
           </Node>
           <Node id="N426" name="N170" history="false">
-            <Commands>
-              <![CDATA[sysCall ( "expectDAs" , "feedback.*correctness" );]]>
-            </Commands>
+            <Commands><![CDATA[sysCall ( "expectDAs" , "feedback.*correctness" );]]></Commands>
             <EEdge target="N425" start ="">
               <Connection>
                 <ControlPoint xPos="200" yPos="329" ctrlXPos="264" ctrlYPos="329"/>
@@ -2046,8 +1810,7 @@ lastReaction = emptyReaction (  );]]>
           </Node>
         </SuperNode>
         <SuperNode id="S55" name="WaitForSolution" comment="" hideLocalVar="false" hideGlobalVar="false" start="N430;">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N405" start="">
             <Connection>
               <ControlPoint xPos="300" yPos="873" ctrlXPos="457" ctrlYPos="831"/>
@@ -2063,20 +1826,16 @@ lastReaction = emptyReaction (  );]]>
           </EEdge>
           <Position xPos="210" yPos="840"/>
           <Node id="N427" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="28" yPos="200"/>
           </Node>
           <Node id="N428" name="DoSomething" history="false">
-            <Commands>
-              <![CDATA[possibleAnswerReaction = lastReaction;
-lastReaction = emptyReaction (  );]]>
-            </Commands>
+            <Commands><![CDATA[possibleAnswerReaction = lastReaction;
+lastReaction = emptyReaction (  );]]></Commands>
             <Position xPos="372" yPos="458"/>
           </Node>
           <Node id="N429" name="WaitForSolutionReaction" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N428" start="">
               <Connection>
                 <ControlPoint xPos="415" yPos="372" ctrlXPos="415" ctrlYPos="436"/>
@@ -2093,9 +1852,7 @@ lastReaction = emptyReaction (  );]]>
             <Position xPos="372" yPos="286"/>
           </Node>
           <Node id="N430" name="N168" history="false">
-            <Commands>
-              <![CDATA[sysCall ( "expectDAs" , "provide.*solution" );]]>
-            </Commands>
+            <Commands><![CDATA[sysCall ( "expectDAs" , "provide.*solution" );]]></Commands>
             <EEdge target="N429" start ="">
               <Connection>
                 <ControlPoint xPos="200" yPos="329" ctrlXPos="264" ctrlYPos="329"/>
@@ -2106,9 +1863,7 @@ lastReaction = emptyReaction (  );]]>
           </Node>
         </SuperNode>
         <SuperNode id="S56" name="WaitForExplanation" comment="" hideLocalVar="false" hideGlobalVar="false" start="N434;">
-          <Commands>
-            <![CDATA[emitDA ( "request(explanation)" );]]>
-          </Commands>
+          <Commands><![CDATA[emitDA ( "request(explanation)" );]]></Commands>
           <EEdge target="N405" start ="">
             <Connection>
               <ControlPoint xPos="570" yPos="885" ctrlXPos="637" ctrlYPos="885"/>
@@ -2117,21 +1872,17 @@ lastReaction = emptyReaction (  );]]>
           </EEdge>
           <Position xPos="480" yPos="840"/>
           <Node id="N431" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="28" yPos="200"/>
           </Node>
           <Node id="N432" name="DoSomething" history="false">
-            <Commands>
-              <![CDATA[possibleAnswerReaction = lastReaction;
+            <Commands><![CDATA[possibleAnswerReaction = lastReaction;
 lastReaction = emptyReaction (  );
-emitDA ( "acknowledgement(explanation)" );]]>
-            </Commands>
+emitDA ( "acknowledgement(explanation)" );]]></Commands>
             <Position xPos="286" yPos="458"/>
           </Node>
           <Node id="N433" name="WaitForExplanationReaction" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N432" start="">
               <Connection>
                 <ControlPoint xPos="329" yPos="372" ctrlXPos="329" ctrlYPos="393"/>
@@ -2148,9 +1899,7 @@ emitDA ( "acknowledgement(explanation)" );]]>
             <Position xPos="286" yPos="286"/>
           </Node>
           <Node id="N434" name="N169" history="false">
-            <Commands>
-              <![CDATA[sysCall ( "expectDAs" , "provide.*explanation" );]]>
-            </Commands>
+            <Commands><![CDATA[sysCall ( "expectDAs" , "provide.*explanation" );]]></Commands>
             <EEdge target="N433" start ="">
               <Connection>
                 <ControlPoint xPos="200" yPos="329" ctrlXPos="221" ctrlYPos="329"/>
@@ -2161,10 +1910,8 @@ emitDA ( "acknowledgement(explanation)" );]]>
           </Node>
         </SuperNode>
         <SuperNode id="S57" name="WaitForTablet" comment="" hideLocalVar="false" hideGlobalVar="false" start="N436;">
-          <Commands>
-            <![CDATA[String wantedOrientation = "child";
-Bool turnRequested = false;]]>
-          </Commands>
+          <Commands><![CDATA[String wantedOrientation = "child";
+Bool turnRequested = false;]]></Commands>
           <EEdge target="N402" start ="">
             <Connection>
               <ControlPoint xPos="120" yPos="255" ctrlXPos="142" ctrlYPos="255"/>
@@ -2173,14 +1920,11 @@ Bool turnRequested = false;]]>
           </EEdge>
           <Position xPos="30" yPos="210"/>
           <Node id="N435" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="28" yPos="286"/>
           </Node>
           <Node id="N436" name="N147" history="false">
-            <Commands>
-              <![CDATA[sysCall ( "expectDAs" , "provide\(turntablet, what=" + wantedOrientation + "\)" );]]>
-            </Commands>
+            <Commands><![CDATA[sysCall ( "expectDAs" , "provide\(turntablet, what=" + wantedOrientation + "\)" );]]></Commands>
             <EEdge target="N438" start ="">
               <Connection>
                 <ControlPoint xPos="243" yPos="372" ctrlXPos="243" ctrlYPos="393"/>
@@ -2190,8 +1934,7 @@ Bool turnRequested = false;]]>
             <Position xPos="200" yPos="286"/>
           </Node>
           <Node id="N437" name="N118" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N439" start="">
               <Connection>
                 <ControlPoint xPos="545" yPos="598" ctrlXPos="434" ctrlYPos="626"/>
@@ -2208,8 +1951,7 @@ Bool turnRequested = false;]]>
             <Position xPos="544" yPos="544"/>
           </Node>
           <Node id="N438" name="WaitForTabletTurn" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N439" start="">
               <Connection>
                 <ControlPoint xPos="243" yPos="544" ctrlXPos="243" ctrlYPos="565"/>
@@ -2233,15 +1975,12 @@ Bool turnRequested = false;]]>
             <Position xPos="200" yPos="458"/>
           </Node>
           <Node id="N439" name="DoSomething" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="200" yPos="630"/>
           </Node>
           <Node id="N440" name="N119" history="false">
-            <Commands>
-              <![CDATA[emitDA ( "request(turntablet)" );
-turnRequested = true;]]>
-            </Commands>
+            <Commands><![CDATA[emitDA ( "request(turntablet)" );
+turnRequested = true;]]></Commands>
             <EEdge target="N438" start ="">
               <Connection>
                 <ControlPoint xPos="550" yPos="350" ctrlXPos="440" ctrlYPos="412"/>
@@ -2252,10 +1991,8 @@ turnRequested = true;]]>
           </Node>
         </SuperNode>
         <SuperNode id="S58" name="WaitForTablet" comment="" hideLocalVar="false" hideGlobalVar="false" start="N446;">
-          <Commands>
-            <![CDATA[String wantedOrientation = "robot";
-Bool turnRequested = false;]]>
-          </Commands>
+          <Commands><![CDATA[String wantedOrientation = "robot";
+Bool turnRequested = false;]]></Commands>
           <EEdge target="N412" start ="">
             <Connection>
               <ControlPoint xPos="795" yPos="300" ctrlXPos="795" ctrlYPos="311"/>
@@ -2264,13 +2001,11 @@ Bool turnRequested = false;]]>
           </EEdge>
           <Position xPos="750" yPos="210"/>
           <Node id="N441" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="28" yPos="286"/>
           </Node>
           <Node id="N442" name="WaitForTabletTurn" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N444" start="">
               <Connection>
                 <ControlPoint xPos="243" yPos="544" ctrlXPos="243" ctrlYPos="565"/>
@@ -2294,8 +2029,7 @@ Bool turnRequested = false;]]>
             <Position xPos="200" yPos="458"/>
           </Node>
           <Node id="N443" name="N118" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N444" start="">
               <Connection>
                 <ControlPoint xPos="545" yPos="598" ctrlXPos="434" ctrlYPos="626"/>
@@ -2312,15 +2046,12 @@ Bool turnRequested = false;]]>
             <Position xPos="544" yPos="544"/>
           </Node>
           <Node id="N444" name="DoSomething" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="200" yPos="630"/>
           </Node>
           <Node id="N445" name="N119" history="false">
-            <Commands>
-              <![CDATA[emitDA ( "request(turntablet)" );
-turnRequested = true;]]>
-            </Commands>
+            <Commands><![CDATA[emitDA ( "request(turntablet)" );
+turnRequested = true;]]></Commands>
             <EEdge target="N442" start ="">
               <Connection>
                 <ControlPoint xPos="550" yPos="350" ctrlXPos="440" ctrlYPos="412"/>
@@ -2330,9 +2061,7 @@ turnRequested = true;]]>
             <Position xPos="544" yPos="286"/>
           </Node>
           <Node id="N446" name="N147" history="false">
-            <Commands>
-              <![CDATA[sysCall ( "expectDAs" , "provide\(turntablet, what=" + wantedOrientation + "\)" );]]>
-            </Commands>
+            <Commands><![CDATA[sysCall ( "expectDAs" , "provide\(turntablet, what=" + wantedOrientation + "\)" );]]></Commands>
             <EEdge target="N442" start ="">
               <Connection>
                 <ControlPoint xPos="243" yPos="372" ctrlXPos="243" ctrlYPos="393"/>
@@ -2344,9 +2073,7 @@ turnRequested = true;]]>
         </SuperNode>
       </SuperNode>
       <SuperNode id="S59" name="PlayQuiz" comment="" hideLocalVar="false" hideGlobalVar="false" start="N453;">
-        <Commands>
-          <![CDATA[DialogueAct roleReaction = emptyReaction (  );]]>
-        </Commands>
+        <Commands><![CDATA[DialogueAct roleReaction = emptyReaction (  );]]></Commands>
         <CEdge target="S63" start="">
           <Connection>
             <ControlPoint xPos="570" yPos="447" ctrlXPos="727" ctrlYPos="489"/>
@@ -2381,13 +2108,6 @@ turnRequested = true;]]>
             <ControlPoint xPos="570" yPos="409" ctrlXPos="660" ctrlYPos="357"/>
           </Connection>
         </EEdge>
-        <IEdge target="S8" start="">
-          <Connection>
-            <ControlPoint xPos="480" yPos="499" ctrlXPos="491" ctrlYPos="492"/>
-            <ControlPoint xPos="499" yPos="480" ctrlXPos="492" ctrlYPos="491"/>
-          </Connection>
-          <Condition><![CDATA[flag.status == StatE.interrupted]]></Condition>
-        </IEdge>
         <Position xPos="480" yPos="390"/>
         <Comment>
           <Boundary xPos="-2147483648" yPos="-2147483648" width="-2147483648" height="-2147483648"/>
@@ -2402,21 +2122,16 @@ turnRequested = true;]]>
           </Text>
         </Comment>
         <Node id="N447" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="930" yPos="120"/>
         </Node>
         <Node id="N448" name="DoTurn" history="false">
-          <Commands>
-            <![CDATA[situation = SE.gameTurn;]]>
-          </Commands>
+          <Commands><![CDATA[situation = SE.gameTurn;]]></Commands>
           <Position xPos="840" yPos="750"/>
         </Node>
         <Node id="N449" name="InitializeNewGame" history="false">
-          <Commands>
-            <![CDATA[startNewSession (  );
-emitDA ( "request(role)" );]]>
-          </Commands>
+          <Commands><![CDATA[startNewSession (  );
+emitDA ( "request(role)" );]]></Commands>
           <EEdge target="S60" start ="">
             <Connection>
               <ControlPoint xPos="210" yPos="885" ctrlXPos="277" ctrlYPos="885"/>
@@ -2426,9 +2141,7 @@ emitDA ( "request(role)" );]]>
           <Position xPos="120" yPos="840"/>
         </Node>
         <Node id="N450" name="NewGameOrNot" history="false">
-          <Commands>
-            <![CDATA[stopRequest = "";]]>
-          </Commands>
+          <Commands><![CDATA[stopRequest = "";]]></Commands>
           <CEdge target="N449" start="">
             <Connection>
               <ControlPoint xPos="165" yPos="750" ctrlXPos="165" ctrlYPos="772"/>
@@ -2445,9 +2158,7 @@ emitDA ( "request(role)" );]]>
           <Position xPos="120" yPos="660"/>
         </Node>
         <Node id="N451" name="DoTurnOrNot" history="false">
-          <Commands>
-            <![CDATA[endTurn (  );]]>
-          </Commands>
+          <Commands><![CDATA[endTurn (  );]]></Commands>
           <CEdge target="N455" start="">
             <Connection>
               <ControlPoint xPos="377" yPos="557" ctrlXPos="464" ctrlYPos="644"/>
@@ -2464,9 +2175,7 @@ emitDA ( "request(role)" );]]>
           <Position xPos="311" yPos="503"/>
         </Node>
         <Node id="N452" name="SwitchRoleOrNot" history="false">
-          <Commands>
-            <![CDATA[endRound (  );]]>
-          </Commands>
+          <Commands><![CDATA[endRound (  );]]></Commands>
           <CEdge target="N458" start="">
             <Connection>
               <ControlPoint xPos="660" yPos="345" ctrlXPos="772" ctrlYPos="345"/>
@@ -2483,8 +2192,7 @@ emitDA ( "request(role)" );]]>
           <Position xPos="570" yPos="300"/>
         </Node>
         <Node id="N453" name="Start" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N15" start="">
             <Connection>
               <ControlPoint xPos="165" yPos="390" ctrlXPos="165" ctrlYPos="367"/>
@@ -2501,10 +2209,8 @@ emitDA ( "request(role)" );]]>
           <Position xPos="120" yPos="390"/>
         </Node>
         <Node id="N454" name="N105" history="false">
-          <Commands>
-            <![CDATA[emitDialogueAct ( { type = "accept" , subtype = "role" , asker = asker } );
-emitDialogueAct ( { type = "provide" , subtype = "instructions" , asker = asker } );]]>
-          </Commands>
+          <Commands><![CDATA[emitDialogueAct ( { type = "accept" , subtype = "role" , asker = asker } );
+emitDialogueAct ( { type = "provide" , subtype = "instructions" , asker = asker } );]]></Commands>
           <EEdge target="N463" start ="">
             <Connection>
               <ControlPoint xPos="750" yPos="885" ctrlXPos="907" ctrlYPos="885"/>
@@ -2514,8 +2220,7 @@ emitDialogueAct ( { type = "provide" , subtype = "instructions" , asker = asker 
           <Position xPos="660" yPos="840"/>
         </Node>
         <Node id="N455" name="N122" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <EEdge target="N448" start ="">
             <Connection>
               <ControlPoint xPos="660" yPos="795" ctrlXPos="727" ctrlYPos="795"/>
@@ -2525,18 +2230,13 @@ emitDialogueAct ( { type = "provide" , subtype = "instructions" , asker = asker 
           <Position xPos="563" yPos="749"/>
         </Node>
         <Node id="N456" name="N132" history="false">
-          <Commands>
-            <![CDATA[endSession (  );]]>
-          </Commands>
+          <Commands><![CDATA[endSession (  );]]></Commands>
           <Position xPos="570" yPos="120"/>
         </Node>
         <Node id="N457" name="N111" history="false">
-          <Commands>
-            <![CDATA[DialogueAct da = { type = "provide" , subtype = "performance" , total = 0 , correct = 0 , asker = asker };]]>
-            <![CDATA[da.total = getNumberOfQuestionsInRound (  );
+          <Commands><![CDATA[DialogueAct da = { type = "provide" , subtype = "performance" , total = 0 , correct = 0 , asker = asker };]]><![CDATA[da.total = getNumberOfQuestionsInRound (  );
 da.correct = getNumberOfCorrectAnswersInRound (  );
-emitDialogueAct ( da );]]>
-          </Commands>
+emitDialogueAct ( da );]]></Commands>
           <EEdge target="N452" start ="">
             <Connection>
               <ControlPoint xPos="615" yPos="480" ctrlXPos="615" ctrlYPos="457"/>
@@ -2546,8 +2246,7 @@ emitDialogueAct ( da );]]>
           <Position xPos="570" yPos="480"/>
         </Node>
         <Node id="N458" name="N49" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N461" start="">
             <Connection>
               <ControlPoint xPos="1014" yPos="368" ctrlXPos="1096" ctrlYPos="416"/>
@@ -2571,11 +2270,8 @@ emitDialogueAct ( da );]]>
           <Position xPos="930" yPos="300"/>
         </Node>
         <Node id="N459" name="N61" history="false">
-          <Commands>
-            <![CDATA[String responder = "";]]>
-            <![CDATA[roleChanged = ! roleChanged;
-emitDialogueAct ( { type = "provide" , subtype = "role" , asker = asker } );]]>
-          </Commands>
+          <Commands><![CDATA[String responder = "";]]><![CDATA[roleChanged = ! roleChanged;
+emitDialogueAct ( { type = "provide" , subtype = "role" , asker = asker } );]]></Commands>
           <EEdge target="N463" start ="">
             <Connection>
               <ControlPoint xPos="1077" yPos="658" ctrlXPos="1096" ctrlYPos="729"/>
@@ -2585,9 +2281,7 @@ emitDialogueAct ( { type = "provide" , subtype = "role" , asker = asker } );]]>
           <Position xPos="1020" yPos="570"/>
         </Node>
         <Node id="N460" name="N55" history="false">
-          <Commands>
-            <![CDATA[asker = AE.robot;]]>
-          </Commands>
+          <Commands><![CDATA[asker = AE.robot;]]></Commands>
           <EEdge target="N459" start ="">
             <Connection>
               <ControlPoint xPos="924" yPos="548" ctrlXPos="952" ctrlYPos="564"/>
@@ -2597,9 +2291,7 @@ emitDialogueAct ( { type = "provide" , subtype = "role" , asker = asker } );]]>
           <Position xPos="840" yPos="480"/>
         </Node>
         <Node id="N461" name="N53" history="false">
-          <Commands>
-            <![CDATA[asker = AE.user;]]>
-          </Commands>
+          <Commands><![CDATA[asker = AE.user;]]></Commands>
           <EEdge target="N459" start ="">
             <Connection>
               <ControlPoint xPos="1206" yPos="547" ctrlXPos="1177" ctrlYPos="563"/>
@@ -2609,8 +2301,7 @@ emitDialogueAct ( { type = "provide" , subtype = "role" , asker = asker } );]]>
           <Position xPos="1200" yPos="480"/>
         </Node>
         <Node id="N462" name="N62" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N452" start="">
             <Connection>
               <ControlPoint xPos="390" yPos="345" ctrlXPos="457" ctrlYPos="345"/>
@@ -2627,9 +2318,7 @@ emitDialogueAct ( { type = "provide" , subtype = "role" , asker = asker } );]]>
           <Position xPos="300" yPos="300"/>
         </Node>
         <Node id="N463" name="N90" history="false">
-          <Commands>
-            <![CDATA[newRound ( asker );]]>
-          </Commands>
+          <Commands><![CDATA[newRound ( asker );]]></Commands>
           <EEdge target="N448" start ="">
             <Connection>
               <ControlPoint xPos="1112" yPos="873" ctrlXPos="1040" ctrlYPos="853"/>
@@ -2639,9 +2328,7 @@ emitDialogueAct ( { type = "provide" , subtype = "role" , asker = asker } );]]>
           <Position xPos="1110" yPos="840"/>
         </Node>
         <Node id="N15" name="N15" history="false">
-          <Commands>
-            <![CDATA[stopRequest = "";]]>
-          </Commands>
+          <Commands><![CDATA[stopRequest = "";]]></Commands>
           <CEdge target="N456" start="">
             <Connection>
               <ControlPoint xPos="208" yPos="243" ctrlXPos="362" ctrlYPos="199"/>
@@ -2658,9 +2345,7 @@ emitDialogueAct ( { type = "provide" , subtype = "role" , asker = asker } );]]>
           <Position xPos="120" yPos="210"/>
         </Node>
         <Node id="N36" name="N36" history="false">
-          <Commands>
-            <![CDATA[situation = SE.stopPlaying;]]>
-          </Commands>
+          <Commands><![CDATA[situation = SE.stopPlaying;]]></Commands>
           <EEdge target="N456" start ="">
             <Connection>
               <ControlPoint xPos="390" yPos="165" ctrlXPos="457" ctrlYPos="165"/>
@@ -2670,8 +2355,7 @@ emitDialogueAct ( { type = "provide" , subtype = "role" , asker = asker } );]]>
           <Position xPos="300" yPos="120"/>
         </Node>
         <SuperNode id="S60" name="WaitForRole" comment="" hideLocalVar="false" hideGlobalVar="false" start="N467;">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N453" start="">
             <Connection>
               <ControlPoint xPos="409" yPos="840" ctrlXPos="296" ctrlYPos="645"/>
@@ -2687,13 +2371,11 @@ emitDialogueAct ( { type = "provide" , subtype = "role" , asker = asker } );]]>
           </EEdge>
           <Position xPos="390" yPos="840"/>
           <Node id="N464" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="840" yPos="210"/>
           </Node>
           <Node id="N465" name="WaitForInterruptIReaction" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N466" start="">
               <Connection>
                 <ControlPoint xPos="345" yPos="300" ctrlXPos="345" ctrlYPos="322"/>
@@ -2717,17 +2399,13 @@ emitDialogueAct ( { type = "provide" , subtype = "role" , asker = asker } );]]>
             <Position xPos="300" yPos="210"/>
           </Node>
           <Node id="N466" name="DoSomething" history="false">
-            <Commands>
-              <![CDATA[roleReaction = lastReaction;
+            <Commands><![CDATA[roleReaction = lastReaction;
 lastReaction = emptyReaction (  );
-asker = get ( roleReaction , "asker" );]]>
-            </Commands>
+asker = get ( roleReaction , "asker" );]]></Commands>
             <Position xPos="300" yPos="390"/>
           </Node>
           <Node id="N467" name="N164" history="false">
-            <Commands>
-              <![CDATA[sysCall ( "expectDAs" , "provide.*role" );]]>
-            </Commands>
+            <Commands><![CDATA[sysCall ( "expectDAs" , "provide.*role" );]]></Commands>
             <EEdge target="N465" start ="">
               <Connection>
                 <ControlPoint xPos="210" yPos="255" ctrlXPos="232" ctrlYPos="255"/>
@@ -2737,14 +2415,12 @@ asker = get ( roleReaction , "asker" );]]>
             <Position xPos="120" yPos="210"/>
           </Node>
           <Node id="N38" name="N38" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="696" yPos="223"/>
           </Node>
         </SuperNode>
         <SuperNode id="S61" name="FinishGame" comment="" hideLocalVar="false" hideGlobalVar="false" start="N475;">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N458" start="">
             <Connection>
               <ControlPoint xPos="840" yPos="210" ctrlXPos="899" ctrlYPos="269"/>
@@ -2767,14 +2443,11 @@ asker = get ( roleReaction , "asker" );]]>
             </Text>
           </Comment>
           <Node id="N468" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="30" yPos="210"/>
           </Node>
           <Node id="N469" name="N56" history="false">
-            <Commands>
-              <![CDATA[situation = SE.stopPlaying;]]>
-            </Commands>
+            <Commands><![CDATA[situation = SE.stopPlaying;]]></Commands>
             <EEdge target="N474" start ="">
               <Connection>
                 <ControlPoint xPos="255" yPos="570" ctrlXPos="255" ctrlYPos="592"/>
@@ -2784,10 +2457,8 @@ asker = get ( roleReaction , "asker" );]]>
             <Position xPos="210" yPos="480"/>
           </Node>
           <Node id="N470" name="N57" history="false">
-            <Commands>
-              <![CDATA[emitDA ( "request(continue, what=game)" );
-sysCall ( "expectDAs" , "(confirm|reject).*repeat" );]]>
-            </Commands>
+            <Commands><![CDATA[emitDA ( "request(continue, what=game)" );
+sysCall ( "expectDAs" , "(confirm|reject).*repeat" );]]></Commands>
             <EEdge target="N473" start ="">
               <Connection>
                 <ControlPoint xPos="300" yPos="345" ctrlXPos="412" ctrlYPos="345"/>
@@ -2797,9 +2468,7 @@ sysCall ( "expectDAs" , "(confirm|reject).*repeat" );]]>
             <Position xPos="210" yPos="300"/>
           </Node>
           <Node id="N471" name="DoSomething" history="false">
-            <Commands>
-              <![CDATA[situation = SE.switchRole;]]>
-            </Commands>
+            <Commands><![CDATA[situation = SE.switchRole;]]></Commands>
             <EEdge target="N474" start ="">
               <Connection>
                 <ControlPoint xPos="570" yPos="705" ctrlXPos="457" ctrlYPos="705"/>
@@ -2809,8 +2478,7 @@ sysCall ( "expectDAs" , "(confirm|reject).*repeat" );]]>
             <Position xPos="570" yPos="660"/>
           </Node>
           <Node id="N472" name="WaitForInterruptIReaction" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N471" start="">
               <Connection>
                 <ControlPoint xPos="615" yPos="570" ctrlXPos="615" ctrlYPos="592"/>
@@ -2834,8 +2502,7 @@ sysCall ( "expectDAs" , "(confirm|reject).*repeat" );]]>
             <Position xPos="570" yPos="480"/>
           </Node>
           <Node id="N473" name="N112" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N472" start="">
               <Connection>
                 <ControlPoint xPos="615" yPos="390" ctrlXPos="615" ctrlYPos="412"/>
@@ -2852,14 +2519,11 @@ sysCall ( "expectDAs" , "(confirm|reject).*repeat" );]]>
             <Position xPos="570" yPos="300"/>
           </Node>
           <Node id="N474" name="N113" history="false">
-            <Commands>
-              <![CDATA[lastReaction = emptyReaction (  );]]>
-            </Commands>
+            <Commands><![CDATA[lastReaction = emptyReaction (  );]]></Commands>
             <Position xPos="210" yPos="660"/>
           </Node>
           <Node id="N475" name="N34" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <EEdge target="N470" start ="">
               <Connection>
                 <ControlPoint xPos="107" yPos="493" ctrlXPos="149" ctrlYPos="450"/>
@@ -2871,9 +2535,7 @@ sysCall ( "expectDAs" , "(confirm|reject).*repeat" );]]>
         </SuperNode>
       </SuperNode>
       <SuperNode id="S62" name="CloseGame" comment="" hideLocalVar="false" hideGlobalVar="false" start="N477;">
-        <Commands>
-          <![CDATA[Int userQuestions = 0;]]>
-        </Commands>
+        <Commands><![CDATA[Int userQuestions = 0;]]></Commands>
         <EEdge target="N398" start ="">
           <Connection>
             <ControlPoint xPos="570" yPos="255" ctrlXPos="592" ctrlYPos="255"/>
@@ -2895,14 +2557,11 @@ sysCall ( "expectDAs" , "(confirm|reject).*repeat" );]]>
           </Text>
         </Comment>
         <Node id="N476" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="30" yPos="210"/>
         </Node>
         <Node id="N477" name="Done" history="false">
-          <Commands>
-            <![CDATA[userQuestions = getNumberOfQuestions ( AE.user );]]>
-          </Commands>
+          <Commands><![CDATA[userQuestions = getNumberOfQuestions ( AE.user );]]></Commands>
           <CEdge target="N478" start="">
             <Connection>
               <ControlPoint xPos="255" yPos="390" ctrlXPos="255" ctrlYPos="457"/>
@@ -2919,8 +2578,7 @@ sysCall ( "expectDAs" , "(confirm|reject).*repeat" );]]>
           <Position xPos="210" yPos="300"/>
         </Node>
         <Node id="N478" name="N112" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N480" start="">
             <Connection>
               <ControlPoint xPos="294" yPos="592" ctrlXPos="376" ctrlYPos="543"/>
@@ -2937,14 +2595,11 @@ sysCall ( "expectDAs" , "(confirm|reject).*repeat" );]]>
           <Position xPos="210" yPos="570"/>
         </Node>
         <Node id="N479" name="N113" history="false">
-          <Commands>
-            <![CDATA[DialogueAct da = { type = "provide" , subtype = "performanceSession" , total = 0 , correct = 0 , totalRobot = 0 , correctRobot = 0 };]]>
-            <![CDATA[da.total = getNumberOfQuestions ( AE.robot );
+          <Commands><![CDATA[DialogueAct da = { type = "provide" , subtype = "performanceSession" , total = 0 , correct = 0 , totalRobot = 0 , correctRobot = 0 };]]><![CDATA[da.total = getNumberOfQuestions ( AE.robot );
 da.correct = getNumberOfCorrectAnswers ( AE.robot );
 da.totalRobot = getNumberOfQuestions ( AE.user );
 da.correctRobot = getNumberOfCorrectAnswers ( AE.user );
-emitDialogueAct ( da );]]>
-          </Commands>
+emitDialogueAct ( da );]]></Commands>
           <EEdge target="N480" start ="">
             <Connection>
               <ControlPoint xPos="525" yPos="570" ctrlXPos="525" ctrlYPos="547"/>
@@ -2954,9 +2609,7 @@ emitDialogueAct ( da );]]>
           <Position xPos="480" yPos="570"/>
         </Node>
         <Node id="N480" name="N117" history="false">
-          <Commands>
-            <![CDATA[emitDA ( "request(fun)" );]]>
-          </Commands>
+          <Commands><![CDATA[emitDA ( "request(fun)" );]]></Commands>
           <EEdge target="N481" start ="">
             <Connection>
               <ControlPoint xPos="564" yPos="412" ctrlXPos="592" ctrlYPos="395"/>
@@ -2966,9 +2619,7 @@ emitDialogueAct ( da );]]>
           <Position xPos="480" yPos="390"/>
         </Node>
         <Node id="N481" name="WaitForFunReaction" history="false">
-          <Commands>
-            <![CDATA[sysCall ( "expectDAs" , "provide.*fun" );]]>
-          </Commands>
+          <Commands><![CDATA[sysCall ( "expectDAs" , "provide.*fun" );]]></Commands>
           <CEdge target="N484" start="">
             <Connection>
               <ControlPoint xPos="705" yPos="390" ctrlXPos="705" ctrlYPos="457"/>
@@ -2985,11 +2636,8 @@ emitDialogueAct ( da );]]>
           <Position xPos="660" yPos="300"/>
         </Node>
         <Node id="N482" name="DoSomething" history="false">
-          <Commands>
-            <![CDATA[String fun = "";]]>
-            <![CDATA[lastReaction.type = "acknowledgement";
-emitDialogueAct ( lastReaction );]]>
-          </Commands>
+          <Commands><![CDATA[String fun = "";]]><![CDATA[lastReaction.type = "acknowledgement";
+emitDialogueAct ( lastReaction );]]></Commands>
           <EEdge target="N483" start ="">
             <Connection>
               <ControlPoint xPos="975" yPos="390" ctrlXPos="975" ctrlYPos="457"/>
@@ -2999,16 +2647,13 @@ emitDialogueAct ( lastReaction );]]>
           <Position xPos="930" yPos="300"/>
         </Node>
         <Node id="N483" name="N118" history="false">
-          <Commands>
-            <![CDATA[lastReaction = emptyReaction (  );
+          <Commands><![CDATA[lastReaction = emptyReaction (  );
 flag.status = StatE.stopped;
-situation = SE.gameFinished;]]>
-          </Commands>
+situation = SE.gameFinished;]]></Commands>
           <Position xPos="930" yPos="570"/>
         </Node>
         <Node id="N484" name="N121" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N482" start="">
             <Connection>
               <ControlPoint xPos="737" yPos="583" ctrlXPos="824" ctrlYPos="495"/>
@@ -3026,12 +2671,10 @@ situation = SE.gameFinished;]]>
         </Node>
       </SuperNode>
       <SuperNode id="S63" name="RobotAsks" comment="" hideLocalVar="false" hideGlobalVar="false" start="S66;">
-        <Commands>
-          <![CDATA[String goto = "";
+        <Commands><![CDATA[String goto = "";
 Bool doNextQuestion = true;
 DialogueAct quizReaction = { type = "" , subtype = "" };
-String explanation = "";]]>
-        </Commands>
+String explanation = "";]]></Commands>
         <EEdge target="S59" start ="">
           <Connection>
             <ControlPoint xPos="930" yPos="435" ctrlXPos="772" ctrlYPos="435"/>
@@ -3060,24 +2703,19 @@ String explanation = "";]]>
           </Text>
         </Comment>
         <Node id="N485" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="1020" yPos="210"/>
         </Node>
         <Node id="N486" name="Qujt" history="false">
-          <Commands>
-            <![CDATA[situation = SE.turnFinished;]]>
-          </Commands>
+          <Commands><![CDATA[situation = SE.turnFinished;]]></Commands>
           <Position xPos="390" yPos="660"/>
         </Node>
         <Node id="N487" name="RobotAsksTurn" history="false">
-          <Commands>
-            <![CDATA[lastReaction = emptyReaction (  );
+          <Commands><![CDATA[lastReaction = emptyReaction (  );
 newTurn (  );
 provideQuestion ( false );
 provideAnswers ( false );
-turnTablet (  );]]>
-          </Commands>
+turnTablet (  );]]></Commands>
           <EEdge target="S67" start ="">
             <Connection>
               <ControlPoint xPos="660" yPos="255" ctrlXPos="671" ctrlYPos="255"/>
@@ -3087,8 +2725,7 @@ turnTablet (  );]]>
           <Position xPos="570" yPos="210"/>
         </Node>
         <Node id="N488" name="and" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N490" start="">
             <Connection>
               <ControlPoint xPos="1077" yPos="478" ctrlXPos="1096" ctrlYPos="549"/>
@@ -3105,8 +2742,7 @@ turnTablet (  );]]>
           <Position xPos="1020" yPos="390"/>
         </Node>
         <Node id="N489" name="WaitForCorrectType" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N488" start="">
             <Connection>
               <ControlPoint xPos="750" yPos="435" ctrlXPos="862" ctrlYPos="435"/>
@@ -3130,10 +2766,8 @@ turnTablet (  );]]>
           <Position xPos="660" yPos="390"/>
         </Node>
         <Node id="N490" name="ReactionAccepted" history="false">
-          <Commands>
-            <![CDATA[quizReaction = lastReaction;
-lastReaction = emptyReaction (  );]]>
-          </Commands>
+          <Commands><![CDATA[quizReaction = lastReaction;
+lastReaction = emptyReaction (  );]]></Commands>
           <EEdge target="S64" start ="">
             <Connection>
               <ControlPoint xPos="1112" yPos="717" ctrlXPos="999" ctrlYPos="748"/>
@@ -3143,13 +2777,10 @@ lastReaction = emptyReaction (  );]]>
           <Position xPos="1110" yPos="660"/>
         </Node>
         <Node id="N491" name="N31" history="false">
-          <Commands>
-            <![CDATA[DialogueAct da = { type = "provide" , subtype = "explanation" , string = "" };]]>
-            <![CDATA[da.type = "provide";
+          <Commands><![CDATA[DialogueAct da = { type = "provide" , subtype = "explanation" , string = "" };]]><![CDATA[da.type = "provide";
 da.subtype = "explanation";
 da.string = explanation;
-emitDialogueAct ( da );]]>
-          </Commands>
+emitDialogueAct ( da );]]></Commands>
           <CEdge target="S66" start="">
             <Connection>
               <ControlPoint xPos="493" yPos="493" ctrlXPos="383" ctrlYPos="448"/>
@@ -3166,10 +2797,8 @@ emitDialogueAct ( da );]]>
           <Position xPos="480" yPos="480"/>
         </Node>
         <Node id="N492" name="N35" history="false">
-          <Commands>
-            <![CDATA[lastReaction = emptyReaction (  );
-explanation = getExplanation ( false );]]>
-          </Commands>
+          <Commands><![CDATA[lastReaction = emptyReaction (  );
+explanation = getExplanation ( false );]]></Commands>
           <CEdge target="N491" start="">
             <Connection>
               <ControlPoint xPos="300" yPos="525" ctrlXPos="367" ctrlYPos="525"/>
@@ -3186,9 +2815,7 @@ explanation = getExplanation ( false );]]>
           <Position xPos="210" yPos="480"/>
         </Node>
         <Node id="N493" name="N36" history="false">
-          <Commands>
-            <![CDATA[emitDA ( "provide(explanation)" );]]>
-          </Commands>
+          <Commands><![CDATA[emitDA ( "provide(explanation)" );]]></Commands>
           <EEdge target="S68" start ="">
             <Connection>
               <ControlPoint xPos="277" yPos="666" ctrlXPos="362" ctrlYPos="514"/>
@@ -3198,9 +2825,7 @@ explanation = getExplanation ( false );]]>
           <Position xPos="210" yPos="660"/>
         </Node>
         <Node id="N494" name="N42" history="false">
-          <Commands>
-            <![CDATA[sysCall ( "expectDAs" , "((provide\((answer|tryagain)\b)|(request\(((repeat, what=(answers|question))\))))" );]]>
-          </Commands>
+          <Commands><![CDATA[sysCall ( "expectDAs" , "((provide\((answer|tryagain)\b)|(request\(((repeat, what=(answers|question))\))))" );]]></Commands>
           <EEdge target="N489" start ="">
             <Connection>
               <ControlPoint xPos="936" yPos="277" ctrlXPos="853" ctrlYPos="323"/>
@@ -3210,10 +2835,8 @@ explanation = getExplanation ( false );]]>
           <Position xPos="930" yPos="210"/>
         </Node>
         <SuperNode id="S64" name="ProcessQuizReaction" comment="" hideLocalVar="false" hideGlobalVar="false" start="N496;">
-          <Commands>
-            <![CDATA[DialogueAct return = { type = "" , subtype = "" };
-DialogueAct result = emptyReaction (  );]]>
-          </Commands>
+          <Commands><![CDATA[DialogueAct return = { type = "" , subtype = "" };
+DialogueAct result = emptyReaction (  );]]></Commands>
           <CEdge target="N489" start="">
             <Connection>
               <ControlPoint xPos="783" yPos="750" ctrlXPos="751" ctrlYPos="631"/>
@@ -3241,13 +2864,11 @@ DialogueAct result = emptyReaction (  );]]>
             </Text>
           </Comment>
           <Node id="N495" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="30" yPos="750"/>
           </Node>
           <Node id="N496" name="N8" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N501" start="">
               <Connection>
                 <ControlPoint xPos="333" yPos="298" ctrlXPos="301" ctrlYPos="410"/>
@@ -3272,9 +2893,7 @@ DialogueAct result = emptyReaction (  );]]>
             <Position xPos="300" yPos="210"/>
           </Node>
           <Node id="N497" name="N11" history="false">
-            <Commands>
-              <![CDATA[provideSolution ( false );]]>
-            </Commands>
+            <Commands><![CDATA[provideSolution ( false );]]></Commands>
             <CEdge target="N503" start="">
               <Connection>
                 <ControlPoint xPos="467" yPos="763" ctrlXPos="509" ctrlYPos="720"/>
@@ -3291,9 +2910,7 @@ DialogueAct result = emptyReaction (  );]]>
             <Position xPos="390" yPos="750"/>
           </Node>
           <Node id="N498" name="N12" history="false">
-            <Commands>
-              <![CDATA[emitDialogueAct ( result );]]>
-            </Commands>
+            <Commands><![CDATA[emitDialogueAct ( result );]]></Commands>
             <CEdge target="N497" start="">
               <Connection>
                 <ControlPoint xPos="840" yPos="795" ctrlXPos="682" ctrlYPos="795"/>
@@ -3310,9 +2927,7 @@ DialogueAct result = emptyReaction (  );]]>
             <Position xPos="840" yPos="750"/>
           </Node>
           <Node id="N499" name="N12" history="false">
-            <Commands>
-              <![CDATA[emitDialogueAct ( result );]]>
-            </Commands>
+            <Commands><![CDATA[emitDialogueAct ( result );]]></Commands>
             <CEdge target="N501" start="">
               <Connection>
                 <ControlPoint xPos="576" yPos="457" ctrlXPos="460" ctrlYPos="522"/>
@@ -3329,9 +2944,7 @@ DialogueAct result = emptyReaction (  );]]>
             <Position xPos="570" yPos="390"/>
           </Node>
           <Node id="N500" name="N14" history="false">
-            <Commands>
-              <![CDATA[emitDA ( "request(tryagain)" );]]>
-            </Commands>
+            <Commands><![CDATA[emitDA ( "request(tryagain)" );]]></Commands>
             <EEdge target="N509" start ="">
               <Connection>
                 <ControlPoint xPos="1065" yPos="750" ctrlXPos="1065" ctrlYPos="727"/>
@@ -3341,19 +2954,14 @@ DialogueAct result = emptyReaction (  );]]>
             <Position xPos="1020" yPos="750"/>
           </Node>
           <Node id="N501" name="N11" history="false">
-            <Commands>
-              <![CDATA[goto = "check";]]>
-            </Commands>
+            <Commands><![CDATA[goto = "check";]]></Commands>
             <Position xPos="210" yPos="570"/>
           </Node>
           <Node id="N502" name="N31" history="false">
-            <Commands>
-              <![CDATA[DialogueAct da = { type = "provide" , subtype = "explanation" , string = "" };]]>
-              <![CDATA[da.type = "provide";
+            <Commands><![CDATA[DialogueAct da = { type = "provide" , subtype = "explanation" , string = "" };]]><![CDATA[da.type = "provide";
 da.subtype = "explanation";
 da.string = explanation;
-emitDialogueAct ( da );]]>
-            </Commands>
+emitDialogueAct ( da );]]></Commands>
             <EEdge target="N501" start ="">
               <Connection>
                 <ControlPoint xPos="255" yPos="750" ctrlXPos="255" ctrlYPos="727"/>
@@ -3363,9 +2971,7 @@ emitDialogueAct ( da );]]>
             <Position xPos="210" yPos="750"/>
           </Node>
           <Node id="N503" name="N33" history="false">
-            <Commands>
-              <![CDATA[explanation = getExplanation ( true );]]>
-            </Commands>
+            <Commands><![CDATA[explanation = getExplanation ( true );]]></Commands>
             <CEdge target="N502" start="">
               <Connection>
                 <ControlPoint xPos="576" yPos="637" ctrlXPos="460" ctrlYPos="702"/>
@@ -3382,8 +2988,7 @@ emitDialogueAct ( da );]]>
             <Position xPos="570" yPos="570"/>
           </Node>
           <Node id="N504" name="N29" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N499" start="">
               <Connection>
                 <ControlPoint xPos="936" yPos="592" ctrlXPos="820" ctrlYPos="523"/>
@@ -3407,9 +3012,7 @@ emitDialogueAct ( da );]]>
             <Position xPos="930" yPos="570"/>
           </Node>
           <Node id="N505" name="N106" history="false">
-            <Commands>
-              <![CDATA[result = assessAnswer ( quizReaction );]]>
-            </Commands>
+            <Commands><![CDATA[result = assessAnswer ( quizReaction );]]></Commands>
             <CEdge target="N504" start="">
               <Connection>
                 <ControlPoint xPos="817" yPos="384" ctrlXPos="863" ctrlYPos="466"/>
@@ -3426,14 +3029,11 @@ emitDialogueAct ( da );]]>
             <Position xPos="750" yPos="300"/>
           </Node>
           <Node id="N506" name="N23" history="false">
-            <Commands>
-              <![CDATA[goto = "listen";]]>
-            </Commands>
+            <Commands><![CDATA[goto = "listen";]]></Commands>
             <Position xPos="30" yPos="570"/>
           </Node>
           <Node id="N507" name="N107" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N506" start="">
               <Connection>
                 <ControlPoint xPos="143" yPos="474" ctrlXPos="126" ctrlYPos="502"/>
@@ -3450,9 +3050,7 @@ emitDialogueAct ( da );]]>
             <Position xPos="120" yPos="390"/>
           </Node>
           <Node id="N508" name="N23" history="false">
-            <Commands>
-              <![CDATA[emitDialogueAct ( result );]]>
-            </Commands>
+            <Commands><![CDATA[emitDialogueAct ( result );]]></Commands>
             <EEdge target="N509" start ="">
               <Connection>
                 <ControlPoint xPos="1065" yPos="300" ctrlXPos="1065" ctrlYPos="412"/>
@@ -3462,15 +3060,12 @@ emitDialogueAct ( da );]]>
             <Position xPos="1020" yPos="210"/>
           </Node>
           <Node id="N509" name="N108" history="false">
-            <Commands>
-              <![CDATA[goto = "listen";]]>
-            </Commands>
+            <Commands><![CDATA[goto = "listen";]]></Commands>
             <Position xPos="1020" yPos="570"/>
           </Node>
         </SuperNode>
         <SuperNode id="S65" name="RepeatSomething" comment="" hideLocalVar="false" hideGlobalVar="false" start="N515;">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N489" start="">
             <Connection>
               <ControlPoint xPos="641" yPos="660" ctrlXPos="684" ctrlYPos="585"/>
@@ -3486,14 +3081,11 @@ emitDialogueAct ( da );]]>
           </EEdge>
           <Position xPos="570" yPos="660"/>
           <Node id="N510" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="120" yPos="300"/>
           </Node>
           <Node id="N511" name="N102" history="false">
-            <Commands>
-              <![CDATA[provideSolution ( true );]]>
-            </Commands>
+            <Commands><![CDATA[provideSolution ( true );]]></Commands>
             <EEdge target="N513" start ="">
               <Connection>
                 <ControlPoint xPos="660" yPos="615" ctrlXPos="682" ctrlYPos="615"/>
@@ -3503,9 +3095,7 @@ emitDialogueAct ( da );]]>
             <Position xPos="570" yPos="570"/>
           </Node>
           <Node id="N512" name="N104" history="false">
-            <Commands>
-              <![CDATA[provideQuestion ( true );]]>
-            </Commands>
+            <Commands><![CDATA[provideQuestion ( true );]]></Commands>
             <EEdge target="N513" start ="">
               <Connection>
                 <ControlPoint xPos="627" yPos="298" ctrlXPos="673" ctrlYPos="465"/>
@@ -3515,15 +3105,11 @@ emitDialogueAct ( da );]]>
             <Position xPos="574" yPos="217"/>
           </Node>
           <Node id="N513" name="N23" history="false">
-            <Commands>
-              <![CDATA[goto = "listen";]]>
-            </Commands>
+            <Commands><![CDATA[goto = "listen";]]></Commands>
             <Position xPos="750" yPos="570"/>
           </Node>
           <Node id="N514" name="N103" history="false">
-            <Commands>
-              <![CDATA[provideAnswers ( true );]]>
-            </Commands>
+            <Commands><![CDATA[provideAnswers ( true );]]></Commands>
             <EEdge target="N513" start ="">
               <Connection>
                 <ControlPoint xPos="647" yPos="467" ctrlXPos="689" ctrlYPos="509"/>
@@ -3533,10 +3119,8 @@ emitDialogueAct ( da );]]>
             <Position xPos="570" yPos="390"/>
           </Node>
           <Node id="N515" name="N101" history="false">
-            <Commands>
-              <![CDATA[quizReaction = lastReaction;
-lastReaction = emptyReaction (  );]]>
-            </Commands>
+            <Commands><![CDATA[quizReaction = lastReaction;
+lastReaction = emptyReaction (  );]]></Commands>
             <CEdge target="N512" start="">
               <Connection>
                 <ControlPoint xPos="197" yPos="583" ctrlXPos="375" ctrlYPos="404"/>
@@ -3568,10 +3152,8 @@ lastReaction = emptyReaction (  );]]>
           </Node>
         </SuperNode>
         <SuperNode id="S66" name="WaitForTablet" comment="" hideLocalVar="false" hideGlobalVar="false" start="N519;">
-          <Commands>
-            <![CDATA[String wantedOrientation = "robot";
-Bool turnRequested = false;]]>
-          </Commands>
+          <Commands><![CDATA[String wantedOrientation = "robot";
+Bool turnRequested = false;]]></Commands>
           <CEdge target="N492" start="">
             <Connection>
               <ControlPoint xPos="255" yPos="300" ctrlXPos="204" ctrlYPos="355"/>
@@ -3587,18 +3169,15 @@ Bool turnRequested = false;]]>
           </EEdge>
           <Position xPos="210" yPos="210"/>
           <Node id="N516" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="30" yPos="300"/>
           </Node>
           <Node id="N517" name="DoSomething" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="390" yPos="660"/>
           </Node>
           <Node id="N518" name="WaitForTabletTurn" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N517" start="">
               <Connection>
                 <ControlPoint xPos="287" yPos="557" ctrlXPos="329" ctrlYPos="599"/>
@@ -3629,9 +3208,7 @@ Bool turnRequested = false;]]>
             <Position xPos="210" yPos="480"/>
           </Node>
           <Node id="N519" name="N147" history="false">
-            <Commands>
-              <![CDATA[sysCall ( "expectDAs" , "provide\(turntablet, what=" + wantedOrientation + "\)" );]]>
-            </Commands>
+            <Commands><![CDATA[sysCall ( "expectDAs" , "provide\(turntablet, what=" + wantedOrientation + "\)" );]]></Commands>
             <EEdge target="N518" start ="">
               <Connection>
                 <ControlPoint xPos="255" yPos="390" ctrlXPos="255" ctrlYPos="412"/>
@@ -3641,8 +3218,7 @@ Bool turnRequested = false;]]>
             <Position xPos="210" yPos="300"/>
           </Node>
           <Node id="N520" name="N118" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N517" start="">
               <Connection>
                 <ControlPoint xPos="752" yPos="627" ctrlXPos="639" ctrlYPos="658"/>
@@ -3659,10 +3235,8 @@ Bool turnRequested = false;]]>
             <Position xPos="750" yPos="570"/>
           </Node>
           <Node id="N521" name="N119" history="false">
-            <Commands>
-              <![CDATA[emitDA ( "request(turntablet)" );
-turnRequested = true;]]>
-            </Commands>
+            <Commands><![CDATA[emitDA ( "request(turntablet)" );
+turnRequested = true;]]></Commands>
             <EEdge target="N518" start ="">
               <Connection>
                 <ControlPoint xPos="576" yPos="367" ctrlXPos="460" ctrlYPos="432"/>
@@ -3673,10 +3247,8 @@ turnRequested = true;]]>
           </Node>
         </SuperNode>
         <SuperNode id="S67" name="WaitForTablet" comment="" hideLocalVar="false" hideGlobalVar="false" start="N527;">
-          <Commands>
-            <![CDATA[String wantedOrientation = "child";
-Bool turnRequested = false;]]>
-          </Commands>
+          <Commands><![CDATA[String wantedOrientation = "child";
+Bool turnRequested = false;]]></Commands>
           <EEdge target="N494" start ="">
             <Connection>
               <ControlPoint xPos="840" yPos="255" ctrlXPos="907" ctrlYPos="255"/>
@@ -3685,18 +3257,15 @@ Bool turnRequested = false;]]>
           </EEdge>
           <Position xPos="732" yPos="211"/>
           <Node id="N522" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="930" yPos="120"/>
           </Node>
           <Node id="N523" name="DoSomething" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="120" yPos="570"/>
           </Node>
           <Node id="N524" name="WaitForTabletTurn" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N523" start="">
               <Connection>
                 <ControlPoint xPos="210" yPos="525" ctrlXPos="243" ctrlYPos="565"/>
@@ -3720,8 +3289,7 @@ Bool turnRequested = false;]]>
             <Position xPos="120" yPos="480"/>
           </Node>
           <Node id="N525" name="N118" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N523" start="">
               <Connection>
                 <ControlPoint xPos="572" yPos="603" ctrlXPos="434" ctrlYPos="626"/>
@@ -3738,10 +3306,8 @@ Bool turnRequested = false;]]>
             <Position xPos="570" yPos="570"/>
           </Node>
           <Node id="N526" name="N119" history="false">
-            <Commands>
-              <![CDATA[emitDA ( "request(turntablet)" );
-turnRequested = true;]]>
-            </Commands>
+            <Commands><![CDATA[emitDA ( "request(turntablet)" );
+turnRequested = true;]]></Commands>
             <EEdge target="N524" start ="">
               <Connection>
                 <ControlPoint xPos="583" yPos="287" ctrlXPos="440" ctrlYPos="412"/>
@@ -3751,9 +3317,7 @@ turnRequested = true;]]>
             <Position xPos="570" yPos="210"/>
           </Node>
           <Node id="N527" name="N147" history="false">
-            <Commands>
-              <![CDATA[sysCall ( "expectDAs" , "provide\(turntablet, what=" + wantedOrientation + "\)" );]]>
-            </Commands>
+            <Commands><![CDATA[sysCall ( "expectDAs" , "provide\(turntablet, what=" + wantedOrientation + "\)" );]]></Commands>
             <EEdge target="N524" start ="">
               <Connection>
                 <ControlPoint xPos="197" yPos="287" ctrlXPos="243" ctrlYPos="393"/>
@@ -3764,10 +3328,8 @@ turnRequested = true;]]>
           </Node>
         </SuperNode>
         <SuperNode id="S68" name="WaitNextQuestion" comment="" hideLocalVar="false" hideGlobalVar="false" start="N531;">
-          <Commands>
-            <![CDATA[String wantedOrientation = "robot";
-Bool turnRequested = false;]]>
-          </Commands>
+          <Commands><![CDATA[String wantedOrientation = "robot";
+Bool turnRequested = false;]]></Commands>
           <CEdge target="N492" start="">
             <Connection>
               <ControlPoint xPos="409" yPos="300" ctrlXPos="354" ctrlYPos="394"/>
@@ -3783,18 +3345,15 @@ Bool turnRequested = false;]]>
           </EEdge>
           <Position xPos="390" yPos="210"/>
           <Node id="N528" name="History" history="true">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="30" yPos="300"/>
           </Node>
           <Node id="N529" name="DoSomething" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <Position xPos="625" yPos="666"/>
           </Node>
           <Node id="N530" name="WaitForTabletTurn" history="false">
-            <Commands>
-            </Commands>
+            <Commands/>
             <CEdge target="N529" start="">
               <Connection>
                 <ControlPoint xPos="557" yPos="467" ctrlXPos="663" ctrlYPos="457"/>
@@ -3825,9 +3384,7 @@ Bool turnRequested = false;]]>
             <Position xPos="480" yPos="390"/>
           </Node>
           <Node id="N531" name="N117" history="false">
-            <Commands>
-              <![CDATA[sysCall ( "expectDAs" , "provide\(nextquestion\)|request\(explanation\)" );]]>
-            </Commands>
+            <Commands><![CDATA[sysCall ( "expectDAs" , "provide\(nextquestion\)|request\(explanation\)" );]]></Commands>
             <EEdge target="N530" start ="">
               <Connection>
                 <ControlPoint xPos="210" yPos="435" ctrlXPos="322" ctrlYPos="435"/>
@@ -3839,8 +3396,7 @@ Bool turnRequested = false;]]>
         </SuperNode>
       </SuperNode>
       <SuperNode id="S69" name="InitQuiz" comment="" hideLocalVar="false" hideGlobalVar="false" start="N535;">
-        <Commands>
-        </Commands>
+        <Commands/>
         <EEdge target="S59" start ="">
           <Connection>
             <ControlPoint xPos="300" yPos="357" ctrlXPos="374" ctrlYPos="376"/>
@@ -3849,14 +3405,11 @@ Bool turnRequested = false;]]>
         </EEdge>
         <Position xPos="210" yPos="300"/>
         <Node id="N532" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="750" yPos="210"/>
         </Node>
         <Node id="N533" name="N77" history="false">
-          <Commands>
-            <![CDATA[tabletOrientation = "inactive";]]>
-          </Commands>
+          <Commands><![CDATA[tabletOrientation = "inactive";]]></Commands>
           <EEdge target="N536" start ="">
             <Connection>
               <ControlPoint xPos="576" yPos="277" ctrlXPos="547" ctrlYPos="293"/>
@@ -3866,16 +3419,12 @@ Bool turnRequested = false;]]>
           <Position xPos="570" yPos="210"/>
         </Node>
         <Node id="N534" name="StartPlayingQuiz" history="false">
-          <Commands>
-            <![CDATA[situation = SE.startQuiz;]]>
-          </Commands>
+          <Commands><![CDATA[situation = SE.startQuiz;]]></Commands>
           <Position xPos="570" yPos="390"/>
         </Node>
         <Node id="N535" name="N20" history="false">
-          <Commands>
-            <![CDATA[setActivity ( "Quiz" );
-sysCall ( "flowStarted" , "Quiz" );]]>
-          </Commands>
+          <Commands><![CDATA[setActivity ( "Quiz" );
+sysCall ( "flowStarted" , "Quiz" );]]></Commands>
           <CEdge target="N533" start="">
             <Connection>
               <ControlPoint xPos="210" yPos="255" ctrlXPos="367" ctrlYPos="255"/>
@@ -3892,8 +3441,7 @@ sysCall ( "flowStarted" , "Quiz" );]]>
           <Position xPos="120" yPos="210"/>
         </Node>
         <Node id="N536" name="DecideOnInstructions" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N537" start="">
             <Connection>
               <ControlPoint xPos="392" yPos="357" ctrlXPos="320" ctrlYPos="376"/>
@@ -3910,10 +3458,7 @@ sysCall ( "flowStarted" , "Quiz" );]]>
           <Position xPos="390" yPos="300"/>
         </Node>
         <Node id="N537" name="SayInstructions" history="false">
-          <Commands>
-            <![CDATA[Int try = 0;]]>
-            <![CDATA[emitDA ( "provide(instructions)" );]]>
-          </Commands>
+          <Commands><![CDATA[Int try = 0;]]><![CDATA[emitDA ( "provide(instructions)" );]]></Commands>
           <EEdge target="N534" start ="">
             <Connection>
               <ControlPoint xPos="210" yPos="435" ctrlXPos="367" ctrlYPos="435"/>
@@ -3924,8 +3469,7 @@ sysCall ( "flowStarted" , "Quiz" );]]>
         </Node>
       </SuperNode>
       <SuperNode id="S70" name="ReactToUserEvents" comment="" hideLocalVar="false" hideGlobalVar="false" start="N540;">
-        <Commands>
-        </Commands>
+        <Commands/>
         <EEdge target="N398" start ="">
           <Connection>
             <ControlPoint xPos="390" yPos="255" ctrlXPos="502" ctrlYPos="255"/>
@@ -3934,15 +3478,12 @@ sysCall ( "flowStarted" , "Quiz" );]]>
         </EEdge>
         <Position xPos="300" yPos="210"/>
         <Node id="N538" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="1290" yPos="300"/>
         </Node>
         <Node id="N539" name="ConsumeLastReaction" history="false">
-          <Commands>
-            <![CDATA[lastReaction = emptyReaction (  );
-stopRequest = StatE.stopped;]]>
-          </Commands>
+          <Commands><![CDATA[lastReaction = emptyReaction (  );
+stopRequest = StatE.stopped;]]></Commands>
           <EEdge target="N540" start ="">
             <Connection>
               <ControlPoint xPos="593" yPos="576" ctrlXPos="576" ctrlYPos="547"/>
@@ -3952,8 +3493,7 @@ stopRequest = StatE.stopped;]]>
           <Position xPos="570" yPos="570"/>
         </Node>
         <Node id="N540" name="WaitForSignalOrInterrupt" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N546" start="">
             <Connection>
               <ControlPoint xPos="525" yPos="390" ctrlXPos="525" ctrlYPos="367"/>
@@ -3991,8 +3531,7 @@ stopRequest = StatE.stopped;]]>
           <Position xPos="480" yPos="390"/>
         </Node>
         <Node id="N541" name="N134" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N539" start="">
             <Connection>
               <ControlPoint xPos="547" yPos="756" ctrlXPos="563" ctrlYPos="727"/>
@@ -4009,9 +3548,7 @@ stopRequest = StatE.stopped;]]>
           <Position xPos="480" yPos="750"/>
         </Node>
         <Node id="N542" name="N138" history="false">
-          <Commands>
-            <![CDATA[situation = SE.switchRole;]]>
-          </Commands>
+          <Commands><![CDATA[situation = SE.switchRole;]]></Commands>
           <EEdge target="N544" start ="">
             <Connection>
               <ControlPoint xPos="165" yPos="750" ctrlXPos="165" ctrlYPos="682"/>
@@ -4021,10 +3558,8 @@ stopRequest = StatE.stopped;]]>
           <Position xPos="120" yPos="750"/>
         </Node>
         <Node id="N544" name="N139" history="false">
-          <Commands>
-            <![CDATA[stopRequest = StatE.interrupted;
-lastReaction = emptyReaction (  );]]>
-          </Commands>
+          <Commands><![CDATA[stopRequest = StatE.interrupted;
+lastReaction = emptyReaction (  );]]></Commands>
           <EEdge target="N540" start ="">
             <Connection>
               <ControlPoint xPos="208" yPos="513" ctrlXPos="320" ctrlYPos="481"/>
@@ -4034,8 +3569,7 @@ lastReaction = emptyReaction (  );]]>
           <Position xPos="120" yPos="480"/>
         </Node>
         <Node id="N545" name="N142" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N541" start="">
             <Connection>
               <ControlPoint xPos="842" yPos="717" ctrlXPos="729" ctrlYPos="748"/>
@@ -4052,10 +3586,8 @@ lastReaction = emptyReaction (  );]]>
           <Position xPos="840" yPos="660"/>
         </Node>
         <Node id="N546" name="N40" history="false">
-          <Commands>
-            <![CDATA[tabletOrientation = lastReaction.what;
-lastReaction = emptyReaction (  );]]>
-          </Commands>
+          <Commands><![CDATA[tabletOrientation = lastReaction.what;
+lastReaction = emptyReaction (  );]]></Commands>
           <EEdge target="N540" start ="">
             <Connection>
               <ControlPoint xPos="513" yPos="298" ctrlXPos="507" ctrlYPos="319"/>
@@ -4065,21 +3597,17 @@ lastReaction = emptyReaction (  );]]>
           <Position xPos="480" yPos="210"/>
         </Node>
         <Node id="N547" name="N13" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="120" yPos="300"/>
         </Node>
         <Node id="N35" name="N35" history="false">
-          <Commands>
-            <![CDATA[situation = SE.gameFinished;
+          <Commands><![CDATA[situation = SE.gameFinished;
 emitDA ( "acknowledgement(game)" );
-stopRequest = StatE.stopped;]]>
-          </Commands>
+stopRequest = StatE.stopped;]]></Commands>
           <Position xPos="1200" yPos="480"/>
         </Node>
         <Node id="N39" name="N39" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N35" start="">
             <Connection>
               <ControlPoint xPos="924" yPos="368" ctrlXPos="1039" ctrlYPos="436"/>
@@ -4105,11 +3633,9 @@ stopRequest = StatE.stopped;]]>
       </SuperNode>
     </SuperNode>
     <SuperNode id="S72" name="DoIntroduction" comment="" hideLocalVar="false" hideGlobalVar="false" start="N558;">
-      <Commands>
-        <![CDATA[DialogueAct return = emptyReaction (  );
+      <Commands><![CDATA[DialogueAct return = emptyReaction (  );
 Bool correctResponse = true;
-String askFor = "";]]>
-      </Commands>
+String askFor = "";]]></Commands>
       <EEdge target="S49" start ="">
         <Connection>
           <ControlPoint xPos="525" yPos="300" ctrlXPos="525" ctrlYPos="322"/>
@@ -4142,14 +3668,11 @@ String askFor = "";]]>
         </Text>
       </Comment>
       <Node id="N557" name="History" history="true">
-        <Commands>
-        </Commands>
+        <Commands/>
         <Position xPos="840" yPos="120"/>
       </Node>
       <Node id="N558" name="Start introduction" history="false">
-        <Commands>
-          <![CDATA[situation = SE.startIntroduction;]]>
-        </Commands>
+        <Commands><![CDATA[situation = SE.startIntroduction;]]></Commands>
         <EEdge target="S75" start ="">
           <Connection>
             <ControlPoint xPos="120" yPos="255" ctrlXPos="322" ctrlYPos="255"/>
@@ -4159,13 +3682,11 @@ String askFor = "";]]>
         <Position xPos="30" yPos="210"/>
       </Node>
       <Node id="N559" name="Done" history="false">
-        <Commands>
-        </Commands>
+        <Commands/>
         <Position xPos="570" yPos="750"/>
       </Node>
       <SuperNode id="S73" name="TestForRightAnswerTest if response is to the question asked" comment="" hideLocalVar="false" hideGlobalVar="false" start="N20;">
-        <Commands>
-        </Commands>
+        <Commands/>
         <CEdge target="S74" start="">
           <Connection>
             <ControlPoint xPos="120" yPos="499" ctrlXPos="214" ctrlYPos="444"/>
@@ -4181,14 +3702,11 @@ String askFor = "";]]>
         </EEdge>
         <Position xPos="30" yPos="480"/>
         <Node id="N560" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="30" yPos="120"/>
         </Node>
         <Node id="N561" name="N129" history="false">
-          <Commands>
-            <![CDATA[correctResponse = false;]]>
-          </Commands>
+          <Commands><![CDATA[correctResponse = false;]]></Commands>
           <CEdge target="N562" start="">
             <Connection>
               <ControlPoint xPos="298" yPos="537" ctrlXPos="491" ctrlYPos="591"/>
@@ -4226,9 +3744,7 @@ String askFor = "";]]>
           <Position xPos="210" yPos="480"/>
         </Node>
         <Node id="N562" name="N130" history="false">
-          <Commands>
-            <![CDATA[correctResponse = true;]]>
-          </Commands>
+          <Commands><![CDATA[correctResponse = true;]]></Commands>
           <EEdge target="N21" start ="">
             <Connection>
               <ControlPoint xPos="763" yPos="557" ctrlXPos="691" ctrlYPos="735"/>
@@ -4238,9 +3754,7 @@ String askFor = "";]]>
           <Position xPos="750" yPos="480"/>
         </Node>
         <Node id="N20" name="N20" history="false">
-          <Commands>
-            <![CDATA[setUserModel ( lastReaction.subtype , get ( lastReaction , "value" ) );]]>
-          </Commands>
+          <Commands><![CDATA[setUserModel ( lastReaction.subtype , get ( lastReaction , "value" ) );]]></Commands>
           <EEdge target="N561" start ="">
             <Connection>
               <ControlPoint xPos="255" yPos="390" ctrlXPos="255" ctrlYPos="412"/>
@@ -4250,15 +3764,12 @@ String askFor = "";]]>
           <Position xPos="210" yPos="300"/>
         </Node>
         <Node id="N21" name="N21" history="false">
-          <Commands>
-            <![CDATA[lastReaction = emptyReaction (  );]]>
-          </Commands>
+          <Commands><![CDATA[lastReaction = emptyReaction (  );]]></Commands>
           <Position xPos="210" yPos="660"/>
         </Node>
       </SuperNode>
       <SuperNode id="S74" name="TestToSendConfirm" comment="" hideLocalVar="false" hideGlobalVar="false" start="N564;">
-        <Commands>
-        </Commands>
+        <Commands/>
         <EEdge target="S76" start ="">
           <Connection>
             <ControlPoint xPos="345" yPos="390" ctrlXPos="345" ctrlYPos="412"/>
@@ -4267,13 +3778,11 @@ String askFor = "";]]>
         </EEdge>
         <Position xPos="300" yPos="300"/>
         <Node id="N563" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="30" yPos="570"/>
         </Node>
         <Node id="N564" name="TestIfSend" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N566" start="">
             <Connection>
               <ControlPoint xPos="114" yPos="278" ctrlXPos="196" ctrlYPos="326"/>
@@ -4290,16 +3799,12 @@ String askFor = "";]]>
           <Position xPos="30" yPos="210"/>
         </Node>
         <Node id="N565" name="WaitToEndSpeak" history="false">
-          <Commands>
-            <![CDATA[askFor = "";]]>
-          </Commands>
+          <Commands><![CDATA[askFor = "";]]></Commands>
           <Position xPos="570" yPos="210"/>
         </Node>
         <Node id="N566" name="N28" history="false">
-          <Commands>
-            <![CDATA[return = { type = "acknowledgement" , subtype = askFor };
-emitDialogueAct ( return );]]>
-          </Commands>
+          <Commands><![CDATA[return = { type = "acknowledgement" , subtype = askFor };
+emitDialogueAct ( return );]]></Commands>
           <TEdge target="N565" start="" timeout="3000">
             <Connection>
               <ControlPoint xPos="384" yPos="412" ctrlXPos="466" ctrlYPos="363"/>
@@ -4310,8 +3815,7 @@ emitDialogueAct ( return );]]>
         </Node>
       </SuperNode>
       <SuperNode id="S75" name="DoGreeting" comment="" hideLocalVar="false" hideGlobalVar="false" start="N568;">
-        <Commands>
-        </Commands>
+        <Commands/>
         <EEdge target="S79" start ="">
           <Connection>
             <ControlPoint xPos="615" yPos="300" ctrlXPos="615" ctrlYPos="322"/>
@@ -4320,13 +3824,11 @@ emitDialogueAct ( return );]]>
         </EEdge>
         <Position xPos="570" yPos="210"/>
         <Node id="N567" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="30" yPos="120"/>
         </Node>
         <Node id="N568" name="TestNameGiven" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N570" start="">
             <Connection>
               <ControlPoint xPos="187" yPos="294" ctrlXPos="203" ctrlYPos="322"/>
@@ -4343,15 +3845,11 @@ emitDialogueAct ( return );]]>
           <Position xPos="120" yPos="210"/>
         </Node>
         <Node id="N569" name="Done" history="false">
-          <Commands>
-            <![CDATA[emitDialogueAct ( { type = "salutation" , subtype = "greeting" } );]]>
-          </Commands>
+          <Commands><![CDATA[emitDialogueAct ( { type = "salutation" , subtype = "greeting" } );]]></Commands>
           <Position xPos="480" yPos="210"/>
         </Node>
         <Node id="N570" name="AskName" history="false">
-          <Commands>
-            <![CDATA[askFor = "name";]]>
-          </Commands>
+          <Commands><![CDATA[askFor = "name";]]></Commands>
           <EEdge target="N569" start ="">
             <Connection>
               <ControlPoint xPos="294" yPos="412" ctrlXPos="376" ctrlYPos="363"/>
@@ -4362,8 +3860,7 @@ emitDialogueAct ( return );]]>
         </Node>
       </SuperNode>
       <SuperNode id="S76" name="HasEyeColor" comment="" hideLocalVar="false" hideGlobalVar="false" start="N572;">
-        <Commands>
-        </Commands>
+        <Commands/>
         <EEdge target="S77" start ="">
           <Connection>
             <ControlPoint xPos="390" yPos="537" ctrlXPos="464" ctrlYPos="556"/>
@@ -4372,13 +3869,11 @@ emitDialogueAct ( return );]]>
         </EEdge>
         <Position xPos="300" yPos="480"/>
         <Node id="N571" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="30" yPos="30"/>
         </Node>
         <Node id="N572" name="N34" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N574" start="">
             <Connection>
               <ControlPoint xPos="210" yPos="255" ctrlXPos="322" ctrlYPos="255"/>
@@ -4396,13 +3891,11 @@ emitDialogueAct ( return );]]>
           <Position xPos="120" yPos="210"/>
         </Node>
         <Node id="N573" name="Done" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="480" yPos="480"/>
         </Node>
         <Node id="N574" name="N28" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N575" start="">
             <Connection>
               <ControlPoint xPos="570" yPos="255" ctrlXPos="637" ctrlYPos="255"/>
@@ -4419,9 +3912,7 @@ emitDialogueAct ( return );]]>
           <Position xPos="480" yPos="210"/>
         </Node>
         <Node id="N575" name="N27" history="false">
-          <Commands>
-            <![CDATA[emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]>
-          </Commands>
+          <Commands><![CDATA[emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]></Commands>
           <EEdge target="N573" start ="">
             <Connection>
               <ControlPoint xPos="763" yPos="287" ctrlXPos="675" ctrlYPos="374"/>
@@ -4432,8 +3923,7 @@ emitDialogueAct ( return );]]>
         </Node>
       </SuperNode>
       <SuperNode id="S77" name="AskOther" comment="" hideLocalVar="false" hideGlobalVar="false" start="N587;">
-        <Commands>
-        </Commands>
+        <Commands/>
         <CEdge target="N559" start="">
           <Connection>
             <ControlPoint xPos="615" yPos="660" ctrlXPos="615" ctrlYPos="682"/>
@@ -4456,15 +3946,11 @@ emitDialogueAct ( return );]]>
           </Text>
         </Comment>
         <Node id="N576" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="930" yPos="120"/>
         </Node>
         <Node id="N577" name="N4" history="false">
-          <Commands>
-            <![CDATA[Float r = 0.0;]]>
-            <![CDATA[r = random (  );]]>
-          </Commands>
+          <Commands><![CDATA[Float r = 0.0;]]><![CDATA[r = random (  );]]></Commands>
           <CEdge target="N578" start="">
             <Connection>
               <ControlPoint xPos="204" yPos="368" ctrlXPos="319" ctrlYPos="436"/>
@@ -4495,8 +3981,7 @@ emitDialogueAct ( return );]]>
           <Position xPos="120" yPos="300"/>
         </Node>
         <Node id="N578" name="N5" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N579" start="">
             <Connection>
               <ControlPoint xPos="570" yPos="525" ctrlXPos="682" ctrlYPos="525"/>
@@ -4513,9 +3998,7 @@ emitDialogueAct ( return );]]>
           <Position xPos="480" yPos="480"/>
         </Node>
         <Node id="N579" name="N6" history="false">
-          <Commands>
-            <![CDATA[askFor = "hobby";]]>
-          </Commands>
+          <Commands><![CDATA[askFor = "hobby";]]></Commands>
           <EEdge target="N580" start ="">
             <Connection>
               <ControlPoint xPos="928" yPos="537" ctrlXPos="999" ctrlYPos="556"/>
@@ -4525,14 +4008,11 @@ emitDialogueAct ( return );]]>
           <Position xPos="840" yPos="480"/>
         </Node>
         <Node id="N580" name="N10" history="false">
-          <Commands>
-            <![CDATA[emitDialogueAct ( { type = "request" , subtype = askFor } );]]>
-          </Commands>
+          <Commands><![CDATA[emitDialogueAct ( { type = "request" , subtype = askFor } );]]></Commands>
           <Position xPos="1110" yPos="570"/>
         </Node>
         <Node id="N581" name="N11" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N582" start="">
             <Connection>
               <ControlPoint xPos="570" yPos="705" ctrlXPos="682" ctrlYPos="705"/>
@@ -4549,9 +4029,7 @@ emitDialogueAct ( return );]]>
           <Position xPos="480" yPos="660"/>
         </Node>
         <Node id="N582" name="N17" history="false">
-          <Commands>
-            <![CDATA[askFor = "age";]]>
-          </Commands>
+          <Commands><![CDATA[askFor = "age";]]></Commands>
           <EEdge target="N580" start ="">
             <Connection>
               <ControlPoint xPos="928" yPos="693" ctrlXPos="999" ctrlYPos="673"/>
@@ -4561,8 +4039,7 @@ emitDialogueAct ( return );]]>
           <Position xPos="840" yPos="660"/>
         </Node>
         <Node id="N583" name="N18" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N584" start="">
             <Connection>
               <ControlPoint xPos="570" yPos="345" ctrlXPos="682" ctrlYPos="345"/>
@@ -4579,9 +4056,7 @@ emitDialogueAct ( return );]]>
           <Position xPos="480" yPos="300"/>
         </Node>
         <Node id="N584" name="N21" history="false">
-          <Commands>
-            <![CDATA[askFor = "color";]]>
-          </Commands>
+          <Commands><![CDATA[askFor = "color";]]></Commands>
           <EEdge target="N580" start ="">
             <Connection>
               <ControlPoint xPos="917" yPos="377" ctrlXPos="1004" ctrlYPos="464"/>
@@ -4591,8 +4066,7 @@ emitDialogueAct ( return );]]>
           <Position xPos="840" yPos="300"/>
         </Node>
         <Node id="N585" name="N27" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N577" start="">
             <Connection>
               <ControlPoint xPos="165" yPos="480" ctrlXPos="165" ctrlYPos="457"/>
@@ -4609,14 +4083,11 @@ emitDialogueAct ( return );]]>
           <Position xPos="120" yPos="480"/>
         </Node>
         <Node id="N586" name="N36" history="false">
-          <Commands>
-            <![CDATA[situation = SE.gameFinished;]]>
-          </Commands>
+          <Commands><![CDATA[situation = SE.gameFinished;]]></Commands>
           <Position xPos="390" yPos="750"/>
         </Node>
         <Node id="N587" name="N26" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N580" start="">
             <Connection>
               <ControlPoint xPos="208" yPos="873" ctrlXPos="677" ctrlYPos="909"/>
@@ -4641,8 +4112,7 @@ emitDialogueAct ( return );]]>
         </Node>
       </SuperNode>
       <SuperNode id="S78" name="TestAskAgain" comment="" hideLocalVar="false" hideGlobalVar="false" start="N589;">
-        <Commands>
-        </Commands>
+        <Commands/>
         <EEdge target="S80" start ="">
           <Connection>
             <ControlPoint xPos="120" yPos="705" ctrlXPos="187" ctrlYPos="705"/>
@@ -4651,13 +4121,11 @@ emitDialogueAct ( return );]]>
         </EEdge>
         <Position xPos="30" yPos="660"/>
         <Node id="N588" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="30" yPos="210"/>
         </Node>
         <Node id="N589" name="N129" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N590" start="">
             <Connection>
               <ControlPoint xPos="204" yPos="322" ctrlXPos="392" ctrlYPos="211"/>
@@ -4689,9 +4157,7 @@ emitDialogueAct ( return );]]>
           <Position xPos="120" yPos="300"/>
         </Node>
         <Node id="N590" name="NameAgain" history="false">
-          <Commands>
-            <![CDATA[return = { type = "apologize" , subtype = "name" };]]>
-          </Commands>
+          <Commands><![CDATA[return = { type = "apologize" , subtype = "name" };]]></Commands>
           <EEdge target="N594" start ="">
             <Connection>
               <ControlPoint xPos="744" yPos="188" ctrlXPos="859" ctrlYPos="256"/>
@@ -4701,9 +4167,7 @@ emitDialogueAct ( return );]]>
           <Position xPos="660" yPos="120"/>
         </Node>
         <Node id="N591" name="AgeAgain" history="false">
-          <Commands>
-            <![CDATA[return = { type = "apologize" , subtype = "age" };]]>
-          </Commands>
+          <Commands><![CDATA[return = { type = "apologize" , subtype = "age" };]]></Commands>
           <EEdge target="N594" start ="">
             <Connection>
               <ControlPoint xPos="750" yPos="345" ctrlXPos="862" ctrlYPos="345"/>
@@ -4713,9 +4177,7 @@ emitDialogueAct ( return );]]>
           <Position xPos="660" yPos="300"/>
         </Node>
         <Node id="N592" name="HobbyAgain" history="false">
-          <Commands>
-            <![CDATA[return = { type = "apologize" , subtype = "hobby" };]]>
-          </Commands>
+          <Commands><![CDATA[return = { type = "apologize" , subtype = "hobby" };]]></Commands>
           <EEdge target="N594" start ="">
             <Connection>
               <ControlPoint xPos="744" yPos="502" ctrlXPos="859" ctrlYPos="433"/>
@@ -4725,9 +4187,7 @@ emitDialogueAct ( return );]]>
           <Position xPos="660" yPos="480"/>
         </Node>
         <Node id="N593" name="ColorAgain" history="false">
-          <Commands>
-            <![CDATA[return = { type = "apologize" , subtype = "color" };]]>
-          </Commands>
+          <Commands><![CDATA[return = { type = "apologize" , subtype = "color" };]]></Commands>
           <EEdge target="N594" start ="">
             <Connection>
               <ControlPoint xPos="737" yPos="673" ctrlXPos="870" ctrlYPos="539"/>
@@ -4737,15 +4197,12 @@ emitDialogueAct ( return );]]>
           <Position xPos="660" yPos="660"/>
         </Node>
         <Node id="N594" name="N105" history="false">
-          <Commands>
-            <![CDATA[emitDialogueAct ( return );]]>
-          </Commands>
+          <Commands><![CDATA[emitDialogueAct ( return );]]></Commands>
           <Position xPos="1020" yPos="300"/>
         </Node>
       </SuperNode>
       <SuperNode id="S79" name="HasEyeColor" comment="" hideLocalVar="false" hideGlobalVar="false" start="N596;">
-        <Commands>
-        </Commands>
+        <Commands/>
         <EEdge target="S77" start ="">
           <Connection>
             <ControlPoint xPos="615" yPos="480" ctrlXPos="615" ctrlYPos="502"/>
@@ -4754,13 +4211,11 @@ emitDialogueAct ( return );]]>
         </EEdge>
         <Position xPos="570" yPos="390"/>
         <Node id="N595" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="30" yPos="30"/>
         </Node>
         <Node id="N596" name="N34" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N597" start="">
             <Connection>
               <ControlPoint xPos="204" yPos="278" ctrlXPos="286" ctrlYPos="326"/>
@@ -4778,15 +4233,12 @@ emitDialogueAct ( return );]]>
           <Position xPos="120" yPos="210"/>
         </Node>
         <Node id="N597" name="Done" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="390" yPos="390"/>
         </Node>
         <Node id="N598" name="N27" history="false">
-          <Commands>
-            <![CDATA[setEyeColor (  );
-emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]>
-          </Commands>
+          <Commands><![CDATA[setEyeColor (  );
+emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]></Commands>
           <EEdge target="N597" start ="">
             <Connection>
               <ControlPoint xPos="583" yPos="287" ctrlXPos="540" ctrlYPos="329"/>
@@ -4797,8 +4249,7 @@ emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]>
         </Node>
       </SuperNode>
       <SuperNode id="S80" name="WaitToContinue" comment="" hideLocalVar="false" hideGlobalVar="false" start="N607;">
-        <Commands>
-        </Commands>
+        <Commands/>
         <EEdge target="S73" start ="">
           <Connection>
             <ControlPoint xPos="300" yPos="679" ctrlXPos="205" ctrlYPos="624"/>
@@ -4807,13 +4258,11 @@ emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]>
         </EEdge>
         <Position xPos="300" yPos="660"/>
         <Node id="N599" name="History" history="true">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="30" yPos="570"/>
         </Node>
         <Node id="N600" name="IdleState" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N601" start="">
             <Connection>
               <ControlPoint xPos="615" yPos="480" ctrlXPos="615" ctrlYPos="502"/>
@@ -4830,19 +4279,15 @@ emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]>
           <Position xPos="570" yPos="390"/>
         </Node>
         <Node id="N601" name="StartPlayingQuiz" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="570" yPos="570"/>
         </Node>
         <Node id="N602" name="Quit" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <Position xPos="390" yPos="570"/>
         </Node>
         <Node id="N603" name="ResetToIdle" history="false">
-          <Commands>
-            <![CDATA[flag.status = StatE.idle;]]>
-          </Commands>
+          <Commands><![CDATA[flag.status = StatE.idle;]]></Commands>
           <EEdge target="N606" start ="">
             <Connection>
               <ControlPoint xPos="576" yPos="277" ctrlXPos="493" ctrlYPos="323"/>
@@ -4852,9 +4297,7 @@ emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]>
           <Position xPos="570" yPos="210"/>
         </Node>
         <Node id="N604" name="ChangeStatus" history="false">
-          <Commands>
-            <![CDATA[flag.status = StatE.shuttingDown;]]>
-          </Commands>
+          <Commands><![CDATA[flag.status = StatE.shuttingDown;]]></Commands>
           <EEdge target="N602" start ="">
             <Connection>
               <ControlPoint xPos="210" yPos="615" ctrlXPos="277" ctrlYPos="615"/>
@@ -4864,8 +4307,7 @@ emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]>
           <Position xPos="120" yPos="570"/>
         </Node>
         <Node id="N605" name="CheckShutDown" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N604" start="">
             <Connection>
               <ControlPoint xPos="165" yPos="480" ctrlXPos="165" ctrlYPos="502"/>
@@ -4882,8 +4324,7 @@ emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]>
           <Position xPos="120" yPos="390"/>
         </Node>
         <Node id="N606" name="CheckStopped" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <CEdge target="N603" start="">
             <Connection>
               <ControlPoint xPos="377" yPos="403" ctrlXPos="444" ctrlYPos="335"/>
@@ -4900,8 +4341,7 @@ emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]>
           <Position xPos="300" yPos="390"/>
         </Node>
         <Node id="N607" name="Start" history="false">
-          <Commands>
-          </Commands>
+          <Commands/>
           <EEdge target="N605" start ="">
             <Connection>
               <ControlPoint xPos="165" yPos="300" ctrlXPos="165" ctrlYPos="322"/>
@@ -4914,8 +4354,7 @@ emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]>
     </SuperNode>
   </SuperNode>
   <SuperNode id="S1" name="Idle" comment="" hideLocalVar="false" hideGlobalVar="false" start="N14;">
-    <Commands>
-    </Commands>
+    <Commands/>
     <CEdge target="S45" start="">
       <Connection>
         <ControlPoint xPos="480" yPos="525" ctrlXPos="592" ctrlYPos="525"/>
@@ -4931,13 +4370,11 @@ emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]>
     </EEdge>
     <Position xPos="390" yPos="480"/>
     <Node id="N4" name="History" history="true">
-      <Commands>
-      </Commands>
+      <Commands/>
       <Position xPos="840" yPos="210"/>
     </Node>
     <Node id="N5" name="IdleState" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <CEdge target="N6" start="">
         <Connection>
           <ControlPoint xPos="705" yPos="480" ctrlXPos="705" ctrlYPos="502"/>
@@ -4954,20 +4391,16 @@ emitDialogueAct ( { type = "acknowledgement" , subtype = "eyecolorset" } );]]>
       <Position xPos="660" yPos="390"/>
     </Node>
     <Node id="N6" name="StartPlayingQuiz" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <Position xPos="660" yPos="570"/>
     </Node>
     <Node id="N9" name="Quit" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <Position xPos="480" yPos="570"/>
     </Node>
     <Node id="N10" name="ResetToIdle" history="false">
-      <Commands>
-        <![CDATA[flag.status = StatE.idle;
-sysCall ( "flowEnded" , "robodemo" );]]>
-      </Commands>
+      <Commands><![CDATA[flag.status = StatE.idle;
+sysCall ( "flowEnded" , "robodemo" );]]></Commands>
       <EEdge target="N13" start ="">
         <Connection>
           <ControlPoint xPos="537" yPos="298" ctrlXPos="543" ctrlYPos="319"/>
@@ -4977,9 +4410,7 @@ sysCall ( "flowEnded" , "robodemo" );]]>
       <Position xPos="480" yPos="210"/>
     </Node>
     <Node id="N11" name="ChangeStatus" history="false">
-      <Commands>
-        <![CDATA[flag.status = StatE.shuttingDown;]]>
-      </Commands>
+      <Commands><![CDATA[flag.status = StatE.shuttingDown;]]></Commands>
       <EEdge target="N9" start ="">
         <Connection>
           <ControlPoint xPos="390" yPos="615" ctrlXPos="412" ctrlYPos="615"/>
@@ -4989,8 +4420,7 @@ sysCall ( "flowEnded" , "robodemo" );]]>
       <Position xPos="300" yPos="570"/>
     </Node>
     <Node id="N12" name="CheckShutDown" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <CEdge target="N11" start="">
         <Connection>
           <ControlPoint xPos="345" yPos="480" ctrlXPos="345" ctrlYPos="502"/>
@@ -5007,8 +4437,7 @@ sysCall ( "flowEnded" , "robodemo" );]]>
       <Position xPos="300" yPos="390"/>
     </Node>
     <Node id="N13" name="CheckStopped" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <CEdge target="N10" start="">
         <Connection>
           <ControlPoint xPos="525" yPos="390" ctrlXPos="525" ctrlYPos="367"/>
@@ -5025,8 +4454,7 @@ sysCall ( "flowEnded" , "robodemo" );]]>
       <Position xPos="480" yPos="390"/>
     </Node>
     <Node id="N14" name="Start" history="false">
-      <Commands>
-      </Commands>
+      <Commands/>
       <EEdge target="N12" start ="">
         <Connection>
           <ControlPoint xPos="345" yPos="300" ctrlXPos="345" ctrlYPos="322"/>

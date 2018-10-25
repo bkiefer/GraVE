@@ -21,7 +21,7 @@ public final class ProjectConfig implements Copyable {
   private final Logger mLogger = LoggerFactory.getLogger(ProjectConfig.class);
 
   // The name of the project
-  @XmlAttribute
+  @XmlAttribute(name="name")
   private String mProjectName;
 
   // Construct an empty project

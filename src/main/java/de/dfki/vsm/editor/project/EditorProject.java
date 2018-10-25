@@ -161,8 +161,7 @@ public class EditorProject extends RunTimeProject {
       }
     }
     // Save the project data
-    if (super.write(mProjectFile)
-            && mEditorConfig.save(mProjectFile)) {
+    if (super.write(mProjectFile) && mEditorConfig.save(mProjectFile)) {
       // Reset the initial hash code here
       mInitialHash = getHashCode();
       // Return true when project is saved
