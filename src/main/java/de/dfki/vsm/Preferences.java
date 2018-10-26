@@ -25,9 +25,9 @@ import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.vsm.editor.project.EditorConfig;
 //~--- JDK imports ------------------------------------------------------------
 import de.dfki.vsm.model.flow.SceneFlow;
-import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
@@ -273,11 +273,11 @@ public final class Preferences {
   public String XSI_SCHEMELOCATION = "res/xsd/sceneflow.xsd";
 
   public boolean sSHOW_ELEMENTS = true;
-  public boolean sSHOW_ELEMENT_PROPERTIES = true;
-  public int sPROPERTIES_DIVIDER_LOCATION = 230;
+  public int sELEMENTS_DIVIDER_LOCATION = 230;
   public boolean sSHOW_SCENEFLOWEDITOR = true;
-  public boolean sSHOW_SCENEEDITOR = true;
-  public double sSCENEFLOW_SCENE_EDITOR_RATIO = 0.75;
+  public boolean sSHOW_CODEEDITOR = true;
+  public int sCODE_DIVIDER_LOCATION = 450;
+  public double sSCENEFLOW_SCENE_EDITOR_RATIO = 0.85;
   public boolean sSHOW_GESTURES = true;
   public int NUM_MAGNETS = 8;
 

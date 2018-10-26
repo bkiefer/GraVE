@@ -11,13 +11,13 @@ import java.util.*;
 import javax.swing.JComponent;
 
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
+import de.dfki.vsm.editor.project.EditorConfig;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.DockingManager;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.flow.geom.Position;
-import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;

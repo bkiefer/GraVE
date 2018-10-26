@@ -12,8 +12,7 @@ import javax.swing.JComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
 
 /**

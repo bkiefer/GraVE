@@ -28,8 +28,6 @@ import de.dfki.vsm.editor.event.ElementEditorToggledEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.editor.project.sceneflow.attributes.NameEditor;
-import de.dfki.vsm.editor.project.sceneflow.elements.SceneFlowElementPanel;
-import de.dfki.vsm.editor.project.sceneflow.elements.SceneFlowPalettePanel;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.flow.SceneFlow;
@@ -172,7 +170,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     mSplitPane.setResizeWeight(0.0);
     mSplitPane.setLeftComponent(mNewElementDisplay);
     if (getPrefs().sSHOW_ELEMENTS) {
-      mSplitPane.setDividerLocation(getPrefs().sPROPERTIES_DIVIDER_LOCATION);
+      mSplitPane.setDividerLocation(getPrefs().sELEMENTS_DIVIDER_LOCATION);
       //THIS EVENT IS CASTED ONLY TO ACTIVATE THE ELEMENT EDITOR WITH THE INFO OF THE CURRENT PROJECT
     } else {
       mSplitPane.setDividerLocation(1.0d);
@@ -185,7 +183,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
 
         // solve issue here
         if (getPrefs().sSHOW_ELEMENTS) {
-          getPrefs().sPROPERTIES_DIVIDER_LOCATION = mSplitPane.getDividerLocation();
+          getPrefs().sELEMENTS_DIVIDER_LOCATION = mSplitPane.getDividerLocation();
         }
       }
     });
@@ -226,7 +224,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
       mNewElementDisplay.setVisible(true);
       getPrefs().sSHOW_ELEMENTS = true;
       getPrefs().save();
-      mSplitPane.setDividerLocation(getPrefs().sPROPERTIES_DIVIDER_LOCATION);
+      mSplitPane.setDividerLocation(getPrefs().sELEMENTS_DIVIDER_LOCATION);
     }
 
   }

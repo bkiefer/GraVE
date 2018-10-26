@@ -1,9 +1,12 @@
 package de.dfki.vsm.editor.project;
 
-import static de.dfki.vsm.Preferences.*;
+import static de.dfki.vsm.Preferences.getPrefs;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
@@ -34,6 +37,8 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   private EditorProject mEditorProject;
   // The sceneflow editor of this project
   private final SceneFlowEditor mSceneFlowEditor;
+  // Code editing panel
+  private final CodeEditor mAuxiliaryEditor;
 
   // Create an empty project editor
   public ProjectEditor() {
@@ -48,6 +53,8 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     mEditorProject = project;
     // Initialize the sceneflow editor
     mSceneFlowEditor = new SceneFlowEditor(mEditorProject);
+    // Initialize Code Editing Region
+    mAuxiliaryEditor = new CodeEditor(mEditorProject);
     // Register at the event dispatcher
     mEventDispatcher.register(this);
     // Initialize the GUI components
@@ -93,14 +100,34 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
     setUI(new BasicSplitPaneUI() {
 
+      @SuppressWarnings("serial")
       @Override
       public BasicSplitPaneDivider createDefaultDivider() {
         return new BasicSplitPaneDivider(this) {
+          /**
+           * Shows the bottom part of the editor when mouse goes over
+           * the border
+           *
+           * @param me
+           */
+          @Override
+          protected void processMouseEvent(MouseEvent me) {
+            super.processMouseEvent(me);
+            switch (me.getID()) {
 
+            case MouseEvent.MOUSE_ENTERED:
+              if (!mAuxiliaryEditor.isPinPricked())
+                showAuxiliaryEditor();
+              break;
+            case MouseEvent.MOUSE_RELEASED:
+              int value = ProjectEditor.this.getDividerLocation();
+              getPrefs().sCODE_DIVIDER_LOCATION = value;
+              mAuxiliaryEditor.setPinPricked();
+              break;
+            }
+          }
         };
-
       }
-
     });
 
     setDividerSize(10);
@@ -109,22 +136,52 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     mSceneFlowEditor.setMinimumSize(new Dimension(10, 10));
     mSceneFlowEditor.setMaximumSize(new Dimension(10000, 3000));
     setTopComponent(mSceneFlowEditor);
+    mAuxiliaryEditor.setMinimumSize(new Dimension(10, 10));
+    mAuxiliaryEditor.setMaximumSize(new Dimension(10000, 3000));
+    setBottomComponent(mAuxiliaryEditor);
 
     // setting size
 
     if (!getPrefs().sSHOW_SCENEFLOWEDITOR) {
-      setDividerLocation(1d);
+      setDividerLocation(0);
     }
 
-    if (getPrefs().sSHOW_SCENEEDITOR && getPrefs().sSHOW_SCENEFLOWEDITOR) {
-      setDividerLocation(getPrefs().sPROPERTIES_DIVIDER_LOCATION);
+    if (getPrefs().sSHOW_CODEEDITOR && getPrefs().sSHOW_SCENEFLOWEDITOR) {
+      showAuxiliaryEditor();
     }
 
+    mAuxiliaryEditor.addComponentListener(new ComponentListener() {
+      @Override
+      public void componentResized(ComponentEvent e) {
+        if (mSceneFlowEditor.getSize().height == 0) {
+          getPrefs().sSHOW_SCENEFLOWEDITOR = false;
+          getPrefs().sSHOW_CODEEDITOR = true;
+        } else {
+          getPrefs().sSHOW_SCENEFLOWEDITOR = true;
+        }
+        if (mAuxiliaryEditor.getSize().height == 0) {
+          getPrefs().sSHOW_SCENEFLOWEDITOR = true;
+          getPrefs().sSHOW_CODEEDITOR = false;
+        } else {
+          getPrefs().sSHOW_CODEEDITOR = true;
+        }
+        Preferences.save();
+      }
+
+      @Override
+      public void componentMoved(ComponentEvent e) { }
+
+      @Override
+      public void componentShown(ComponentEvent e) { }
+
+      @Override
+      public void componentHidden(ComponentEvent e) { }
+    });
   }
 
   // Show the bottom part of the project editor
   private void showAuxiliaryEditor() {
-    setDividerLocation(getPrefs().sPROPERTIES_DIVIDER_LOCATION);
+    setDividerLocation(getPrefs().sCODE_DIVIDER_LOCATION);
   }
 
   // Hides the bottom part of the project editor

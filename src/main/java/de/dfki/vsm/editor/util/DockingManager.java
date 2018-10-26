@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.editor.project.EditorConfig;
 
 /**
  * EdgeNodeDockingManager manages incoming and outgoing edges of a

@@ -14,6 +14,7 @@ import java.util.HashSet;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
 import de.dfki.vsm.editor.util.grid.GridConstants;
 import de.dfki.vsm.editor.util.grid.GridRectangle;
@@ -21,7 +22,6 @@ import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.flow.graphics.workspace.WorkAreaSize;
 import de.dfki.vsm.model.flow.graphics.workspace.WorkSpaceInitNodeSize;
 import de.dfki.vsm.model.flow.graphics.workspace.WorkSpaceSuperNode;
-import de.dfki.vsm.model.project.EditorConfig;
 
 /*
 * @author Patrick

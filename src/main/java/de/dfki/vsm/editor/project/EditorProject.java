@@ -3,7 +3,6 @@ package de.dfki.vsm.editor.project;
 import java.io.File;
 
 import de.dfki.vsm.Preferences;
-import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.model.project.ProjectConfig;
 import de.dfki.vsm.runtime.project.RunTimeProject;
 

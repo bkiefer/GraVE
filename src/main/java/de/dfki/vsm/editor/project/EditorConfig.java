@@ -1,4 +1,4 @@
-package de.dfki.vsm.model.project;
+package de.dfki.vsm.editor.project;
 
 import java.awt.Dimension;
 import java.io.*;

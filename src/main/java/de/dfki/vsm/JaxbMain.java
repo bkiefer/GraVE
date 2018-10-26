@@ -9,8 +9,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.model.flow.SceneFlow;
-import de.dfki.vsm.model.project.EditorConfig;
 
 public class JaxbMain {
 

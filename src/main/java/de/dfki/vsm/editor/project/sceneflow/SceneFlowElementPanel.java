@@ -1,4 +1,4 @@
-package de.dfki.vsm.editor.project.sceneflow.elements;
+package de.dfki.vsm.editor.project.sceneflow;
 
 import java.awt.Color;
 import java.awt.Component;
