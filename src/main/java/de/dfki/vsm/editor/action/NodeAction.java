@@ -13,7 +13,7 @@ import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Node.Type;
 import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.flow.BasicNode;

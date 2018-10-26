@@ -1,4 +1,4 @@
-package de.dfki.vsm.editor.project.sceneflow.workspace;
+package de.dfki.vsm.editor.project.sceneflow;
 
 import static de.dfki.vsm.Preferences.*;
 
@@ -26,7 +26,6 @@ import de.dfki.vsm.editor.event.ProjectChangedEvent;
 import de.dfki.vsm.editor.event.WorkSpaceSelectedEvent;
 import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
 import de.dfki.vsm.editor.util.GridManager;
 import de.dfki.vsm.editor.util.SceneFlowLayoutManager;
 import de.dfki.vsm.editor.util.SceneFlowManager;

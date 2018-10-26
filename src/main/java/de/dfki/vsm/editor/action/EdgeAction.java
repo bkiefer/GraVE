@@ -16,7 +16,7 @@ import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.Node.Flavour;
 import de.dfki.vsm.editor.dialog.ModifyPEdgeDialog;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.grid.*;
 import de.dfki.vsm.editor.util.grid.pathfinding.Path;
 import de.dfki.vsm.model.flow.*;

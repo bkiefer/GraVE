@@ -8,7 +8,7 @@ import javax.swing.undo.CannotUndoException;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.dialog.ModifyTEdgeDialog;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.model.flow.TimeoutEdge;
 
 /**

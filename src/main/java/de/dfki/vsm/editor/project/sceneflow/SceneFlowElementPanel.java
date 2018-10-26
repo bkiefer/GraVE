@@ -9,9 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -23,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.MainGrave;
 import de.dfki.vsm.Preferences;
-import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.TreeEntry;
 import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
 import de.dfki.vsm.editor.project.EditorProject;

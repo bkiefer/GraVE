@@ -2,7 +2,7 @@ package de.dfki.vsm.editor.action;
 
 import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.util.evt.EventDispatcher;
 
 /**

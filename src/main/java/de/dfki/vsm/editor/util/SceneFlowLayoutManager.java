@@ -12,7 +12,10 @@ import java.awt.Dimension;
 import java.awt.LayoutManager;
 
 //~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.*;
+import de.dfki.vsm.editor.Comment;
+import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.StartSign;
 
 /**
  *

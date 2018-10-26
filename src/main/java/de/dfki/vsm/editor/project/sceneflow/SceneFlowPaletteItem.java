@@ -1,6 +1,6 @@
 package de.dfki.vsm.editor.project.sceneflow;
 
-import static de.dfki.vsm.Preferences.*;
+import static de.dfki.vsm.Preferences.getPrefs;
 
 import java.awt.Cursor;
 import java.awt.Image;
@@ -16,8 +16,6 @@ import java.io.IOException;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.TransferHandler;
-
-import de.dfki.vsm.Preferences;
 
 public final class SceneFlowPaletteItem extends JLabel implements Transferable {
 

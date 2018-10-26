@@ -12,7 +12,7 @@ import javax.swing.undo.UndoManager;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Comment;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.flow.SuperNode;
 

@@ -37,7 +37,7 @@ import de.dfki.vsm.editor.event.EdgeEditEvent;
 import de.dfki.vsm.editor.event.EdgeSelectedEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.EditorConfig;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.EdgeGraphics;
 import de.dfki.vsm.model.flow.GuardedEdge;
 import de.dfki.vsm.model.flow.InterruptEdge;

@@ -12,7 +12,7 @@ import de.dfki.vsm.editor.dialog.ModifyCEdgeDialog;
 import de.dfki.vsm.editor.dialog.ModifyIEdgeDialog;
 import de.dfki.vsm.editor.dialog.ModifyPEdgeDialog;
 import de.dfki.vsm.editor.dialog.ModifyTEdgeDialog;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.model.flow.EpsilonEdge;
 import de.dfki.vsm.model.flow.ForkingEdge;
 import de.dfki.vsm.model.flow.RandomEdge;

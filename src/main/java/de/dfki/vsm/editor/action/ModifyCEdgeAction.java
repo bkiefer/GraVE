@@ -6,7 +6,7 @@ import javax.swing.undo.CannotUndoException;
 
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.dialog.ModifyCEdgeDialog;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.model.flow.GuardedEdge;
 
 /**

@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import javax.swing.JComponent;
 
 import de.dfki.vsm.editor.project.EditorConfig;
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.TextFormat;
 

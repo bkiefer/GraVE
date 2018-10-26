@@ -1,6 +1,6 @@
 package de.dfki.vsm.editor;
 
-import static de.dfki.vsm.Preferences.*;
+import static de.dfki.vsm.Preferences.getPrefs;
 
 import java.awt.Color;
 import java.awt.Graphics;

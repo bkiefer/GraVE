@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.model.flow.BasicNode;
 
 /**

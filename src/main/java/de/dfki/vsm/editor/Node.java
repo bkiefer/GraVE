@@ -12,8 +12,7 @@ import javax.swing.JComponent;
 
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.EditorConfig;
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.DockingManager;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;

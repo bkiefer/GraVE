@@ -26,8 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.editor.project.EditorConfig;
-//~--- JDK imports ------------------------------------------------------------
-import de.dfki.vsm.model.flow.SceneFlow;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**

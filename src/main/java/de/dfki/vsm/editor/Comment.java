@@ -11,8 +11,7 @@ import java.util.Observer;
 import javax.swing.*;
 
 import de.dfki.vsm.editor.project.EditorConfig;
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.model.flow.geom.Boundary;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;

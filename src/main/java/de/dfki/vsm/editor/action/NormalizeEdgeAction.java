@@ -14,7 +14,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Set;
 
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.grid.*;
 import de.dfki.vsm.editor.util.grid.pathfinding.Path;
 

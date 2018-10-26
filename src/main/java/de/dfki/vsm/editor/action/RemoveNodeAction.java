@@ -9,7 +9,7 @@ import javax.swing.undo.CannotUndoException;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 
 /**
  * @author Gregor Mehlmann

@@ -1,6 +1,6 @@
 package de.dfki.vsm.model.flow.graphics.workspace;
 
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 
 /**
  * Created by alvaro on 1/24/17.

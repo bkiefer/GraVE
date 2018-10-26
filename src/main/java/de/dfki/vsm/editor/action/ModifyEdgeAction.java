@@ -2,7 +2,7 @@ package de.dfki.vsm.editor.action;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge.TYPE;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 
 /**
  * @author Gregor Mehlmann

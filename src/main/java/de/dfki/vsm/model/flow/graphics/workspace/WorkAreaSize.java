@@ -2,7 +2,7 @@ package de.dfki.vsm.model.flow.graphics.workspace;
 
 import java.awt.Dimension;
 
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
 

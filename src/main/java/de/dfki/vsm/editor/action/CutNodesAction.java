@@ -11,7 +11,7 @@ import javax.swing.undo.CannotUndoException;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
-import de.dfki.vsm.editor.project.sceneflow.workspace.WorkSpacePanel;
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 
 /**
  * @author Patrick Gebhard
