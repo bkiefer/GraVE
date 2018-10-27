@@ -96,7 +96,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
     setOneTouchExpandable(true);
 
-    setResizeWeight(getPrefs().sSCENEFLOW_SCENE_EDITOR_RATIO);
+    setResizeWeight(mEditorProject.getEditorConfig().sSCENEFLOW_SCENE_EDITOR_RATIO);
 
     setUI(new BasicSplitPaneUI() {
 
@@ -121,7 +121,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
               break;
             case MouseEvent.MOUSE_RELEASED:
               int value = ProjectEditor.this.getDividerLocation();
-              getPrefs().sCODE_DIVIDER_LOCATION = value;
+              mEditorProject.getEditorConfig().sCODE_DIVIDER_LOCATION = value;
               mAuxiliaryEditor.setPinPricked();
               break;
             }
@@ -142,11 +142,12 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
     // setting size
 
-    if (!getPrefs().sSHOW_SCENEFLOWEDITOR) {
+    if (!mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR) {
       setDividerLocation(0);
     }
 
-    if (getPrefs().sSHOW_CODEEDITOR && getPrefs().sSHOW_SCENEFLOWEDITOR) {
+    if (mEditorProject.getEditorConfig().sSHOW_CODEEDITOR
+            && mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR) {
       showAuxiliaryEditor();
     }
 
@@ -154,16 +155,16 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       @Override
       public void componentResized(ComponentEvent e) {
         if (mSceneFlowEditor.getSize().height == 0) {
-          getPrefs().sSHOW_SCENEFLOWEDITOR = false;
-          getPrefs().sSHOW_CODEEDITOR = true;
+          mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR = false;
+          mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = true;
         } else {
-          getPrefs().sSHOW_SCENEFLOWEDITOR = true;
+          mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR = true;
         }
         if (mAuxiliaryEditor.getSize().height == 0) {
-          getPrefs().sSHOW_SCENEFLOWEDITOR = true;
-          getPrefs().sSHOW_CODEEDITOR = false;
+          mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR = true;
+          mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = false;
         } else {
-          getPrefs().sSHOW_CODEEDITOR = true;
+          mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = true;
         }
         Preferences.save();
       }
@@ -181,7 +182,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
   // Show the bottom part of the project editor
   private void showAuxiliaryEditor() {
-    setDividerLocation(getPrefs().sCODE_DIVIDER_LOCATION);
+    setDividerLocation(mEditorProject.getEditorConfig().sCODE_DIVIDER_LOCATION);
   }
 
   // Hides the bottom part of the project editor

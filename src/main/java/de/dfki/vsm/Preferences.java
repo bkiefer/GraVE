@@ -270,15 +270,6 @@ public final class Preferences {
   public String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
   public String XSI_SCHEMELOCATION = "res/xsd/sceneflow.xsd";
 
-  public boolean sSHOW_ELEMENTS = true;
-  public int sELEMENTS_DIVIDER_LOCATION = 230;
-  public boolean sSHOW_SCENEFLOWEDITOR = true;
-  public boolean sSHOW_CODEEDITOR = true;
-  public int sCODE_DIVIDER_LOCATION = 450;
-  public double sSCENEFLOW_SCENE_EDITOR_RATIO = 0.85;
-  public boolean sSHOW_GESTURES = true;
-  public int NUM_MAGNETS = 8;
-
   public ArrayList<String> recentProjectPaths = new ArrayList<>();
   public ArrayList<String> recentProjectNames = new ArrayList<>();
   public ArrayList<String> recentProjectDates = new ArrayList<>();
