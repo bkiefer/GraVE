@@ -32,6 +32,8 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
   private final Font mFont;
   private final int maxWidth = 200;
   private final int maxHeight = 100;
+  
+  private Color boxActiveColour = new Color(255, 255, 255, 100);
 
   /**
    */
@@ -39,10 +41,10 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
     super(30, 40);
     setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
     setCodeFoldingEnabled(true);
+    this.setLineWrap(true);
     this.setWrapStyleWord(true);
     setVisible(true);
-    //setBackground(new Color(255, 255, 255, 90));
-    setBackground(new Color(175, 175, 175, 95));
+    setBackground(new Color(175, 175, 175, 100));
     this.setMaximumSize(new Dimension(maxWidth, maxHeight));
 
     // Get rid of annoying yellow line
@@ -52,12 +54,11 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
 
     addFocusListener(new FocusListener() {
       public void focusGained(FocusEvent e) {
-        setBackground(new Color(255, 255, 255, 100));
-        setOpaque(true);
+        setBackground(boxActiveColour);
       }
 
       public void focusLost(FocusEvent e) {
-        setBackground(new Color(175, 175, 175, 95));
+        setBackground(new Color(175, 175, 175, 100));
         endEditMode();
       }
     });
