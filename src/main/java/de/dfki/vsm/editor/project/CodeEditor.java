@@ -49,6 +49,7 @@ public class CodeEditor extends JPanel {
     mTextArea = new RSyntaxTextArea();
     mTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
     mTextArea.setCodeFoldingEnabled(true);
+    mTextArea.setLineWrap(true);
     mTextArea.setWrapStyleWord(true);
     mTextArea.setPreferredSize(new Dimension(10000, 230));
     mTextArea.setVisible(true);

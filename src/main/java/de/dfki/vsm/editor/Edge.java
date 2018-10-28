@@ -20,7 +20,6 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -46,6 +45,7 @@ import de.dfki.vsm.model.flow.TimeoutEdge;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 /**
  * @author Patrick Gebhard
@@ -93,8 +93,8 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   private final Logger mLogger = LoggerFactory.getLogger(Edge.class);;
 
   // edit panel
-  private JPanel mTextPanel = null;
-  private JTextPane mValueEditor = null;
+  private RSyntaxTextArea mTextPanel = null;
+  //private JTextPane mValueEditor = null;
   private boolean mEditMode = false;
   SimpleAttributeSet attribs;
 
@@ -113,7 +113,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   }
 
   public Edge(TYPE type) {
-
     // TODO: remove constructor
     switch (type) {
       case EEDGE:
@@ -121,7 +120,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         mName = "Epsilon";
         mDescription = "Conditionless edge";
         mColor = sEEDGE_COLOR;
-
         break;
 
       case FEDGE:
@@ -129,7 +127,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         mName = "Fork";
         mDescription = "Fork edge";
         mColor = sFEDGE_COLOR;
-
         break;
 
       case TEDGE:
@@ -137,7 +134,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         mName = "Timeout";
         mDescription = "Edge with a time condition";
         mColor = sTEDGE_COLOR;
-
         break;
 
       case CEDGE:
@@ -145,7 +141,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         mName = "Conditional";
         mDescription = "Edge with a logical condition";
         mColor = sCEDGE_COLOR;
-
         break;
 
       case PEDGE:
@@ -153,7 +148,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         mName = "Probability";
         mDescription = "Edge with a probalistic condition";
         mColor = sPEDGE_COLOR;
-
         break;
 
       case IEDGE:
@@ -161,10 +155,8 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         mName = "Interruptive";
         mDescription = "Edge with a logical condition that interrupts supernodes";
         mColor = sIEDGE_COLOR;
-
         break;
     }
-
     initEditBox();
   }
 
@@ -212,7 +204,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
   @Override
   public void update(Observable o, Object obj) {
-
     // mLogger.message("AbstractEdge.update(" + obj + ")");
     update();
   }
@@ -251,55 +242,48 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
           mName = "Epsilon";
           mColor = sEEDGE_COLOR;
           mDescription = "";
-
           break;
 
         case FEDGE:
           mName = "Fork";
           mColor = sFEDGE_COLOR;
           mDescription = "";
-
           break;
 
         case TEDGE:
           mName = "Timeout";
           mColor = sTEDGE_COLOR;
           mDescription = ((TimeoutEdge) mDataEdge).getTimeout() + "ms";
-
           break;
 
         case CEDGE:
           mName = "Conditional";
           mColor = sCEDGE_COLOR;
-
           if (((GuardedEdge) mDataEdge).getCondition() != null) {
             mDescription = ((GuardedEdge) mDataEdge).getCondition();
           } else {
             mDescription = "";
           }
-
           break;
 
         case PEDGE:
           mName = "Propabilistic";
           mColor = sPEDGE_COLOR;
           mDescription = ((RandomEdge) mDataEdge).getProbability() + "%";
-
           break;
 
         case IEDGE:
           mName = "Interruptive";
           mColor = sIEDGE_COLOR;
-
           if (((InterruptEdge) mDataEdge).getCondition() != null) {
             mDescription = ((InterruptEdge) mDataEdge).getCondition();
           } else {
             mDescription = "";
           }
-
           break;
       }
-
+      if (mTextPanel != null)
+        mTextPanel.setForeground(mColor);
       hasAlternativeTargetNodes = !mDataEdge.getAltMap().isEmpty();
     }
 
@@ -328,13 +312,13 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   }
 
   class MyDocumentListener implements DocumentListener {
-
+    // TODO: We should either use or remove this
     @Override
     // character added
     public void insertUpdate(DocumentEvent e) {
       if (mType == TYPE.CEDGE) {
 
-        if (!validate(mValueEditor.getText())) {
+        if (!validate(mTextPanel.getText())) {
           // wrong condition
         } else {
           // correct condition
@@ -347,7 +331,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     public void removeUpdate(DocumentEvent e) {
       if (mType == TYPE.CEDGE) {
 
-        if (!validate(mValueEditor.getText())) {
+        if (!validate(mTextPanel.getText())) {
           // wrong condition
         } else {
           // correct condition
@@ -382,56 +366,56 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     * Initialize mTextPane and mValueEditor
    */
   private void initEditBox() {
-
     setLayout(null);
 
-    mTextPanel = new JPanel();
-    mTextPanel.setLayout(new BoxLayout(mTextPanel, BoxLayout.Y_AXIS));
-    mTextPanel.setBackground(Color.WHITE);
-
     Color borderColor = Preferences.sTEDGE_COLOR;
-
     switch (mType) {
-
       case TEDGE:
         borderColor = Preferences.sTEDGE_COLOR;
         break;
-
       case CEDGE:
         borderColor = Preferences.sCEDGE_COLOR;
         break;
-
       case PEDGE:
         borderColor = Preferences.sPEDGE_COLOR;
         break;
-
       case IEDGE:
         borderColor = Preferences.sIEDGE_COLOR;
         break;
     }
 
+    mTextPanel = new RSyntaxTextArea();
+    mTextPanel.setLayout(new BoxLayout(mTextPanel, BoxLayout.Y_AXIS));
+    mTextPanel.setBackground(Color.WHITE);
+    // Get rid of annoying yellow line
+    mTextPanel.setHighlighter(null);
+    mTextPanel.setHighlightCurrentLine(false);
+    mTextPanel.setHighlightSecondaryLanguages(false);
+    
     mTextPanel.setBorder(BorderFactory.createLineBorder(borderColor));
+    mTextPanel.getDocument().addDocumentListener(new MyDocumentListener());
+    
+    // Attributes
+    mTextPanel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
 
-    mValueEditor = new JTextPane();
-    mValueEditor.getDocument().addDocumentListener(new MyDocumentListener());
+    //attribs = new SimpleAttributeSet();
+    //StyleConstants.setAlignment(attribs, StyleConstants.ALIGN_CENTER);
+    //StyleConstants.setFontFamily(attribs, Font.SANS_SERIF);
+    //StyleConstants.setFontSize(attribs, 16);
+    //mValueEditor.setParagraphAttributes(attribs, true);
 
-    attribs = new SimpleAttributeSet();
-    StyleConstants.setAlignment(attribs, StyleConstants.ALIGN_CENTER);
-    StyleConstants.setFontFamily(attribs, Font.SANS_SERIF);
-    StyleConstants.setFontSize(attribs, 16);
-    mValueEditor.setParagraphAttributes(attribs, true);
-
-    mTextPanel.add(Box.createRigidArea(new Dimension(5, 5)));
-    mTextPanel.add(mValueEditor);
+    // TODO: What does this do?
+    //mTextPanel.add(Box.createRigidArea(new Dimension(5, 5)));
+    //mTextPanel.add(mValueEditor);
     mTextPanel.add(Box.createRigidArea(new Dimension(5, 5)));
 
     if (mDataEdge != null) {
       if (mType.equals(TYPE.TEDGE)) {
-        mValueEditor.setText("" + ((TimeoutEdge) mDataEdge).getTimeout());
+        mTextPanel.setText("" + ((TimeoutEdge) mDataEdge).getTimeout());
       } else if (mType.equals(TYPE.PEDGE)) {
-        mValueEditor.setText("" + ((RandomEdge) mDataEdge).getProbability());
+        mTextPanel.setText("" + ((RandomEdge) mDataEdge).getProbability());
       } else {
-        mValueEditor.setText(mDescription);
+        mTextPanel.setText(mDescription);
       }
     }
 
@@ -446,7 +430,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         mDispatcher.convey(evt);
         updateFromTextEditor();
 
-        if (!validate(mValueEditor.getText())) {
+        if (!validate(mTextPanel.getText())) {
           EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getFooterLabel().setForeground(Preferences.sIEDGE_COLOR);
           EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().setMessageLabelText(
                   "Invalid Condition");
@@ -465,17 +449,17 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       }
     };
 
-    mValueEditor.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
-    mValueEditor.getActionMap().put("enter", pressedAction);
-    mValueEditor.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
-    mValueEditor.getActionMap().put("escape", escapeAction);
+    mTextPanel.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
+    mTextPanel.getActionMap().put("enter", pressedAction);
+    mTextPanel.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
+    mTextPanel.getActionMap().put("escape", escapeAction);
   }
 
   /*
     *   Take input value of mValueEditor and set it as value of the edge
    */
   public void updateFromTextEditor() {
-    String input = mValueEditor.getText();
+    String input = mTextPanel.getText();
 
     if (mType.equals(TYPE.TEDGE)) {
       try {
@@ -569,7 +553,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     // revalidate();
     repaint(100);
 
-    // show contect menu
+    // show context menu
     if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
       mWorkSpace.showContextMenu(event, this);
     } else if ((event.getClickCount() == 2)) {
@@ -580,7 +564,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         timeout = timeout.replace("s", "");
         timeout = timeout.replace(" ", "");
         timeout = timeout.replace("\n", "");
-        mValueEditor.setText(timeout);
+        mTextPanel.setText(timeout);
 
       } else if (mType.equals(TYPE.PEDGE)) {
         ModifyEdgeAction modifyAction = new ModifyEdgeAction(this, mWorkSpace);
@@ -589,18 +573,18 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         EditorInstance.getInstance().refresh();
 
       } else if (mType.equals(TYPE.CEDGE) || mType.equals(TYPE.IEDGE)) {
-        mValueEditor.setText(this.getDescription());
+        mTextPanel.setText(this.getDescription());
       }
 
       if (mType.equals(TYPE.TEDGE) || mType.equals(TYPE.CEDGE) || mType.equals(TYPE.IEDGE)) {
 
         // mValueEditor.setText(getDescription());
-        mValueEditor.requestFocus();
+        mTextPanel.requestFocus();
         mEditMode = true;
         mDispatcher.convey(new EdgeEditEvent(this, this.getDataEdge()));
         add(mTextPanel);
 
-        mValueEditor.setText(mValueEditor.getText()); // hack to make mValueEditor visible
+        //mValueEditor.setText(mValueEditor.getText()); // hack to make mValueEditor visible
       }
     }
   }
@@ -808,18 +792,25 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         paintRoundedTextBadge(graphics, new Point((int) mEg.mLeftCurve.x2, (int) mEg.mLeftCurve.y2),
                 mDescription);
       }
+      // bring TextArea back to background
+      // this.mWorkSpace.setComponentZOrder(mTextPanel, -1);
     } else {
 
       //  Dimension size = mValueEditor.getPreferredSize();
       graphics.setColor(mColor);
 
-      int x = (int) mEg.mLeftCurve.x2 - (mValueEditor.getText().length() * 7);
+      int x = (int) mEg.mLeftCurve.x2 - (mTextPanel.getText().length() * 7);
       int y = (int) mEg.mLeftCurve.y2 - 20;
-      int width = 20 + 10 * mValueEditor.getText().length();
-      int height = 40;
+      int width = //20 + 
+              10 * mTextPanel.getText().length();
+      //int height = 40;
+      int height = 20;
 
       mTextPanel.setBounds(x, y, width, height);
-      mValueEditor.requestFocusInWindow();
+      mTextPanel.requestFocusInWindow();
+      // bring TextArea to foreground
+      // TODO: need to set order of all other workspace elements, too, to undo this
+      // this.mWorkSpace.setComponentZOrder(mTextPanel, 1);
     }
 
     graphics.setColor(mColor);
