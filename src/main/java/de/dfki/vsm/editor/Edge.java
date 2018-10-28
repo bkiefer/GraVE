@@ -93,7 +93,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   private final Logger mLogger = LoggerFactory.getLogger(Edge.class);;
 
   // edit panel
-  private RSyntaxTextArea mTextPanel = null;
+  private RSyntaxTextArea mEdgeTextArea = null;
   //private JTextPane mValueEditor = null;
   private boolean mEditMode = false;
   SimpleAttributeSet attribs;
@@ -114,44 +114,39 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
   public Edge(TYPE type) {
     // TODO: remove constructor
+    mType = type;
     switch (type) {
       case EEDGE:
-        mType = TYPE.EEDGE;
         mName = "Epsilon";
         mDescription = "Conditionless edge";
         mColor = sEEDGE_COLOR;
         break;
 
       case FEDGE:
-        mType = TYPE.FEDGE;
         mName = "Fork";
         mDescription = "Fork edge";
         mColor = sFEDGE_COLOR;
         break;
 
       case TEDGE:
-        mType = TYPE.TEDGE;
         mName = "Timeout";
         mDescription = "Edge with a time condition";
         mColor = sTEDGE_COLOR;
         break;
 
       case CEDGE:
-        mType = TYPE.CEDGE;
         mName = "Conditional";
         mDescription = "Edge with a logical condition";
         mColor = sCEDGE_COLOR;
         break;
 
       case PEDGE:
-        mType = TYPE.PEDGE;
         mName = "Probability";
         mDescription = "Edge with a probalistic condition";
         mColor = sPEDGE_COLOR;
         break;
 
       case IEDGE:
-        mType = TYPE.IEDGE;
         mName = "Interruptive";
         mDescription = "Edge with a logical condition that interrupts supernodes";
         mColor = sIEDGE_COLOR;
@@ -161,8 +156,16 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   }
 
   public Edge(WorkSpacePanel ws, de.dfki.vsm.model.flow.AbstractEdge edge, TYPE type, Node sourceNode, Node targetNode) {
+    this(ws, edge, type, sourceNode, targetNode, null, null);
+  }
+
+  // TODO: Neuer Konstruktor, der Source und Target dockpoint "mitbekommt"
+  public Edge(WorkSpacePanel ws, de.dfki.vsm.model.flow.AbstractEdge edge, TYPE type, Node sourceNode, Node targetNode,
+          Point sourceDockPoint, Point targetDockpoint) {
     mDataEdge = edge;
     mWorkSpace = ws;
+    // mEditorConfig = EditorInstance.getInstance().getSelectedProjectEditor()
+    //                 .getEditorProject().getEditorConfig();
     mEditorConfig = mWorkSpace.getEditorConfig();
     mSourceNode = sourceNode;
     mTargetNode = targetNode;
@@ -172,30 +175,8 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
             : false;
 
     // Timer
-    mVisualisationTimer = new Timer("Edge(" + mDataEdge.getSourceUnid() + "->" + mDataEdge.getTargetUnid()
-            + ")-Visualization-Timer");
-    update();
-    mEg = new EdgeGraphics(this, null, null);
-    setVisible(true);
-    initEditBox();
-  }
-
-  // TODO: Neuer Konstruktor, der Source und Target dockpoint "mitbekommt"
-  public Edge(WorkSpacePanel ws, de.dfki.vsm.model.flow.AbstractEdge edge, TYPE type, Node sourceNode, Node targetNode,
-          Point sourceDockPoint, Point targetDockpoint) {
-    mDataEdge = edge;
-    mWorkSpace = ws;
-    mEditorConfig = EditorInstance.getInstance().getSelectedProjectEditor().getEditorProject().getEditorConfig();
-    mSourceNode = sourceNode;
-    mTargetNode = targetNode;
-    mType = type;
-    mPointingToSameNode = (mTargetNode == mSourceNode)
-            ? true
-            : false;
-
-    // Timer
-    mVisualisationTimer = new Timer("Edge(" + mDataEdge.getSourceUnid() + "->" + mDataEdge.getTargetUnid()
-            + ")-Visualization-Timer");
+    mVisualisationTimer = new Timer("Edge(" + mDataEdge.getSourceUnid() +
+            "->" + mDataEdge.getTargetUnid() + ")-Visualization-Timer");
     update();
     mEg = new EdgeGraphics(this, sourceDockPoint, targetDockpoint);
     setVisible(true);
@@ -237,17 +218,16 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
     // configure type
     if (mDataEdge != null) {
+      mDescription = "";
       switch (mType) {
         case EEDGE:
           mName = "Epsilon";
           mColor = sEEDGE_COLOR;
-          mDescription = "";
           break;
 
         case FEDGE:
           mName = "Fork";
           mColor = sFEDGE_COLOR;
-          mDescription = "";
           break;
 
         case TEDGE:
@@ -259,11 +239,8 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         case CEDGE:
           mName = "Conditional";
           mColor = sCEDGE_COLOR;
-          if (((GuardedEdge) mDataEdge).getCondition() != null) {
+          if (((GuardedEdge) mDataEdge).getCondition() != null)
             mDescription = ((GuardedEdge) mDataEdge).getCondition();
-          } else {
-            mDescription = "";
-          }
           break;
 
         case PEDGE:
@@ -275,15 +252,12 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         case IEDGE:
           mName = "Interruptive";
           mColor = sIEDGE_COLOR;
-          if (((InterruptEdge) mDataEdge).getCondition() != null) {
+          if (((InterruptEdge) mDataEdge).getCondition() != null)
             mDescription = ((InterruptEdge) mDataEdge).getCondition();
-          } else {
-            mDescription = "";
-          }
           break;
       }
-      if (mTextPanel != null)
-        mTextPanel.setForeground(mColor);
+      if (mEdgeTextArea != null)
+        mEdgeTextArea.setForeground(mColor);
       hasAlternativeTargetNodes = !mDataEdge.getAltMap().isEmpty();
     }
 
@@ -318,7 +292,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     public void insertUpdate(DocumentEvent e) {
       if (mType == TYPE.CEDGE) {
 
-        if (!validate(mTextPanel.getText())) {
+        if (!validate(mEdgeTextArea.getText())) {
           // wrong condition
         } else {
           // correct condition
@@ -331,7 +305,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     public void removeUpdate(DocumentEvent e) {
       if (mType == TYPE.CEDGE) {
 
-        if (!validate(mTextPanel.getText())) {
+        if (!validate(mEdgeTextArea.getText())) {
           // wrong condition
         } else {
           // correct condition
@@ -368,35 +342,22 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   private void initEditBox() {
     setLayout(null);
 
-    Color borderColor = Preferences.sTEDGE_COLOR;
-    switch (mType) {
-      case TEDGE:
-        borderColor = Preferences.sTEDGE_COLOR;
-        break;
-      case CEDGE:
-        borderColor = Preferences.sCEDGE_COLOR;
-        break;
-      case PEDGE:
-        borderColor = Preferences.sPEDGE_COLOR;
-        break;
-      case IEDGE:
-        borderColor = Preferences.sIEDGE_COLOR;
-        break;
-    }
+    Color borderColor = mColor;
 
-    mTextPanel = new RSyntaxTextArea();
-    mTextPanel.setLayout(new BoxLayout(mTextPanel, BoxLayout.Y_AXIS));
-    mTextPanel.setBackground(Color.WHITE);
+    mEdgeTextArea = new RSyntaxTextArea();
+    this.add(mEdgeTextArea);
+    mEdgeTextArea.setLayout(new BoxLayout(mEdgeTextArea, BoxLayout.Y_AXIS));
+    mEdgeTextArea.setBackground(Color.WHITE);
     // Get rid of annoying yellow line
-    mTextPanel.setHighlighter(null);
-    mTextPanel.setHighlightCurrentLine(false);
-    mTextPanel.setHighlightSecondaryLanguages(false);
+    mEdgeTextArea.setHighlighter(null);
+    mEdgeTextArea.setHighlightCurrentLine(false);
+    mEdgeTextArea.setHighlightSecondaryLanguages(false);
     
-    mTextPanel.setBorder(BorderFactory.createLineBorder(borderColor));
-    mTextPanel.getDocument().addDocumentListener(new MyDocumentListener());
+    mEdgeTextArea.setBorder(BorderFactory.createLineBorder(borderColor));
+    mEdgeTextArea.getDocument().addDocumentListener(new MyDocumentListener());
     
     // Attributes
-    mTextPanel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
+    mEdgeTextArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
 
     //attribs = new SimpleAttributeSet();
     //StyleConstants.setAlignment(attribs, StyleConstants.ALIGN_CENTER);
@@ -407,15 +368,15 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     // TODO: What does this do?
     //mTextPanel.add(Box.createRigidArea(new Dimension(5, 5)));
     //mTextPanel.add(mValueEditor);
-    mTextPanel.add(Box.createRigidArea(new Dimension(5, 5)));
+    mEdgeTextArea.add(Box.createRigidArea(new Dimension(5, 5)));
 
     if (mDataEdge != null) {
       if (mType.equals(TYPE.TEDGE)) {
-        mTextPanel.setText("" + ((TimeoutEdge) mDataEdge).getTimeout());
+        mEdgeTextArea.setText("" + ((TimeoutEdge) mDataEdge).getTimeout());
       } else if (mType.equals(TYPE.PEDGE)) {
-        mTextPanel.setText("" + ((RandomEdge) mDataEdge).getProbability());
+        mEdgeTextArea.setText("" + ((RandomEdge) mDataEdge).getProbability());
       } else {
-        mTextPanel.setText(mDescription);
+        mEdgeTextArea.setText(mDescription);
       }
     }
 
@@ -430,7 +391,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         mDispatcher.convey(evt);
         updateFromTextEditor();
 
-        if (!validate(mTextPanel.getText())) {
+        if (!validate(mEdgeTextArea.getText())) {
           EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getFooterLabel().setForeground(Preferences.sIEDGE_COLOR);
           EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().setMessageLabelText(
                   "Invalid Condition");
@@ -449,17 +410,17 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       }
     };
 
-    mTextPanel.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
-    mTextPanel.getActionMap().put("enter", pressedAction);
-    mTextPanel.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
-    mTextPanel.getActionMap().put("escape", escapeAction);
+    mEdgeTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
+    mEdgeTextArea.getActionMap().put("enter", pressedAction);
+    mEdgeTextArea.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
+    mEdgeTextArea.getActionMap().put("escape", escapeAction);
   }
 
   /*
     *   Take input value of mValueEditor and set it as value of the edge
    */
   public void updateFromTextEditor() {
-    String input = mTextPanel.getText();
+    String input = mEdgeTextArea.getText();
 
     if (mType.equals(TYPE.TEDGE)) {
       try {
@@ -505,14 +466,18 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   }
 
   public void setDeselected() {
+    deselectMCs();
     mIsSelected = false;
+    mEditMode = false;
+    remove(mEdgeTextArea);
+    repaint(100);
+  }
+  
+  private void deselectMCs() {
     mCP1Selected = false;
     mCP2Selected = false;
     mCSPSelected = false;
     mCEPSelected = false;
-    mEditMode = false;
-    remove(mTextPanel);
-    repaint(100);
   }
 
   @Override
@@ -522,31 +487,20 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     mIsSelected = true;
 
     if (mEg.controlPoint1HandlerContainsPoint(event.getPoint(), 10)) {
+      deselectMCs();
       mCP1Selected = true;
-      mCP2Selected = false;
-      mCEPSelected = false;
-      mCSPSelected = false;
     }
-
     if (mEg.controlPoint2HandlerContainsPoint(event.getPoint(), 10)) {
-      mCP1Selected = false;
+      deselectMCs();
       mCP2Selected = true;
-      mCEPSelected = false;
-      mCSPSelected = false;
     }
-
     if (!(mCP1Selected || mCP2Selected) && mEg.curveStartPointContainsPoint(event.getPoint(), 10)) {
-      mCP1Selected = false;
-      mCP2Selected = false;
-      mCEPSelected = false;
+      deselectMCs();
       mCSPSelected = true;
     }
-
     if (!(mCP1Selected || mCP2Selected) && mEg.curveEndPointContainsPoint(event.getPoint(), 10)) {
-      mCP1Selected = false;
-      mCP2Selected = false;
+      deselectMCs();
       mCEPSelected = true;
-      mCSPSelected = false;
     }
 
     // showActivity();
@@ -564,7 +518,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         timeout = timeout.replace("s", "");
         timeout = timeout.replace(" ", "");
         timeout = timeout.replace("\n", "");
-        mTextPanel.setText(timeout);
+        mEdgeTextArea.setText(timeout);
 
       } else if (mType.equals(TYPE.PEDGE)) {
         ModifyEdgeAction modifyAction = new ModifyEdgeAction(this, mWorkSpace);
@@ -573,16 +527,16 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         EditorInstance.getInstance().refresh();
 
       } else if (mType.equals(TYPE.CEDGE) || mType.equals(TYPE.IEDGE)) {
-        mTextPanel.setText(this.getDescription());
+        mEdgeTextArea.setText(this.getDescription());
       }
 
       if (mType.equals(TYPE.TEDGE) || mType.equals(TYPE.CEDGE) || mType.equals(TYPE.IEDGE)) {
 
         // mValueEditor.setText(getDescription());
-        mTextPanel.requestFocus();
+        mEdgeTextArea.requestFocus();
         mEditMode = true;
         mDispatcher.convey(new EdgeEditEvent(this, this.getDataEdge()));
-        add(mTextPanel);
+        add(mEdgeTextArea);
 
         //mValueEditor.setText(mValueEditor.getText()); // hack to make mValueEditor visible
       }
@@ -598,32 +552,21 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
     if (mEg.controlPoint1HandlerContainsPoint(e.getPoint(), 10)) {
       firstDrag = true;
+      deselectMCs();
       mCP1Selected = true;
-      mCP2Selected = false;
-      mCEPSelected = false;
-      mCSPSelected = false;
     }
-
     if (mEg.controlPoint2HandlerContainsPoint(e.getPoint(), 10)) {
       firstDrag = true;
-      mCP1Selected = false;
+      deselectMCs();
       mCP2Selected = true;
-      mCEPSelected = false;
-      mCSPSelected = false;
     }
-
     if (!(mCP1Selected || mCP2Selected) && mEg.curveStartPointContainsPoint(e.getPoint(), 10)) {
-      mCP1Selected = false;
-      mCP2Selected = false;
-      mCEPSelected = false;
+      deselectMCs();
       mCSPSelected = true;
     }
-
     if (!(mCP1Selected || mCP2Selected) && mEg.curveEndPointContainsPoint(e.getPoint(), 10)) {
-      mCP1Selected = false;
-      mCP2Selected = false;
+      deselectMCs();
       mCEPSelected = true;
-      mCSPSelected = false;
     }
 
     // revalidate();
@@ -658,12 +601,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         mTargetNode.mDockingManager.getNearestSecondDockPoint(this, relPos);
       }
     }
-
-    mCP1Selected = false;
-    mCP2Selected = false;
-    mCEPSelected = false;
-    mCSPSelected = false;
-
+    deselectMCs();
     // revalidate();
     repaint(100);
   }
@@ -679,35 +617,25 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     Point p = e.getPoint();
 
     // do not allow x and y values below 10
-    if (p.x - 10 < 0) {
+    if (p.x - 10 < 0)
       p.x = 10;
-    }
-
-    if (p.y - 10 < 0) {
+    if (p.y - 10 < 0)
       p.y = 10;
-    }
-
-    if (mCP1Selected) {
+    if (mCP1Selected)
       mEg.mCCrtl1.setLocation(p);
-    }
-
-    if (mCP2Selected) {
+    if (mCP2Selected)
       mEg.mCCrtl2.setLocation(p);
-    }
-
     if (mCEPSelected) {
       if (!mPointingToSameNode) {
         mLastTargetNodeDockPoint = mTargetNode.mDockingManager.freeDockPoint(this);
       } else {
         mLastTargetNodeDockPoint = mTargetNode.mDockingManager.freeSecondDockPoint(this);
       }
-
       mEg.mAbsoluteEndPos.setLocation(p);
     }
 
     if (mCSPSelected) {
       mSourceNode.mDockingManager.freeDockPoint(this);
-
       // TODO store last start /end node and start and end pos
       mEg.mAbsoluteStartPos.setLocation(p);
     }
@@ -716,15 +644,12 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   }
 
   @Override
-  public void mouseEntered(java.awt.event.MouseEvent e) {
-  }
+  public void mouseEntered(java.awt.event.MouseEvent e) {}
 
   @Override
-  public void mouseExited(java.awt.event.MouseEvent e) {
-  }
+  public void mouseExited(java.awt.event.MouseEvent e) {}
 
-  public void mouseMoved(java.awt.event.MouseEvent e) {
-  }
+  public void mouseMoved(java.awt.event.MouseEvent e) {}
 
   public void straightenEdge() {
     mEg.initCurve();
@@ -789,28 +714,28 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
     if (mEditMode == false) {
       if (mDescription.length() > 0) {
-        paintRoundedTextBadge(graphics, new Point((int) mEg.mLeftCurve.x2, (int) mEg.mLeftCurve.y2),
-                mDescription);
+        paintRoundedTextBadge(graphics, new Point((int) mEg.mLeftCurve.x2,
+                (int) mEg.mLeftCurve.y2), mDescription);
       }
       // bring TextArea back to background
-      // this.mWorkSpace.setComponentZOrder(mTextPanel, -1);
+      // this.mWorkSpace.setComponentZOrder(mEdgeTextArea, -1);
     } else {
 
       //  Dimension size = mValueEditor.getPreferredSize();
       graphics.setColor(mColor);
 
-      int x = (int) mEg.mLeftCurve.x2 - (mTextPanel.getText().length() * 7);
+      int x = (int) mEg.mLeftCurve.x2 - (mEdgeTextArea.getText().length() * 7);
       int y = (int) mEg.mLeftCurve.y2 - 20;
       int width = //20 + 
-              10 * mTextPanel.getText().length();
+              10 * mEdgeTextArea.getText().length();
       //int height = 40;
       int height = 20;
 
-      mTextPanel.setBounds(x, y, width, height);
-      mTextPanel.requestFocusInWindow();
+      mEdgeTextArea.setBounds(x, y, width, height);
+      mEdgeTextArea.requestFocusInWindow();
       // bring TextArea to foreground
       // TODO: need to set order of all other workspace elements, too, to undo this
-      // this.mWorkSpace.setComponentZOrder(mTextPanel, 1);
+      // this.mWorkSpace.setComponentZOrder(mEdgeTextArea, 1);
     }
 
     graphics.setColor(mColor);
@@ -883,6 +808,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     return mEditMode;
   }
 
+  // TODO: Why is this never called, and why can we see the arrow anyways?
   public void drawArrow(Graphics2D g2d, int x, int y, float stroke) {    // int xCenter, int yCenter,
     g2d.setColor(mColor);
 
@@ -934,18 +860,14 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   }
 
   /*
-     * Implements EventListener
+   * Implements EventListener
    */
   @Override
   public synchronized void update(EventObject event) {
   }
 
   /**
-   *
-   *
    * UNDOABLE ACTION
-   *
-   *
    */
   private class UndoDragEdge extends AbstractUndoableEdit {
 
