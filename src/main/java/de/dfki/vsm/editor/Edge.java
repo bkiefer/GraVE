@@ -352,10 +352,10 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     mEdgeTextArea.setHighlighter(null);
     mEdgeTextArea.setHighlightCurrentLine(false);
     mEdgeTextArea.setHighlightSecondaryLanguages(false);
-    
+
     mEdgeTextArea.setBorder(BorderFactory.createLineBorder(borderColor));
     mEdgeTextArea.getDocument().addDocumentListener(new MyDocumentListener());
-    
+
     // Attributes
     mEdgeTextArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
 
@@ -378,6 +378,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       } else {
         mEdgeTextArea.setText(mDescription);
       }
+      mEdgeTextArea.setVisible(mEdgeTextArea.getText().trim().length() > 0);
     }
 
     Action pressedAction = new AbstractAction() {
@@ -414,6 +415,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     mEdgeTextArea.getActionMap().put("enter", pressedAction);
     mEdgeTextArea.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
     mEdgeTextArea.getActionMap().put("escape", escapeAction);
+    repaint();
   }
 
   /*
@@ -472,7 +474,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     remove(mEdgeTextArea);
     repaint(100);
   }
-  
+
   private void deselectMCs() {
     mCP1Selected = false;
     mCP2Selected = false;
@@ -536,7 +538,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         mEdgeTextArea.requestFocus();
         mEditMode = true;
         mDispatcher.convey(new EdgeEditEvent(this, this.getDataEdge()));
-        add(mEdgeTextArea);
+        //add(mEdgeTextArea);
 
         //mValueEditor.setText(mValueEditor.getText()); // hack to make mValueEditor visible
       }
@@ -676,17 +678,22 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     GlyphVector glyphVector = getFont().createGlyphVector(renderContext, text);
     Rectangle visualBounds = glyphVector.getVisualBounds().getBounds();
     int halfTextHeight = visualBounds.height / 2;
+    /*
     int textY = position.y - visualBounds.height / 2 - visualBounds.y;
-
     graphics.setColor(Color.WHITE);
     graphics.fillRect(position.x - mFontWidthCorrection - 2, position.y - halfTextHeight - 2,
             mFontWidthCorrection * 2 + 4, halfTextHeight * 2 + 4);
     graphics.setColor(mColor);
     graphics.setStroke(new BasicStroke(0.5f));
+    *
     graphics.drawRoundRect(position.x - mFontWidthCorrection - 2, position.y - halfTextHeight - 2,
             mFontWidthCorrection * 2 + 4, halfTextHeight * 2 + 4, 5, 5);
+    *
     graphics.setColor(mColor.darker());
     graphics.drawString(text, position.x - mFontWidthCorrection, textY);
+    */
+    mEdgeTextArea.setLocation(position.x - mFontWidthCorrection - 2,
+        position.y - halfTextHeight - 2);
   }
 
   @Override
@@ -718,7 +725,8 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
                 (int) mEg.mLeftCurve.y2), mDescription);
       }
       // bring TextArea back to background
-      // this.mWorkSpace.setComponentZOrder(mEdgeTextArea, -1);
+      this.mWorkSpace.setComponentZOrder(mEdgeTextArea, 0);
+
     } else {
 
       //  Dimension size = mValueEditor.getPreferredSize();
@@ -726,7 +734,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
       int x = (int) mEg.mLeftCurve.x2 - (mEdgeTextArea.getText().length() * 7);
       int y = (int) mEg.mLeftCurve.y2 - 20;
-      int width = //20 + 
+      int width = //20 +
               10 * mEdgeTextArea.getText().length();
       //int height = 40;
       int height = 20;
@@ -735,7 +743,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       mEdgeTextArea.requestFocusInWindow();
       // bring TextArea to foreground
       // TODO: need to set order of all other workspace elements, too, to undo this
-      // this.mWorkSpace.setComponentZOrder(mEdgeTextArea, 1);
+      this.mWorkSpace.setComponentZOrder(mEdgeTextArea, 1);
     }
 
     graphics.setColor(mColor);
