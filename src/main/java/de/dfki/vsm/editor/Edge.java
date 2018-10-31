@@ -152,7 +152,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         mColor = sIEDGE_COLOR;
         break;
     }
-    initEditBox();
+    //initEditBox();
   }
 
   public Edge(WorkSpacePanel ws, de.dfki.vsm.model.flow.AbstractEdge edge, TYPE type, Node sourceNode, Node targetNode) {
@@ -244,7 +244,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
           break;
 
         case PEDGE:
-          mName = "Propabilistic";
+          mName = "Probabilistic";
           mColor = sPEDGE_COLOR;
           mDescription = ((RandomEdge) mDataEdge).getProbability() + "%";
           break;
@@ -340,13 +340,13 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     * Initialize mTextPane and mValueEditor
    */
   private void initEditBox() {
-    setLayout(null);
+    //setLayout(null);
 
     Color borderColor = mColor;
 
     mEdgeTextArea = new RSyntaxTextArea();
     this.add(mEdgeTextArea);
-    mEdgeTextArea.setLayout(new BoxLayout(mEdgeTextArea, BoxLayout.Y_AXIS));
+    //mEdgeTextArea.setLayout(new BoxLayout(mEdgeTextArea, BoxLayout.Y_AXIS));
     mEdgeTextArea.setBackground(Color.WHITE);
     // Get rid of annoying yellow line
     mEdgeTextArea.setHighlighter(null);
@@ -368,7 +368,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     // TODO: What does this do?
     //mTextPanel.add(Box.createRigidArea(new Dimension(5, 5)));
     //mTextPanel.add(mValueEditor);
-    mEdgeTextArea.add(Box.createRigidArea(new Dimension(5, 5)));
+    //mEdgeTextArea.add(Box.createRigidArea(new Dimension(5, 5)));
 
     if (mDataEdge != null) {
       if (mType.equals(TYPE.TEDGE)) {
@@ -415,7 +415,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     mEdgeTextArea.getActionMap().put("enter", pressedAction);
     mEdgeTextArea.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
     mEdgeTextArea.getActionMap().put("escape", escapeAction);
-    repaint();
+    update();
   }
 
   /*
@@ -433,11 +433,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
     } else if (mType.equals(TYPE.CEDGE)) {
       try {
-        //ChartParser.parseResultType = ChartParser.LOG;
-        //ChartParser.parseResultType = ChartParser.EXP;
-
-        //LogicalCond log = ChartParser.logResult;
-        //Command log = ChartParser.expResult;
         if (input != null) {
           ((GuardedEdge) mDataEdge).setCondition(input);
         } else {
@@ -450,11 +445,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
     } else if (mType.equals(TYPE.IEDGE)) {
       try {
-        //ChartParser.parseResultType = ChartParser.LOG;
-        //ChartParser.parseResultType = ChartParser.EXP;
-
-        //LogicalCond log = ChartParser.logResult;
-        //Command log = ChartParser.expResult;
         if (input != null) {
           ((InterruptEdge) mDataEdge).setCondition(input);
         } else {
@@ -471,7 +461,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     deselectMCs();
     mIsSelected = false;
     mEditMode = false;
-    remove(mEdgeTextArea);
+    //remove(mEdgeTextArea);
     repaint(100);
   }
 
@@ -670,49 +660,23 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     mEg.initEdgeGraphics(this, null, null);
   }
 
-  private void paintRoundedTextBadge(Graphics2D graphics, Point position, String text) {
+  private void computeTextBoxBounds(Graphics2D graphics, Point position, String text) {
     mFontWidthCorrection = mFM.stringWidth(text) / 2;
-
     // do an exact font positioning
     FontRenderContext renderContext = graphics.getFontRenderContext();
     GlyphVector glyphVector = getFont().createGlyphVector(renderContext, text);
     Rectangle visualBounds = glyphVector.getVisualBounds().getBounds();
     int halfTextHeight = visualBounds.height / 2;
-    /*
-    int textY = position.y - visualBounds.height / 2 - visualBounds.y;
-    graphics.setColor(Color.WHITE);
-    graphics.fillRect(position.x - mFontWidthCorrection - 2, position.y - halfTextHeight - 2,
-            mFontWidthCorrection * 2 + 4, halfTextHeight * 2 + 4);
-    graphics.setColor(mColor);
-    graphics.setStroke(new BasicStroke(0.5f));
-    *
-    graphics.drawRoundRect(position.x - mFontWidthCorrection - 2, position.y - halfTextHeight - 2,
-            mFontWidthCorrection * 2 + 4, halfTextHeight * 2 + 4, 5, 5);
-    *
-    graphics.setColor(mColor.darker());
-    graphics.drawString(text, position.x - mFontWidthCorrection, textY);
-    */
-    mEdgeTextArea.setLocation(position.x - mFontWidthCorrection - 2,
-        position.y - halfTextHeight - 2);
+    mEdgeTextArea.setBounds(position.x - mFontWidthCorrection - 2,
+        position.y - halfTextHeight - 2 + (int)visualBounds.getY(),
+        (int)visualBounds.getWidth(), (int)visualBounds.getHeight());
   }
 
   @Override
   public void paintComponent(java.awt.Graphics g) {
     Graphics2D graphics = (Graphics2D) g;
-
-//      if (mWorkSpace != null) {
-//        if (mEg.mEdge != null) {
     mEg.updateDrawingParameters();
 
-    Rectangle bounds = getBounds();
-
-    // translate absolute to relative coordinates
-    // graphics.translate(-bounds.x, -bounds.y);
-    // Debug
-//      graphics.setColor(Color.BLACK);
-//      graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//      graphics.setStroke(new BasicStroke(0.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
-//      graphics.drawRect(bounds.x, bounds.y, bounds.width - 1, bounds.height - 1);
     graphics.setColor(mColor);
     graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     graphics.setStroke(new BasicStroke(mEditorConfig.sNODEWIDTH / 30.0f, BasicStroke.CAP_BUTT,
@@ -721,29 +685,14 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
     if (mEditMode == false) {
       if (mDescription.length() > 0) {
-        paintRoundedTextBadge(graphics, new Point((int) mEg.mLeftCurve.x2,
+        computeTextBoxBounds(graphics, new Point((int) mEg.mLeftCurve.x2,
                 (int) mEg.mLeftCurve.y2), mDescription);
       }
-      // bring TextArea back to background
-      this.mWorkSpace.setComponentZOrder(mEdgeTextArea, 0);
-
     } else {
-
-      //  Dimension size = mValueEditor.getPreferredSize();
       graphics.setColor(mColor);
-
-      int x = (int) mEg.mLeftCurve.x2 - (mEdgeTextArea.getText().length() * 7);
-      int y = (int) mEg.mLeftCurve.y2 - 20;
-      int width = //20 +
-              10 * mEdgeTextArea.getText().length();
-      //int height = 40;
-      int height = 20;
-
-      mEdgeTextArea.setBounds(x, y, width, height);
+      computeTextBoxBounds(graphics, new Point((int) mEg.mLeftCurve.x2,
+          (int) mEg.mLeftCurve.y2), mDescription);
       mEdgeTextArea.requestFocusInWindow();
-      // bring TextArea to foreground
-      // TODO: need to set order of all other workspace elements, too, to undo this
-      this.mWorkSpace.setComponentZOrder(mEdgeTextArea, 1);
     }
 
     graphics.setColor(mColor);
@@ -807,7 +756,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       at.setToRotation((2 * Math.PI) - (mEg.mArrowDir + (Math.PI / 2)));
       graphics.transform(at);
       graphics.setColor(Color.WHITE);
-      paintRoundedTextBadge(graphics, new Point(-(mFontWidthCorrection + 5), 0), targets);
+      computeTextBoxBounds(graphics, new Point(-(mFontWidthCorrection + 5), 0), targets);
       graphics.setTransform(currentAT);
     }
   }
