@@ -153,6 +153,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         break;
     }
     //initEditBox();
+    setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
   }
 
   public Edge(WorkSpacePanel ws, de.dfki.vsm.model.flow.AbstractEdge edge, TYPE type, Node sourceNode, Node targetNode) {
@@ -174,11 +175,12 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
             ? true
             : false;
 
+    setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
     // Timer
     mVisualisationTimer = new Timer("Edge(" + mDataEdge.getSourceUnid() +
             "->" + mDataEdge.getTargetUnid() + ")-Visualization-Timer");
-    update();
     mEg = new EdgeGraphics(this, sourceDockPoint, targetDockpoint);
+    update();
     setVisible(true);
     initEditBox();
   }
@@ -264,7 +266,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     // Update the font and the font metrics that have to be
     // recomputed if the node's font size has changed
     // TODO: Move attributes to preferences and make editable
-    Map<TextAttribute, Object> map = new Hashtable<TextAttribute, Object>();
+    /*Map<TextAttribute, Object> map = new Hashtable<TextAttribute, Object>();
 
     map.put(TextAttribute.KERNING, TextAttribute.KERNING_ON);
     map.put(TextAttribute.FAMILY, Font.SANS_SERIF);
@@ -274,28 +276,30 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     map.put(TextAttribute.SIZE, mEditorConfig.sWORKSPACEFONTSIZE);
 
     // Derive the font from the attribute map
-    Font font = Font.getFont(map);
+    Font font = Font.getFont(map);*/
+    if (mEditorConfig.sWORKSPACEFONTSIZE != getFont().getSize())
+      getFont().deriveFont(mEditorConfig.sWORKSPACEFONTSIZE);
 
     // Derive the node's font metrics from the font
-    mFM = getFontMetrics(font);
+    mFM = getFontMetrics(getFont());
 
     // Set the edge's font to the updated font
-    setFont(font);
+    //setFont(font);
     mFontWidthCorrection = mFM.stringWidth(mName) / 2;
     mFontHeightCorrection = (mFM.getAscent() - mFM.getDescent()) / 2;
+    
+    if (mEdgeTextArea != null)
+      // do an exact font positioning    
+      computeTextBoxBounds(mDescription);
   }
 
   class MyDocumentListener implements DocumentListener {
-    // TODO: We should either use or remove this
     @Override
     // character added
     public void insertUpdate(DocumentEvent e) {
       if (mType == TYPE.CEDGE) {
-
         if (!validate(mEdgeTextArea.getText())) {
-          // wrong condition
         } else {
-          // correct condition
         }
       }
     }
@@ -304,11 +308,8 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     // character removed
     public void removeUpdate(DocumentEvent e) {
       if (mType == TYPE.CEDGE) {
-
         if (!validate(mEdgeTextArea.getText())) {
-          // wrong condition
         } else {
-          // correct condition
         }
       }
     }
@@ -357,7 +358,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     mEdgeTextArea.getDocument().addDocumentListener(new MyDocumentListener());
 
     // Attributes
-    mEdgeTextArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
+    mEdgeTextArea.setFont(this.getFont());
 
     //attribs = new SimpleAttributeSet();
     //StyleConstants.setAlignment(attribs, StyleConstants.ALIGN_CENTER);
@@ -380,6 +381,9 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       }
       mEdgeTextArea.setVisible(mEdgeTextArea.getText().trim().length() > 0);
     }
+    
+    // do an exact font positioning    
+    computeTextBoxBounds(mDescription);
 
     Action pressedAction = new AbstractAction() {
       @Override
@@ -523,14 +527,9 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       }
 
       if (mType.equals(TYPE.TEDGE) || mType.equals(TYPE.CEDGE) || mType.equals(TYPE.IEDGE)) {
-
-        // mValueEditor.setText(getDescription());
         mEdgeTextArea.requestFocus();
         mEditMode = true;
         mDispatcher.convey(new EdgeEditEvent(this, this.getDataEdge()));
-        //add(mEdgeTextArea);
-
-        //mValueEditor.setText(mValueEditor.getText()); // hack to make mValueEditor visible
       }
     }
   }
@@ -660,16 +659,15 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     mEg.initEdgeGraphics(this, null, null);
   }
 
-  private void computeTextBoxBounds(Graphics2D graphics, Point position, String text) {
-    mFontWidthCorrection = mFM.stringWidth(text) / 2;
-    // do an exact font positioning
-    FontRenderContext renderContext = graphics.getFontRenderContext();
-    GlyphVector glyphVector = getFont().createGlyphVector(renderContext, text);
-    Rectangle visualBounds = glyphVector.getVisualBounds().getBounds();
-    int halfTextHeight = visualBounds.height / 2;
-    mEdgeTextArea.setBounds(position.x - mFontWidthCorrection - 2,
-        position.y - halfTextHeight - 2 + (int)visualBounds.getY(),
-        (int)visualBounds.getWidth(), (int)visualBounds.getHeight());
+  private void computeTextBoxBounds(String text) {
+    // do an exact font positioning    
+    FontMetrics fm = getFontMetrics(getFont());
+    int height = fm.getHeight();
+    int width = fm.stringWidth(text) + 2;
+    mFontWidthCorrection = width / 2;
+    
+    mEdgeTextArea.setBounds((int) Math.round(mEg.mLeftCurve.x2 - mFontWidthCorrection),
+        (int) Math.round(mEg.mLeftCurve.y2), width, height);
   }
 
   @Override
@@ -683,15 +681,11 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
             BasicStroke.JOIN_MITER));
     graphics.draw(mEg.mCurve);
 
-    if (mEditMode == false) {
-      if (mDescription.length() > 0) {
-        computeTextBoxBounds(graphics, new Point((int) mEg.mLeftCurve.x2,
-                (int) mEg.mLeftCurve.y2), mDescription);
-      }
-    } else {
+    //if (mDescription.length() > 0) {
+    //  computeTextBoxBounds(mDescription);
+    //}
+    if (mEditMode == true) {
       graphics.setColor(mColor);
-      computeTextBoxBounds(graphics, new Point((int) mEg.mLeftCurve.x2,
-          (int) mEg.mLeftCurve.y2), mDescription);
       mEdgeTextArea.requestFocusInWindow();
     }
 
@@ -756,7 +750,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       at.setToRotation((2 * Math.PI) - (mEg.mArrowDir + (Math.PI / 2)));
       graphics.transform(at);
       graphics.setColor(Color.WHITE);
-      computeTextBoxBounds(graphics, new Point(-(mFontWidthCorrection + 5), 0), targets);
+      computeTextBoxBounds(targets);
       graphics.setTransform(currentAT);
     }
   }
