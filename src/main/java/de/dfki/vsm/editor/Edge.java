@@ -287,16 +287,17 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     //setFont(font);
     mFontWidthCorrection = mFM.stringWidth(mName) / 2;
     mFontHeightCorrection = (mFM.getAscent() - mFM.getDescent()) / 2;
-    
+
     if (mEdgeTextArea != null)
-      // do an exact font positioning    
-      computeTextBoxBounds(mDescription);
+      // do an exact font positioning
+      computeTextBoxBounds();
   }
 
   class MyDocumentListener implements DocumentListener {
     @Override
     // character added
     public void insertUpdate(DocumentEvent e) {
+      computeTextBoxBounds();
       if (mType == TYPE.CEDGE) {
         if (!validate(mEdgeTextArea.getText())) {
         } else {
@@ -307,6 +308,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     @Override
     // character removed
     public void removeUpdate(DocumentEvent e) {
+      computeTextBoxBounds();
       if (mType == TYPE.CEDGE) {
         if (!validate(mEdgeTextArea.getText())) {
         } else {
@@ -317,6 +319,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     @Override
     public void changedUpdate(DocumentEvent e) {
       //Plain text components do not fire these events
+      computeTextBoxBounds();
     }
   }
 
@@ -381,9 +384,9 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       }
       mEdgeTextArea.setVisible(mEdgeTextArea.getText().trim().length() > 0);
     }
-    
-    // do an exact font positioning    
-    computeTextBoxBounds(mDescription);
+
+    // do an exact font positioning
+    computeTextBoxBounds();
 
     Action pressedAction = new AbstractAction() {
       @Override
@@ -659,13 +662,13 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     mEg.initEdgeGraphics(this, null, null);
   }
 
-  private void computeTextBoxBounds(String text) {
-    // do an exact font positioning    
+  private void computeTextBoxBounds() {
+    // do an exact font positioning
     FontMetrics fm = getFontMetrics(getFont());
     int height = fm.getHeight();
-    int width = fm.stringWidth(text) + 2;
+    int width = fm.stringWidth(mEdgeTextArea.getText() + "p");
     mFontWidthCorrection = width / 2;
-    
+
     mEdgeTextArea.setBounds((int) Math.round(mEg.mLeftCurve.x2 - mFontWidthCorrection),
         (int) Math.round(mEg.mLeftCurve.y2), width, height);
   }
@@ -681,13 +684,11 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
             BasicStroke.JOIN_MITER));
     graphics.draw(mEg.mCurve);
 
-    //if (mDescription.length() > 0) {
-    //  computeTextBoxBounds(mDescription);
-    //}
     if (mEditMode == true) {
       graphics.setColor(mColor);
       mEdgeTextArea.requestFocusInWindow();
     }
+    computeTextBoxBounds();
 
     graphics.setColor(mColor);
 
@@ -750,7 +751,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       at.setToRotation((2 * Math.PI) - (mEg.mArrowDir + (Math.PI / 2)));
       graphics.transform(at);
       graphics.setColor(Color.WHITE);
-      computeTextBoxBounds(targets);
+      computeTextBoxBounds();
       graphics.setTransform(currentAT);
     }
   }
