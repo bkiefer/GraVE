@@ -185,7 +185,7 @@ public class RunTimeProject {
       }
     }
     // Write the project configuration file
-    if (JaxbUtilities.marshal(file, mProjectConfig, ProjectConfig.class)) {
+    if (!JaxbUtilities.marshal(file, mProjectConfig, ProjectConfig.class)) {
       // Print an error message in this case
       //mLogger.error("Error: Cannot write project configuration file '" + file + "'");
       // Return failure if it does not exist

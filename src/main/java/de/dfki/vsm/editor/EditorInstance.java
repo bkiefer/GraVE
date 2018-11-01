@@ -461,7 +461,8 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
             return true;
           } else {
             // Print an error message
-            mLogger.error("Error: Cannot write the editor project '" + project + "'");
+            mLogger.error("Error: Cannot write the editor project '"
+                    + project.getProjectName() + "'");
             // And return failure here
             return false;
           }
