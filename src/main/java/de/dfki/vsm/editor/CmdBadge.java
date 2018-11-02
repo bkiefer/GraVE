@@ -32,7 +32,7 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
   private final Font mFont;
   private final int maxWidth = 200;
   private final int maxHeight = 100;
-  
+
   private Color boxActiveColour = new Color(255, 255, 255, 100);
 
   /**
@@ -62,7 +62,6 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
         endEditMode();
       }
     });
-
     mNode = node;
     mEditorConfig = mNode.getWorkSpace().getEditorConfig();
     mFont = new Font("Monospaced",
@@ -103,7 +102,6 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
     // Sets visibility of the component to true only if there is something to display
     setVisible(!content.isEmpty());
     setText(content);
-
     if (!content.isEmpty()) {
       int newWidth = getColumns() * getColumnWidth();
       newWidth = newWidth > maxWidth? maxWidth : newWidth;
@@ -123,7 +121,12 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
   }
 
   @Override
+  public void setText(String text) {
+    super.setText(text);
+    mNode.getDataNode().setCmd(text);
+  }
+
+  @Override
   public void update(EventObject event) {
-    //System.out.println("Event happened!!");
   }
 }
