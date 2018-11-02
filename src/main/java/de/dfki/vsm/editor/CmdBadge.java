@@ -14,6 +14,8 @@ import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * @author Gregor Mehlmann
@@ -32,7 +34,7 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
   private final Font mFont;
   private final int maxWidth = 200;
   private final int maxHeight = 100;
-  
+
   private Color boxActiveColour = new Color(255, 255, 255, 100);
 
   /**
@@ -62,7 +64,20 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
         endEditMode();
       }
     });
-
+    getDocument().addDocumentListener(new DocumentListener() {
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        mNode.getDataNode().setCmd(getText());
+      }
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        removeUpdate(e);
+      }
+      @Override
+      public void changedUpdate(DocumentEvent arg0) {
+        removeUpdate(arg0);
+      }
+    });
     mNode = node;
     mEditorConfig = mNode.getWorkSpace().getEditorConfig();
     mFont = new Font("Monospaced",
@@ -103,7 +118,6 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
     // Sets visibility of the component to true only if there is something to display
     setVisible(!content.isEmpty());
     setText(content);
-
     if (!content.isEmpty()) {
       int newWidth = getColumns() * getColumnWidth();
       newWidth = newWidth > maxWidth? maxWidth : newWidth;
@@ -123,7 +137,12 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
   }
 
   @Override
+  public void setText(String text) {
+    super.setText(text);
+    mNode.getDataNode().setCmd(text);
+  }
+
+  @Override
   public void update(EventObject event) {
-    //System.out.println("Event happened!!");
   }
 }

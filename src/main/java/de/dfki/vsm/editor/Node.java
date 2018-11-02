@@ -656,7 +656,6 @@ public final class Node extends JComponent implements EventListener, Observer {
   public void mouseClicked(MouseEvent event) {
     mPressed = false;
     mSelected = true;
-
     Point loc = getLocation();
     Point clickLoc = event.getPoint();
 

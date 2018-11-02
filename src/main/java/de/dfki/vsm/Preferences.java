@@ -3,8 +3,6 @@ package de.dfki.vsm;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,17 +14,15 @@ import java.util.Arrays;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.editor.project.EditorConfig;
+import de.dfki.vsm.util.JaxbUtilities;
 import de.dfki.vsm.util.ios.ResourceLoader;
+import java.io.File;
 
 /**
  * @author Gregor Mehlmann
@@ -290,25 +286,15 @@ public final class Preferences {
 
   public static synchronized void save() {
     // write the Preferences file
-    try {
-      JAXBContext jc = JAXBContext.newInstance(Preferences.class);
-      Marshaller m = jc.createMarshaller();
-      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-
-      m.marshal(getPrefs(), new FileOutputStream(sCONFIG_FILE));
-    } catch (JAXBException|FileNotFoundException e) {
-      mLogger.error("Error: Cannot write preferences file "
-              + sCONFIG_FILE + " : " + e);
-    }
+    JaxbUtilities.marshal(new File(sCONFIG_FILE), getPrefs(),
+            Preferences.class);
   }
 
   public static synchronized void load() {
-    try (FileInputStream in = new FileInputStream(sCONFIG_FILE)) {
-      JAXBContext jc = JAXBContext.newInstance(Preferences.class);
-      Unmarshaller u = jc.createUnmarshaller();
-      single_instance = (Preferences) u.unmarshal(in);
-    } catch (JAXBException|IOException e) {
+    try {
+      JaxbUtilities.unmarshal(new FileInputStream(sCONFIG_FILE), sCONFIG_FILE,
+              Preferences.class);
+    } catch (IOException e) {
       mLogger.error("Cannot read preference file: " + sCONFIG_FILE + " :\n" + e);
     }
   }
