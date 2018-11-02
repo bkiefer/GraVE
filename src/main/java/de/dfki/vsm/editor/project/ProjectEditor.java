@@ -18,6 +18,10 @@ import org.slf4j.LoggerFactory;
 //import org.fife.ui.autocomplete.AutoCompletion;
 
 import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.CmdBadge;
+import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.event.EdgeSelectedEvent;
+import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
 import de.dfki.vsm.util.evt.EventDispatcher;
@@ -197,6 +201,15 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     if (event instanceof TreeEntrySelectedEvent) {
       // Show the auxiliary editor
       showAuxiliaryEditor();
+    } else if (event instanceof NodeSelectedEvent
+            && ((NodeSelectedEvent) event).getSource() instanceof Node) {
+      // the source of the event is the node object
+      mAuxiliaryEditor.setEditedNodeOrEdge(
+              mSceneFlowEditor.getWorkSpace().getCmdBadge(
+                      (Node)((NodeSelectedEvent) event).getSource()));
+    } else if (event instanceof EdgeSelectedEvent) {
+      // the source of the event is the node object
+      mAuxiliaryEditor.setEditedNodeOrEdge(((EdgeSelectedEvent) event).getSource());
     }
   }
 

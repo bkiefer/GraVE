@@ -1,5 +1,6 @@
 package de.dfki.vsm.editor.project;
 
+import de.dfki.vsm.editor.CmdBadge;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -10,8 +11,10 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
 import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.ios.ResourceLoader;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 @SuppressWarnings("serial")
 public class CodeEditor extends JPanel {
@@ -47,11 +50,32 @@ public class CodeEditor extends JPanel {
     setLayout(new BorderLayout());
 
     mTextArea = new RSyntaxTextArea();
+    mTextArea.getDocument().addDocumentListener(new DocumentListener() {
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+          if (mEditedObject instanceof CmdBadge) {
+            ((CmdBadge)mEditedObject).setText(mTextArea.getText());
+            ((CmdBadge)mEditedObject).repaint();
+          } else if (mEditedObject instanceof Edge) {
+            ((Edge)mEditedObject).getDescription();
+            ((Edge)mEditedObject).repaint();
+          }
+        }
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+          removeUpdate(e);
+        }
+        @Override
+        public void changedUpdate(DocumentEvent arg0) {
+          removeUpdate(arg0);
+        }
+    });
     mTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
     mTextArea.setCodeFoldingEnabled(true);
     mTextArea.setLineWrap(true);
     mTextArea.setWrapStyleWord(true);
-    mTextArea.setPreferredSize(new Dimension(10000, 230));
+    //mTextArea.setBounds(this.getBounds());
+    mTextArea.setBounds(0, 0, 10000, 230);
     mTextArea.setVisible(true);
     //setBackground(new Color(255, 255, 255, 90));
     //mTextArea.setBackground(new Color(175, 175, 175, 95));
@@ -100,16 +124,18 @@ public class CodeEditor extends JPanel {
   }
 
   public void setEditedNodeOrEdge(Object n) {
-    if (n != null && !(n instanceof Node || n instanceof Edge)) return;
-    // check if text was changed and write back
-
+    String text;
+    if (n == null) return; // clear editor?
+    if (n instanceof CmdBadge)
+      text = ((CmdBadge)n).getText();
+    else if (n instanceof Edge)
+      text = ((Edge)n).getDescription();
+    else
+      return;
     // set new edited object
     mEditedObject = n;
-    if (n == null) {
-      // clear text area
-    } else {
-      // update text area with current code
-    }
+    // update text area with current code
+    mTextArea.setText(text);
   }
 
   /** If the TODO: revert button is pressed, put the original text back into
