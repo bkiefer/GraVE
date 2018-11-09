@@ -94,9 +94,9 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   // Initialize the GUI components
   private void initComponents() {
     // Set Background Color
-    setBackground(Color.WHITE);
+    mSceneFlowEditor.setBackground(Color.WHITE);
     // Set An Empty Border
-    setBorder(BorderFactory.createEmptyBorder());
+    mSceneFlowEditor.setBorder(BorderFactory.createEmptyBorder());
 
     setOneTouchExpandable(true);
 
@@ -163,12 +163,14 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
           mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = true;
         } else {
           mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR = true;
+          mAuxiliaryEditor.updateBorders();
         }
         if (mAuxiliaryEditor.getSize().height == 0) {
           mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR = true;
           mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = false;
         } else {
           mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = true;
+          mAuxiliaryEditor.updateBorders();
         }
         Preferences.save();
       }

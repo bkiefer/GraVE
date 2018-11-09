@@ -75,7 +75,8 @@ public class CodeEditor extends JPanel {
     mTextArea.setLineWrap(true);
     mTextArea.setWrapStyleWord(true);
     //mTextArea.setBounds(this.getBounds());
-    mTextArea.setBounds(0, 0, 10000, 230);
+    mTextArea.setBounds(0, 0, 10000,
+            mEditorProject.getEditorConfig().sCODE_DIVIDER_LOCATION);
     mTextArea.setVisible(true);
     //setBackground(new Color(255, 255, 255, 90));
     //mTextArea.setBackground(new Color(175, 175, 175, 95));
@@ -105,6 +106,10 @@ public class CodeEditor extends JPanel {
     jsp.add(mTextArea);
     //jsp.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     add(jsp, BorderLayout.CENTER);
+  }
+  
+  public void updateBorders(){
+    mTextArea.setBounds(0, 0, 10000, this.getSize().height);
   }
 
   // Set the pin pricked flag
