@@ -21,6 +21,7 @@ import javax.swing.*;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.*;
 import de.dfki.vsm.editor.action.*;
+import de.dfki.vsm.editor.event.ClearCodeEditorEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
 import de.dfki.vsm.editor.event.WorkSpaceSelectedEvent;
@@ -1010,7 +1011,8 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     // active supernodes and remove it's name from the path
     SuperNode s = getSceneFlowManager().removeActiveSuperNode();
     SuperNode sn = mSceneFlowEditor.removePathComponent();
-    NodeSelectedEvent e = new NodeSelectedEvent(this, getSceneFlowManager().getCurrentActiveSuperNode());
+    NodeSelectedEvent e = new NodeSelectedEvent(this,
+            getSceneFlowManager().getCurrentActiveSuperNode());
     mEventCaster.convey(e);
     if (e.getNode() instanceof SuperNode) {
       mGridManager.update((SuperNode) e.getNode());
@@ -1042,6 +1044,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     // Create a new Gridmanager for the workspace
     mGridManager.update();
     revalidate();
+    mEventCaster.convey(new ClearCodeEditorEvent(null));
     repaint(100);
     // TODO: Refresh here!
   }

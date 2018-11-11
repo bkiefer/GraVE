@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import de.dfki.vsm.Preferences;
 import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.event.ClearCodeEditorEvent;
 import de.dfki.vsm.editor.event.EdgeSelectedEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
@@ -209,6 +210,9 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       mAuxiliaryEditor.setEditedNodeOrEdge(
               mSceneFlowEditor.getWorkSpace().getCmdBadge(
                       (Node)((NodeSelectedEvent) event).getSource()));
+    
+    } else if (event instanceof ClearCodeEditorEvent) {
+      mAuxiliaryEditor.setEditedNodeOrEdge(null);
     } else if (event instanceof EdgeSelectedEvent) {
       // the source of the event is the node object
       mAuxiliaryEditor.setEditedNodeOrEdge(((EdgeSelectedEvent) event).getSource());

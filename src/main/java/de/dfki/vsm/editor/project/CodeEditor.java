@@ -11,7 +11,6 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
 import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.ios.ResourceLoader;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -130,7 +129,12 @@ public class CodeEditor extends JPanel {
 
   public void setEditedNodeOrEdge(Object n) {
     String text;
-    if (n == null) return; // clear editor?
+    if (n == null) {
+      // clear editor
+      mEditedObject = null;
+      mTextArea.setText("");
+      return;
+    }
     if (n instanceof CmdBadge)
       text = ((CmdBadge)n).getText();
     else if (n instanceof Edge)
