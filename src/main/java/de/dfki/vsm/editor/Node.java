@@ -64,12 +64,10 @@ public final class Node extends JComponent implements EventListener, Observer {
   private boolean mIsActive;
 
   public enum Flavour {
-
     None, ENode, TNode, CNode, PNode, INode, FNode
   }
 
   public enum Type {
-
     BasicNode, SuperNode
   }
 
@@ -80,8 +78,9 @@ public final class Node extends JComponent implements EventListener, Observer {
     mWorkSpace = workSpace;
     mEditorConfig = mWorkSpace.getEditorConfig();
     mDataNode = dataNode;
-
-    //
+    // setToolTipText(mDataNode.getId());
+    // the former overrides any MouseListener!!!
+    
     if (mDataNode instanceof SuperNode) {
       mType = Type.SuperNode;
     } else {
@@ -92,17 +91,12 @@ public final class Node extends JComponent implements EventListener, Observer {
     mDockingManager = new DockingManager(this);
 
     // TODO: move this to data model
-    mIsEndNode = (!mDataNode.hasEdge())
-            ? true
-            : false;
+    mIsEndNode = !mDataNode.hasEdge();
 
     // check if connected edge(s) is/are cedge(s)
     if (mDataNode.getFlavour().equals(BasicNode.FLAVOUR.CNODE)) {
-
       // If no additional default edge is present - node is possible end node!
-      mIsEndNode = (mDataNode.getDedge() == null)
-              ? true
-              : false;
+      mIsEndNode = mDataNode.getDedge() == null;
     }
 
     // Set initial position
@@ -118,7 +112,6 @@ public final class Node extends JComponent implements EventListener, Observer {
     if (startNodeMap.containsKey(mDataNode.getId())) {
       addStartSign();
     }
-
     if (mDataNode.isHistoryNode()) {
       addAltStartSign();
     }
@@ -163,14 +156,8 @@ public final class Node extends JComponent implements EventListener, Observer {
     return mDockingManager;
   }
 
-  /**
-   *
-   *
-   */
   @Override
   public void update(Observable o, Object obj) {
-
-    // mLogger.message("BasicNode.update(" + obj + ")");
     update();
   }
 
@@ -192,18 +179,13 @@ public final class Node extends JComponent implements EventListener, Observer {
 
     /////////////////////////////////////font
     // mLogger.message("BasicNode.update()");
-    mIsEndNode = (!mDataNode.hasEdge())
-            ? true
-            : false;
+    mIsEndNode = !mDataNode.hasEdge();
 
     // check if connected edge(s) is/are cedge(s)
     if (mDataNode.getFlavour().equals(de.dfki.vsm.model.flow.BasicNode.FLAVOUR.CNODE)) {
 
       // If no additional default edge is present - node is possible end node!
-      mIsEndNode = (mDataNode.getDedge() == null)
-              ? true
-              : false;
-
+      mIsEndNode = mDataNode.getDedge() == null;
       ////System.out.println("Is end node " + mIsEndNode);
     }
 
@@ -225,10 +207,8 @@ public final class Node extends JComponent implements EventListener, Observer {
 
     // Derive the font from the attribute map
     Font font = Font.getFont(map);
-
     // Derive the node's font metrics from the font
     FontMetrics fontMetrics = getFontMetrics(font);
-
     // Set the node's font to the updated font
     setFont(font);
 
@@ -251,17 +231,10 @@ public final class Node extends JComponent implements EventListener, Observer {
 
     // Update the color of the node that has to be changed
     // if the type or the flavour of the node have changed
-    switch (mType) {
-      case SuperNode:
-        mColor = sSUPER_NODE_COLOR;
-
-        break;
-
-      case BasicNode:
-        mColor = sBASIC_NODE_COLOR;
-
-        break;
-    }
+    if (mType == Type.SuperNode)
+      mColor = sSUPER_NODE_COLOR;
+    else
+      mColor = sBASIC_NODE_COLOR;
 
     // Set the history node color
     if (mDataNode.isHistoryNode()) {
@@ -272,32 +245,26 @@ public final class Node extends JComponent implements EventListener, Observer {
     switch (mFlavour) {
       case ENode:
         mColor = sEEDGE_COLOR;
-
         break;
 
       case FNode:
         mColor = sFEDGE_COLOR;
-
         break;
 
       case TNode:
         mColor = sTEDGE_COLOR;
-
         break;
 
       case PNode:
         mColor = sPEDGE_COLOR;
-
         break;
 
       case CNode:
         mColor = sCEDGE_COLOR;
-
         break;
 
       case INode:
         mColor = sIEDGE_COLOR;
-
         break;
     }
 
@@ -310,18 +277,10 @@ public final class Node extends JComponent implements EventListener, Observer {
     return mDisplayName;
   }
 
-  /**
-   *
-   *
-   */
   @Override
   public void update(EventObject event) {
   }
 
-  /**
-   *
-   *
-   */
   public void resetLocation(Point newLocation) {
     Point location = getLocation();
 
@@ -343,23 +302,14 @@ public final class Node extends JComponent implements EventListener, Observer {
     updateDataModel();
   }
 
-  /**
-   *
-   *
-   */
   // TODO - move to controler class - sceneflowManager!
   private void updateDataModel() {
-
 //      mDataNode.getGraphics().setPosition(getLocation().x, getLocation().y);
     Position g = new Position(getLocation().x, getLocation().y);
 
     mDataNode.setPosition(g);
   }
 
-  /**
-   *
-   *
-   */
   // TODO: move to workspace
   public void removeStartSign() {
     if (mStartSign != null) {
@@ -417,7 +367,6 @@ public final class Node extends JComponent implements EventListener, Observer {
         mColor = (mFlavour == Flavour.ENode)
                 ? sEEDGE_COLOR
                 : mColor;
-
         break;
 
       case FEDGE:
@@ -427,7 +376,6 @@ public final class Node extends JComponent implements EventListener, Observer {
         mColor = (mFlavour == Flavour.FNode)
                 ? sFEDGE_COLOR
                 : mColor;
-
         break;
 
       case TEDGE:
@@ -437,59 +385,45 @@ public final class Node extends JComponent implements EventListener, Observer {
         mColor = (mFlavour == Flavour.TNode)
                 ? sTEDGE_COLOR
                 : mColor;
-
         break;
 
       case CEDGE:
         mFlavour = Flavour.CNode;
         mColor = sCEDGE_COLOR;
-
         break;
 
       case PEDGE:
         mFlavour = Flavour.PNode;
         mColor = sPEDGE_COLOR;
-
         break;
 
       case IEDGE:
         mFlavour = Flavour.INode;
         mColor = sIEDGE_COLOR;
-
         break;
     }
-
     return dp;
   }
 
   // Tells the node that an edge connects
   public Point connectEdgetAtTargetNode(Edge e, Point p) {
-
     // get location of node
     Point loc = getLocation();
-
     // get relative (to the current node) coordinates;
     p.setLocation(p.x - loc.x, p.y - loc.y);
-
     Point dp = mDockingManager.getNearestDockPoint(e, p);
-
     // make position absolute to underlying canvas
     dp.setLocation(dp.x + loc.x, dp.y + loc.y);
-
     return dp;
   }
 
   public Point connectSelfPointingEdge(Edge e, Point p) {
     Point loc = getLocation();
-
     // get relative (to the current node) coordinates;
     p.setLocation(p.x - loc.x, p.y - loc.y);
-
     Point dp = mDockingManager.getNearestSecondDockPoint(e, p);
-
     // make position absolute to underlying canvas
     dp.setLocation(dp.x + loc.x, dp.y + loc.y);
-
     return dp;
   }
 
@@ -497,13 +431,11 @@ public final class Node extends JComponent implements EventListener, Observer {
     Point relPos = mDockingManager.freeDockPoint(e);
     Point pos = getLocation();
     Point absLoc;
-
     if (relPos != null) {
       absLoc = new Point(relPos.x + pos.x, relPos.y + pos.y);
     } else {
       absLoc = new Point(pos.x, pos.y);
     }
-
     return absLoc;
   }
 
@@ -511,7 +443,6 @@ public final class Node extends JComponent implements EventListener, Observer {
     Point relPos = mDockingManager.freeSecondDockPoint(e);
     Point pos = getLocation();
     Point absLoc = new Point(relPos.x + pos.x, relPos.y + pos.y);
-
     return absLoc;
   }
 
@@ -521,9 +452,8 @@ public final class Node extends JComponent implements EventListener, Observer {
   public Point getCenterPoint() {
     Point loc = getLocation();
     Point c = new Point();
-
-    c.setLocation(loc.x + (mEditorConfig.sNODEWIDTH / 2), loc.y + (mEditorConfig.sNODEHEIGHT / 2));
-
+    c.setLocation(loc.x + (mEditorConfig.sNODEWIDTH / 2),
+            loc.y + (mEditorConfig.sNODEHEIGHT / 2));
     return c;
   }
 
@@ -534,7 +464,6 @@ public final class Node extends JComponent implements EventListener, Observer {
   public Point getEdgeDockPoint(Edge e) {
     Point loc = getLocation();
     Point dp = mDockingManager.getDockPoint(e);
-
     // make position absolute to underlying canvas
     if (dp != null) {
       dp.setLocation(dp.x + loc.x, dp.y + loc.y);
@@ -545,14 +474,12 @@ public final class Node extends JComponent implements EventListener, Observer {
         return (new Point(loc.x + getWidth(), loc.y + getHeight() / 2));
       }
     }
-
     return dp;
   }
 
   public Point getSelfPointingEdgeDockPoint(Edge e) {
     Point loc = getLocation();
     Point dp = mDockingManager.getSecondDockPoint(e);
-
     // make position absolute to underlying canvas
     if (dp != null) {
       dp.setLocation(dp.x + loc.x, dp.y + loc.y);
@@ -563,7 +490,6 @@ public final class Node extends JComponent implements EventListener, Observer {
         return (new Point(loc.x + getWidth(), loc.y + getHeight() / 2));
       }
     }
-
     return dp;
   }
 
@@ -571,13 +497,10 @@ public final class Node extends JComponent implements EventListener, Observer {
     ArrayList<Point> fDP = mDockingManager.getFreeDockPoints();
     ArrayList<Point> points = new ArrayList<>();
     Point loc = getLocation();
-
     for (Point p : fDP) {
-
       // make position absolute to underlying canvas
       points.add(new Point(p.x + loc.x, p.y + loc.y));
     }
-
     return points;
   }
 
@@ -586,57 +509,32 @@ public final class Node extends JComponent implements EventListener, Observer {
 
     switch (mFlavour) {
       case None:    // if node working type is unclear, allow all (except iedge for nodes)
-        /*   allowed = ((mType == Type.BasicNode) && (eType == AbstractEdge.TYPE.IEDGE))
-                 ? true
-                 : false;
-         */
-
         allowed = true;
         break;
 
       case ENode:    // only one eegde is allowed
-        allowed = ((eType == Edge.TYPE.CEDGE) || (eType == Edge.TYPE.IEDGE))
-                ? true
-                : false;
-
-        break;
-
       case TNode:    // only one tegde is allowed
-        allowed = ((eType == Edge.TYPE.CEDGE) || (eType == Edge.TYPE.IEDGE))
-                ? true
-                : false;
-
+        allowed = (eType == Edge.TYPE.CEDGE) || (eType == Edge.TYPE.IEDGE);
         break;
 
       case CNode:    // only cedges are allowed - TODO allow dedge/tedge
-        allowed = ((eType == Edge.TYPE.CEDGE)
+        allowed = (eType == Edge.TYPE.CEDGE)
                 || ((mDataNode.getDedge() == null)
-                && (((eType == Edge.TYPE.TEDGE) || (eType == Edge.TYPE.EEDGE)))))
-                        ? true
-                        : false;
-
+                && (((eType == Edge.TYPE.TEDGE) || (eType == Edge.TYPE.EEDGE))));
         break;
 
       case PNode:    // only pedges are allowed - TODO allow dedge/tedge
-        allowed = (eType == Edge.TYPE.PEDGE)
-                ? true
-                : false;
-
+        allowed = eType == Edge.TYPE.PEDGE;
         break;
 
       case FNode:    // only fedges are allowed
-        allowed = (eType == Edge.TYPE.FEDGE)
-                ? true
-                : false;
-
+        allowed = eType == Edge.TYPE.FEDGE;
         break;
 
       case INode:    // allow TEdges and IEdges
-        allowed = ((eType == Edge.TYPE.IEDGE)
+        allowed = (eType == Edge.TYPE.IEDGE)
                 || ((mDataNode.getDedge() == null)
-                && (((eType == Edge.TYPE.TEDGE) || (eType == Edge.TYPE.EEDGE)))))
-                        ? true
-                        : false;
+                && (((eType == Edge.TYPE.TEDGE) || (eType == Edge.TYPE.EEDGE))));
         break;
     }
 
