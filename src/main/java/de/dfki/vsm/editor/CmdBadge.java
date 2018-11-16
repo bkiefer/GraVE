@@ -14,6 +14,8 @@ import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
+import java.util.Arrays;
+import java.util.Comparator;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -32,8 +34,8 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
 
   // TODO: put preferences into external yml
   private final Font mFont;
-  private final int maxWidth = 200;
-  private final int maxHeight = 100;
+  private final int maxWidth = 800;
+  private final int maxHeight = 300;
 
   private Color boxActiveColour = new Color(255, 255, 255, 100);
 
@@ -120,17 +122,26 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
     setVisible(!content.isEmpty());
     setText(content);
     if (!content.isEmpty()) {
-      int newWidth = getColumns() * getColumnWidth();
-      newWidth = newWidth > maxWidth? maxWidth : newWidth;
-      int newHeight = getLineCount() * getLineHeight();
-      newHeight = newHeight > maxHeight? maxHeight : newHeight;
-      setSize(new Dimension(newWidth, newHeight));
-      setLocation(mNode.getLocation().x + (mEditorConfig.sNODEWIDTH / 2)
-              - (newWidth / 2),
-              mNode.getLocation().y + mEditorConfig.sNODEHEIGHT);
+      computeAndSetNewSize();
     } else {
       setSize(new Dimension(getWidth(), getHeight()));
     }
+  }
+  
+  private void computeAndSetNewSize() {
+    int lines = (int) getText().chars().filter(x -> x == '\n').count() + 1;
+    String longestLine = Arrays.asList(getText().split("\n")).stream()
+            .max(Comparator.comparingInt(String::length)).get();
+    FontMetrics fm = getFontMetrics(getFont());
+    int newHeight = fm.getHeight() * lines;
+    // font is monospaced, so this always works
+    int newWidth = fm.stringWidth("p") * longestLine.length();
+    newWidth = newWidth > maxWidth? maxWidth : newWidth;
+    newHeight = newHeight > maxHeight? maxHeight : newHeight;
+    setSize(new Dimension(newWidth, newHeight));
+    setLocation(mNode.getLocation().x + (mEditorConfig.sNODEWIDTH / 2)
+            - (newWidth / 2),
+            mNode.getLocation().y + mEditorConfig.sNODEHEIGHT);
   }
 
   public Node getNode() {
@@ -141,6 +152,7 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
   public void setText(String text) {
     super.setText(text);
     mNode.getDataNode().setCmd(text);
+    computeAndSetNewSize();
   }
 
   @Override
