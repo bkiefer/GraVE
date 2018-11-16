@@ -12,9 +12,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.NONE)
 public class GuardedEdge extends AbstractEdge {
 
-  @XmlElement(name="Condition")
-  protected Expression mCondition = null;
+  protected Expression mCondition = new Expression();
 
+  @XmlElement(name="Condition")
   public String getCondition() {
     return mCondition.getContent();
   }

@@ -9,10 +9,12 @@ import javax.xml.bind.annotation.*;
 @XmlAccessorType(XmlAccessType.NONE)
 public class TimeoutEdge extends AbstractEdge {
 
+  private static final long DEFAULT_TIMEOUT = 1000; // 1 sec
+
   @XmlAttribute(name="timeout")
-  protected long mTimeout = Long.MIN_VALUE;
+  protected long mTimeout = DEFAULT_TIMEOUT;
   @XmlElement(name="Commands", nillable=true)
-  protected Expression mExpression = null;
+  protected Expression mExpression = new Expression();
 
   public long getTimeout() {
     return mTimeout;

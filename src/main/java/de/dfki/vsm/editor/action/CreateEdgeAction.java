@@ -16,6 +16,7 @@ import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.model.flow.EpsilonEdge;
 import de.dfki.vsm.model.flow.ForkingEdge;
 import de.dfki.vsm.model.flow.RandomEdge;
+import de.dfki.vsm.model.flow.TimeoutEdge;
 
 /**
  * @author Gregor Mehlmann
@@ -52,28 +53,31 @@ public class CreateEdgeAction extends EdgeAction {
     if (mShowDialog) {
       switch (mGUIEdgeType) {
         case EEDGE:
-          mDataEdge = new EpsilonEdge();
+          mDataEdge = new EpsilonEdge(mSourceGUINode.getDataNode(),
+              mTargetGUINode.getDataNode());
 
           break;
 
         case FEDGE:
-          mDataEdge = new ForkingEdge();
+          mDataEdge = new ForkingEdge(mSourceGUINode.getDataNode(),
+              mTargetGUINode.getDataNode());
 
           break;
 
         case TEDGE:
-          ModifyTEdgeDialog tedgeDialog = new ModifyTEdgeDialog(mSourceGUINode.getDataNode(),
+          //ModifyTEdgeDialog tedgeDialog = new ModifyTEdgeDialog(mSourceGUINode.getDataNode(),
+          //        mTargetGUINode.getDataNode());
+
+          mDataEdge = //tedgeDialog.run();
+              new TimeoutEdge(mSourceGUINode.getDataNode(),
                   mTargetGUINode.getDataNode());
-
-          mDataEdge = tedgeDialog.run();
-
           break;
 
         case CEDGE:
-          ModifyCEdgeDialog cedgeDialog = new ModifyCEdgeDialog(mSourceGUINode.getDataNode(),
-                  mTargetGUINode.getDataNode());
+          //ModifyCEdgeDialog cedgeDialog = new ModifyCEdgeDialog(mSourceGUINode.getDataNode(),
+          //        mTargetGUINode.getDataNode());
 
-          mDataEdge = cedgeDialog.run();
+          mDataEdge = //cedgeDialog.run();
 
           break;
 

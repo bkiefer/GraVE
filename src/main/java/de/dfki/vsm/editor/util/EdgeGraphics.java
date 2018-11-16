@@ -107,9 +107,10 @@ public final class EdgeGraphics {
     bounds.height = bounds.height + 10;
 
     // check if a badge is there and add its bounds
-    if (mEdge.getGraphics() != null) {
+    String desc = mEdge.getDescription();
+    if (mEdge.getGraphics() != null && desc != null) {
       FontRenderContext renderContext = ((Graphics2D) mEdge.getGraphics()).getFontRenderContext();
-      GlyphVector glyphVector = mEdge.getFont().createGlyphVector(renderContext, mEdge.getDescription());
+      GlyphVector glyphVector = mEdge.getFont().createGlyphVector(renderContext, desc);
       Rectangle visualBounds = glyphVector.getVisualBounds().getBounds();
 
       bounds.add(this.mLeftCurve.x2 - visualBounds.width / 2 - 5,

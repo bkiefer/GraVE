@@ -1,6 +1,6 @@
 package de.dfki.vsm.editor.action;
 
-import static de.dfki.vsm.editor.Edge.TYPE.PEDGE;
+import static de.dfki.vsm.editor.Edge.TYPE.*;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Point;
@@ -10,9 +10,11 @@ import java.util.Set;
 
 import javax.swing.undo.UndoManager;
 
+import de.dfki.vsm.editor.Edge;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge.TYPE;
 import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.Node.Flavour;
 import de.dfki.vsm.editor.dialog.ModifyPEdgeDialog;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
@@ -29,10 +31,10 @@ public abstract class EdgeAction extends EditorAction {
   protected UndoManager mUndoManager = null;
   protected SceneFlowEditor mSceneFlowPane = null;
   protected WorkSpacePanel mWorkSpace = null;
-  protected de.dfki.vsm.editor.Node mSourceGUINode = null;
-  protected de.dfki.vsm.editor.Node mTargetGUINode = null;
-  protected de.dfki.vsm.editor.Node mLastTargetGUINode = null;
-  protected de.dfki.vsm.editor.Edge mGUIEdge = null;
+  protected Node mSourceGUINode = null;
+  protected Node mTargetGUINode = null;
+  protected Node mLastTargetGUINode = null;
+  protected Edge mGUIEdge = null;
   protected AbstractEdge mDataEdge = null;
   protected TYPE mGUIEdgeType = null;
   protected Point mSourceGUINodeDockPoint = null;
@@ -118,7 +120,7 @@ public abstract class EdgeAction extends EditorAction {
     // Connect GUI AbstractEdge to Target GUI node
     // TODO: Recompute the appearance of the source GUI node
     if (mGUIEdge == null) {
-      mGUIEdge = new de.dfki.vsm.editor.Edge(mWorkSpace, mDataEdge, mGUIEdgeType, mSourceGUINode, mTargetGUINode);
+      mGUIEdge = new Edge(mWorkSpace, mDataEdge, mGUIEdgeType, mSourceGUINode, mTargetGUINode);
     } else {
       if (mSourceGUINode.equals(mTargetGUINode)) {
 
@@ -146,9 +148,9 @@ public abstract class EdgeAction extends EditorAction {
   public void recalculateWeight() {
     mWorkSpace.getGridManager().resetAllGridWeight();
 
-    Set<de.dfki.vsm.editor.Edge> edgeSet = mWorkSpace.getEdges();
+    Set<Edge> edgeSet = mWorkSpace.getEdges();
 
-    for (de.dfki.vsm.editor.Edge edge : edgeSet) {
+    for (Edge edge : edgeSet) {
       if (!edge.getName().equals(mGUIEdge.getName())) {
         mWorkSpace.getGridManager().setEdgeWeight(edge);
         mWorkSpace.getGridManager().setNodeWeight(edge.getSourceNode());

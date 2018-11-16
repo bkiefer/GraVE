@@ -12,9 +12,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.NONE)
 public class RandomEdge extends AbstractEdge {
 
-  @XmlAttribute(name="probability")
   protected int mProbability = Integer.MIN_VALUE;
 
+  @XmlAttribute(name="probability")
   public int getProbability() {
     return mProbability;
   }

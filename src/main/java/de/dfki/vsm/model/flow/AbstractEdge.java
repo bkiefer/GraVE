@@ -16,6 +16,101 @@ import de.dfki.vsm.util.cpy.Copyable;
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class AbstractEdge implements Copyable {
 
+  protected String mTargetUnid = new String();
+  protected String mSourceUnid = new String();
+  protected BasicNode mTargetNode = null;
+  protected BasicNode mSourceNode = null;
+  protected EdgeArrow mArrow = null;
+  @XmlElement(name="Commands")
+  protected String mCmdList = null;
+  protected HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> mAltMap =
+      new HashMap<>();
+
+  @XmlAttribute(name="target")
+  public final String getTargetUnid() {
+    return mTargetUnid;
+  }
+
+  public final void setTargetUnid(final String value) {
+    mTargetUnid = value;
+  }
+
+  @XmlAttribute(name="source")
+  public final String getSourceUnid() {
+    return mSourceUnid;
+  }
+
+  public final void setSourceUnid(final String value) {
+    mSourceUnid = value;
+  }
+
+  @XmlTransient
+  public final BasicNode getTargetNode() {
+    return mTargetNode;
+  }
+
+  public final void setTargetNode(final BasicNode value) {
+    mTargetNode = value;
+  }
+
+  public final BasicNode getSourceNode() {
+    return mSourceNode;
+  }
+
+  public final void setSourceNode(final BasicNode value) {
+    mSourceNode = value;
+  }
+
+  @XmlElement(name="Connection")
+  public final EdgeArrow getArrow() {
+    return mArrow;
+  }
+
+  public final void setArrow(final EdgeArrow value) {
+    mArrow = value;
+  }
+
+  @XmlTransient
+  public final String getCmdList() {
+    return mCmdList;
+  }
+
+  public final void setCmdList(final String value) {
+    mCmdList = value;
+  }
+
+  public final String getCopyOfCmdList() {
+    final String copy = new String(this.mCmdList);
+    return copy;
+  }
+
+  /** Set the content of an edge, if applicable */
+  public void setContent(String s) { }
+
+  /** Get the content of an edge, as string (if applicable) */
+  public String getContent() { return null; }
+
+
+  /*
+    public final ArrayList<BasicNode> getAltList() {
+        final ArrayList<BasicNode> altList = new ArrayList();
+        for (TPLTuple<String, BasicNode> pair : mAltMap.values()) {
+            altList.add(pair.getSecond());
+        }
+        return altList;
+    }
+   */
+  @XmlTransient
+  public final HashMap<
+        Pair<String, BasicNode>, Pair<String, BasicNode>> getAltMap() {
+    return mAltMap;
+  }
+
+  public final void setAltMap(final
+      HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> value) {
+    mAltMap = value;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -67,103 +162,15 @@ public abstract class AbstractEdge implements Copyable {
     return true;
   }
 
-  @XmlAttribute(name="target")
-  protected String mTargetUnid = new String();
-  protected String mSourceUnid = new String();
-  protected BasicNode mTargetNode = null;
-  protected BasicNode mSourceNode = null;
-  protected EdgeArrow mArrow = null;
-  @XmlElement(name="Commands")
-  protected String mCmdList = null;
-  protected HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> mAltMap =
-      new HashMap<>();
-
-  @XmlTransient
-  public final String getTargetUnid() {
-    return mTargetUnid;
-  }
-
-  public final void setTargetUnid(final String value) {
-    mTargetUnid = value;
-  }
-
-  @XmlTransient
-  public final String getSourceUnid() {
-    return mSourceUnid;
-  }
-
-  public final void setSourceUnid(final String value) {
-    mSourceUnid = value;
-  }
-
-  @XmlTransient
-  public final BasicNode getTargetNode() {
-    return mTargetNode;
-  }
-
-  public final void setTargetNode(final BasicNode value) {
-    mTargetNode = value;
-  }
-
-  @XmlTransient
-  public final BasicNode getSourceNode() {
-    return mSourceNode;
-  }
-
-  public final void setSourceNode(final BasicNode value) {
-    mSourceNode = value;
-  }
-
-  @XmlElement(name="Connection")
-  public final EdgeArrow getArrow() {
-    return mArrow;
-  }
-
-  public final void setArrow(final EdgeArrow value) {
-    mArrow = value;
-  }
-
-  @XmlTransient
-  public final String getCmdList() {
-    return mCmdList;
-  }
-
-  public final void setCmdList(final String value) {
-    mCmdList = value;
-  }
-
-  public final String getCopyOfCmdList() {
-    final String copy = new String(this.mCmdList);
-    return copy;
-  }
-
-  /*
-    public final ArrayList<BasicNode> getAltList() {
-        final ArrayList<BasicNode> altList = new ArrayList();
-        for (TPLTuple<String, BasicNode> pair : mAltMap.values()) {
-            altList.add(pair.getSecond());
-        }
-        return altList;
-    }
-   */
-  @XmlTransient
-  public final HashMap<
-        Pair<String, BasicNode>, Pair<String, BasicNode>> getAltMap() {
-    return mAltMap;
-  }
-
-  public final void setAltMap(final
-      HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> value) {
-    mAltMap = value;
-  }
-
   // TODO: This is not yet a deep copy
   public HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> getCopyOfAltStartNodeMap() {
-    HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> copy = new HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>>();
-    Iterator it = mAltMap.entrySet().iterator();
+    HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> copy =
+        new HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>>();
+    Iterator<Map.Entry<Pair<String, BasicNode>, Pair<String, BasicNode>>> it =
+        mAltMap.entrySet().iterator();
 
     while (it.hasNext()) {
-      Map.Entry pairs = (Map.Entry) it.next();
+      Map.Entry<Pair<String, BasicNode>, Pair<String, BasicNode>> pairs = it.next();
       Pair<String, BasicNode> startNodePair = (Pair<String, BasicNode>) pairs.getKey();
       Pair<String, BasicNode> altStartNodePair = (Pair<String, BasicNode>) pairs.getValue();
       Pair<String, BasicNode> startNodePairCopy = new Pair<String, BasicNode>(startNodePair.getFirst(),
