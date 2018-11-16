@@ -45,6 +45,8 @@ import de.dfki.vsm.model.flow.TimeoutEdge;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 /**
@@ -215,6 +217,11 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   public String getDescription() {
     return mDescription;
   }
+  
+  public void setDescription(String s) {
+    mDescription = s;
+    mEdgeTextArea.setText(mDescription);
+  }
 
   public void update() {
 
@@ -359,6 +366,14 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
     mEdgeTextArea.setBorder(BorderFactory.createLineBorder(borderColor));
     mEdgeTextArea.getDocument().addDocumentListener(new MyDocumentListener());
+    mEdgeTextArea.addFocusListener(new FocusListener() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        mDispatcher.convey(new EdgeSelectedEvent(Edge.this, getDataEdge()));
+      }
+      @Override
+      public void focusLost(FocusEvent e) {}
+    });
 
     // Attributes
     mEdgeTextArea.setFont(this.getFont());
