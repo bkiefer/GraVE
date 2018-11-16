@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.Node.Flavour;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
-import de.dfki.vsm.model.flow.*;
 
 /**
  * @author Patrick Gebhard
@@ -38,7 +36,6 @@ public class DeflectEdgeAction extends EdgeAction {
     mLastTargetGUINodeDockPoint = edge.mLastTargetNodeDockPoint;    // last target node dockpoint
     mTargetGUINodeDockPoint = newDropPoint;
     mLogger.info("new target dockpoint (was drop point) " + mTargetGUINodeDockPoint);
-    mGUIEdgeType = edge.getType();
     mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
     mUndoManager = mSceneFlowPane.getUndoManager();
   }
@@ -50,78 +47,12 @@ public class DeflectEdgeAction extends EdgeAction {
     mDataEdge.setSourceNode(mSourceGUINode.getDataNode());    // this is the new node
     mDataEdge.setTargetUnid(mDataEdge.getTargetNode().getId());
 
-    switch (mGUIEdgeType) {
-      case EEDGE:
-        mSourceGUINode.getDataNode().setDedge(mDataEdge);
-
-        break;
-
-      case FEDGE:
-        mSourceGUINode.getDataNode().addFEdge((ForkingEdge) mDataEdge);
-
-        break;
-
-      case TEDGE:
-        mSourceGUINode.getDataNode().setDedge(mDataEdge);
-
-        break;
-
-      case CEDGE:
-        mSourceGUINode.getDataNode().addCEdge((GuardedEdge) mDataEdge);
-
-        break;
-
-      case PEDGE:
-        mSourceGUINode.getDataNode().addPEdge((RandomEdge) mDataEdge);
-
-        break;
-
-      case IEDGE:
-        mSourceGUINode.getDataNode().addIEdge((InterruptEdge) mDataEdge);
-
-        break;
-    }
-
-    // Revalidate data node and graphical node types
-    switch (mSourceGUINode.getDataNode().getFlavour()) {
-      case NONE:
-        de.dfki.vsm.model.flow.AbstractEdge dedge = mSourceGUINode.getDataNode().getDedge();
-
-        if (dedge instanceof EpsilonEdge) {
-          mSourceGUINode.setFlavour(Flavour.ENode);
-        } else if (dedge instanceof TimeoutEdge) {
-          mSourceGUINode.setFlavour(Flavour.TNode);
-        } else {
-          mSourceGUINode.setFlavour(Flavour.None);
-        }
-
-        break;
-
-      case PNODE:
-        mSourceGUINode.setFlavour(Flavour.PNode);
-
-        break;
-
-      case FNODE:
-        mSourceGUINode.setFlavour(Flavour.FNode);
-
-        break;
-
-      case CNODE:
-        mSourceGUINode.setFlavour(Flavour.CNode);
-
-        break;
-
-      case INODE:
-        mSourceGUINode.setFlavour(Flavour.INode);
-
-        break;
-    }
+    mSourceGUINode.getDataNode().addEdge(mDataEdge);
 
     mLogger.info("edge creation");
 
     // create a new gui edge
-    mGUIEdge = new Edge(mWorkSpace, mDataEdge, mGUIEdgeType, mSourceGUINode, mTargetGUINode,
+    mGUIEdge = new Edge(mWorkSpace, mDataEdge, mSourceGUINode, mTargetGUINode,
             mSourceGUINodeDockPoint, mTargetGUINodeDockPoint);
     mLogger.info("edge connection from source point " + mSourceGUINodeDockPoint + " to "
             + mTargetGUINodeDockPoint);

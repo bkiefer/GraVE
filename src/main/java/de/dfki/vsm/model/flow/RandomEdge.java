@@ -23,6 +23,14 @@ public class RandomEdge extends AbstractEdge {
     mProbability = value;
   }
 
+  public String getContent() {
+    return "" + mProbability;
+  }
+
+  public void setContent(String s) {
+    mProbability = Integer.parseInt(s);
+  }
+
   // TODO:
   public RandomEdge getCopy() {
     RandomEdge result = copyFieldsTo(new RandomEdge());

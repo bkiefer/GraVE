@@ -37,6 +37,14 @@ public class TimeoutEdge extends AbstractEdge {
     mExpression = new Expression(value);
   }
 
+  public String getContent() {
+    return "" + mTimeout;
+  }
+
+  public void setContent(String s) {
+    mTimeout = Long.parseLong(s);
+  }
+
   // TODO:
   public TimeoutEdge getCopy() {
     TimeoutEdge result = copyFieldsTo(new TimeoutEdge());

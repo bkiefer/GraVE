@@ -1,4 +1,4 @@
-package de.dfki.vsm.model.flow.graphics.edge;
+package de.dfki.vsm.model.flow.geom;
 
 import java.util.ArrayList;
 
@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import de.dfki.vsm.model.flow.geom.ControlPoint;
 import de.dfki.vsm.util.cpy.Copyable;
 
 /**

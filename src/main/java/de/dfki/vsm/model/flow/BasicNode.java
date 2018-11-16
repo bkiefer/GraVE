@@ -114,21 +114,6 @@ public class BasicNode implements Copyable {
     return mComment;
   }
 
-//    public void setExhaustive(boolean value) {
-//        mExhaustive = value;
-//    }
-//
-//    public boolean getExhaustive() {
-//        return mExhaustive;
-//    }
-//
-//    public void setPreserving(boolean value) {
-//        mPreserving = value;
-//    }
-//
-//    public boolean getPreserving() {
-//        return mPreserving;
-//    }
   public boolean hasComment() {
     if (mComment == null) {
       return false;
@@ -142,39 +127,68 @@ public class BasicNode implements Copyable {
   }
 
   public boolean hasEdge() {
+    return getFlavour() == FLAVOUR.NONE;
+  }
 
-    if (mDEdge != null) {
+  public boolean canAddEdge(AbstractEdge e) {
+    FLAVOUR flavour = getFlavour();
+    switch (flavour) {
+    case NONE:    // if node working type is unclear, allow all (except iedge for nodes)
       return true;
-    }
 
-    if (mCEdgeList != null) {
-      if (mCEdgeList.size() > 0) {
-        return true;
-      }
-    }
+    case ENODE:    // only one eegde is allowed
+    case TNODE:    // only one tegde is allowed
+      return (e instanceof GuardedEdge) || (e instanceof InterruptEdge);
 
-    if (mPEdgeList != null) {
-      if (mPEdgeList.size() > 0) {
-        return true;
-      }
-    }
+    case CNODE:    // only cedges are allowed - TODO allow dedge/tedge
+      return (e instanceof GuardedEdge)
+          || ((mDEdge == null)
+              && ((e instanceof TimeoutEdge)
+                  || (e instanceof EpsilonEdge)));
 
-    if (mFEdgeList != null) {
-      if (mFEdgeList.size() > 0) {
-        return true;
-      }
-    }
+    case PNODE:    // only pedges are allowed - TODO allow dedge/tedge
+      return e instanceof RandomEdge;
 
-    if (mIEdgeList != null) {
-      if (mIEdgeList.size() > 0) {
-        return true;
-      }
+    case FNODE:    // only fedges are allowed
+      return e instanceof ForkingEdge;
+
+    case INODE:    // allow TEdges and IEdges
+      return (e instanceof InterruptEdge)
+          || ((mDEdge == null)
+              && ((e instanceof TimeoutEdge)
+                  || (e instanceof EpsilonEdge)));
     }
     return false;
   }
 
+  public void addEdge(AbstractEdge e) {
+    if ((e instanceof EpsilonEdge) || e instanceof TimeoutEdge)
+      mDEdge = e;
+    else if (e instanceof ForkingEdge)
+      addFEdge((ForkingEdge) e);
+    else if (e instanceof GuardedEdge)
+      addCEdge((GuardedEdge) e);
+    else if (e instanceof RandomEdge)
+      addPEdge((RandomEdge) e);
+    else if (e instanceof InterruptEdge)
+      addIEdge((InterruptEdge) e);
+  }
+
+  public void removeEdge(AbstractEdge e) {
+    if ((e instanceof EpsilonEdge) || e instanceof TimeoutEdge)
+      mDEdge = null;
+    else if (e instanceof ForkingEdge)
+      removeFEdge((ForkingEdge) e);
+    else if (e instanceof GuardedEdge)
+      removeCEdge((GuardedEdge) e);
+    else if (e instanceof RandomEdge)
+      removePEdge((RandomEdge) e);
+    else if (e instanceof InterruptEdge)
+      removeIEdge((InterruptEdge) e);
+  }
+
   /**
-   * Tells if the node has more than 0 Probabilistic edge in case true, it is
+   * tells if the node has more than 0 Probabilistic edge in case true, it is
    * necessary to reorganise the values of probabilities Used when deleting an
    * edge
    *
@@ -199,37 +213,25 @@ public class BasicNode implements Copyable {
   }
 
   public FLAVOUR getFlavour() {
-    if (mCEdgeList != null) {
-      if (mCEdgeList.size() > 0) {
-        return FLAVOUR.CNODE;
-      }
+    if (mCEdgeList != null && mCEdgeList.size() > 0) {
+      return FLAVOUR.CNODE;
     }
 
-    if (mPEdgeList != null) {
-      if (mPEdgeList.size() > 0) {
-        return FLAVOUR.PNODE;
-      }
+    if (mPEdgeList != null && mPEdgeList.size() > 0) {
+      return FLAVOUR.PNODE;
     }
 
-    if (mFEdgeList != null) {
-      if (mFEdgeList.size() > 0) {
-        return FLAVOUR.FNODE;
-      }
+    if (mFEdgeList != null && mFEdgeList.size() > 0) {
+      return FLAVOUR.FNODE;
     }
 
-    if (mIEdgeList != null) {
-      if (mIEdgeList.size() > 0) {
-        return FLAVOUR.INODE;
-      }
+    if (mIEdgeList != null && mIEdgeList.size() > 0) {
+      return FLAVOUR.INODE;
     }
 
-    if (mDEdge != null) {
-      return (mDEdge instanceof TimeoutEdge)
-              ? FLAVOUR.TNODE
-              : FLAVOUR.ENODE;
-    }
-
-    return FLAVOUR.NONE;
+    if (mDEdge == null) return FLAVOUR.NONE;
+    return (mDEdge instanceof TimeoutEdge)
+        ? FLAVOUR.TNODE : FLAVOUR.ENODE;
   }
 
   public void setDedge(AbstractEdge value) {

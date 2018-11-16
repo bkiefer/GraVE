@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.NONE)
 public class GuardedEdge extends AbstractEdge {
 
-  protected Expression mCondition = new Expression();
+  protected Expression mCondition = new Expression("true");
 
   @XmlElement(name="Condition")
   public String getCondition() {
@@ -21,6 +21,14 @@ public class GuardedEdge extends AbstractEdge {
 
   public void setCondition(String mOldCondition) {
     mCondition.setContent(mOldCondition);
+  }
+
+  public String getContent() {
+    return getCondition();
+  }
+
+  public void setContent(String s) {
+    setCondition(s);
   }
 
   // TODO:

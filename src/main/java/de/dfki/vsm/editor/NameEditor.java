@@ -1,4 +1,4 @@
-package de.dfki.vsm.editor.project.sceneflow.attributes;
+package de.dfki.vsm.editor;
 
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
@@ -6,7 +6,6 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
-import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.util.evt.EventDispatcher;

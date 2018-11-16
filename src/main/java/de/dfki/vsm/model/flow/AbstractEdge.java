@@ -1,12 +1,17 @@
 package de.dfki.vsm.model.flow;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.bind.annotation.*;
 
-import de.dfki.vsm.model.flow.graphics.edge.EdgeArrow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.dfki.vsm.model.flow.geom.EdgeArrow;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.cpy.Copyable;
 
@@ -15,6 +20,8 @@ import de.dfki.vsm.util.cpy.Copyable;
  */
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class AbstractEdge implements Copyable {
+
+  private static final Logger logger = LoggerFactory.getLogger(AbstractEdge.class);
 
   protected String mTargetUnid = new String();
   protected String mSourceUnid = new String();
@@ -218,6 +225,19 @@ public abstract class AbstractEdge implements Copyable {
     mCmdList = e.mCmdList;
     mAltMap = e.getCopyOfAltStartNodeMap();
     return e;
+  }
+
+  /** Factory method to create new edges from prototypes */
+  public static AbstractEdge getNewEdge(AbstractEdge e) {
+    try {
+      Constructor<? extends AbstractEdge> cons = e.getClass().getConstructor();
+      return cons.newInstance();
+    } catch (NoSuchMethodException | SecurityException | InstantiationException
+        | IllegalAccessException | IllegalArgumentException
+        | InvocationTargetException ex) {
+      logger.error("Error constructing edge: {}", ex);
+    }
+    return null;
   }
 
 }

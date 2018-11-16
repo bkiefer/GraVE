@@ -139,8 +139,7 @@ public class PasteNodesAction extends EditorAction {
 
         for (GuardedEdge c : ces) {
           CreateEdgeAction cea = new CreateEdgeAction(mWorkSpace, mWorkSpace.getNode(node.getId()),
-                  mWorkSpace.getNode(c.getTargetUnid()), c,
-                  de.dfki.vsm.editor.Edge.TYPE.CEDGE);
+                  mWorkSpace.getNode(c.getTargetUnid()), c);
 
           cea.run();
         }
@@ -152,8 +151,7 @@ public class PasteNodesAction extends EditorAction {
 
         for (RandomEdge p : pes) {
           CreateEdgeAction cea = new CreateEdgeAction(mWorkSpace, mWorkSpace.getNode(node.getId()),
-                  mWorkSpace.getNode(p.getTargetUnid()), p,
-                  de.dfki.vsm.editor.Edge.TYPE.PEDGE);
+                  mWorkSpace.getNode(p.getTargetUnid()), p);
 
           cea.run();
         }
@@ -165,8 +163,7 @@ public class PasteNodesAction extends EditorAction {
 
         for (ForkingEdge f : fes) {
           CreateEdgeAction cea = new CreateEdgeAction(mWorkSpace, mWorkSpace.getNode(node.getId()),
-                  mWorkSpace.getNode(f.getTargetUnid()), f,
-                  de.dfki.vsm.editor.Edge.TYPE.FEDGE);
+                  mWorkSpace.getNode(f.getTargetUnid()), f);
 
           cea.run();
         }
@@ -178,8 +175,7 @@ public class PasteNodesAction extends EditorAction {
 
         for (InterruptEdge i : ies) {
           CreateEdgeAction cea = new CreateEdgeAction(mWorkSpace, mWorkSpace.getNode(node.getId()),
-                  mWorkSpace.getNode(i.getTargetUnid()), i,
-                  de.dfki.vsm.editor.Edge.TYPE.IEDGE);
+                  mWorkSpace.getNode(i.getTargetUnid()), i);
 
           cea.run();
         }
@@ -188,17 +184,9 @@ public class PasteNodesAction extends EditorAction {
       // dedge
       if (mNodesDefaultEdge.containsKey(node)) {
         AbstractEdge e = mNodesDefaultEdge.get(node);
-        CreateEdgeAction cea = null;
-
-        if (TimeoutEdge.class.isInstance(e)) {
-          cea = new CreateEdgeAction(mWorkSpace, mWorkSpace.getNode(node.getId()),
-                  mWorkSpace.getNode(e.getTargetUnid()), e,
-                  de.dfki.vsm.editor.Edge.TYPE.TEDGE);
-        } else {
-          cea = new CreateEdgeAction(mWorkSpace, mWorkSpace.getNode(node.getId()),
-                  mWorkSpace.getNode(e.getTargetUnid()), e,
-                  de.dfki.vsm.editor.Edge.TYPE.EEDGE);
-        }
+        CreateEdgeAction cea = new CreateEdgeAction(mWorkSpace,
+            mWorkSpace.getNode(node.getId()),
+            mWorkSpace.getNode(e.getTargetUnid()), e);
 
         cea.run();
       }

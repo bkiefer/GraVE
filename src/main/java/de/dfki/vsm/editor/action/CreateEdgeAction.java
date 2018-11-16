@@ -8,15 +8,8 @@ import javax.swing.undo.CannotUndoException;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.dialog.ModifyCEdgeDialog;
-import de.dfki.vsm.editor.dialog.ModifyIEdgeDialog;
-import de.dfki.vsm.editor.dialog.ModifyPEdgeDialog;
-import de.dfki.vsm.editor.dialog.ModifyTEdgeDialog;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
-import de.dfki.vsm.model.flow.EpsilonEdge;
-import de.dfki.vsm.model.flow.ForkingEdge;
-import de.dfki.vsm.model.flow.RandomEdge;
-import de.dfki.vsm.model.flow.TimeoutEdge;
+import de.dfki.vsm.model.flow.AbstractEdge;
 
 /**
  * @author Gregor Mehlmann
@@ -25,31 +18,32 @@ public class CreateEdgeAction extends EdgeAction {
 
   private boolean mShowDialog = true;
 
-  public CreateEdgeAction(WorkSpacePanel workSpace, Node sourceNode, Node targetNode, Edge.TYPE type) {
+  public CreateEdgeAction(WorkSpacePanel workSpace, Node sourceNode, Node targetNode, Edge e) {
     mWorkSpace = workSpace;
     mTargetGUINode = targetNode;
     mSourceGUINode = sourceNode;
-    mGUIEdgeType = type;
+    mGUIEdge = e;
     mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
     mUndoManager = mSceneFlowPane.getUndoManager();
     mShowDialog = true;
   }
 
   public CreateEdgeAction(WorkSpacePanel workSpace, Node sourceNode, Node targetNode,
-          de.dfki.vsm.model.flow.AbstractEdge dataEdge, Edge.TYPE type) {
+          AbstractEdge dataEdge) {
     mWorkSpace = workSpace;
     mTargetGUINode = targetNode;
     mSourceGUINode = sourceNode;
     mDataEdge = dataEdge;
 
     // TODO check data edge integrity (i.e. pedges!)
-    mGUIEdgeType = type;
+    mGUIEdge = null;
     mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
     mUndoManager = mSceneFlowPane.getUndoManager();
     mShowDialog = false;
   }
 
   protected void showCreationDialog() {
+    /*
     if (mShowDialog) {
       switch (mGUIEdgeType) {
         case EEDGE:
@@ -102,7 +96,7 @@ public class CreateEdgeAction extends EdgeAction {
 
           break;
       }
-    }
+    }*/
   }
 
   public void run() {

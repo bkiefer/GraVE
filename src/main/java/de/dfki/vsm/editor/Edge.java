@@ -3,9 +3,7 @@ package de.dfki.vsm.editor;
 import static de.dfki.vsm.Preferences.*;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +24,6 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.vsm.editor.action.ModifyEdgeAction;
 import de.dfki.vsm.editor.action.RedoAction;
 import de.dfki.vsm.editor.action.UndoAction;
 import de.dfki.vsm.editor.event.EdgeEditEvent;
@@ -48,9 +45,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
   private final EventDispatcher mDispatcher
           = EventDispatcher.getInstance();
-
-  // The actual type
-  private TYPE mType = null;
 
   // Reference to data model edges and nodes
   private AbstractEdge mDataEdge = null;
@@ -126,9 +120,11 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   private UndoManager mUndoManager;
   private boolean firstDrag = false;
 
+  /*
   public enum TYPE {
     EEDGE, TEDGE, CEDGE, PEDGE, IEDGE, FEDGE
   }
+  */
 
   private Color color() {
     if (mDataEdge == null) return null;
@@ -145,20 +141,14 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     return edgeProperties.get(mDataEdge.getClass()).mName;
   }
 
-  public Edge(TYPE type) {
-    // TODO: remove constructor
-    mType = type;
-    //initEditBox();
-    setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-  }
-
-  public Edge(WorkSpacePanel ws, AbstractEdge edge, TYPE type, Node sourceNode, Node targetNode) {
-    this(ws, edge, type, sourceNode, targetNode, null, null);
+  public Edge(WorkSpacePanel ws, AbstractEdge edge, Node sourceNode, Node targetNode) {
+    this(ws, edge, sourceNode, targetNode, null, null);
   }
 
   // TODO: Neuer Konstruktor, der Source und Target dockpoint "mitbekommt"
-  public Edge(WorkSpacePanel ws, AbstractEdge edge, TYPE type, Node sourceNode, Node targetNode,
+  public Edge(WorkSpacePanel ws, AbstractEdge edge, Node sourceNode, Node targetNode,
           Point sourceDockPoint, Point targetDockpoint) {
+    setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
     mDataEdge = edge;
     mWorkSpace = ws;
     // mEditorConfig = EditorInstance.getInstance().getSelectedProjectEditor()
@@ -166,7 +156,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     mEditorConfig = mWorkSpace.getEditorConfig();
     mSourceNode = sourceNode;
     mTargetNode = targetNode;
-    mType = type;
     mPointingToSameNode = (mTargetNode == mSourceNode);
 
     setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
@@ -195,10 +184,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
   public Node getTargetNode() {
     return mTargetNode;
-  }
-
-  public TYPE getType() {
-    return mType;
   }
 
   @Override
@@ -291,6 +276,14 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
     mEdgeTextArea.setBorder(BorderFactory.createLineBorder(borderColor));
     mEdgeTextArea.getDocument().addDocumentListener(new MyDocumentListener());
+    mEdgeTextArea.addFocusListener(new FocusListener() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        mDispatcher.convey(new EdgeSelectedEvent(Edge.this, getDataEdge()));
+      }
+      @Override
+      public void focusLost(FocusEvent e) {}
+    });
 
     // Attributes
     mEdgeTextArea.setFont(this.getFont());
@@ -307,13 +300,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     //mEdgeTextArea.add(Box.createRigidArea(new Dimension(5, 5)));
 
     if (mDataEdge != null) {
-      if (mType.equals(TYPE.TEDGE)) {
-        mEdgeTextArea.setText("" + ((TimeoutEdge) mDataEdge).getTimeout());
-      } else if (mType.equals(TYPE.PEDGE)) {
-        mEdgeTextArea.setText("" + ((RandomEdge) mDataEdge).getProbability());
-      } else {
-        mEdgeTextArea.setText(description());
-      }
+      mEdgeTextArea.setText(mDataEdge.getContent());
       mEdgeTextArea.setVisible(mEdgeTextArea.getText().trim().length() > 0);
     }
 
@@ -352,37 +339,21 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
    */
   public void updateFromTextEditor() {
     String input = mEdgeTextArea.getText();
-
-    if (mType.equals(TYPE.TEDGE)) {
+    if (mDataEdge != null) {
       try {
-        ((TimeoutEdge) mDataEdge).setTimeout(Long.valueOf(input));
-      } catch (NumberFormatException e) {
-        mLogger.warn("Invalid Number Format");
+        mDataEdge.setContent(input);
       }
+      catch (NumberFormatException ex) {
+        // TODO: WRITE THE ERROR WHERE IT'S VISIBLE (where is that?)
+        // Status Bar?
 
-    } else if (mType.equals(TYPE.CEDGE)) {
-      try {
-        if (input != null) {
-          ((GuardedEdge) mDataEdge).setCondition(input);
-        } else {
-          EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().setMessageLabelText(
-                  "Remember to wrap condition in parenthesis");
-          // Do nothing
-        }
-      } catch (Exception e) {
       }
+      catch (Exception ex) {
+        // TODO: WRITE THE ERROR WHERE IT'S VISIBLE (where is that?)
+        // Status Bar?
 
-    } else if (mType.equals(TYPE.IEDGE)) {
-      try {
-        if (input != null) {
-          ((InterruptEdge) mDataEdge).setCondition(input);
-        } else {
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
       }
     }
-
     EditorInstance.getInstance().refresh();
   }
 
@@ -431,31 +402,10 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     // show context menu
     if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
       mWorkSpace.showContextMenu(event, this);
-    } else if ((event.getClickCount() == 2)) {
-
-      if (mType.equals(TYPE.TEDGE)) {
-        String timeout = getDescription();
-        timeout = timeout.replace("m", "");
-        timeout = timeout.replace("s", "");
-        timeout = timeout.replace(" ", "");
-        timeout = timeout.replace("\n", "");
-        mEdgeTextArea.setText(timeout);
-
-      } else if (mType.equals(TYPE.PEDGE)) {
-        ModifyEdgeAction modifyAction = new ModifyEdgeAction(this, mWorkSpace);
-
-        modifyAction.run();
-        EditorInstance.getInstance().refresh();
-
-      } else if (mType.equals(TYPE.CEDGE) || mType.equals(TYPE.IEDGE)) {
-        mEdgeTextArea.setText(this.getDescription());
-      }
-
-      if (mType.equals(TYPE.TEDGE) || mType.equals(TYPE.CEDGE) || mType.equals(TYPE.IEDGE)) {
-        mEdgeTextArea.requestFocus();
-        mEditMode = true;
-        mDispatcher.convey(new EdgeEditEvent(this, this.getDataEdge()));
-      }
+    } else if ((event.getClickCount() == 2) && getDescription() != null) {
+      mEdgeTextArea.requestFocus();
+      mEditMode = true;
+      mDispatcher.convey(new EdgeEditEvent(this, this.getDataEdge()));
     }
   }
 

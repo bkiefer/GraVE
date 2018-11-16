@@ -26,7 +26,6 @@ public class RemoveEdgeAction extends EdgeAction {
     mTargetGUINodeDockPoint = (mSourceGUINode.equals(mTargetGUINode))
             ? mSourceGUINode.getSelfPointingEdgeDockPoint(edge)
             : mTargetGUINode.getEdgeDockPoint(edge);
-    mGUIEdgeType = edge.getType();
     mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
     mUndoManager = mSceneFlowPane.getUndoManager();
   }

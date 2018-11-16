@@ -30,7 +30,6 @@ import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.editor.util.GridManager;
 import de.dfki.vsm.editor.util.SceneFlowLayoutManager;
 import de.dfki.vsm.editor.util.SceneFlowManager;
-import de.dfki.vsm.model.dialogact.DialogAct;
 import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.util.evt.EventDispatcher;
@@ -65,7 +64,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   private Set<Node> mSelectedNodes = new HashSet<>();
 
   // Variables for edge creation
-  private Edge mEdgeInProgress = null;
+  private AbstractEdge mEdgeInProgress = null;
   private Node mEdgeSourceNode = null;
   private Point mSelectNodePoint = null;
   private final AttributedString sEdgeCreationHint = new AttributedString("Select Target Node");
@@ -268,16 +267,12 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
           // System.err.println("Accept Drag over");
         }
 
-        if (data instanceof DialogAct) {
-          dtde.acceptDrag(dtde.getDropAction());
-        }
-
-        if (data instanceof Edge) {
+        if (data instanceof AbstractEdge) {
           Point pos = dtde.getLocation();
           dtde.acceptDrag(dtde.getDropAction());
           mSceneFlowEditor.setMessageLabelText("Drag edge on a node to select edge source");
           for (Node node : mNodeSet) {
-            if (node.containsPoint(pos.x, pos.y) && !node.isEdgeAllowed(((Edge) data).getType())) {
+            if (node.containsPoint(pos.x, pos.y) && !node.isEdgeAllowed((AbstractEdge)data)) {
               mSceneFlowEditor.setMessageLabelText("Edge is not allowed at this node");
             }
           }
@@ -306,8 +301,9 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
             // repaint(100);
             dtde.acceptDrop(mAcceptableActions);
             dtde.getDropTargetContext().dropComplete(true);
-          } else if (data instanceof Edge) {
-            createNewEdgeSelectSourceNode((Edge) data, dtde.getLocation().x, dtde.getLocation().y);
+          } else if (data instanceof AbstractEdge) {
+            AbstractEdge e = AbstractEdge.getNewEdge((AbstractEdge)data);
+            createNewEdgeSelectSourceNode(e, dtde.getLocation().x, dtde.getLocation().y);
 
             // revalidate();
             // repaint(100);
@@ -433,7 +429,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    * AbstractEdge creation
    *
    */
-  public void createNewEdgeSelectSourceNode(Edge edge, int x, int y) {
+  public void createNewEdgeSelectSourceNode(AbstractEdge edge, int x, int y) {
 
     // Try to find the c on which the edge was dropped. If we do not find
     // such a c then the edge was dropped on the drawing area of the workspace
@@ -454,7 +450,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
     // Check if the type of this edge is allowed to be connected to the
     // source c. If the edge is not allowed then we exit the method.
-    if (!sourceNode.isEdgeAllowed(edge.getType())) {
+    if (!sourceNode.isEdgeAllowed(edge)) {
       return;
     }
 
@@ -499,7 +495,8 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     }
 
     // If we found a target c, then we create a new edge
-    new CreateEdgeAction(this, mEdgeSourceNode, targetNode, mEdgeInProgress.getType()).run();
+    new CreateEdgeAction(this, mEdgeSourceNode, targetNode,
+        mEdgeInProgress).run();
   }
 
   /**
@@ -681,11 +678,11 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    */
   public void showContextMenu(MouseEvent evt, Edge edge) {
     JPopupMenu pop = new JPopupMenu();
-    JMenuItem item = new JMenuItem("Modify");
-    ModifyEdgeAction modifyAction = new ModifyEdgeAction(edge, this);
+    JMenuItem item;// = new JMenuItem("Modify");
+    //ModifyEdgeAction modifyAction = new ModifyEdgeAction(edge, this);
 
-    item.addActionListener(modifyAction.getActionListener());
-    pop.add(item);
+    //item.addActionListener(modifyAction.getActionListener());
+    //pop.add(item);
     item = new JMenuItem("Delete");
 
     RemoveEdgeAction deleteAction = new RemoveEdgeAction(this, edge);
@@ -1105,7 +1102,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
           // Why should this be null????????
           // Create a new GUI-AbstractEdge and add the new GUI-AbstractEdge to the workspace.
-          Edge edge = new Edge(this, cedge, Edge.TYPE.CEDGE, sourceNode, targetNode);
+          Edge edge = new Edge(this, cedge, sourceNode, targetNode);
 
           add(edge);
         }
@@ -1118,7 +1115,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
           // Why should this be null????????
           // Create a new GUI-AbstractEdge and add the new GUI-AbstractEdge to the workspace.
-          Edge edge = new Edge(this, pedge, Edge.TYPE.PEDGE, sourceNode, targetNode);
+          Edge edge = new Edge(this, pedge, sourceNode, targetNode);
 
           add(edge);
         }
@@ -1131,7 +1128,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
           // Why should this be null????????
           // Create a new GUI-AbstractEdge and add the new GUI-AbstractEdge to the workspace.
-          Edge edge = new Edge(this, fedge, Edge.TYPE.FEDGE, sourceNode, targetNode);
+          Edge edge = new Edge(this, fedge, sourceNode, targetNode);
 
           add(edge);
         }
@@ -1144,7 +1141,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
           // Why should this be null????????
           // Create a new GUI-AbstractEdge and add the new GUI-AbstractEdge to the workspace.
-          Edge edge = new Edge(this, iedge, Edge.TYPE.IEDGE, sourceNode, targetNode);
+          Edge edge = new Edge(this, iedge, sourceNode, targetNode);
 
           add(edge);
         }
@@ -1152,22 +1149,12 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
       // Show the DEdge
       de.dfki.vsm.model.flow.AbstractEdge dedge = sourceNode.getDataNode().getDedge();
-      Edge.TYPE dEdgeType = null;
 
       if (dedge != null) {
         targetNode = getNode(dedge.getTargetUnid());
 
-        if (dedge instanceof EpsilonEdge) {
-          dEdgeType = Edge.TYPE.EEDGE;
-        } else if (dedge instanceof TimeoutEdge) {
-          dEdgeType = Edge.TYPE.TEDGE;
-        } else {
-
-          // Error
-        }
-
         // Create a new GUI-AbstractEdge and add the new GUI-AbstractEdge to the workspace.
-        Edge edge = new Edge(this, dedge, dEdgeType, sourceNode, targetNode);
+        Edge edge = new Edge(this, dedge, sourceNode, targetNode);
 
         add(edge);
       }

@@ -1,7 +1,5 @@
 package de.dfki.vsm.editor.action;
 
-import static de.dfki.vsm.editor.Edge.TYPE.*;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -12,11 +10,8 @@ import javax.swing.undo.UndoManager;
 
 import de.dfki.vsm.editor.Edge;
 //~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.Edge.TYPE;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.Node.Flavour;
-import de.dfki.vsm.editor.dialog.ModifyPEdgeDialog;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.grid.*;
@@ -36,7 +31,6 @@ public abstract class EdgeAction extends EditorAction {
   protected Node mLastTargetGUINode = null;
   protected Edge mGUIEdge = null;
   protected AbstractEdge mDataEdge = null;
-  protected TYPE mGUIEdgeType = null;
   protected Point mSourceGUINodeDockPoint = null;
   protected Point mTargetGUINodeDockPoint = null;
   protected Point mLastTargetGUINodeDockPoint = null;
@@ -48,79 +42,13 @@ public abstract class EdgeAction extends EditorAction {
     mDataEdge.setSourceNode(mSourceGUINode.getDataNode());
     mDataEdge.setTargetUnid(mDataEdge.getTargetNode().getId());
 
-    switch (mGUIEdgeType) {
-      case EEDGE:
-        mSourceGUINode.getDataNode().setDedge(mDataEdge);
-
-        break;
-
-      case FEDGE:
-        mSourceGUINode.getDataNode().addFEdge((ForkingEdge) mDataEdge);
-
-        break;
-
-      case TEDGE:
-        mSourceGUINode.getDataNode().setDedge(mDataEdge);
-
-        break;
-
-      case CEDGE:
-        mSourceGUINode.getDataNode().addCEdge((GuardedEdge) mDataEdge);
-
-        break;
-
-      case PEDGE:
-        mSourceGUINode.getDataNode().addPEdge((RandomEdge) mDataEdge);
-
-        break;
-
-      case IEDGE:
-        mSourceGUINode.getDataNode().addIEdge((InterruptEdge) mDataEdge);
-
-        break;
-    }
-
-    // Revalidate data node and graphical node types
-    switch (mSourceGUINode.getDataNode().getFlavour()) {
-      case NONE:
-        AbstractEdge dedge = mSourceGUINode.getDataNode().getDedge();
-
-        if (dedge instanceof EpsilonEdge) {
-          mSourceGUINode.setFlavour(Flavour.ENode);
-        } else if (dedge instanceof TimeoutEdge) {
-          mSourceGUINode.setFlavour(Flavour.TNode);
-        } else {
-          mSourceGUINode.setFlavour(Flavour.None);
-        }
-
-        break;
-
-      case PNODE:
-        mSourceGUINode.setFlavour(Flavour.PNode);
-
-        break;
-
-      case FNODE:
-        mSourceGUINode.setFlavour(Flavour.FNode);
-
-        break;
-
-      case CNODE:
-        mSourceGUINode.setFlavour(Flavour.CNode);
-
-        break;
-
-      case INODE:
-        mSourceGUINode.setFlavour(Flavour.INode);
-
-        break;
-    }
+    mSourceGUINode.getDataNode().addEdge(mDataEdge);
 
     // Connect GUI AbstractEdge to Source GUI node
     // Connect GUI AbstractEdge to Target GUI node
     // TODO: Recompute the appearance of the source GUI node
     if (mGUIEdge == null) {
-      mGUIEdge = new Edge(mWorkSpace, mDataEdge, mGUIEdgeType, mSourceGUINode, mTargetGUINode);
+      mGUIEdge = new Edge(mWorkSpace, mDataEdge, mSourceGUINode, mTargetGUINode);
     } else {
       if (mSourceGUINode.equals(mTargetGUINode)) {
 
@@ -360,11 +288,13 @@ public abstract class EdgeAction extends EditorAction {
       mTargetGUINodeDockPoint = mTargetGUINode.disconnectEdge(mGUIEdge);
     }
     cleanUpData();
+    /* TODO: we'll most probably turn these into something else anyway
     if (mGUIEdgeType.equals(PEDGE) && mSourceGUINode.getDataNode().hasPEdges() == mSourceGUINode.getDataNode().hasMany) //TODO VALUES OF hasMany SHOULD BE GLOBAL
     {
       ModifyPEdgeDialog mPEdgeDialog = new ModifyPEdgeDialog(mSourceGUINode.getDataNode().getFirstPEdge()); //OPEN EDITION DIALOG TO ASSING NEW PROBABILITIES
       mPEdgeDialog.run();
     }
+    */
     if (mSourceGUINode.getDataNode().hasPEdges() == mSourceGUINode.getDataNode().hasOne) //HAS ONLY ONE EDGE LEFT
     {
       mSourceGUINode.getDataNode().getFirstPEdge().setProbability(100);// ASSIGN 100% PROBABILITY AUTOMATICALLY
@@ -372,82 +302,8 @@ public abstract class EdgeAction extends EditorAction {
   }
 
   private void cleanUpData() {
-
     // Disconnect the data edge from the source data node
-    switch (mGUIEdgeType) {
-      case EEDGE:
-        mSourceGUINode.getDataNode().removeDEdge();
-
-        break;
-
-      case TEDGE:
-        mSourceGUINode.getDataNode().removeDEdge();
-
-        break;
-
-      case CEDGE:
-        mSourceGUINode.getDataNode().removeCEdge((GuardedEdge) mDataEdge);
-        break;
-
-      case PEDGE:
-        mSourceGUINode.getDataNode().removePEdge((RandomEdge) mDataEdge);
-
-        break;
-
-      case FEDGE:
-        mSourceGUINode.getDataNode().removeFEdge((ForkingEdge) mDataEdge);
-
-        break;
-
-      case IEDGE:
-        mSourceGUINode.getDataNode().removeIEdge((InterruptEdge) mDataEdge);
-
-        break;
-    }
-
-    // Revalidate data node and graphical node types
-    switch (mSourceGUINode.getDataNode().getFlavour()) {
-      case NONE:
-        AbstractEdge dedge = mSourceGUINode.getDataNode().getDedge();
-
-        if (dedge instanceof EpsilonEdge) {
-          mSourceGUINode.setFlavour(Flavour.ENode);
-        } else if (dedge instanceof TimeoutEdge) {
-          mSourceGUINode.setFlavour(Flavour.TNode);
-        } else {
-          mSourceGUINode.setFlavour(Flavour.None);
-        }
-
-        break;
-
-      case PNODE:
-        mSourceGUINode.setFlavour(Flavour.PNode);
-
-        break;
-
-      case FNODE:
-        mSourceGUINode.setFlavour(Flavour.FNode);
-
-        break;
-
-      case CNODE:
-        mSourceGUINode.setFlavour(Flavour.CNode);
-
-        break;
-
-      case INODE:
-        mSourceGUINode.setFlavour(Flavour.INode);
-
-        break;
-
-      case ENODE:
-        mSourceGUINode.setFlavour(Flavour.ENode);
-        break;
-
-      case TNODE:
-        mSourceGUINode.setFlavour(Flavour.TNode);
-        break;
-    }
+    mSourceGUINode.getDataNode().removeEdge(mDataEdge);
 
     // Remove the GUI-AbstractEdge from the workspace and
     // update the source node appearance

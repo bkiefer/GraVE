@@ -23,10 +23,10 @@ import javax.swing.undo.UndoManager;
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
 import de.dfki.vsm.Preferences;
+import de.dfki.vsm.editor.NameEditor;
 import de.dfki.vsm.editor.event.ElementEditorToggledEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.editor.project.sceneflow.attributes.NameEditor;
 import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.flow.SceneFlow;
 import de.dfki.vsm.model.flow.SuperNode;

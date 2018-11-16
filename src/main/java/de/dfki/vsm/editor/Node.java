@@ -14,8 +14,7 @@ import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.DockingManager;
-import de.dfki.vsm.model.flow.BasicNode;
-import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
@@ -26,8 +25,6 @@ import de.dfki.vsm.util.evt.EventObject;
  * @author Patrick Gebhard
  */
 public final class Node extends JComponent implements EventListener, Observer {
-
-  private Flavour mFlavour = Flavour.None;
 
   // TODO: move this condition to the data node
   private boolean mIsEndNode = true;
@@ -52,7 +49,6 @@ public final class Node extends JComponent implements EventListener, Observer {
   //
   // TODO: move away
   private final WorkSpacePanel mWorkSpace;
-  private final EditorConfig mEditorConfig;
 
   // The name which will be displayed on the node
   private String mDisplayName;
@@ -63,9 +59,7 @@ public final class Node extends JComponent implements EventListener, Observer {
 
   private boolean mIsActive;
 
-  public enum Flavour {
-    None, ENode, TNode, CNode, PNode, INode, FNode
-  }
+  private EditorConfig getEditorConfig() { return mWorkSpace.getEditorConfig(); }
 
   public enum Type {
     BasicNode, SuperNode
@@ -76,11 +70,10 @@ public final class Node extends JComponent implements EventListener, Observer {
    */
   public Node(WorkSpacePanel workSpace, BasicNode dataNode) {
     mWorkSpace = workSpace;
-    mEditorConfig = mWorkSpace.getEditorConfig();
     mDataNode = dataNode;
     // setToolTipText(mDataNode.getId());
     // the former overrides any MouseListener!!!
-    
+
     if (mDataNode instanceof SuperNode) {
       mType = Type.SuperNode;
     } else {
@@ -103,7 +96,7 @@ public final class Node extends JComponent implements EventListener, Observer {
     Point pos = new Point(mDataNode.getPosition().getXPos(),
             mDataNode.getPosition().getYPos());
 
-    setBounds(pos.x, pos.y, mEditorConfig.sNODEWIDTH, mEditorConfig.sNODEHEIGHT);
+    setBounds(pos.x, pos.y, getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT);
 
     // Set the initial start sign
     HashMap<String, BasicNode> startNodeMap
@@ -126,14 +119,6 @@ public final class Node extends JComponent implements EventListener, Observer {
 
   public void setType(Type type) {
     mType = type;
-  }
-
-  public Flavour getFlavour() {
-    return mFlavour;
-  }
-
-  public void setFlavour(Flavour flavour) {
-    mFlavour = flavour;
   }
 
   public WorkSpacePanel getWorkSpace() {
@@ -159,6 +144,32 @@ public final class Node extends JComponent implements EventListener, Observer {
   @Override
   public void update(Observable o, Object obj) {
     update();
+  }
+
+
+  private void setColor() {
+    // Update the color of the node that has to be changed
+    // if the type or the flavour of the node have changed
+    if (mType == Type.SuperNode)
+      mColor = sSUPER_NODE_COLOR;
+    else
+      mColor = sBASIC_NODE_COLOR;
+
+    // Set the history node color
+    if (mDataNode.isHistoryNode()) {
+      mColor = sHISTORY_NODE_COLOR;
+    }
+
+    // Set the flavour dependend color
+    switch (mDataNode.getFlavour()) {
+      case ENODE: mColor = sEEDGE_COLOR; break;
+      case FNODE: mColor = sFEDGE_COLOR; break;
+      case TNODE: mColor = sTEDGE_COLOR; break;
+      case PNODE: mColor = sPEDGE_COLOR; break;
+      case CNODE: mColor = sCEDGE_COLOR; break;
+      case INODE: mColor = sIEDGE_COLOR; break;
+      case NONE: break;
+    }
   }
 
   private void update() {
@@ -203,7 +214,7 @@ public final class Node extends JComponent implements EventListener, Observer {
     map.put(TextAttribute.FAMILY, Font.SANS_SERIF);
     map.put(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
     map.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_DEMIBOLD);
-    map.put(TextAttribute.SIZE, mEditorConfig.sWORKSPACEFONTSIZE);
+    map.put(TextAttribute.SIZE, getEditorConfig().sWORKSPACEFONTSIZE);
 
     // Derive the font from the attribute map
     Font font = Font.getFont(map);
@@ -216,9 +227,9 @@ public final class Node extends JComponent implements EventListener, Observer {
     // Update the display name that has to be changed if the
     // node's size or the node's font size have chaged
     String prefix = "";
-    if (fontMetrics.stringWidth(mDataNode.getName()) > (mEditorConfig.sNODEWIDTH - 10)) {
+    if (fontMetrics.stringWidth(mDataNode.getName()) > (getEditorConfig().sNODEWIDTH - 10)) {
       for (char c : mDataNode.getName().toCharArray()) {
-        if (fontMetrics.stringWidth(prefix + c + "...") < mEditorConfig.sNODEWIDTH - 10) {
+        if (fontMetrics.stringWidth(prefix + c + "...") < getEditorConfig().sNODEWIDTH - 10) {
           prefix += c;
         } else {
           break;
@@ -229,47 +240,11 @@ public final class Node extends JComponent implements EventListener, Observer {
       mDisplayName = mDataNode.getName();
     }
 
-    // Update the color of the node that has to be changed
-    // if the type or the flavour of the node have changed
-    if (mType == Type.SuperNode)
-      mColor = sSUPER_NODE_COLOR;
-    else
-      mColor = sBASIC_NODE_COLOR;
-
-    // Set the history node color
-    if (mDataNode.isHistoryNode()) {
-      mColor = sHISTORY_NODE_COLOR;
-    }
-
     // Set the flavour dependend color
-    switch (mFlavour) {
-      case ENode:
-        mColor = sEEDGE_COLOR;
-        break;
-
-      case FNode:
-        mColor = sFEDGE_COLOR;
-        break;
-
-      case TNode:
-        mColor = sTEDGE_COLOR;
-        break;
-
-      case PNode:
-        mColor = sPEDGE_COLOR;
-        break;
-
-      case CNode:
-        mColor = sCEDGE_COLOR;
-        break;
-
-      case INode:
-        mColor = sIEDGE_COLOR;
-        break;
-    }
+    setColor();
 
     // Update the bounds if the node's size has changed
-    setBounds(getX(), getY(), mEditorConfig.sNODEWIDTH, mEditorConfig.sNODEHEIGHT);
+    setBounds(getX(), getY(), getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT);
   }
 
   @Override
@@ -359,49 +334,7 @@ public final class Node extends JComponent implements EventListener, Observer {
     dp.setLocation(dp.x + loc.x, dp.y + loc.y);
 
     // set working type and color
-    switch (edge.getType()) {
-      case EEDGE:
-        mFlavour = (mFlavour == Flavour.None)
-                ? Flavour.ENode
-                : mFlavour;
-        mColor = (mFlavour == Flavour.ENode)
-                ? sEEDGE_COLOR
-                : mColor;
-        break;
-
-      case FEDGE:
-        mFlavour = (mFlavour == Flavour.None)
-                ? Flavour.FNode
-                : mFlavour;
-        mColor = (mFlavour == Flavour.FNode)
-                ? sFEDGE_COLOR
-                : mColor;
-        break;
-
-      case TEDGE:
-        mFlavour = (mFlavour == Flavour.None)
-                ? Flavour.TNode
-                : mFlavour;
-        mColor = (mFlavour == Flavour.TNode)
-                ? sTEDGE_COLOR
-                : mColor;
-        break;
-
-      case CEDGE:
-        mFlavour = Flavour.CNode;
-        mColor = sCEDGE_COLOR;
-        break;
-
-      case PEDGE:
-        mFlavour = Flavour.PNode;
-        mColor = sPEDGE_COLOR;
-        break;
-
-      case IEDGE:
-        mFlavour = Flavour.INode;
-        mColor = sIEDGE_COLOR;
-        break;
-    }
+    setColor();
     return dp;
   }
 
@@ -452,8 +385,8 @@ public final class Node extends JComponent implements EventListener, Observer {
   public Point getCenterPoint() {
     Point loc = getLocation();
     Point c = new Point();
-    c.setLocation(loc.x + (mEditorConfig.sNODEWIDTH / 2),
-            loc.y + (mEditorConfig.sNODEHEIGHT / 2));
+    c.setLocation(loc.x + (getEditorConfig().sNODEWIDTH / 2),
+            loc.y + (getEditorConfig().sNODEHEIGHT / 2));
     return c;
   }
 
@@ -504,41 +437,8 @@ public final class Node extends JComponent implements EventListener, Observer {
     return points;
   }
 
-  public boolean isEdgeAllowed(Edge.TYPE eType) {
-    boolean allowed = false;
-
-    switch (mFlavour) {
-      case None:    // if node working type is unclear, allow all (except iedge for nodes)
-        allowed = true;
-        break;
-
-      case ENode:    // only one eegde is allowed
-      case TNode:    // only one tegde is allowed
-        allowed = (eType == Edge.TYPE.CEDGE) || (eType == Edge.TYPE.IEDGE);
-        break;
-
-      case CNode:    // only cedges are allowed - TODO allow dedge/tedge
-        allowed = (eType == Edge.TYPE.CEDGE)
-                || ((mDataNode.getDedge() == null)
-                && (((eType == Edge.TYPE.TEDGE) || (eType == Edge.TYPE.EEDGE))));
-        break;
-
-      case PNode:    // only pedges are allowed - TODO allow dedge/tedge
-        allowed = eType == Edge.TYPE.PEDGE;
-        break;
-
-      case FNode:    // only fedges are allowed
-        allowed = eType == Edge.TYPE.FEDGE;
-        break;
-
-      case INode:    // allow TEdges and IEdges
-        allowed = (eType == Edge.TYPE.IEDGE)
-                || ((mDataNode.getDedge() == null)
-                && (((eType == Edge.TYPE.TEDGE) || (eType == Edge.TYPE.EEDGE))));
-        break;
-    }
-
-    return allowed;
+  public boolean isEdgeAllowed(AbstractEdge e) {
+    return mDataNode.canAddEdge(e);
   }
 
   /*
@@ -620,6 +520,9 @@ public final class Node extends JComponent implements EventListener, Observer {
 
     final Graphics2D g2d = (Graphics2D) graphics;
 
+    int nodeWidth = getEditorConfig().sNODEWIDTH;
+    int nodeHeight = getEditorConfig().sNODEHEIGHT;
+
     // TODO move to update
     // Compute the font metrics and the correction offsets
     final FontMetrics fontMetrics = getFontMetrics(getFont());
@@ -629,7 +532,7 @@ public final class Node extends JComponent implements EventListener, Observer {
 
     // Compute the border which is relative to a nodes size.
     // It is used for visualising an end nodes and node selection
-    final float borderSize = Math.max(1.0f, mEditorConfig.sNODEWIDTH / 25.0f);
+    final float borderSize = Math.max(1.0f, nodeWidth / 25.0f);
     final int borderOffset = Math.round(borderSize);
     final float[] dashPattern = {borderSize * 0.5f, borderSize * 1.25f};
 
@@ -645,31 +548,31 @@ public final class Node extends JComponent implements EventListener, Observer {
 
     // Draw the node as a supernode
     if (mType == Type.SuperNode) {
-      g2d.fillRect(borderOffset + 1, borderOffset + 1, mEditorConfig.sNODEWIDTH - borderOffset * 2 - 1,
-              mEditorConfig.sNODEHEIGHT - borderOffset * 2 - 1);
+      g2d.fillRect(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 1,
+              nodeHeight - borderOffset * 2 - 1);
 
       if (mSelected) {
         g2d.setStroke(new BasicStroke(borderSize, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10,
                 dashPattern, 0));
         g2d.setColor(sSTART_SIGN_COLOR);
-        g2d.drawRect(borderOffset, borderOffset, mEditorConfig.sNODEWIDTH - borderOffset * 2,
-                mEditorConfig.sNODEHEIGHT - borderOffset * 2);
+        g2d.drawRect(borderOffset, borderOffset, nodeWidth - borderOffset * 2,
+                nodeHeight - borderOffset * 2);
       } else if (mIsEndNode) {
         g2d.setStroke(new BasicStroke(borderSize));
         g2d.setColor(mColor.darker());
-        g2d.drawRect(borderOffset + 1, borderOffset + 1, mEditorConfig.sNODEWIDTH - borderOffset * 2 - 2,
-                mEditorConfig.sNODEHEIGHT - borderOffset * 2 - 2);
+        g2d.drawRect(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 2,
+                nodeHeight - borderOffset * 2 - 2);
       }
 
       // Draw visualization highlights
       if (mIsActive) {
         g2d.setColor(new Color(246, 0, 0, 100));
-        g2d.fillRect(1, 1, mEditorConfig.sNODEWIDTH - 1, mEditorConfig.sNODEHEIGHT - 1);
+        g2d.fillRect(1, 1, nodeWidth - 1, nodeHeight - 1);
       }
 
     } else if (mType == Type.BasicNode) {
-      g2d.fillOval(borderOffset + 1, borderOffset + 1, mEditorConfig.sNODEWIDTH - borderOffset * 2 - 1,
-              mEditorConfig.sNODEHEIGHT - borderOffset * 2 - 1);
+      g2d.fillOval(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 1,
+              nodeHeight - borderOffset * 2 - 1);
 
       if (mSelected) {
         g2d.setStroke(new BasicStroke(borderSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 2,
@@ -677,19 +580,19 @@ public final class Node extends JComponent implements EventListener, Observer {
 
         // TODO: warum andrs als bei supernode?
         g2d.setColor(sSTART_SIGN_COLOR);
-        g2d.drawOval(borderOffset, borderOffset, mEditorConfig.sNODEWIDTH - borderOffset * 2,
-                mEditorConfig.sNODEHEIGHT - borderOffset * 2);
+        g2d.drawOval(borderOffset, borderOffset, nodeWidth - borderOffset * 2,
+                nodeHeight - borderOffset * 2);
       } else if (mIsEndNode) {
         g2d.setStroke(new BasicStroke(borderSize));
         g2d.setColor(mColor.darker());
-        g2d.drawOval(borderOffset + 1, borderOffset + 1, mEditorConfig.sNODEWIDTH - borderOffset * 2 - 2,
-                mEditorConfig.sNODEHEIGHT - borderOffset * 2 - 2);
+        g2d.drawOval(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 2,
+                nodeHeight - borderOffset * 2 - 2);
       }
 
       // draw activity cue
       if (mIsActive) {
         g2d.setColor(new Color(246, 0, 0, 100));
-        g2d.fillOval(1, 1, mEditorConfig.sNODEWIDTH - 1, mEditorConfig.sNODEHEIGHT - 1);
+        g2d.fillOval(1, 1, nodeWidth - 1, nodeHeight - 1);
       }
     }
 
@@ -702,25 +605,25 @@ public final class Node extends JComponent implements EventListener, Observer {
 
     if (!mDisplayName.isEmpty()) {
       final String[] lines = mDisplayName.split(";");
-      final int lOffset = mEditorConfig.sSHOWIDSOFNODES
+      final int lOffset = getEditorConfig().sSHOWIDSOFNODES
               ? lines.length : (lines.length - 1);
       for (int i = 0; i < lines.length; i++) {
         g2d.drawString(lines[i],
-                mEditorConfig.sNODEWIDTH / 2 - fontMetrics.stringWidth(lines[i]) / 2, // The x position
-                mEditorConfig.sNODEHEIGHT / 2 + hOffset
+                nodeWidth / 2 - fontMetrics.stringWidth(lines[i]) / 2, // The x position
+                nodeHeight / 2 + hOffset
                 - lOffset * fontMetrics.getHeight() / 2
                 + i * fontMetrics.getHeight()
         );
       }
 
-      //g2d.drawString(mDisplayName, mEditorConfig.sNODEWIDTH / 2 - wNameOffset,
-      //        (mEditorConfig.sNODEHEIGHT + 2) / 2 + hOffset);
+      //g2d.drawString(mDisplayName, nodeWidth / 2 - wNameOffset,
+      //        (nodeHeight + 2) / 2 + hOffset);
       // Draw the node's identifier string
-      if (mEditorConfig.sSHOWIDSOFNODES) {
+      if (getEditorConfig().sSHOWIDSOFNODES) {
         g2d.setColor(Color.LIGHT_GRAY);
         g2d.drawString("[" + mDataNode.getId() + "]",
-                mEditorConfig.sNODEWIDTH / 2 - wIdOffset, // The x position
-                mEditorConfig.sNODEHEIGHT / 2 + hOffset
+                nodeWidth / 2 - wIdOffset, // The x position
+                nodeHeight / 2 + hOffset
                 - lOffset * fontMetrics.getHeight() / 2
                 + lines.length * fontMetrics.getHeight());
       }

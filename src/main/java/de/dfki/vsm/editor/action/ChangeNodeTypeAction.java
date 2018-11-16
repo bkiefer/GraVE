@@ -101,7 +101,6 @@ public class ChangeNodeTypeAction extends NodeAction {
     for (Edge edge : mConnectedEdgesVector) {
 
       de.dfki.vsm.model.flow.AbstractEdge newDataEdge = edge.getDataEdge().getCopy();
-      Edge.TYPE newEdgeType = edge.getType();
       Node newSourceGUINode = (edge.getSourceNode().equals(mOldGUINode)) ? mGUINode : edge.getSourceNode();
       Node newTargetGUINode = (edge.getTargetNode().equals(mOldGUINode)) ? mGUINode : edge.getTargetNode();
 
@@ -109,8 +108,8 @@ public class ChangeNodeTypeAction extends NodeAction {
       newDataEdge.setSourceNode(newSourceGUINode.getDataNode());
       newDataEdge.setTargetUnid(newTargetGUINode.getDataNode().getId());
       newDataEdge.setTargetNode(newTargetGUINode.getDataNode());
-      mCreateEdgeActionList.add(new CreateEdgeAction(mWorkSpace, newSourceGUINode, newTargetGUINode, newDataEdge,
-              newEdgeType));
+      mCreateEdgeActionList.add(
+          new CreateEdgeAction(mWorkSpace, newSourceGUINode, newTargetGUINode, newDataEdge));
     }
 
     for (CreateEdgeAction action : mCreateEdgeActionList) {

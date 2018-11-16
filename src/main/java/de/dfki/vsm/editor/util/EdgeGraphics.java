@@ -479,8 +479,8 @@ public final class EdgeGraphics {
   public void updateDataModel() {
 
     // add the graphic information to the sceneflow!
-    de.dfki.vsm.model.flow.graphics.edge.EdgeArrow arrow
-            = new de.dfki.vsm.model.flow.graphics.edge.EdgeArrow();
+    de.dfki.vsm.model.flow.geom.EdgeArrow arrow
+            = new de.dfki.vsm.model.flow.geom.EdgeArrow();
     ArrayList<de.dfki.vsm.model.flow.geom.ControlPoint> xmlEdgePoints
             = new ArrayList<>();
     de.dfki.vsm.model.flow.geom.ControlPoint startPoint

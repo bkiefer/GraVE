@@ -16,6 +16,7 @@ import de.dfki.vsm.Preferences;
 import de.dfki.vsm.editor.Comment;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.model.flow.*;
 
 /**
  * @author Sergio Soto
@@ -36,32 +37,32 @@ public class SceneFlowPalettePanel extends JPanel {
   private final SceneFlowPaletteItem mEEdgeEntry
           = new SceneFlowPaletteItem("Epsilon Edge", "Creates Epsilon Transition",
                   Preferences.ICON_EEDGE_ENTRY_STANDARD, Preferences.ICON_EEDGE_ENTRY_ROLLOVER, Preferences.ICON_EEDGE_ENTRY_DRAGGING,
-                  new Edge(Edge.TYPE.EEDGE));
+                  new EpsilonEdge());
 
   private final SceneFlowPaletteItem mTEdgeEntry
           = new SceneFlowPaletteItem("Timeout Edge", "Creates Timeout Transition",
                   Preferences.ICON_TEDGE_ENTRY_STANDARD, Preferences.ICON_TEDGE_ENTRY_ROLLOVER, Preferences.ICON_TEDGE_ENTRY_DRAGGING,
-                  new Edge(Edge.TYPE.TEDGE));
+                  new TimeoutEdge());
 
   private final SceneFlowPaletteItem mPEdgeEntry
           = new SceneFlowPaletteItem("Probability Edge", "Creates Probability Transition",
                   Preferences.ICON_PEDGE_ENTRY_STANDARD, Preferences.ICON_PEDGE_ENTRY_ROLLOVER, Preferences.ICON_PEDGE_ENTRY_DRAGGING,
-                  new Edge(Edge.TYPE.PEDGE));
+                  new RandomEdge());
 
   private final SceneFlowPaletteItem mCEdgeEntry
           = new SceneFlowPaletteItem("Conditional Edge", "Creates Conditional Transition",
                   Preferences.ICON_CEDGE_ENTRY_STANDARD, Preferences.ICON_CEDGE_ENTRY_ROLLOVER, Preferences.ICON_CEDGE_ENTRY_DRAGGING,
-                  new Edge(Edge.TYPE.CEDGE));
+                  new GuardedEdge());
 
   private final SceneFlowPaletteItem mIEdgeEntry
           = new SceneFlowPaletteItem("Interruptive Edge", "Creates Interrutive Transition",
                   Preferences.ICON_IEDGE_ENTRY_STANDARD, Preferences.ICON_IEDGE_ENTRY_ROLLOVER, Preferences.ICON_IEDGE_ENTRY_DRAGGING,
-                  new Edge(Edge.TYPE.IEDGE));
+                  new InterruptEdge());
 
   private final SceneFlowPaletteItem mFEdgeEntry
           = new SceneFlowPaletteItem("Fork Edge", "Creates Forked Transition",
                   Preferences.ICON_FEDGE_ENTRY_STANDARD, Preferences.ICON_FEDGE_ENTRY_ROLLOVER, Preferences.ICON_FEDGE_ENTRY_DRAGGING,
-                  new Edge(Edge.TYPE.FEDGE));
+                  new ForkingEdge());
 
   private final SceneFlowPaletteItem mCommentEntry
           = new SceneFlowPaletteItem("Comment", "Adds a Comment",
