@@ -57,6 +57,7 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
     addFocusListener(new FocusListener() {
       public void focusGained(FocusEvent e) {
         setBackground(boxActiveColour);
+        mDispatcher.convey(new NodeSelectedEvent(CmdBadge.this, mNode.getDataNode()));
       }
 
       public void focusLost(FocusEvent e) {

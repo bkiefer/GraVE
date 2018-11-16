@@ -204,13 +204,16 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     if (event instanceof TreeEntrySelectedEvent) {
       // Show the auxiliary editor
       showAuxiliaryEditor();
-    } else if (event instanceof NodeSelectedEvent
-            && ((NodeSelectedEvent) event).getSource() instanceof Node) {
-      // the source of the event is the node object
-      mAuxiliaryEditor.setEditedNodeOrEdge(
-              mSceneFlowEditor.getWorkSpace().getCmdBadge(
-                      (Node)((NodeSelectedEvent) event).getSource()));
-    
+    } else if (event instanceof NodeSelectedEvent) {
+      Object edited = null;
+      if (((NodeSelectedEvent) event).getSource() instanceof Node)
+        // the source of the event is the node object
+        edited = mSceneFlowEditor.getWorkSpace().getCmdBadge(
+                      (Node)((NodeSelectedEvent) event).getSource());
+      else if (((NodeSelectedEvent) event).getSource() instanceof CmdBadge)
+        // the source of the event is the node object
+        edited = ((NodeSelectedEvent) event).getSource();
+      mAuxiliaryEditor.setEditedNodeOrEdge(edited);
     } else if (event instanceof ClearCodeEditorEvent) {
       mAuxiliaryEditor.setEditedNodeOrEdge(null);
     } else if (event instanceof EdgeSelectedEvent) {
