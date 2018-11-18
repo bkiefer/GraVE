@@ -477,7 +477,7 @@ public class EditorStarter extends JPanel {
 
         project.parse(tutorialProj.getPath());
         JLabel newTutorialProj = new JLabel(project.getProjectName() + " ["
-                + project.getSceneFlow().getNodeAndSuperNodeList().size()
+                + project.getSceneFlow().getNodeSize()
                 + " global nodes]");// + ", last edited: "
         // + getPrefs().sDATE_FORMAT.format(tutorialProj.lastModified()));
 

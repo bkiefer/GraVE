@@ -18,10 +18,8 @@ import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.grid.GridConstants;
 import de.dfki.vsm.editor.util.grid.GridRectangle;
+import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.graphics.workspace.WorkAreaSize;
-import de.dfki.vsm.model.flow.graphics.workspace.WorkSpaceInitNodeSize;
-import de.dfki.vsm.model.flow.graphics.workspace.WorkSpaceSuperNode;
 
 /*
 * @author Patrick
@@ -51,14 +49,29 @@ public class GridManager {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
     isDebug = config.sSHOW_SMART_PATH_DEBUG;
     isDockingView = false;
-    WorkAreaSize workAreaSize = new WorkSpaceInitNodeSize(mWorkSpacePanel, config.sGRID_NODEWIDTH, config.sGRID_NODEHEIGHT);
-    compute(workAreaSize);
+    compute();
   }
 
-  public final void compute(WorkAreaSize workAreaSize) {
+  // TODO: MUST BE ADAPTED, THE SIZE OF THE COMMAND BADGES IS NOT TAKEN INTO
+  // ACCOUNT, WHICH LEADS TO ERRORS
+  public Dimension calculateWorkArea(int nodeWidth, int nodeHeight) {
+    int width = mWorkSpacePanel.getSize().width;
+    int height = mWorkSpacePanel.getSize().height;
+    for (BasicNode n : mWorkSpacePanel.getSceneFlowEditor().getSceneFlow()) {
+      if (n.getPosition().getYPos() > height) {
+        height = n.getPosition().getYPos() + nodeHeight;
+      }
+      if (n.getPosition().getXPos() > width) {
+        width = n.getPosition().getXPos() + nodeWidth;
+      }
+    }
+    return new Dimension(width, height);
+  }
+
+  public final void compute() {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
 
-    Dimension area = workAreaSize.calculate();
+    Dimension area = calculateWorkArea(config.sGRID_NODEWIDTH, config.sGRID_NODEHEIGHT);
     int w = area.width;
     int h = area.height;    // <-
 
@@ -216,24 +229,17 @@ public class GridManager {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
     isDebug = config.sSHOW_SMART_PATH_DEBUG;
     mPlacedNodes = new HashSet<>();
-    WorkAreaSize workAreaSize = new WorkSpaceInitNodeSize(mWorkSpacePanel, config.sGRID_NODEWIDTH, config.sGRID_NODEHEIGHT);
-    compute(workAreaSize);
   }
 
   public void update(SuperNode superNode) {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
     isDebug = config.sSHOW_SMART_PATH_DEBUG;
     mPlacedNodes = new HashSet<>();
-    WorkAreaSize workAreaSize = new WorkSpaceSuperNode(mWorkSpacePanel, config.sGRID_NODEWIDTH, config.sGRID_NODEHEIGHT, superNode);
-    compute(workAreaSize);
   }
 
   //private Point isBiggerThan
   public void drawGrid(Graphics2D g2d) {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
-    WorkAreaSize workAreaSize = new WorkSpaceInitNodeSize(mWorkSpacePanel, config.sGRID_NODEWIDTH, config.sGRID_NODEHEIGHT);
-    compute(workAreaSize);
-
     if (config.sSHOWGRID) {
       g2d.setStroke(new BasicStroke(1.0f));
 

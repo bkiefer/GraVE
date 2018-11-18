@@ -90,11 +90,10 @@ public class AltStartNodeManager {
       }
 
       // ArrayList<Node>
-      ArrayList<BasicNode> possililities = ((SuperNode) mEdge.getTargetNode()).getNodeAndSuperNodeList();
       ArrayList<BasicNode> finals = new ArrayList<BasicNode>();
 
       // /
-      for (BasicNode node : possililities) {
+      for (BasicNode node : ((SuperNode) mEdge.getTargetNode())) {
         System.err.println("looking if " + node.getId() + " is valid");
 
         boolean valid = true;

@@ -1062,10 +1062,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   public void showNodesOnWorkSpace() {
-    ArrayList<de.dfki.vsm.model.flow.BasicNode> nodeList
-            = getSceneFlowManager().getCurrentActiveSuperNode().getNodeAndSuperNodeList();
-
-    for (de.dfki.vsm.model.flow.BasicNode n : nodeList) {
+    for (BasicNode n : getSceneFlowManager().getCurrentActiveSuperNode()) {
       Point p = mGridManager.getNodeLocation(new Point(n.getPosition().getXPos(),
               n.getPosition().getYPos()));
 

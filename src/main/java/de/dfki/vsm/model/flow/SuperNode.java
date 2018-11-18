@@ -2,6 +2,7 @@ package de.dfki.vsm.model.flow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.bind.annotation.*;
@@ -16,7 +17,7 @@ import de.dfki.vsm.util.cpy.CopyTool;
  */
 @XmlType(name="SuperNode")
 @XmlAccessorType(XmlAccessType.NONE)
-public class SuperNode extends BasicNode {
+public class SuperNode extends BasicNode implements Iterable<BasicNode> {
 
   public static class StartNodeAdapter extends XmlAdapter<String, Map<String, BasicNode>> {
     @Override
@@ -193,36 +194,45 @@ public class SuperNode extends BasicNode {
     return copy;
   }
 
-  public ArrayList<BasicNode> getNodeAndSuperNodeList() {
-    ArrayList<BasicNode> list = new ArrayList<BasicNode>();
+  private class NodeIterator implements Iterator<BasicNode> {
+    Iterator<? extends BasicNode> impl = mNodeList.iterator();
+    boolean basic = true;
 
-    for (BasicNode n : mNodeList) {
-      list.add(n);
+    @Override
+    public boolean hasNext() {
+      boolean result = impl.hasNext();
+      if (!result && basic) {
+        basic = false;
+        impl = mSuperNodeList.iterator();
+        result = impl.hasNext();
+      }
+      return result;
     }
 
-    for (SuperNode sn : mSuperNodeList) {
-      list.add(sn);
-    }
+    @Override
+    public BasicNode next() { return impl.next(); }
+  }
 
-    return list;
+  public Iterator<BasicNode> iterator() {
+    return new NodeIterator();
+  }
+
+  public int getNodeSize() {
+    return mNodeList.size() + mSuperNodeList.size();
   }
 
   public ArrayList<BasicNode> getCopyOfNodeAndSuperNodeList() {
     ArrayList<BasicNode> copy = new ArrayList<BasicNode>();
 
-    for (BasicNode n : mNodeList) {
+    for (BasicNode n : this) {
       copy.add(n.getCopy());
-    }
-
-    for (SuperNode sn : mSuperNodeList) {
-      copy.add(sn.getCopy());
     }
 
     return copy;
   }
 
   public BasicNode getChildNodeById(String id) {
-    for (BasicNode node : getNodeAndSuperNodeList()) {
+    for (BasicNode node : this) {
       if (node.getId().equals(id)) {
         return node;
       }
@@ -248,7 +258,7 @@ public class SuperNode extends BasicNode {
   public void establishTargetNodes() {
     super.establishTargetNodes();
 
-    for (BasicNode node : getNodeAndSuperNodeList()) {
+    for (BasicNode node : this) {
       node.establishTargetNodes();
     }
   }
@@ -265,7 +275,7 @@ public class SuperNode extends BasicNode {
 
   // TODO:
   public void establishAltStartNodes() {
-    for (BasicNode node : getNodeAndSuperNodeList()) {
+    for (BasicNode node : this) {
       for (AbstractEdge edge : node.getEdgeList()) {
         if (edge.getTargetNode() instanceof SuperNode) {
 

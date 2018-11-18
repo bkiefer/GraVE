@@ -133,9 +133,9 @@ public class IDManager {
   }
 
   /*
-     * resets recursively all ids of a given node or supernode and used edges.
+   * resets recursively all ids of a given node or supernode and used edges.
    */
-  public void reassignAllIDs(Set<BasicNode> nodes) {
+  public void reassignAllIDs(Iterable<BasicNode> nodes) {
 
     // DEBUG System.out.println("reassignAllIDs");
     Hashtable<String, String> relationOldNewIDs = new Hashtable<String, String>();
@@ -145,16 +145,14 @@ public class IDManager {
       nodesVector.add(n);
     }
 
-    relationOldNewIDs = reassignNodesID(nodesVector, relationOldNewIDs);
+    reassignNodesID(nodesVector, relationOldNewIDs);
     reassignEdgesID(nodesVector, relationOldNewIDs);
     reassignStartNodeIDs(nodesVector, relationOldNewIDs);
 
     // TODO reassign alternative Startnode information in Edges
   }
 
-  private Hashtable<String, String> reassignNodesID(ArrayList<BasicNode> nodes, Hashtable<String, String> lastOldNewIDRef) {
-    Hashtable<String, String> currentOldNewIDRef = lastOldNewIDRef;
-
+  private void reassignNodesID(Iterable<BasicNode> nodes, Hashtable<String, String> currentOldNewIDRef) {
     for (BasicNode node : nodes) {
       if (SuperNode.class.isInstance(node)) {
         String oldID = node.getId();
@@ -164,11 +162,8 @@ public class IDManager {
         // System.out.println("Supernode " + node.getName() + " has old id " + oldID + " gets " + newID);
         node.setId(newID);
         currentOldNewIDRef.put(oldID, newID);
-
-        ArrayList<BasicNode> childNodes = ((SuperNode) node).getNodeAndSuperNodeList();
-
         // reassign recursively other nodes id
-        currentOldNewIDRef = reassignNodesID(childNodes, currentOldNewIDRef);
+        reassignNodesID((SuperNode) node, currentOldNewIDRef);
       } else {
         String oldID = node.getId();
         String newID = getNextFreeNodeID();
@@ -179,8 +174,6 @@ public class IDManager {
         currentOldNewIDRef.put(oldID, newID);
       }
     }
-
-    return currentOldNewIDRef;
   }
 
   private void reassignSubSuperNodeStartNodeIDs(SuperNode sn, Hashtable<String, String> relationOldNewIDRef) {
@@ -247,7 +240,8 @@ public class IDManager {
     }
   }
 
-  private void reassignEdgesID(ArrayList<BasicNode> nodes, Hashtable<String, String> relationOldNewIDRef) {
+  private void reassignEdgesID(Iterable<BasicNode> nodes,
+      Hashtable<String, String> relationOldNewIDRef) {
     for (BasicNode node : nodes) {
       if (node.hasEdge()) {
         switch (node.getFlavour()) {
@@ -374,10 +368,8 @@ public class IDManager {
         }
       }
 
-      if (SuperNode.class.isInstance(node)) {
-        ArrayList<BasicNode> childNodes = ((SuperNode) node).getNodeAndSuperNodeList();
-
-        reassignEdgesID(childNodes, relationOldNewIDRef);
+      if (node instanceof SuperNode) {
+        reassignEdgesID((SuperNode)node, relationOldNewIDRef);
       }
     }
   }
