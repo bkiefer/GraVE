@@ -117,58 +117,14 @@ public class SceneFlowManager {
   }
 
   /*
-     * Returns the list of all parent SuperNodes containing the root SuperNode
-   */
-  public Set<SuperNode> getParentSuperNodeSet(BasicNode n) {
-    Set<SuperNode> nSet = new HashSet<SuperNode>();
-
-    if (isRootSuperNode(n)) {    // if given node n is root SuperNode return null
-      return null;
-    } else {
-      SuperNode sn = getParentSuperNode(n);
-
-      if (sn != null) {
-        nSet.add(sn);
-
-        if (!sn.equals((SuperNode) mSceneFlow)) {
-          nSet = buildSuperNodeSet(sn, nSet);
-        }
-      }
-    }
-
-    return (nSet.size() > 0)
-            ? nSet
-            : null;
-  }
-
-  /*
-     * Helper method for the recursive process of building the set of parent
-     * SuperNodes to a given BasicNode.
-   */
-  private Set<SuperNode> buildSuperNodeSet(SuperNode sn, Set<SuperNode> nSet) {
-    SuperNode pn = getParentSuperNode(sn);
-
-    if (pn != null) {
-      nSet.add(pn);
-
-      if (!pn.equals((SuperNode) mSceneFlow)) {
-        nSet = buildSuperNodeSet(pn, nSet);
-      }
-    }
-
-    return nSet;
-  }
-
-  /*
      * Returns the parent SuperNode to a given BasicNode n
    */
   public SuperNode getParentSuperNode(BasicNode n) {
     if (!isRootSuperNode(n)) {
       SuperNode parentSuperNode = (SuperNode) mSceneFlow;
-      Set<BasicNode> ns = getSubNodes(parentSuperNode);
 
       // checking if node is contained in the nodes of the root SuperNode
-      for (BasicNode cn : ns) {
+      for (BasicNode cn : parentSuperNode) {
         if (cn.equals(n)) {
           return parentSuperNode;
         } else {
@@ -193,9 +149,8 @@ public class SceneFlowManager {
   private SuperNode findParentSuperNode(SuperNode currentSN, BasicNode n) {
     if (hasSuperNodes(currentSN)) {
       SuperNode parentSuperNode = currentSN;
-      Set<BasicNode> ns = getSubNodes(currentSN);
 
-      for (BasicNode cn : ns) {
+      for (BasicNode cn : currentSN) {
         if (cn.equals(n)) {
           return parentSuperNode;
         } else {
@@ -214,47 +169,6 @@ public class SceneFlowManager {
   }
 
   /*
-     * Checks if a given BasicNode instance is a subnode of a given intance of SuperNode
-   */
-  public boolean isSubNode(BasicNode superNode, BasicNode n) {
-    if (!(superNode instanceof SuperNode)) {
-      return false;
-    }
-
-    Set<BasicNode> nSet = getSuperNodeSubNodes((SuperNode) superNode, new HashSet<BasicNode>());
-
-    // DEBUG //System.out.println("super node set size " + nSet.size());
-    if ((nSet == null) || (nSet.size() == 0)) {
-      return false;
-    }
-
-    if (nSet.contains(n)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  private Set<BasicNode> getSuperNodeSubNodes(SuperNode sNode, Set allSubNodes) {
-
-    // get all super nodes and nodes
-    ArrayList<BasicNode> ns = sNode.getNodeList();         // .getNodeSet();
-    ArrayList<SuperNode> sns = sNode.getSuperNodeList();    // .getSuperNodeSet();
-
-    // add super nodes and nodes to one set
-    for (SuperNode sn : sns) {
-      allSubNodes.add(sn);
-      getSuperNodeSubNodes(sn, allSubNodes);    // recurvsively collect all SubSupernodes
-    }
-
-    for (BasicNode n : ns) {
-      allSubNodes.add(n);
-    }
-
-    return allSubNodes;
-  }
-
-  /*
      * Checks if a given SuperNode contains an instance of SuperNode an returns a appropriate
      * boolean value
      *
@@ -266,101 +180,4 @@ public class SceneFlowManager {
     return (sn.getSuperNodeList().size() > 0);
   }
 
-  public Set<BasicNode> getSubNodes() {
-    return getSubNodes((SuperNode) mSceneFlow);
-  }
-
-  public Set<BasicNode> getSubNodes(SuperNode sNode) {
-    HashSet<BasicNode> allNodes = new HashSet<BasicNode>();
-
-    // get all super nodes and nodes
-    // Set<Node> ns = sNode.getNodeSet();
-    // Set<SuperNode> sns = sNode.getSuperNodeSet();
-    ArrayList<BasicNode> ns = sNode.getNodeList();         // .getNodeSet();
-    ArrayList<SuperNode> sns = sNode.getSuperNodeList();    // .getSuperNodeSet();
-
-    // add super nodes and nodes to one set
-    for (SuperNode sn : sns) {
-      allNodes.add(sn);
-    }
-
-    for (BasicNode n : ns) {
-      allNodes.add(n);
-    }
-
-    return allNodes;
-  }
-
-  public Set<String> getSubNodesNames() {
-    HashSet<String> allNodeNames = new HashSet<String>();
-
-    // get all active super nodes and nodes
-    // Set<Node> ns = mActiveSuperNodes.getLast().getNodeSet();
-    // Set<SuperNode> sns = mActiveSuperNodes.getLast().getSuperNodeSet();
-    ArrayList<BasicNode> ns = mActiveSuperNodes.getLast().getNodeList();         // .getNodeSet();
-    ArrayList<SuperNode> sns = mActiveSuperNodes.getLast().getSuperNodeList();    // .getSuperNodeSet();
-
-    // add super nodes and nodes to one set
-    for (SuperNode sn : sns) {
-      allNodeNames.add(sn.getName() + " (" + sn.getId() + ")");
-    }
-
-    for (BasicNode n : ns) {
-      allNodeNames.add(n.getName() + " (" + n.getId() + ")");
-    }
-
-    return allNodeNames;
-  }
-
-//  public String getSceneFlowFileName() {
-//      return mSceneFlowFileName;
-//  }
-//
-//  public String getSceneFlowFilePath() {
-//      if (mSceneFlowFile != null) {
-//          return mSceneFlowFile.getPath();
-//      } else {
-//          return "<untitled>";
-//      }
-//  }
-//
-//  public void setSceneFlowFileName(String value) {
-//      mSceneFlowFileName = value;
-//  }
-//
-//  public void setSceneFlowFile(File value) {
-//      mSceneFlowFile = value;
-//  }
-//
-//  public File getSceneFlowFile() {
-//      return mSceneFlowFile;
-//  }
-//  public void setSceneFlow(SceneFlow value) {
-//      mSceneFlow = value;
-//      mActiveSuperNodes.addLast(mSceneFlow);
-//  }
-//  public boolean hasChangedSinceLastSave() {
-//      if (mSceneFlowFile == null) {
-//          return true;
-//      }
-//      File file = new File(mSceneFlowFile.getParent() + File.separator + "~" + mSceneFlowFile.getName());
-//      boolean hasChanged = false;
-//      try {
-//          IndentOutputStream out = new IndentOutputStream(file);
-//          mSceneFlow.writeXML(out);
-//          out.close();
-//          hasChanged = !FileAttributes.compare(file, mSceneFlowFile);
-//      } catch (IOException e) {
-//          e.printStackTrace();
-//          return true;
-//      } finally {
-//          try {
-//              file.delete();
-//              file = null;
-//          } catch (SecurityException e) {
-//              e.printStackTrace();
-//          }
-//      }
-//      return hasChanged;
-//  }
 }

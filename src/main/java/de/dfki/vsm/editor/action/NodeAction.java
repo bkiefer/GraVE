@@ -76,7 +76,7 @@ public abstract class NodeAction extends EditorAction {
           } else {
 
             // Get a supernode as start node
-            de.dfki.vsm.model.flow.BasicNode newStartNode = mParentDataNode.getSuperNodeAt(0);
+            BasicNode newStartNode = mParentDataNode.getSuperNodeList().get(0);
 
             mParentDataNode.getStartNodeMap().put(newStartNode.getId(), newStartNode);
           }

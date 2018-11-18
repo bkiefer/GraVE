@@ -150,10 +150,6 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
     mSuperNodeList.remove(value);
   }
 
-  public SuperNode getSuperNodeAt(int index) {
-    return mSuperNodeList.get(index);
-  }
-
   public ArrayList<SuperNode> getSuperNodeList() {
     return mSuperNodeList;
   }
