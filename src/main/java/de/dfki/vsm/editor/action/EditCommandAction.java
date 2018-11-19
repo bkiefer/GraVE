@@ -14,11 +14,9 @@ public class EditCommandAction extends EditorAction {
   private final EventDispatcher mDispatcher
           = EventDispatcher.getInstance();
 
-  private final WorkSpacePanel mWorkSpace;
   private final CmdBadge mCmdBadge;
 
   public EditCommandAction(WorkSpacePanel workSpace, CmdBadge c) {
-    mWorkSpace = workSpace;
     mCmdBadge = c;
   }
 

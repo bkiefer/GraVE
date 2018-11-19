@@ -28,7 +28,6 @@ public abstract class NodeAction extends EditorAction {
   protected UndoManager mUndoManager = null;
   protected SceneFlowEditor mSceneFlowPane = null;
   protected WorkSpacePanel mWorkSpace = null;
-  protected EditorConfig mPreferences = null;
   protected Point mCoordinate = null;
   protected Type mGUINodeType = null;
   protected SceneFlowManager mSceneFlowManager = null;

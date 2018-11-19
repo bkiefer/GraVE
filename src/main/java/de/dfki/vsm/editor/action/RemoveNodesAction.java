@@ -18,9 +18,9 @@ import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
  */
 public class RemoveNodesAction extends EditorAction {
 
-  Set<Node> mNodes = new HashSet<Node>();
-  Set<RemoveNodeAction> mRemoveNodeActions = new HashSet<RemoveNodeAction>();
-  WorkSpacePanel mWorkSpace = null;
+  private Set<Node> mNodes = new HashSet<Node>();
+  private Set<RemoveNodeAction> mRemoveNodeActions = new HashSet<RemoveNodeAction>();
+  private WorkSpacePanel mWorkSpace = null;
 
   public RemoveNodesAction(WorkSpacePanel workSpace, Set<Node> nodes) {
     mWorkSpace = workSpace;

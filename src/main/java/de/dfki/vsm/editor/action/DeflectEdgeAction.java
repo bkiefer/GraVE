@@ -28,12 +28,10 @@ public class DeflectEdgeAction extends EdgeAction {
     mGUIEdge = edge;
     mDataEdge = edge.getDataEdge();
     mSourceGUINode = edge.getSourceNode();
-    mLastTargetGUINode = edge.getTargetNode();
     mTargetGUINode = newTargetNode;
 
     // store the dockpoints
     mSourceGUINodeDockPoint = mSourceGUINode.getEdgeDockPoint(edge);
-    mLastTargetGUINodeDockPoint = edge.mLastTargetNodeDockPoint;    // last target node dockpoint
     mTargetGUINodeDockPoint = newDropPoint;
     mLogger.info("new target dockpoint (was drop point) " + mTargetGUINodeDockPoint);
     mSceneFlowPane = mWorkSpace.getSceneFlowEditor();

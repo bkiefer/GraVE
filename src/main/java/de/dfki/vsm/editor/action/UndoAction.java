@@ -23,6 +23,7 @@ import de.dfki.vsm.util.evt.EventDispatcher;
  *
  * @author Gregor Mehlmann
  */
+@SuppressWarnings("serial")
 public class UndoAction extends AbstractAction {
   // The singelton logger instance
 

@@ -1,9 +1,5 @@
 package de.dfki.vsm.editor.action;
 
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.Point;
-import java.util.ArrayList;
-
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -14,22 +10,20 @@ import de.dfki.vsm.editor.Comment;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.SceneFlowManager;
+import de.dfki.vsm.model.flow.CommentBadge;
 import de.dfki.vsm.model.flow.SuperNode;
 
 /**
  * @author Patrick Gebhard
  */
 public class RemoveCommentAction extends EditorAction {
-
-  ArrayList<RemoveEdgeAction> mRemoveEdgeActionList = new ArrayList<RemoveEdgeAction>();
   private WorkSpacePanel mWorkSpace;
   private SceneFlowEditor mSceneFlowPane;
   private SceneFlowManager mSceneFlowManager;
   private UndoManager mUndoManager;
   private SuperNode mSuperNode;
   private Comment mGUIComment;
-  private Point mLocation;
-  private de.dfki.vsm.model.flow.CommentBadge mDataComment;
+  private CommentBadge mDataComment;
 
   public RemoveCommentAction(WorkSpacePanel workSpace, Comment c) {
     mWorkSpace = workSpace;
@@ -38,7 +32,6 @@ public class RemoveCommentAction extends EditorAction {
     mSuperNode = mSceneFlowManager.getCurrentActiveSuperNode();
     mUndoManager = mSceneFlowPane.getUndoManager();
     mGUIComment = c;
-    mLocation = mGUIComment.getLocation();
     mDataComment = mGUIComment.getData();
   }
 
