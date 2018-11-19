@@ -114,7 +114,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       }};
 
   private EditorConfig mEditorConfig;
-  private Timer mVisualisationTimer;
   private UndoManager mUndoManager;
   private boolean firstDrag = false;
 
@@ -138,17 +137,12 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
     mDataEdge = edge;
     mWorkSpace = ws;
-    // mEditorConfig = EditorInstance.getInstance().getSelectedProjectEditor()
-    //                 .getEditorProject().getEditorConfig();
     mEditorConfig = mWorkSpace.getEditorConfig();
     mSourceNode = sourceNode;
     mTargetNode = targetNode;
     mPointingToSameNode = (mTargetNode == mSourceNode);
 
     setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-    // Timer
-    mVisualisationTimer = new Timer("Edge(" + mDataEdge.getSourceUnid() +
-            "->" + mDataEdge.getTargetUnid() + ")-Visualization-Timer");
     mEg = new EdgeGraphics(this, sourceDockPoint, targetDockpoint);
     update();
     setVisible(true);
@@ -217,7 +211,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     // Set the edge's font to the updated font
     //setFont(font);
     mFontWidthCorrection = mFM.stringWidth(name()) / 2;
-    mFontHeightCorrection = (mFM.getAscent() - mFM.getDescent()) / 2;
+    mFontHeightCorrection = (mFM.getAscent() + mFM.getDescent()) / 2;
 
     if (mEdgeTextArea != null)
       // do an exact font positioning
@@ -378,8 +372,8 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     }
   }
 
-  /*
-     * Handles the mouse pressed event
+  /**
+   * Handles the mouse pressed event
    */
   @Override
   public void mousePressed(java.awt.event.MouseEvent e) {
@@ -437,7 +431,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       }
     }
     deselectMCs();
-    // revalidate();
     repaint(100);
   }
 
@@ -474,7 +467,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       // TODO store last start /end node and start and end pos
       mEg.mAbsoluteStartPos.setLocation(p);
     }
-    // revalidate();
     repaint(100);
   }
 
@@ -483,8 +475,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
   @Override
   public void mouseExited(java.awt.event.MouseEvent e) {}
-
-  public void mouseMoved(java.awt.event.MouseEvent e) {}
 
   public void straightenEdge() {
     mEg.initCurve();
@@ -511,7 +501,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     mFontWidthCorrection = width / 2;
 
     mEdgeTextArea.setBounds((int) Math.round(mEg.mLeftCurve.x2 - mFontWidthCorrection),
-        (int) Math.round(mEg.mLeftCurve.y2), width, height);
+        (int) Math.round(mEg.mLeftCurve.y2 - mFontHeightCorrection), width, height);
   }
 
   @Override
@@ -565,10 +555,12 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       graphics.drawRect((int) mEg.mCurve.x1 - 7, (int) mEg.mCurve.y1 - 7, 14, 14);
       graphics.drawPolygon(mEg.mHead);
       graphics.fillRect((int) mEg.mCurve.x1 - 7, (int) mEg.mCurve.y1 - 7, 14, 14);
+      // This draws the arrow head
       graphics.fillPolygon(mEg.mHead);
     } else {
       graphics.setStroke(new BasicStroke(mEditorConfig.sNODEWIDTH / 30.0f, BasicStroke.CAP_BUTT,
               BasicStroke.JOIN_MITER));
+      // This draws the arrow head
       graphics.fillPolygon(mEg.mHead);
       graphics.setColor(color());
       graphics.drawPolygon(mEg.mHead);
@@ -599,57 +591,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
   public boolean isInEditMode() {
     return mEditMode;
-  }
-
-  // TODO: Why is this never called, and why can we see the arrow anyways?
-  public void drawArrow(Graphics2D g2d, int x, int y, float stroke) {    // int xCenter, int yCenter,
-    g2d.setColor(color());
-
-    double aDir = Math.atan2(x, y);    // xCenter-x,yCenter-y);
-
-    g2d.setStroke(new BasicStroke(stroke));
-    g2d.drawLine(x + 2, y + 2, 40, 40);
-    g2d.setStroke(new BasicStroke(1f));    // make the arrow head solid even if dash pattern has been specified
-
-    Polygon tmpPoly = new Polygon();
-    int i1 = 16;    // + (int) (stroke * 2);
-
-    tmpPoly.addPoint(x, y);      // arrow tip
-    tmpPoly.addPoint(x + xCor(i1, aDir + .5), y + yCor(i1, aDir + .5));
-    tmpPoly.addPoint(x + xCor(i1, aDir - .5), y + yCor(i1, aDir - .5));
-    tmpPoly.addPoint(x, y);      // arrow tip
-    g2d.fillPolygon(tmpPoly);    // paint arrow head
-  }
-
-  /**
-   * helper method used to provive an arrow for the edge
-   *
-   * @param len
-   * @param dir
-   * @return
-   */
-  private static int yCor(int len, double dir) {
-    return (int) (len * Math.cos(dir));
-  }
-
-  /**
-   * helper method used to provive an arrow for the edge
-   *
-   * @param len
-   * @param dir
-   * @return
-   */
-  private static int xCor(int len, double dir) {
-    return (int) (len * Math.sin(dir));
-  }
-
-  /**
-   * Nullifies the VisalisationTimer thread
-   */
-  public void stopVisualisation() {
-    mVisualisationTimer.purge();
-    mVisualisationTimer.cancel();
-    mVisualisationTimer = null;
   }
 
   /*

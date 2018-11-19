@@ -625,7 +625,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     super.add(badge);
     mCmdBadgeMap.put(node, badge);
     mEventCaster.register(badge);
-    mObservable.addObserver(badge);
   }
 
   /**
@@ -637,7 +636,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
     super.remove(badge);
     mEventCaster.remove(badge);
-    mObservable.deleteObserver(badge);
   }
 
   /**

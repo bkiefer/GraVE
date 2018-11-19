@@ -123,7 +123,8 @@ public final class SceneFlowPaletteItem extends JLabel implements Transferable {
   //
   @Override
   public final DataFlavor[] getTransferDataFlavors() {
-    return null;
+    DataFlavor[] df = {};
+    return df;
   }
 
 }

@@ -24,7 +24,7 @@ import javax.swing.event.DocumentListener;
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer {
+public class CmdBadge extends RSyntaxTextArea implements EventListener {
 
   //
   private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
@@ -109,11 +109,6 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
 
   public boolean containsPoint(int x, int y) {
     return getBounds().contains(x, y);
-  }
-
-  @Override
-  public void update(java.util.Observable obs, Object obj) {
-    update();
   }
 
   private void update() {
