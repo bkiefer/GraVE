@@ -18,6 +18,7 @@ import de.dfki.vsm.Preferences;
  *
  * @author mfallas
  */
+@SuppressWarnings("serial")
 public class CancelButton extends JLabel {
 
   private final Dimension buttonSize = new Dimension(125, 30);

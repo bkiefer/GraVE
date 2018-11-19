@@ -21,6 +21,7 @@ import de.dfki.vsm.util.ios.ResourceLoader;
  * @author Patrick Gebhard
  * @author Gregor Mehlmann
  */
+@SuppressWarnings("serial")
 public class Comment extends JComponent implements EventListener, Observer, MouseListener, MouseMotionListener {
 
   private JEditorPane mTextEditor = null;
@@ -45,12 +46,12 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
   private de.dfki.vsm.model.flow.CommentBadge mDataComment;
 
   // interaction flags
-  public boolean mSelected;
+  private boolean mSelected;
   public boolean mPressed;
   public boolean mDragged;
   public boolean mResizing;
-  public int mXMovement;
-  public int mYMovement;
+  private int mXMovement;
+  private int mYMovement;
 
   public Comment() {
     mDataComment = null;

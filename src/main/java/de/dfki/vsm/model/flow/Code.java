@@ -14,7 +14,7 @@ import de.dfki.vsm.util.cpy.Copyable;
 public class Code implements Copyable {
   @XmlValue
   @XmlCDATA
-  protected String content;
+  private String content;
 
   public Code(String c) {
     content = c.trim();

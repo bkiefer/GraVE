@@ -21,6 +21,7 @@ import math.geom2d.spline.CubicBezierCurve2D;
  *
  * @author Souza Putra
  */
+@SuppressWarnings("serial")
 public class GridRectangle extends Rectangle {
 
   public static final int NODE_INTERSECTION = 0;

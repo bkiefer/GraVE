@@ -9,6 +9,7 @@ import de.dfki.vsm.model.flow.BasicNode;
  * The clipboard should be shared among the different projects
  *
  */
+@SuppressWarnings("serial")
 public class ClipBoard extends HashSet<BasicNode> {
 
   private static ClipBoard sInstance;

@@ -20,7 +20,7 @@ import de.dfki.vsm.util.cpy.Copyable;
 @XmlAccessorType(XmlAccessType.NONE)
 public class BasicNode implements Copyable {
 
-  public static final Logger logger = LoggerFactory.getLogger(BasicNode.class);
+  private static final Logger logger = LoggerFactory.getLogger(BasicNode.class);
 
   @XmlAttribute(name="id")
   protected String mNodeId = new String();
@@ -59,22 +59,6 @@ public class BasicNode implements Copyable {
   };
 
   public BasicNode() {
-  }
-
-  //
-  public boolean isSubNodeOf(BasicNode node) {
-    if (node instanceof SuperNode) {
-      SuperNode parentNode = mParentNode;
-
-      while (parentNode != null) {
-        if (parentNode.equals(node)) {
-          return true;
-        } else {
-          parentNode = parentNode.getParentNode();
-        }
-      }
-    }
-    return false;
   }
 
   public void setId(String value) {
@@ -304,11 +288,11 @@ public class BasicNode implements Copyable {
     return copy;
   }
 
-  public void addFEdge(ForkingEdge value) {
+  private void addFEdge(ForkingEdge value) {
     mFEdgeList.add(value);
   }
 
-  public void removeFEdge(ForkingEdge value) {
+  private void removeFEdge(ForkingEdge value) {
     mFEdgeList.remove(value);
   }
 
@@ -320,15 +304,11 @@ public class BasicNode implements Copyable {
     return mFEdgeList;
   }
 
-  public void addPEdge(RandomEdge value) {
+  private void addPEdge(RandomEdge value) {
     mPEdgeList.add(value);
   }
 
-  public RandomEdge getPEdgeAt(int index) {
-    return mPEdgeList.get(index);
-  }
-
-  public void removePEdge(RandomEdge value) {
+  private void removePEdge(RandomEdge value) {
     mPEdgeList.remove(value);
   }
 
@@ -354,15 +334,11 @@ public class BasicNode implements Copyable {
     return copy;
   }
 
-  public void addIEdge(InterruptEdge value) {
+  private void addIEdge(InterruptEdge value) {
     mIEdgeList.add(value);
   }
 
-  public InterruptEdge getIEdgeAt(int index) {
-    return mIEdgeList.get(index);
-  }
-
-  public void removeIEdge(InterruptEdge value) {
+  private void removeIEdge(InterruptEdge value) {
     mIEdgeList.remove(value);
   }
 

@@ -18,7 +18,7 @@ import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
  */
 public class CopyNodesAction extends EditorAction {
 
-  Set<Node> mNodes = new HashSet<Node>();
+  private Set<Node> mNodes = new HashSet<Node>();
   Set<RemoveNodeAction> mRemoveNodeActions = new HashSet<RemoveNodeAction>();
   WorkSpacePanel mWorkSpace = null;
   SceneFlowEditor mSceneFlowEditor;

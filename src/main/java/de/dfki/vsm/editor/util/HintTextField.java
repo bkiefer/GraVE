@@ -15,6 +15,7 @@ import javax.swing.JTextField;
  *
  * @author mfallas
  */
+@SuppressWarnings("serial")
 public class HintTextField extends JTextField implements FocusListener {
 
   private final String hint;

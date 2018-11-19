@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.TransferHandler;
 
+@SuppressWarnings("serial")
 public final class SceneFlowPaletteItem extends JLabel implements Transferable {
 
   private final String mToolTipText;
@@ -32,7 +33,9 @@ public final class SceneFlowPaletteItem extends JLabel implements Transferable {
   private final DragSourceListener mDragSourceListener;
 
   // Create a sceneflow element item
-  public SceneFlowPaletteItem(final String text, final String info, final ImageIcon stdIcon, final ImageIcon rollIcon, final ImageIcon dragIcon, final Object data) {
+  public SceneFlowPaletteItem(final String text, final String info,
+      final ImageIcon stdIcon, final ImageIcon rollIcon, final ImageIcon dragIcon,
+      final Object data) {
     mToolTipText = text;
     //ICONS
     mStandardIcon = stdIcon;
@@ -64,34 +67,34 @@ public final class SceneFlowPaletteItem extends JLabel implements Transferable {
         setIcon(mStandardIcon);
       }
     });
+
     mDragSourceListener = new DragSourceListener() {
       @Override
       public void dragEnter(DragSourceDragEvent dsde) {
-//                System.out.println("drag enter");
+        // System.out.println("drag enter");
       }
 
       @Override
       public void dragOver(DragSourceDragEvent dsde) {
-
-//                System.out.println("drag over");
+        // System.out.println("drag over");
       }
 
       @Override
       public void dropActionChanged(DragSourceDragEvent dsde) {
-//                System.out.println("drag action changed");
+        // System.out.println("drag action changed");
       }
 
       @Override
       public void dragExit(DragSourceEvent dse) {
-
-//                System.out.println("drag exit");
+        // System.out.println("drag exit");
       }
 
       @Override
       public void dragDropEnd(DragSourceDropEvent dsde) {
-//                System.out.println("drag drop end");
+        // System.out.println("drag drop end");
       }
     };
+
     mDragGestureListener = new DragGestureListener() {
       @Override
       public void dragGestureRecognized(DragGestureEvent event) {
@@ -123,12 +126,4 @@ public final class SceneFlowPaletteItem extends JLabel implements Transferable {
     return null;
   }
 
-//    @Override
-//    public final Icon getIcon() {
-//        return mStandardIcon;
-//    }
-//    @Override
-//    public final Icon getRolloverIcon() {
-//        return mRollOverIcon;
-//    }
 }

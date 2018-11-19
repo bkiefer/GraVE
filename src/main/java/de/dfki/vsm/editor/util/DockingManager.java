@@ -28,7 +28,6 @@ public class DockingManager {
   private ArrayList<DockPoint> mDockPoints = new ArrayList<DockPoint>();
   private Hashtable<Edge, DockPoint> mEdgeDockPoints = new Hashtable<Edge, DockPoint>();
   private Hashtable<Edge, DockPoint> mEdgeSecondDockPoints = new Hashtable<Edge, DockPoint>();
-  private final Logger mLogger = LoggerFactory.getLogger(DockingManager.class);;
   private EditorConfig mEditorConfig;
 
   public DockingManager(Node node) {
@@ -53,12 +52,10 @@ public class DockingManager {
     switch (mNodeType) {
       case BasicNode:
         initNodeDockPoints();
-
         break;
 
       case SuperNode:
         initSuperNodeDockPoints();
-
         break;
     }
   }
@@ -450,7 +447,7 @@ public class DockingManager {
     }
   }
 
-  class DockPoint {
+  private static class DockPoint {
 
     static final String sSTARTSIGN_TYPE = "start pos dock point";
     String mName = null;

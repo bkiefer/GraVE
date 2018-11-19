@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.Preferences;
 import de.dfki.vsm.editor.Comment;
-import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.model.flow.*;
 
@@ -22,6 +21,7 @@ import de.dfki.vsm.model.flow.*;
  * @author Sergio Soto
  * @author Gregor Mehlmann
  */
+@SuppressWarnings("serial")
 public class SceneFlowPalettePanel extends JPanel {
 
   private final SceneFlowPaletteItem mSuperNodeEntry
@@ -70,7 +70,8 @@ public class SceneFlowPalettePanel extends JPanel {
                   new Comment());
 
   //
-  private final Logger mLogger = LoggerFactory.getLogger(SceneFlowPalettePanel.class);;
+  private static final Logger mLogger =
+      LoggerFactory.getLogger(SceneFlowPalettePanel.class);;
 
   //
   private final int paletteDimension = 230;

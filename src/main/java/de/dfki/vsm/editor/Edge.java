@@ -41,6 +41,7 @@ import de.dfki.vsm.util.evt.EventObject;
  * @author Patrick Gebhard
  * @author Gregor Mehlmann
  */
+@SuppressWarnings("serial")
 public class Edge extends JComponent implements EventListener, Observer, MouseListener {
 
   private final EventDispatcher mDispatcher
@@ -77,13 +78,13 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   public Point mLastTargetNodeDockPoint = null;
 
   // Activity monitor
-  private final Logger mLogger = LoggerFactory.getLogger(Edge.class);;
+  private static final Logger mLogger = LoggerFactory.getLogger(Edge.class);
 
   // edit panel
   private RSyntaxTextArea mEdgeTextArea = null;
   //private JTextPane mValueEditor = null;
   private boolean mEditMode = false;
-  SimpleAttributeSet attribs;
+
 
   //
   // other stuff
@@ -96,8 +97,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     Color mColor;
   }
 
-  @SuppressWarnings("serial")
-  static final Map<Class<? extends AbstractEdge>, Props> edgeProperties =
+  private static final Map<Class<? extends AbstractEdge>, Props> edgeProperties =
       new HashMap<Class<? extends AbstractEdge>, Props>() {{
         put(EpsilonEdge.class,
             new Props("Epsilon", "Unconditioned edge", sEEDGE_COLOR));
@@ -113,27 +113,14 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
             new Props("Interruptive", "Edge with a logical condition that interrupts supernodes", sIEDGE_COLOR));
       }};
 
-
-
   private EditorConfig mEditorConfig;
   private Timer mVisualisationTimer;
   private UndoManager mUndoManager;
   private boolean firstDrag = false;
 
-  /*
-  public enum TYPE {
-    EEDGE, TEDGE, CEDGE, PEDGE, IEDGE, FEDGE
-  }
-  */
-
   private Color color() {
     if (mDataEdge == null) return null;
     return edgeProperties.get(mDataEdge.getClass()).mColor;
-  }
-
-  private String description() {
-    if (mDataEdge == null) return null;
-    return edgeProperties.get(mDataEdge.getClass()).mDescription;
   }
 
   private String name() {
@@ -174,7 +161,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     update();
   }
 
-  public de.dfki.vsm.model.flow.AbstractEdge getDataEdge() {
+  public AbstractEdge getDataEdge() {
     return mDataEdge;
   }
 
@@ -200,7 +187,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     mEdgeTextArea.setText(s);
   }
 
-  public void update() {
+  private void update() {
     if (mDataEdge != null) {
       if (mEdgeTextArea != null)
         mEdgeTextArea.setForeground(color());
@@ -237,7 +224,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       computeTextBoxBounds();
   }
 
-  class MyDocumentListener implements DocumentListener {
+  private class MyDocumentListener implements DocumentListener {
     @Override
     // character addsed
     public void insertUpdate(DocumentEvent e) {
@@ -261,13 +248,9 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     * Initialize mTextPane and mValueEditor
    */
   private void initEditBox() {
-    //setLayout(null);
-
     Color borderColor = color();
-
     mEdgeTextArea = new RSyntaxTextArea();
     this.add(mEdgeTextArea);
-    //mEdgeTextArea.setLayout(new BoxLayout(mEdgeTextArea, BoxLayout.Y_AXIS));
     mEdgeTextArea.setBackground(Color.WHITE);
     // Get rid of annoying yellow line
     mEdgeTextArea.setHighlighter(null);
@@ -287,17 +270,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
     // Attributes
     mEdgeTextArea.setFont(this.getFont());
-
-    //attribs = new SimpleAttributeSet();
-    //StyleConstants.setAlignment(attribs, StyleConstants.ALIGN_CENTER);
-    //StyleConstants.setFontFamily(attribs, Font.SANS_SERIF);
-    //StyleConstants.setFontSize(attribs, 16);
-    //mValueEditor.setParagraphAttributes(attribs, true);
-
-    // TODO: What does this do?
-    //mTextPanel.add(Box.createRigidArea(new Dimension(5, 5)));
-    //mTextPanel.add(mValueEditor);
-    //mEdgeTextArea.add(Box.createRigidArea(new Dimension(5, 5)));
 
     if (mDataEdge != null) {
       mEdgeTextArea.setText(mDataEdge.getContent());
@@ -337,7 +309,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
   /*
     *   Take input value of mValueEditor and set it as value of the edge
    */
-  public void updateFromTextEditor() {
+  private void updateFromTextEditor() {
     String input = mEdgeTextArea.getText();
     if (mDataEdge != null) {
       try {
@@ -394,9 +366,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       deselectMCs();
       mCEPSelected = true;
     }
-
-    // showActivity();
-    // revalidate();
     repaint(100);
 
     // show context menu

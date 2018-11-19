@@ -54,7 +54,7 @@ public class GridManager {
 
   // TODO: MUST BE ADAPTED, THE SIZE OF THE COMMAND BADGES IS NOT TAKEN INTO
   // ACCOUNT, WHICH LEADS TO ERRORS
-  public Dimension calculateWorkArea(int nodeWidth, int nodeHeight) {
+  private Dimension calculateWorkArea(int nodeWidth, int nodeHeight) {
     int width = mWorkSpacePanel.getSize().width;
     int height = mWorkSpacePanel.getSize().height;
     for (BasicNode n : mWorkSpacePanel.getSceneFlowEditor().getSceneFlow()) {
@@ -68,7 +68,7 @@ public class GridManager {
     return new Dimension(width, height);
   }
 
-  public final void compute() {
+  private final void compute() {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
 
     Dimension area = calculateWorkArea(config.sGRID_NODEWIDTH, config.sGRID_NODEHEIGHT);
@@ -229,23 +229,24 @@ public class GridManager {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
     isDebug = config.sSHOW_SMART_PATH_DEBUG;
     mPlacedNodes = new HashSet<>();
+    compute();
   }
 
   public void update(SuperNode superNode) {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
     isDebug = config.sSHOW_SMART_PATH_DEBUG;
     mPlacedNodes = new HashSet<>();
+    compute();
   }
 
   //private Point isBiggerThan
   public void drawGrid(Graphics2D g2d) {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
+    compute();
     if (config.sSHOWGRID) {
       g2d.setStroke(new BasicStroke(1.0f));
 
       for (Rectangle r : mNodeAreas) {
-        int ai = mNodeAreas.indexOf(r);
-
         // draw a litte cross
         g2d.setColor(Color.GRAY.brighter());
 
@@ -261,8 +262,6 @@ public class GridManager {
       if (isDebug) {
         for (GridRectangle[] r : mTransitionArea) {
           for (GridRectangle s : r) {
-            int ai = mNodeAreas.indexOf(r);
-
             // draw a litte cross
             g2d.setColor(new Color(230, 230, 230, 200));
             g2d.drawLine(s.x + s.width / 2 - 2, s.y + s.height / 2, s.x + s.width / 2 + 2,
@@ -501,6 +500,7 @@ public class GridManager {
 
     return null;
   }
+  /*
 
   class PComparator implements Comparator<Point> {
 
@@ -515,4 +515,5 @@ public class GridManager {
       }
     }
   }
+  */
 }

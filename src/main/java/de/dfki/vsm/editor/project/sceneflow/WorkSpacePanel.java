@@ -40,6 +40,7 @@ import de.dfki.vsm.util.evt.EventObject;
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
+@SuppressWarnings("serial")
 public final class WorkSpacePanel extends JPanel implements EventListener, MouseListener, MouseMotionListener {
 
   // The clipboard
@@ -53,7 +54,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
   // Flags for mouse interaction
   private Node mSelectedNode = null;
-  public Edge mSelectedEdge = null;
+  private Edge mSelectedEdge = null;
   private Comment mSelectedComment = null;
   private CmdBadge mSelectedCmdBadge = null;
   private Rectangle2D.Double mAreaSelection = null;
@@ -429,7 +430,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    * AbstractEdge creation
    *
    */
-  public void createNewEdgeSelectSourceNode(AbstractEdge edge, int x, int y) {
+  private void createNewEdgeSelectSourceNode(AbstractEdge edge, int x, int y) {
 
     // Try to find the c on which the edge was dropped. If we do not find
     // such a c then the edge was dropped on the drawing area of the workspace
@@ -471,7 +472,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    *
    */
-  public void createNewEdgeSelectTargetNode(int x, int y) {
+  private void createNewEdgeSelectTargetNode(int x, int y) {
     mSelectTargetNodeMode = false;
 
     // repaint(100);
@@ -514,7 +515,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    *
    */
-  public void clear() {
+  private void clear() {
 
     // Reset mouse interaction
     mIgnoreMouseInput = true;
@@ -651,7 +652,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     repaint(100);
   }
 
-  public void straightenAllOutOfBoundEdges() {
+  private void straightenAllOutOfBoundEdges() {
     for (Edge edge : mEdgeSet) {
       if ((edge.mEg.mCCrtl1.x < 0) || (edge.mEg.mCCrtl1.y < 0) || (edge.mEg.mCCrtl2.x < 0)
               || (edge.mEg.mCCrtl2.y < 0)) {
@@ -727,7 +728,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
   /**
    *
-   *
+   * TODO: ADD "CREATE XEDGE" FOR ALL LEGAL EDGES STARTING AT THIS NODE
    */
   public void showContextMenu(MouseEvent evt, Node node) {
     JPopupMenu pop = new JPopupMenu();
@@ -757,6 +758,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
         pop.add(new JSeparator());
       }
 
+      // TODO: MAYBE INVERT: IF NO CMD, ADD ONE
       if (node.getDataNode().getCmd() != null) {
         item = new JMenuItem("Edit Command");
 
@@ -818,7 +820,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    *
    */
-  public void multipleNodesContextMenu(MouseEvent evt, Node node) {
+  private void multipleNodesContextMenu(MouseEvent evt, Node node) {
 
     // remove History node for actions
     HashSet<Node> filteredSelectedNodes = new HashSet<>();

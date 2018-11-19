@@ -17,11 +17,11 @@ import de.dfki.vsm.util.cpy.Copyable;
 @XmlType(name="Comment")
 public class CommentBadge implements Copyable {
 
-  protected SuperNode mParentNode = null;
-  protected String mHTMLText = "";
-  protected Boundary mBoundary;
-  protected int mFontSize;
-  JEditorPane mTextEditor;
+  private SuperNode mParentNode = null;
+  private String mHTMLText = "";
+  private Boundary mBoundary;
+  private int mFontSize;
+  private JEditorPane mTextEditor;
 
   public void setParentNode(SuperNode value) {
     mParentNode = value;

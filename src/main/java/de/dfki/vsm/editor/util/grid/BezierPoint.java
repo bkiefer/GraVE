@@ -12,7 +12,7 @@ package de.dfki.vsm.editor.util.grid;
  */
 public class BezierPoint {
 
-  double x, y;
+  private double x, y;
 
   public BezierPoint(double x, double y) {
     this.x = x;

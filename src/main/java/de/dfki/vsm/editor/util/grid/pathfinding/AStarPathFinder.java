@@ -435,7 +435,7 @@ public class AStarPathFinder implements PathFinder, PathFindingContext {
   /**
    * A single node in the search graph
    */
-  private class Node implements Comparable {
+  private class Node implements Comparable<Node> {
 
     /** The x coordinate of the node */
     private int x;
@@ -488,18 +488,10 @@ public class AStarPathFinder implements PathFinder, PathFindingContext {
     /**
      * @see Comparable#compareTo(Object)
      */
-    public int compareTo(Object other) {
-      Node o = (Node) other;
+    public int compareTo(Node n) {
       float f = heuristic + cost;
-      float of = o.heuristic + o.cost;
-
-      if (f < of) {
-        return -1;
-      } else if (f > of) {
-        return 1;
-      } else {
-        return 0;
-      }
+      float of = n.heuristic + n.cost;
+      return (int)Math.signum(f - of);
     }
 
     /**

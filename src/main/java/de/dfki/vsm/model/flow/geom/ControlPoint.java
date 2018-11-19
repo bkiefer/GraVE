@@ -54,7 +54,7 @@ public final class ControlPoint implements Copyable {
     mCtrlYPos = Integer.MIN_VALUE;
   }
 
-  public ControlPoint(int xPos, int ctrlXPos, int yPos, int ctrlYPos) {
+  private ControlPoint(int xPos, int ctrlXPos, int yPos, int ctrlYPos) {
     mXPpos = xPos;
     mYPos = yPos;
     mCtrlXPos = ctrlXPos;

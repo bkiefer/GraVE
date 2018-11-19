@@ -55,7 +55,7 @@ public final class Node extends JComponent implements EventListener, Observer {
 
   // The color of the node
   // TODO: eventually move computation of color to paint component
-  public Color mColor;
+  private Color mColor;
 
   private boolean mIsActive;
 

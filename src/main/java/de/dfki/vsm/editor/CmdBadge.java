@@ -23,6 +23,7 @@ import javax.swing.event.DocumentListener;
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
+@SuppressWarnings("serial")
 public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer {
 
   //
@@ -127,7 +128,7 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
       setSize(new Dimension(getWidth(), getHeight()));
     }
   }
-  
+
   private void computeAndSetNewSize() {
     int lines = (int) getText().chars().filter(x -> x == '\n').count() + 1;
     String longestLine = Arrays.asList(getText().split("\n")).stream()
@@ -139,8 +140,7 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
     newWidth = newWidth > maxWidth? maxWidth : newWidth;
     newHeight = newHeight > maxHeight? maxHeight : newHeight;
     setSize(new Dimension(newWidth, newHeight));
-    setLocation(mNode.getLocation().x + (mEditorConfig.sNODEWIDTH / 2)
-            - (newWidth / 2),
+    setLocation(mNode.getLocation().x + (mEditorConfig.sNODEWIDTH - newWidth)/2,
             mNode.getLocation().y + mEditorConfig.sNODEHEIGHT);
   }
 

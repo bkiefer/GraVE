@@ -1,7 +1,5 @@
 package de.dfki.vsm.editor.project.sceneflow;
 
-import static de.dfki.vsm.Preferences.getPrefs;
-
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -22,7 +20,6 @@ import javax.swing.undo.UndoManager;
 //~--- non-JDK imports --------------------------------------------------------
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
-import de.dfki.vsm.Preferences;
 import de.dfki.vsm.editor.NameEditor;
 import de.dfki.vsm.editor.event.ElementEditorToggledEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
@@ -237,13 +234,6 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     return mNewElementDisplay.isVisible();
   }
 
-  public void showElementDisplay() {
-    boolean v = mNewElementDisplay.isVisible()? false : true;
-    mEditorProject.getEditorConfig().sSHOW_ELEMENTS = v;
-    mEditorProject.getEditorConfig()
-            .save(mEditorProject.getProjectFile().getParentFile());
-  }
-
   public boolean isElementDisplayVisible() {
     return mNewElementDisplay.isVisible();
   }
@@ -327,13 +317,12 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     //mElementEditor.refresh();
   }
 
-  class SceneFlowImage extends TransferHandler implements Transferable {
+  private class SceneFlowImage extends TransferHandler implements Transferable {
 
     private final DataFlavor flavors[]
             = {
               DataFlavor.imageFlavor
             };
-    private JPanel source;
     private Image image;
 
     @Override
@@ -362,17 +351,12 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     public Transferable createTransferable(JComponent comp) {
 
       // Clear
-      source = null;
       image = new BufferedImage(comp.getWidth(), comp.getHeight(), BufferedImage.TYPE_INT_RGB);
 
       if (comp instanceof JPanel) {
-        JPanel panel = (JPanel) comp;
         Graphics g = image.getGraphics();
-
         comp.paint(g);
         g.dispose();
-        source = panel;
-
         return this;
       }
 

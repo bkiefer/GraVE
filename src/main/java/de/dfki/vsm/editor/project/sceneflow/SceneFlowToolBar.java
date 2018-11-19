@@ -143,8 +143,8 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   private JScrollBar mPathScrollBar;
   private JScrollPane mPathScrollPane;
 
-  Action undoAction = UndoAction.getInstance();
-  Action redoAction = RedoAction.getInstance();
+  private Action undoAction = UndoAction.getInstance();
+  private Action redoAction = RedoAction.getInstance();
 
   // TODO: why is this here?
   // It is here to simplify code in the zooming in/out operations
@@ -228,11 +228,6 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     refreshDisplay();
 
     return sn;
-  }
-
-  public void setPathComponent(int index, SuperNode supernode) {
-    mPathComponents.set(index, supernode);
-    refreshDisplay();
   }
 
   private void sanitizeButton(JButton b, Dimension bDim) {

@@ -13,6 +13,8 @@ import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.model.flow.AbstractEdge;
+import de.dfki.vsm.model.flow.geom.ControlPoint;
+import de.dfki.vsm.model.flow.geom.EdgeArrow;
 
 /**
  * @author Patrick Gebhard
@@ -24,14 +26,14 @@ import de.dfki.vsm.model.flow.AbstractEdge;
  */
 public final class EdgeGraphics {
 
-  Edge mEdge = null;
-  AbstractEdge mDataEdge = null;
-  Node mSourceNode = null;
-  Node mTargetNode = null;
-  public Point[] mCoordList = new Point[4];    // the edge curve control points
-  public int[] mXPoints = new int[4];
-  public int[] mYPoints = new int[4];
-  public Point[] mCurveControlPoints = new Point[4];
+  private Edge mEdge = null;
+  private AbstractEdge mDataEdge = null;
+  private Node mSourceNode = null;
+  private Node mTargetNode = null;
+  private Point[] mCoordList = new Point[4];    // the edge curve control points
+  private int[] mXPoints = new int[4];
+  private int[] mYPoints = new int[4];
+  private Point[] mCurveControlPoints = new Point[4];
   public CubicCurve2D.Double mCurve = null;
   public CubicCurve2D.Double mLeftCurve = null;
   public Point mAbsoluteStartPos = new Point();
@@ -43,11 +45,11 @@ public final class EdgeGraphics {
   public Polygon mHead = new Polygon();
 
   // general flags
-  boolean mPointingToSameNode = false;
+  private boolean mPointingToSameNode = false;
   private final EditorConfig mEditorConfig;
   public double mArrowDir;
-  double mArrow1Point;
-  double mArrow2Point;
+  private double mArrow1Point;
+  private double mArrow2Point;
   private final int mCCtrmin = 15; //MIN POSITION OF THE CONTROLPOINTS OF THE EDGE
 
   public EdgeGraphics(Edge e, Point sourceDockpoint, Point targetDockpoint) {
@@ -92,7 +94,7 @@ public final class EdgeGraphics {
     computeBounds();
   }
 
-  void computeBounds() {
+  private void computeBounds() {
 
     // set bounds of edge
     Rectangle bounds = mCurve.getBounds();
@@ -323,7 +325,7 @@ public final class EdgeGraphics {
     sanitizeControPoint();
   }
 
-  public boolean controlPointHandlerContainsPoint(Point point, int threshold) {
+  private boolean controlPointHandlerContainsPoint(Point point, int threshold) {
     if (controlPoint1HandlerContainsPoint(point, threshold)) {
       return true;
     }
@@ -476,23 +478,19 @@ public final class EdgeGraphics {
     return false;
   }
 
-  public void updateDataModel() {
+  private void updateDataModel() {
 
     // add the graphic information to the sceneflow!
-    de.dfki.vsm.model.flow.geom.EdgeArrow arrow
-            = new de.dfki.vsm.model.flow.geom.EdgeArrow();
-    ArrayList<de.dfki.vsm.model.flow.geom.ControlPoint> xmlEdgePoints
-            = new ArrayList<>();
-    de.dfki.vsm.model.flow.geom.ControlPoint startPoint
-            = new de.dfki.vsm.model.flow.geom.ControlPoint();
+    EdgeArrow arrow = new EdgeArrow();
+    ArrayList<ControlPoint> xmlEdgePoints = new ArrayList<>();
+    ControlPoint startPoint = new ControlPoint();
 
     startPoint.setXPos((int) mCurve.x1);
     startPoint.setYPos((int) mCurve.y1);
     startPoint.setCtrlXPos((int) mCurve.ctrlx1);
     startPoint.setCtrlYPos((int) mCurve.ctrly1);
 
-    de.dfki.vsm.model.flow.geom.ControlPoint endPoint
-            = new de.dfki.vsm.model.flow.geom.ControlPoint();
+    ControlPoint endPoint = new ControlPoint();
 
     endPoint.setXPos((int) mCurve.x2);
     endPoint.setYPos((int) mCurve.y2);

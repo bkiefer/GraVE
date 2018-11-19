@@ -157,9 +157,7 @@ public class AltStartNodeManager {
   }
 
   public void createAltStartNode(String s, String a) {
-    String x = (s.equals("none")
-            ? ""
-            : s);
+    String x = (s.equals("none") ? "" : s);
     BasicNode n1 = ((SuperNode) mEdge.getTargetNode()).getChildNodeById(x);
     BasicNode n2 = ((SuperNode) mEdge.getTargetNode()).getChildNodeById(a);
     Pair<String, BasicNode> pair1 = new Pair<String, BasicNode>(x, n1);
