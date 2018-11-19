@@ -24,6 +24,7 @@ import de.dfki.vsm.util.evt.EventObject;
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
+@SuppressWarnings("serial")
 public final class Node extends JComponent implements EventListener, Observer {
 
   // TODO: move this condition to the data node
@@ -35,7 +36,7 @@ public final class Node extends JComponent implements EventListener, Observer {
 
   // private Point mStartSignPosition;
   //
-  public DockingManager mDockingManager = null;
+  private DockingManager mDockingManager = null;
 
   // interaction flags
   public boolean mSelected = false;
@@ -290,7 +291,6 @@ public final class Node extends JComponent implements EventListener, Observer {
     if (mStartSign != null) {
       mDockingManager.releaseDockPointForStartSign();
       mWorkSpace.remove(mStartSign);
-      mWorkSpace.mObservable.deleteObserver(mStartSign);
       mStartSign = null;
     }
 
@@ -303,19 +303,13 @@ public final class Node extends JComponent implements EventListener, Observer {
 
   // TODO: move to workspace
   public void addStartSign() {
-    Point p = mDockingManager.occupyDockPointForStartSign();
-
-    mStartSign = new StartSign(this, p);
+    mStartSign = new StartSign(this);
     mWorkSpace.add(mStartSign);
-    mWorkSpace.mObservable.addObserver(mStartSign);
   }
 
   public void addAltStartSign() {
-    Point p = mDockingManager.occupyDockPointForStartSign();
-
-    mAltStartSign = new StartSign(this, p, true, Color.LIGHT_GRAY);
+    mAltStartSign = new StartSign(this, true, Color.LIGHT_GRAY);
     mWorkSpace.add(mAltStartSign);
-    mWorkSpace.mObservable.addObserver(mAltStartSign);
   }
 
   // Tells the node that an edge connects and that node is sourcenode

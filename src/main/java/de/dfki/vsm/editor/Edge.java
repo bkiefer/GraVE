@@ -44,8 +44,7 @@ import de.dfki.vsm.util.evt.EventObject;
 @SuppressWarnings("serial")
 public class Edge extends JComponent implements EventListener, Observer, MouseListener {
 
-  private final EventDispatcher mDispatcher
-          = EventDispatcher.getInstance();
+  private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
 
   // Reference to data model edges and nodes
   private AbstractEdge mDataEdge = null;
@@ -310,14 +309,12 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
         mDataEdge.setContent(input);
       }
       catch (NumberFormatException ex) {
-        // TODO: WRITE THE ERROR WHERE IT'S VISIBLE (where is that?)
-        // Status Bar?
-
+        mWorkSpace.getSceneFlowEditor().setMessageLabelText(
+            "Not a number: " + input);
       }
       catch (Exception ex) {
-        // TODO: WRITE THE ERROR WHERE IT'S VISIBLE (where is that?)
-        // Status Bar?
-
+        mWorkSpace.getSceneFlowEditor().setMessageLabelText(
+            "Something wrong here: " + input);
       }
     }
     EditorInstance.getInstance().refresh();
@@ -412,8 +409,8 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       relPos.setLocation(e.getX() - relPos.x, e.getY() - relPos.y);
 
       // DEBUG System.out.println("set new dock point for pos " + relPos);
-      mSourceNode.mDockingManager.freeDockPoint(this);
-      mSourceNode.mDockingManager.getNearestDockPoint(this, relPos);
+      mSourceNode.getDockingManager().freeDockPoint(this);
+      mSourceNode.getDockingManager().getNearestDockPoint(this, relPos);
     }
 
     if (mCEPSelected) {
@@ -423,11 +420,11 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
       // DEBUG System.out.println("set new dock point for pos " + relPos);
       if (!mPointingToSameNode) {
-        mTargetNode.mDockingManager.freeDockPoint(this);
-        mTargetNode.mDockingManager.getNearestDockPoint(this, relPos);
+        mTargetNode.getDockingManager().freeDockPoint(this);
+        mTargetNode.getDockingManager().getNearestDockPoint(this, relPos);
       } else {
-        mTargetNode.mDockingManager.freeSecondDockPoint(this);
-        mTargetNode.mDockingManager.getNearestSecondDockPoint(this, relPos);
+        mTargetNode.getDockingManager().freeSecondDockPoint(this);
+        mTargetNode.getDockingManager().getNearestSecondDockPoint(this, relPos);
       }
     }
     deselectMCs();
@@ -455,15 +452,15 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       mEg.mCCrtl2.setLocation(p);
     if (mCEPSelected) {
       if (!mPointingToSameNode) {
-        mLastTargetNodeDockPoint = mTargetNode.mDockingManager.freeDockPoint(this);
+        mLastTargetNodeDockPoint = mTargetNode.getDockingManager().freeDockPoint(this);
       } else {
-        mLastTargetNodeDockPoint = mTargetNode.mDockingManager.freeSecondDockPoint(this);
+        mLastTargetNodeDockPoint = mTargetNode.getDockingManager().freeSecondDockPoint(this);
       }
       mEg.mAbsoluteEndPos.setLocation(p);
     }
 
     if (mCSPSelected) {
-      mSourceNode.mDockingManager.freeDockPoint(this);
+      mSourceNode.getDockingManager().freeDockPoint(this);
       // TODO store last start /end node and start and end pos
       mEg.mAbsoluteStartPos.setLocation(p);
     }
@@ -484,12 +481,12 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
     // disconnectEdge
     if (!mPointingToSameNode) {
-      mTargetNode.mDockingManager.freeDockPoint(this);
+      mTargetNode.getDockingManager().freeDockPoint(this);
     } else {
-      mTargetNode.mDockingManager.freeSecondDockPoint(this);
+      mTargetNode.getDockingManager().freeSecondDockPoint(this);
     }
 
-    mSourceNode.mDockingManager.freeDockPoint(this);
+    mSourceNode.getDockingManager().freeDockPoint(this);
     mEg.initEdgeGraphics(this, null, null);
   }
 
@@ -506,12 +503,13 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
   @Override
   public void paintComponent(java.awt.Graphics g) {
+    float lineWidth = mSourceNode.getWidth() / 30.0f;
     Graphics2D graphics = (Graphics2D) g;
     mEg.updateDrawingParameters();
 
     graphics.setColor(color());
     graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    graphics.setStroke(new BasicStroke(mEditorConfig.sNODEWIDTH / 30.0f, BasicStroke.CAP_BUTT,
+    graphics.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
             BasicStroke.JOIN_MITER));
     graphics.draw(mEg.mCurve);
 
@@ -534,7 +532,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
               (int) mEg.mCurve.ctrly1);
       graphics.drawLine((int) mEg.mCurve.x2, (int) mEg.mCurve.y2, (int) mEg.mCurve.ctrlx2,
               (int) mEg.mCurve.ctrly2);
-      graphics.setStroke(new BasicStroke(mEditorConfig.sNODEWIDTH / 30.0f, BasicStroke.CAP_BUTT,
+      graphics.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
               BasicStroke.JOIN_MITER));
 
       if (mCP1Selected) {
@@ -558,7 +556,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
       // This draws the arrow head
       graphics.fillPolygon(mEg.mHead);
     } else {
-      graphics.setStroke(new BasicStroke(mEditorConfig.sNODEWIDTH / 30.0f, BasicStroke.CAP_BUTT,
+      graphics.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
               BasicStroke.JOIN_MITER));
       // This draws the arrow head
       graphics.fillPolygon(mEg.mHead);

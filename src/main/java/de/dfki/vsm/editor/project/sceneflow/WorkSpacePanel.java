@@ -374,10 +374,8 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    *
    */
-  public void createNode(Point point, Node.Type type) {
-    Point correctedPoint = new Point(point.x - getEditorConfig().sGRID_NODEWIDTH / 2,
-            point.y - getEditorConfig().sGRID_NODEWIDTH / 2);
-
+  private void createNode(Point point, Node.Type type) {
+    Point correctedPoint = new Point(point.x, point.y);
     new CreateNodeAction(this, mGridManager.getNodeLocation(correctedPoint), type).run();
   }
 
@@ -965,7 +963,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     getSceneFlowManager().addActiveSuperNode(superNode);
     mSceneFlowEditor.addPathComponent(superNode);
 
-    mGridManager.update(superNode);
+    mGridManager.update();
 
     showCurrentWorkSpace();
   }
@@ -1012,7 +1010,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
             getSceneFlowManager().getCurrentActiveSuperNode());
     mEventCaster.convey(e);
     if (e.getNode() instanceof SuperNode) {
-      mGridManager.update((SuperNode) e.getNode());
+      mGridManager.update();
     }
     showCurrentWorkSpace();
   }

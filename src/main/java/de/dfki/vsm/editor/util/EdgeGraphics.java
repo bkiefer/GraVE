@@ -290,7 +290,7 @@ public final class EdgeGraphics {
 
       // let the start and end point bet placed at least one third of the mean
       // of width and height od nodes away from each other
-      double minDist = (mEditorConfig.sNODEHEIGHT + mEditorConfig.sNODEWIDTH) / 2 / 3;
+      double minDist = (mSourceNode.getHeight() + mSourceNode.getWidth()) / 2 / 3;
 
       for (Point p : freeSourceNodeDockPoints) {
         for (Point q : freeSourceNodeDockPoints) {

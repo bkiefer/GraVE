@@ -135,8 +135,8 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener {
     newWidth = newWidth > maxWidth? maxWidth : newWidth;
     newHeight = newHeight > maxHeight? maxHeight : newHeight;
     setSize(new Dimension(newWidth, newHeight));
-    setLocation(mNode.getLocation().x + (mEditorConfig.sNODEWIDTH - newWidth)/2,
-            mNode.getLocation().y + mEditorConfig.sNODEHEIGHT);
+    setLocation(mNode.getLocation().x + (mNode.getWidth() - newWidth)/2,
+        mNode.getLocation().y + mNode.getHeight());
   }
 
   public Node getNode() {

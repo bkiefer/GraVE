@@ -16,7 +16,9 @@ import de.dfki.vsm.util.TextFormat;
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
- */
+ *
+@SuppressWarnings("serial")
+// TODO: CURRENTLY NOT USED, UNCLEAR IF REACTIVATED, COULD SHOW ACCESSIBLE VARIABLES
 public class NodeVariableBadge extends JComponent {
 
   LocationType mLocation = LocationType.RIGHT;
@@ -190,3 +192,4 @@ public class NodeVariableBadge extends JComponent {
     }
   }
 }
+*/
