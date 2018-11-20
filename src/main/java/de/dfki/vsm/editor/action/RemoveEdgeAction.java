@@ -37,8 +37,6 @@ public class RemoveEdgeAction extends EdgeAction {
     mUndoManager.addEdit(new Edit());
     UndoAction.getInstance().refreshUndoState();
     RedoAction.getInstance().refreshRedoState();
-    this.mWorkSpace.mGridManager.deleteDockingPoints(mSourceGUINodeDockPoint);
-    this.mWorkSpace.mGridManager.deleteDockingPoints(mTargetGUINodeDockPoint);
     EditorInstance.getInstance().refresh();
   }
 

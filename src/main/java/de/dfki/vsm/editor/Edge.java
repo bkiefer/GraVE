@@ -9,12 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Timer;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.SimpleAttributeSet;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -75,9 +73,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
   // last dockpoints
   public Point mLastTargetNodeDockPoint = null;
-
-  // Activity monitor
-  private static final Logger mLogger = LoggerFactory.getLogger(Edge.class);
 
   // edit panel
   private RSyntaxTextArea mEdgeTextArea = null;

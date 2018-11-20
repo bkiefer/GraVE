@@ -1,6 +1,5 @@
 package de.dfki.vsm.editor.project;
 
-import java.awt.Dimension;
 import java.io.*;
 
 import javax.xml.bind.JAXBContext;
@@ -8,7 +7,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 //~--- non-JDK imports --------------------------------------------------------
@@ -35,37 +33,16 @@ public class EditorConfig {
   ////////////////////////////////////////////////////////////////////////////
   public int sNODEWIDTH = 100;
   public int sNODEHEIGHT = 100;
-  public int sSUPERNODEWIDTH = 100;
-  public int sSUPERNODEHEIGHT = 100;
-  @XmlTransient
-  public Dimension sNODESIZE = new Dimension(sNODEWIDTH, sNODEHEIGHT);
-  @XmlTransient
-  public Dimension sSUPERNODESIZE = new Dimension(sSUPERNODEWIDTH, sSUPERNODEHEIGHT);
-  public int sGRID_NODEWIDTH = 100;
-  public int sGRID_NODEHEIGHT = 100;
-  public int sGRID_XSCALE = 1;
-  public int sGRID_YSCALE = 1;
-  @XmlTransient
-  public int sGRID_XSPACE = sNODEWIDTH * sGRID_XSCALE;
-  @XmlTransient
-  public int sGRID_YSPACE = sNODEHEIGHT * sGRID_YSCALE;
-  @XmlTransient
-  public int sXOFFSET = sGRID_NODEWIDTH / 3;
-  @XmlTransient
-  public int sYOFFSET = sGRID_NODEHEIGHT / 3;
+  public float sGRID_SCALE = 2;
+  public float sZOOM_FACTOR = 1;
   public int sWORKSPACEFONTSIZE = 16;
   public float sEDITORFONTSIZE = 11;
-  public boolean sLAUNCHPLAYER = false;
   public boolean sSHOWGRID = true;
-  public boolean sVISUALISATION = true;
-  public boolean sVISUALIZATIONTRACE = true;
-  public int sVISUALISATIONTIME = 15;    // 25 = 1 second
   public boolean sSHOW_VARIABLE_BADGE_ON_WORKSPACE = true;
   public boolean sSHOW_SMART_PATH_DEBUG = false;
   public boolean sSHOWIDSOFNODES = true;
   public String sSCRIPT_FONT_TYPE = "Monospaced";
   public int sSCRIPT_FONT_SIZE = 16;
-  public boolean sSHOWSCENE_ELEMENTS = false;
   public boolean sAUTOHIDE_BOTTOMPANEL = true; // Saves the pricked pin of the bottom panel of the editor
   public String sMAINSUPERNODENAME = "default";
 
@@ -75,8 +52,6 @@ public class EditorConfig {
   public boolean sSHOW_CODEEDITOR = true;
   public int sCODE_DIVIDER_LOCATION = 450;
   public double sSCENEFLOW_SCENE_EDITOR_RATIO = 0.85;
-  public boolean sSHOW_GESTURES = true;
-  public int NUM_MAGNETS = 8;
 
   public EditorConfig() {
   }

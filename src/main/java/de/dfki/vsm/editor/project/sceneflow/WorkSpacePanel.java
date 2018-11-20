@@ -137,12 +137,16 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     // rebuild node position
     mGridManager.update();
 
+    /*
+    // TODO: THIS SEEMS FISHY. IF A NODE HAS A LOCATION, WHY SHOULD IT BE
+    // RELOCATED AT REFRESH?
     for (Node node : mNodeSet) {
       Point p = mGridManager.getNodeLocation(node.getLocation());
 
       node.resetLocation(p);
       node.getDataNode().setPosition(new Position(p.x, p.y));
     }
+    */
 
     revalidate();
     repaint(100);

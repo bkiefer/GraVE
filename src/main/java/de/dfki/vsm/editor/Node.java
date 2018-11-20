@@ -27,9 +27,6 @@ import de.dfki.vsm.util.evt.EventObject;
 @SuppressWarnings("serial")
 public final class Node extends JComponent implements EventListener, Observer {
 
-  // TODO: move this condition to the data node
-  private boolean mIsEndNode = true;
-
   // ToDO: move to workspace - just have a link here
   private StartSign mStartSign = null;
   private StartSign mAltStartSign = null;
@@ -84,15 +81,6 @@ public final class Node extends JComponent implements EventListener, Observer {
     // Init docking manager
     mDockingManager = new DockingManager(this);
 
-    // TODO: move this to data model
-    mIsEndNode = !mDataNode.hasEdge();
-
-    // check if connected edge(s) is/are cedge(s)
-    if (mDataNode.getFlavour().equals(BasicNode.FLAVOUR.CNODE)) {
-      // If no additional default edge is present - node is possible end node!
-      mIsEndNode = mDataNode.getDedge() == null;
-    }
-
     // Set initial position
     Point pos = new Point(mDataNode.getPosition().getXPos(),
             mDataNode.getPosition().getYPos());
@@ -118,20 +106,12 @@ public final class Node extends JComponent implements EventListener, Observer {
     return mType;
   }
 
-  public void setType(Type type) {
-    mType = type;
-  }
-
   public WorkSpacePanel getWorkSpace() {
     return mWorkSpace;
   }
 
   public BasicNode getDataNode() {
     return mDataNode;
-  }
-
-  public void setDataNode(SuperNode sNode) {
-    mDataNode = sNode;
   }
 
   public boolean containsPoint(int x, int y) {
@@ -146,7 +126,6 @@ public final class Node extends JComponent implements EventListener, Observer {
   public void update(Observable o, Object obj) {
     update();
   }
-
 
   private void setColor() {
     // Update the color of the node that has to be changed
@@ -187,23 +166,6 @@ public final class Node extends JComponent implements EventListener, Observer {
 
     if (mAltStartSign != null) {
       mAltStartSign.update();
-    }
-
-    /////////////////////////////////////font
-    // mLogger.message("BasicNode.update()");
-    mIsEndNode = !mDataNode.hasEdge();
-
-    // check if connected edge(s) is/are cedge(s)
-    if (mDataNode.getFlavour().equals(de.dfki.vsm.model.flow.BasicNode.FLAVOUR.CNODE)) {
-
-      // If no additional default edge is present - node is possible end node!
-      mIsEndNode = mDataNode.getDedge() == null;
-      ////System.out.println("Is end node " + mIsEndNode);
-    }
-
-    // / TODO: wozu das hier?
-    if (mDataNode.getFlavour().equals(de.dfki.vsm.model.flow.BasicNode.FLAVOUR.FNODE)) {
-      mIsEndNode = false;
     }
 
     // Update the font and the font metrics that have to be
@@ -314,8 +276,6 @@ public final class Node extends JComponent implements EventListener, Observer {
 
   // Tells the node that an edge connects and that node is sourcenode
   public Point connectEdgeAtSourceNode(Edge edge, Point point) {
-    mIsEndNode = false;
-
     // get location of node
     Point loc = getLocation();
 
@@ -379,8 +339,7 @@ public final class Node extends JComponent implements EventListener, Observer {
   public Point getCenterPoint() {
     Point loc = getLocation();
     Point c = new Point();
-    c.setLocation(loc.x + (getEditorConfig().sNODEWIDTH / 2),
-            loc.y + (getEditorConfig().sNODEHEIGHT / 2));
+    c.setLocation(loc.x + getWidth() / 2, loc.y + getHeight() / 2);
     return c;
   }
 
@@ -395,7 +354,7 @@ public final class Node extends JComponent implements EventListener, Observer {
     if (dp != null) {
       dp.setLocation(dp.x + loc.x, dp.y + loc.y);
     } else {
-      if (this.mIsEndNode) {
+      if (this.mDataNode.isEndNode()) {
         return (new Point(loc.x, loc.y + getHeight() / 2));
       } else {
         return (new Point(loc.x + getWidth(), loc.y + getHeight() / 2));
@@ -411,7 +370,7 @@ public final class Node extends JComponent implements EventListener, Observer {
     if (dp != null) {
       dp.setLocation(dp.x + loc.x, dp.y + loc.y);
     } else {
-      if (this.mIsEndNode) {
+      if (this.mDataNode.isEndNode()) {
         return (new Point(loc.x, loc.y + getHeight() / 2));
       } else {
         return (new Point(loc.x + getWidth(), loc.y + getHeight() / 2));
@@ -551,7 +510,7 @@ public final class Node extends JComponent implements EventListener, Observer {
         g2d.setColor(sSTART_SIGN_COLOR);
         g2d.drawRect(borderOffset, borderOffset, nodeWidth - borderOffset * 2,
                 nodeHeight - borderOffset * 2);
-      } else if (mIsEndNode) {
+      } else if (this.mDataNode.isEndNode()) {
         g2d.setStroke(new BasicStroke(borderSize));
         g2d.setColor(mColor.darker());
         g2d.drawRect(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 2,
@@ -576,7 +535,7 @@ public final class Node extends JComponent implements EventListener, Observer {
         g2d.setColor(sSTART_SIGN_COLOR);
         g2d.drawOval(borderOffset, borderOffset, nodeWidth - borderOffset * 2,
                 nodeHeight - borderOffset * 2);
-      } else if (mIsEndNode) {
+      } else if (this.mDataNode.isEndNode()) {
         g2d.setStroke(new BasicStroke(borderSize));
         g2d.setColor(mColor.darker());
         g2d.drawOval(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 2,

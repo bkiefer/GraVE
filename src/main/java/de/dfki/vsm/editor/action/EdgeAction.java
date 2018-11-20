@@ -2,9 +2,6 @@ package de.dfki.vsm.editor.action;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Set;
 
 import javax.swing.undo.UndoManager;
 
@@ -15,7 +12,6 @@ import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.grid.*;
-import de.dfki.vsm.editor.util.grid.pathfinding.Path;
 import de.dfki.vsm.model.flow.*;
 
 /**
@@ -50,15 +46,12 @@ public abstract class EdgeAction extends EditorAction {
     if (mGUIEdge == null) {
       mGUIEdge = new Edge(mWorkSpace, mDataEdge, mSourceGUINode, mTargetGUINode);
     } else {
+      mSourceGUINodeDockPoint = mSourceGUINode.connectEdgeAtSourceNode(mGUIEdge, mSourceGUINodeDockPoint);
       if (mSourceGUINode.equals(mTargetGUINode)) {
-
         // same nodes
-        mSourceGUINodeDockPoint = mSourceGUINode.connectEdgeAtSourceNode(mGUIEdge, mSourceGUINodeDockPoint);
         mTargetGUINodeDockPoint = mTargetGUINode.connectSelfPointingEdge(mGUIEdge, mTargetGUINodeDockPoint);
       } else {
-
         // different nodes
-        mSourceGUINodeDockPoint = mSourceGUINode.connectEdgeAtSourceNode(mGUIEdge, mSourceGUINodeDockPoint);
         mTargetGUINodeDockPoint = mTargetGUINode.connectEdgetAtTargetNode(mGUIEdge, new Point(50, 50));
       }
     }
@@ -138,11 +131,10 @@ public abstract class EdgeAction extends EditorAction {
   public void delete() {
 
     // Disconnect the GUI edge from the GUI nodes
+    mSourceGUINodeDockPoint = mSourceGUINode.disconnectEdge(mGUIEdge);
     if (mSourceGUINode.equals(mTargetGUINode)) {
-      mSourceGUINodeDockPoint = mSourceGUINode.disconnectEdge(mGUIEdge);
       mTargetGUINodeDockPoint = mTargetGUINode.disconnectSelfPointingEdge(mGUIEdge);
     } else {
-      mSourceGUINodeDockPoint = mSourceGUINode.disconnectEdge(mGUIEdge);
       mTargetGUINodeDockPoint = mTargetGUINode.disconnectEdge(mGUIEdge);
     }
     cleanUpData();

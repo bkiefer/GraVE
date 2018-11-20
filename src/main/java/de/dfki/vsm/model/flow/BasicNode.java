@@ -50,6 +50,8 @@ public class BasicNode implements Copyable {
   @XmlAttribute(name="history")
   protected boolean mIsHistoryNode = false;
 
+  protected boolean mIsEndNode = true;
+
   public Byte hasNone = new Byte("0");
   public Byte hasOne = new Byte("1");
   public Byte hasMany = new Byte("2");
@@ -156,19 +158,26 @@ public class BasicNode implements Copyable {
       addPEdge((RandomEdge) e);
     else if (e instanceof InterruptEdge)
       addIEdge((InterruptEdge) e);
+    // this is an end node if either it has no outgoing edges at all, or
+    // only outgoing conditional edges
   }
 
   public void removeEdge(AbstractEdge e) {
-    if ((e instanceof EpsilonEdge) || e instanceof TimeoutEdge)
-      mDEdge = null;
-    else if (e instanceof ForkingEdge)
-      removeFEdge((ForkingEdge) e);
-    else if (e instanceof GuardedEdge)
-      removeCEdge((GuardedEdge) e);
-    else if (e instanceof RandomEdge)
-      removePEdge((RandomEdge) e);
-    else if (e instanceof InterruptEdge)
+    if ((e instanceof EpsilonEdge) || e instanceof TimeoutEdge) {
+      mDEdge = null; return;
+    } else if (e instanceof ForkingEdge) {
+      removeFEdge((ForkingEdge) e); return;
+    } else if (e instanceof GuardedEdge) {
+      removeCEdge((GuardedEdge) e); return;
+    } else if (e instanceof RandomEdge) {
+      removePEdge((RandomEdge) e); return;
+    } else if (e instanceof InterruptEdge)
       removeIEdge((InterruptEdge) e);
+  }
+
+  public boolean isEndNode() {
+    FLAVOUR f = getFlavour();
+    return f == FLAVOUR.NONE || (f == FLAVOUR.CNODE && mDEdge == null);
   }
 
   /**
