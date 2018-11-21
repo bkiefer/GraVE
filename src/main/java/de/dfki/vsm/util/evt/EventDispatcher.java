@@ -37,14 +37,14 @@ public final class EventDispatcher {
   }
 
   // Dispatch an event object
-  private void dispatch(final EventObject event) {
+  private void dispatch(final Object event) {
     for (final EventListener listener : mListenerList) {
       listener.update(event);
     }
   }
 
   // Immediately schedule an event
-  public final void convey(final EventObject event) {
+  public final void convey(final Object event) {
     //schedule(event, 1);
     dispatch(event);
   }

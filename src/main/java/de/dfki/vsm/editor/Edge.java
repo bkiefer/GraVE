@@ -32,15 +32,13 @@ import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.EdgeGraphics;
 import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
 
 /**
  * @author Patrick Gebhard
  * @author Gregor Mehlmann
  */
 @SuppressWarnings("serial")
-public class Edge extends JComponent implements EventListener, Observer, MouseListener {
+public class Edge extends JComponent implements Observer, MouseListener {
 
   private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
 
@@ -584,13 +582,6 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
 
   public boolean isInEditMode() {
     return mEditMode;
-  }
-
-  /*
-   * Implements EventListener
-   */
-  @Override
-  public synchronized void update(EventObject event) {
   }
 
   /**

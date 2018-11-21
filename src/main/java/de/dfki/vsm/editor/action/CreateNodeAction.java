@@ -113,9 +113,6 @@ public class CreateNodeAction extends NodeAction {
 
     @Override
     public void redo() throws CannotRedoException {
-
-      // say IDMAnger thta id is used
-      mIDManager.setID(mGUINode);
       create();
     }
 

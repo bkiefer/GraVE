@@ -1,17 +1,17 @@
 package de.dfki.vsm.editor.event;
 
+import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.model.flow.AbstractEdge;
-import de.dfki.vsm.util.evt.EventObject;
 
 /**
  * @author Sergio Soto
  */
-public class EdgeEditEvent extends EventObject {
+public class EdgeEditEvent {
 
+  private Edge mView;
   private AbstractEdge mEdge;
 
-  public EdgeEditEvent(Object source, AbstractEdge edge) {
-    super(source);
+  public EdgeEditEvent(Edge view, AbstractEdge edge) {
     mEdge = edge;
   }
 
@@ -22,4 +22,9 @@ public class EdgeEditEvent extends EventObject {
   public String getEventDescription() {
     return "EdgeEditEvent(" + mEdge.getSourceUnid() + " -> " + mEdge.getTargetUnid() + ")";
   }
+
+  public Edge getGUIEdge() {
+    return mView;
+  }
+
 }

@@ -13,7 +13,6 @@ import de.dfki.vsm.editor.event.ProjectChangedEvent;
 import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
 import java.util.Arrays;
 import java.util.Comparator;
 import javax.swing.event.DocumentEvent;
@@ -24,7 +23,7 @@ import javax.swing.event.DocumentListener;
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public class CmdBadge extends RSyntaxTextArea implements EventListener {
+public class CmdBadge extends RSyntaxTextArea {
 
   //
   private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
@@ -148,9 +147,5 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener {
     super.setText(text);
     mNode.getDataNode().setCmd(text);
     computeAndSetNewSize();
-  }
-
-  @Override
-  public void update(EventObject event) {
   }
 }

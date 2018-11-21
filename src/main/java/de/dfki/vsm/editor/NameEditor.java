@@ -10,10 +10,8 @@ import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
 
 /**
- *
  *
  * @author Gregor Mehlmann
  *
@@ -55,7 +53,7 @@ public class NameEditor extends JPanel implements EventListener {
   }
 
   @Override
-  public void update(EventObject event) {
+  public void update(Object event) {
     if (event instanceof NodeSelectedEvent) {
 
       // Update the selected node
@@ -63,9 +61,6 @@ public class NameEditor extends JPanel implements EventListener {
 
       // Reload the node name
       mNameField.setText(mDataNode.getName());
-    } else {
-
-      // Do nothing
     }
   }
 

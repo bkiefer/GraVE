@@ -27,15 +27,13 @@ import de.dfki.vsm.editor.project.ProjectEditor;
 import de.dfki.vsm.editor.project.sceneflow.ClipBoard;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.project.ProjectConfig;
-import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
  * @author Gregor Mehlmann
  */
-public final class EditorInstance extends JFrame implements EventListener, ChangeListener {
+@SuppressWarnings("serial")
+public final class EditorInstance extends JFrame implements ChangeListener {
 
   // The singelton editor instance
   public static EditorInstance sInstance = null;
@@ -43,8 +41,6 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
   //private final RunTimeInstance mRunTime = RunTimeInstance.getInstance();
   // The singelton logger instance
   private final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);;
-  // The singelton event multicaster
-  private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
   // The editor's GUI components
   private final EditorMenuBar mEditorMenuBar;
   private final JTabbedPane mProjectEditors;
@@ -96,14 +92,16 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
     public void componentResized(ComponentEvent e) {
       getPrefs().FRAME_HEIGHT = getHeight();
       getPrefs().FRAME_WIDTH = getWidth();
-      getPrefs().save();
+      getPrefs();
+      Preferences.save();
     }
 
     @Override
     public void componentMoved(ComponentEvent e) {
       getPrefs().FRAME_POS_X = getX();
       getPrefs().FRAME_POS_Y = getY();
-      getPrefs().save();
+      getPrefs();
+      Preferences.save();
     }
 
     @Override
@@ -182,9 +180,6 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
 
     // handle resize and positioning
     this.addComponentListener(mComponentListener);
-
-    // Register the editor as event listener
-    mEventCaster.register(this);
   }
 
   private void setUIFonts() {
@@ -256,7 +251,6 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
             getPrefs().FRAME_HEIGHT);
 
     // check systems monitor setup
-    Rectangle virtualBounds = new Rectangle();
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     GraphicsDevice[] gs = ge.getScreenDevices();
 
@@ -450,8 +444,8 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
           // Try to write the editor project
           if (project.write()) {
             // Refresh the title of the project tab
-            final int index = mProjectEditors.getSelectedIndex();
-            final String title = mProjectEditors.getTitleAt(index);
+            //final int index = mProjectEditors.getSelectedIndex();
+            //final String title = mProjectEditors.getTitleAt(index);
             setTabNameSaved();
             // Update rectent project list
             updateRecentProjects(project);
@@ -496,18 +490,21 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
 
     // Create an AddButton
     final AddButton mCloseButton = new AddButton();
-    mCloseButton.setIcon(getPrefs().ICON_CANCEL_STANDARD_TINY);
+    getPrefs();
+    mCloseButton.setIcon(Preferences.ICON_CANCEL_STANDARD_TINY);
     mCloseButton.setTabPos(mProjectEditors.getTabCount() - 1);
     mCloseButton.removeMouseListener(mCloseButton.getMouseListeners()[1]);
     mCloseButton.addMouseListener(new java.awt.event.MouseAdapter() {
       @Override
       public void mouseEntered(MouseEvent me) {
-        mCloseButton.setIcon(getPrefs().ICON_CANCEL_ROLLOVER_TINY);
+        getPrefs();
+        mCloseButton.setIcon(Preferences.ICON_CANCEL_ROLLOVER_TINY);
       }
 
       @Override
       public void mouseExited(MouseEvent me) {
-        mCloseButton.setIcon(getPrefs().ICON_CANCEL_STANDARD_TINY);
+        getPrefs();
+        mCloseButton.setIcon(Preferences.ICON_CANCEL_STANDARD_TINY);
       }
 
       @Override
@@ -578,7 +575,7 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
           // Try to write the editor project
           if (project.write(file)) {
             // Refresh the title of the project tab
-            final int index = mProjectEditors.getSelectedIndex();
+            //final int index = mProjectEditors.getSelectedIndex();
             setTabNameSaved();
             // Update rectent project list
             updateRecentProjects(project);
@@ -733,7 +730,8 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
   public void updateRecentProjects(final EditorProject project) {
     String projectPath = project.getProjectPath();
     String projectName = project.getProjectName();
-    String projectDate = getPrefs().sDATE_FORMAT.format(new Date());
+    getPrefs();
+    String projectDate = Preferences.sDATE_FORMAT.format(new Date());
 
     if (getPrefs().recentProjectPaths.contains(projectPath)) {
       int index = getPrefs().recentProjectPaths.indexOf(projectPath);
@@ -755,11 +753,15 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
         getPrefs().recentProjectNames.remove(index);
         getPrefs().recentProjectNames.add(index, projectName); */
       }
-    } else if (projectPath != null && !projectPath.contains(getPrefs().sSAMPLE_PROJECTS) && !projectPath.contains(getPrefs().sTUTORIALS_PROJECTS)) {
-      // case: project not in recent list
-      getPrefs().recentProjectPaths.add(0, projectPath);
-      getPrefs().recentProjectNames.add(0, projectName);
-      getPrefs().recentProjectDates.add(0, projectDate);
+    } else {
+      getPrefs();
+      getPrefs();
+      if (projectPath != null && !projectPath.contains(Preferences.sSAMPLE_PROJECTS) && !projectPath.contains(Preferences.sTUTORIALS_PROJECTS)) {
+        // case: project not in recent list
+        getPrefs().recentProjectPaths.add(0, projectPath);
+        getPrefs().recentProjectNames.add(0, projectName);
+        getPrefs().recentProjectDates.add(0, projectDate);
+      }
     }
     int si = getPrefs().recentProjectPaths.size();
     if (si > getPrefs().sMAX_RECENT_PROJECTS) {
@@ -809,9 +811,6 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
     final AboutDialog aboutDialog = AboutDialog.getInstance();
 
     aboutDialog.setVisible(true);
-  }
-
-  public final void update(final EventObject event) {
   }
 
   // Refresh this editor component

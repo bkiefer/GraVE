@@ -44,8 +44,6 @@ public abstract class NodeAction extends EditorAction {
   }
 
   public void delete() {
-    mIDManager.freeID(mGUINode);
-
     // System.out.println("Delete");
     // Remove the data node from the sceneflow, which means that we
     // remove the node from the from the parent nodes list of child

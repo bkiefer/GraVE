@@ -21,22 +21,19 @@ import javax.swing.undo.UndoManager;
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
 import de.dfki.vsm.editor.NameEditor;
-import de.dfki.vsm.editor.event.ElementEditorToggledEvent;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.flow.SceneFlow;
 import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
 
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public final class SceneFlowEditor extends JPanel implements EventListener {
+public final class SceneFlowEditor extends JPanel {
 
   // The singelton logger instance
   //private final Logger mLogger = LoggerFactory.getLogger(SceneFlowEditor.class);
@@ -116,8 +113,6 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
             switch (me.getID()) {
               case MouseEvent.MOUSE_CLICKED:
                 toggleElementEditor();
-                ElementEditorToggledEvent ev = new ElementEditorToggledEvent(this);
-                mEventCaster.convey(ev);
             }
           }
         };
@@ -191,11 +186,6 @@ public final class SceneFlowEditor extends JPanel implements EventListener {
     mFooterLabel.setForeground(Color.red);
     add(mFooterLabel, BorderLayout.SOUTH);
 
-  }
-
-  // Update the visualization
-  @Override
-  public final void update(final EventObject event) {
   }
 
   public void setViewPosition(Point p) {

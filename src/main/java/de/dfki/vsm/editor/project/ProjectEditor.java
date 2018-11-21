@@ -25,7 +25,6 @@ import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
 
 /**
  * @author Gregor Mehlmann
@@ -197,7 +196,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
   // Update when an event happened
   @Override
-  public void update(final EventObject event) {
+  public void update(final Object event) {
     if (event instanceof TreeEntrySelectedEvent) {
       // Show the auxiliary editor
       showAuxiliaryEditor();

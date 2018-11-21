@@ -17,15 +17,13 @@ import de.dfki.vsm.editor.util.DockingManager;
 import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
 
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public final class Node extends JComponent implements EventListener, Observer {
+public final class Node extends JComponent implements Observer {
 
   // ToDO: move to workspace - just have a link here
   private StartSign mStartSign = null;
@@ -190,9 +188,9 @@ public final class Node extends JComponent implements EventListener, Observer {
     // Update the display name that has to be changed if the
     // node's size or the node's font size have chaged
     String prefix = "";
-    if (fontMetrics.stringWidth(mDataNode.getName()) > (getEditorConfig().sNODEWIDTH - 10)) {
+    if (fontMetrics.stringWidth(mDataNode.getName()) > getWidth() - 10) {
       for (char c : mDataNode.getName().toCharArray()) {
-        if (fontMetrics.stringWidth(prefix + c + "...") < getEditorConfig().sNODEWIDTH - 10) {
+        if (fontMetrics.stringWidth(prefix + c + "...") < getWidth() - 10) {
           prefix += c;
         } else {
           break;
@@ -207,16 +205,13 @@ public final class Node extends JComponent implements EventListener, Observer {
     setColor();
 
     // Update the bounds if the node's size has changed
-    setBounds(getX(), getY(), getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT);
+    // BK: WHAT? IF THE SIZE HAS CHANGED, RESET TO EDITORCONFIG?
+    //setBounds(getX(), getY(), getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT);
   }
 
   @Override
   public String getName() {
     return mDisplayName;
-  }
-
-  @Override
-  public void update(EventObject event) {
   }
 
   public void resetLocation(Point newLocation) {
@@ -407,8 +402,8 @@ public final class Node extends JComponent implements EventListener, Observer {
   public void mouseClicked(MouseEvent event) {
     mPressed = false;
     mSelected = true;
-    Point loc = getLocation();
-    Point clickLoc = event.getPoint();
+    //Point loc = getLocation();
+    //Point clickLoc = event.getPoint();
 
     // mLastMousePosition = new Point(clickLoc);
     // save click location relavitvely to node postion
@@ -438,8 +433,8 @@ public final class Node extends JComponent implements EventListener, Observer {
     mPressed = true;
     mSelected = true;
 
-    Point loc = getLocation();
-    Point clickLoc = event.getPoint();
+    //Point loc = getLocation();
+    //Point clickLoc = event.getPoint();
 
     // mLastMousePosition =                new Point(clickLoc);
     // save click location relavitvely to node postion
@@ -473,15 +468,15 @@ public final class Node extends JComponent implements EventListener, Observer {
 
     final Graphics2D g2d = (Graphics2D) graphics;
 
-    int nodeWidth = getEditorConfig().sNODEWIDTH;
-    int nodeHeight = getEditorConfig().sNODEHEIGHT;
+    int nodeWidth = getWidth();
+    int nodeHeight = getHeight();
 
     // TODO move to update
     // Compute the font metrics and the correction offsets
     final FontMetrics fontMetrics = getFontMetrics(getFont());
     final int hOffset = (fontMetrics.getAscent() - fontMetrics.getDescent()) / 2;
     final int wIdOffset = fontMetrics.stringWidth("[" + mDataNode.getId() + "]") / 2;
-    final int wNameOffset = fontMetrics.stringWidth(mDisplayName) / 2;
+    //final int wNameOffset = fontMetrics.stringWidth(mDisplayName) / 2;
 
     // Compute the border which is relative to a nodes size.
     // It is used for visualising an end nodes and node selection

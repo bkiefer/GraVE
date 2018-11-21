@@ -13,8 +13,6 @@ import javax.swing.*;
 import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.model.flow.geom.Boundary;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
@@ -22,7 +20,8 @@ import de.dfki.vsm.util.ios.ResourceLoader;
  * @author Gregor Mehlmann
  */
 @SuppressWarnings("serial")
-public class Comment extends JComponent implements EventListener, Observer, MouseListener, MouseMotionListener {
+public class Comment extends JComponent
+implements Observer, MouseListener, MouseMotionListener {
 
   private JEditorPane mTextEditor = null;
   private JLabel mTextLabel = null;
@@ -107,10 +106,6 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
     text = text.replaceAll("(\r\n|\n)", "<br />");
     String displayText = "<html>" + text + "</html>";
     return displayText;
-  }
-
-  @Override
-  public void update(EventObject event) {
   }
 
   @Override

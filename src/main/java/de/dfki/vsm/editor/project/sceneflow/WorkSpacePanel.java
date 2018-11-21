@@ -34,7 +34,6 @@ import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
 
 /**
  * @author Gregor Mehlmann
@@ -73,7 +72,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   //
   private boolean mIgnoreMouseInput = false;
   private boolean mSelectTargetNodeMode = false;
-  private boolean mEdgeSourceNodeReassign = false;
   private boolean mEdgeTargetNodeReassign = false;
   private Node mReassignNode = null;
 
@@ -157,9 +155,8 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   @Override
-  public void update(EventObject event) {
+  public void update(Object event) {
     checkChangesOnWorkspace();
-
   }
 
   // TODO: Move that up to to the editor
@@ -169,8 +166,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     if (EditorInstance.getInstance().getSelectedProjectEditor() != null) {
       if (EditorInstance.getInstance().getSelectedProjectEditor().getEditorProject() != null) {
         if (mProject.hasChanged()) {
-
-          int selectecTabIndex = EditorInstance.getInstance().getProjectEditors().getSelectedIndex();
+          //int selectecTabIndex = EditorInstance.getInstance().getProjectEditors().getSelectedIndex();
           EditorInstance.getInstance().setTabNameModified();
           //mLogger.message("Changes on workspace detected");
         }
@@ -544,7 +540,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   public void add(Comment c) {
     mCmtSet.add(c);
     super.add(c);
-    mEventCaster.register(c);
     mObservable.addObserver(c);
   }
 
@@ -555,7 +550,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   public void remove(Comment c) {
     mCmtSet.remove(c);
     super.remove(c);
-    mEventCaster.remove(c);
     mObservable.deleteObserver(c);
   }
 
@@ -566,7 +560,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   public void addNode(Node node) {
     mNodeSet.add(node);
     super.add(node);
-    mEventCaster.register(node);
     mObservable.addObserver(node);
   }
 
@@ -575,17 +568,13 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   public void remove(Node node) {
-
     // TODO: deselect all components instead
     if (mSelectedNode != null) {
-      mSelectedNode = (mSelectedNode.equals(node))
-              ? null
-              : mSelectedNode;
+      mSelectedNode = (mSelectedNode.equals(node)) ? null : mSelectedNode;
     }
 
     super.remove(node);
     mNodeSet.remove(node);
-    mEventCaster.remove(node);
     mObservable.deleteObserver(node);
   }
 
@@ -596,7 +585,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   public void add(Edge edge) {
     super.add(edge);
     mEdgeSet.add(edge);
-    mEventCaster.register(edge);
     mObservable.addObserver(edge);
   }
 
@@ -608,14 +596,11 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
     // TODO: deselect all components instead
     if (mSelectedEdge != null) {
-      mSelectedEdge = (mSelectedEdge.equals(edge))
-              ? null
-              : mSelectedEdge;
+      mSelectedEdge = (mSelectedEdge.equals(edge)) ? null : mSelectedEdge;
     }
 
     mEdgeSet.remove(edge);
     super.remove(edge);
-    mEventCaster.remove(edge);
     mObservable.deleteObserver(edge);
   }
 
@@ -626,7 +611,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   public void addCmdBadge(Node node, CmdBadge badge) {
     super.add(badge);
     mCmdBadgeMap.put(node, badge);
-    mEventCaster.register(badge);
   }
 
   /**
@@ -635,9 +619,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    */
   public void removeCmdBadge(Node node) {
     CmdBadge badge = mCmdBadgeMap.remove(node);
-
     super.remove(badge);
-    mEventCaster.remove(badge);
   }
 
   /**
@@ -1008,10 +990,10 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     clearCurrentWorkspace();
     // Pop the current active supernode from the list of
     // active supernodes and remove it's name from the path
-    SuperNode s = getSceneFlowManager().removeActiveSuperNode();
-    SuperNode sn = mSceneFlowEditor.removePathComponent();
+    //SuperNode s = getSceneFlowManager().removeActiveSuperNode();
+    //SuperNode sn = mSceneFlowEditor.removePathComponent();
     NodeSelectedEvent e = new NodeSelectedEvent(this,
-            getSceneFlowManager().getCurrentActiveSuperNode());
+        getSceneFlowManager().getCurrentActiveSuperNode());
     mEventCaster.convey(e);
     if (e.getNode() instanceof SuperNode) {
       mGridManager.update();
@@ -1043,7 +1025,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     // Create a new Gridmanager for the workspace
     mGridManager.update();
     revalidate();
-    mEventCaster.convey(new ClearCodeEditorEvent(null));
+    mEventCaster.convey(new ClearCodeEditorEvent(this));
     repaint(100);
     // TODO: Refresh here!
   }
@@ -1736,14 +1718,10 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
         if (mSelectedEdge.mCSPSelected) {
 
           // look if mouse pressed (without a click) was on a c
-          mEdgeSourceNodeReassign = false;
-
           for (Node node : mNodeSet) {
             if (node != mSelectedEdge.getSourceNode()) {
               if (node.containsPoint(event.getX(), event.getY())) {
                 mReassignNode = node;
-                mEdgeSourceNodeReassign = true;
-
                 break;
               }
             }
@@ -1976,8 +1954,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   private void resizeComment(Comment comment, MouseEvent event, Point moveVec) {
-    Point nodePos = comment.getLocation();
-
     comment.resize(moveVec);
 
     if ((event.getModifiersEx() == 1024)) {

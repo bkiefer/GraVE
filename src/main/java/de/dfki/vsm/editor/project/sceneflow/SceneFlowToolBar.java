@@ -20,19 +20,18 @@ import de.dfki.vsm.editor.action.RedoAction;
 import de.dfki.vsm.editor.action.UndoAction;
 import de.dfki.vsm.editor.dialog.OptionsDialog;
 import de.dfki.vsm.editor.dialog.SaveFileDialog;
-import de.dfki.vsm.editor.event.ElementEditorToggledEvent;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
 import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
  * @author Gregor Mehlmann
  */
+@SuppressWarnings("serial")
 public class SceneFlowToolBar extends JToolBar implements EventListener {
 
   /**
@@ -177,18 +176,10 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   }
 
   @Override
-  public void update(EventObject event) {
-    if (event instanceof ElementEditorToggledEvent) {
-      //updateElementEditorButton();
-    }
-//        if (event instanceof ExceptionThrownEvent) {
-//            if (mRunTime.isRunning(mEditorProject)) {
-//                mEditorInstance.stop(mEditorProject);
-//            }
-//        }
+  public void update(Object event) {
     refreshButtons();
     if (event instanceof ProjectChangedEvent) {
-      if (event.getSource() instanceof OptionsDialog) {
+      if (((ProjectChangedEvent)event).getSource() instanceof OptionsDialog) {
         mSaveProject.setEnabled(true);
       }
     }

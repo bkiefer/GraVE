@@ -83,7 +83,6 @@ public class RemoveNodeAction extends NodeAction {
 
     @Override
     public void undo() throws CannotUndoException {
-      mIDManager.setID(mGUINode);
       create();
 
       // /

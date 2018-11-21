@@ -1,14 +1,18 @@
 package de.dfki.vsm.editor.event;
 
+import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+
 //~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.util.evt.EventObject;
 
 /**
  *     @author Martin Fallas
  */
-public class WorkSpaceSelectedEvent extends EventObject {
+public class WorkSpaceSelectedEvent {
+  private WorkSpacePanel mSource;
 
-  public WorkSpaceSelectedEvent(Object source) {
-    super(source);
+  public WorkSpaceSelectedEvent(WorkSpacePanel source) {
+    mSource = source;
   }
+
+  public WorkSpacePanel getSource() { return mSource; }
 }
