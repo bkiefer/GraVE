@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.LinkedList;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -23,7 +24,7 @@ import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 import de.dfki.vsm.editor.NameEditor;
 import de.dfki.vsm.editor.event.NodeSelectedEvent;
 import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.editor.util.SceneFlowManager;
+import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.model.flow.SceneFlow;
 import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.util.evt.EventDispatcher;
@@ -31,6 +32,9 @@ import de.dfki.vsm.util.evt.EventDispatcher;
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
+ *
+ * This class should contain all objects and information that are necessary
+ * to work on the WHOLE Sceneflow, which is in mSceneFlow
  */
 @SuppressWarnings("serial")
 public final class SceneFlowEditor extends JPanel {
@@ -44,8 +48,10 @@ public final class SceneFlowEditor extends JPanel {
   //
   private final EditorProject mEditorProject;
 
-  // TODO: remove sceneflow manager
-  private final SceneFlowManager mSceneFlowManager;
+  private final SceneFlow mSceneFlow;
+  private final IDManager mIDManager; // manages new IDs for the SceneFlow
+
+  private final LinkedList<SuperNode> mActiveSuperNodes;
 
   // The GUI components of the editor
   private final WorkSpacePanel mWorkSpacePanel;
@@ -119,7 +125,10 @@ public final class SceneFlowEditor extends JPanel {
       }
     });
     mUndoManager = new UndoManager();
-    mSceneFlowManager = new SceneFlowManager(getSceneFlow());
+    mSceneFlow = project.getSceneFlow();
+    mIDManager = new IDManager(mSceneFlow);
+    mActiveSuperNodes = new LinkedList<SuperNode>();
+    mActiveSuperNodes.addLast(mSceneFlow);
 
     // The center component is the workspace
     mWorkSpacePanel = new WorkSpacePanel(this, mEditorProject);
@@ -179,7 +188,7 @@ public final class SceneFlowEditor extends JPanel {
     });
 
     //ACTIVATE THE CONTENT OF THE ElementEditor
-    NodeSelectedEvent e = new NodeSelectedEvent(this, getSceneFlowManager().getCurrentActiveSuperNode());
+    NodeSelectedEvent e = new NodeSelectedEvent(this, getActiveSuperNode());
     mEventCaster.convey(e);
 
     //
@@ -228,16 +237,12 @@ public final class SceneFlowEditor extends JPanel {
     return mNewElementDisplay.isVisible();
   }
 
-  public final SceneFlowToolBar getToolBar() {
-    return mSceneFlowToolBar;
-  }
-
-  public SceneFlowManager getSceneFlowManager() {
-    return mSceneFlowManager;
-  }
-
   public SceneFlow getSceneFlow() {
     return mEditorProject.getSceneFlow();
+  }
+
+  public IDManager getIDManager() {
+    return mIDManager;
   }
 
   public WorkSpacePanel getWorkSpace() {
@@ -249,14 +254,22 @@ public final class SceneFlowEditor extends JPanel {
   }
 
   // TODO: adding not explicit but via refresh method
-  public void addPathComponent(SuperNode supernode) {
-
-    // TODO: adding not explicit but via refresh method
+  public void addActiveSuperNode(SuperNode supernode) {
+    mActiveSuperNodes.addLast(supernode);
     mSceneFlowToolBar.addPathComponent(supernode);
+    // mWorkSpacePanel.setActiveSuperNode(supernode);
   }
 
-  public SuperNode removePathComponent() {
-    return mSceneFlowToolBar.removePathComponent();
+  public SuperNode removeActiveSuperNode() {
+    if (mActiveSuperNodes.size() == 1) return null;
+    mActiveSuperNodes.removeLast();
+    mSceneFlowToolBar.removePathComponent();
+    // mWorkSpacePanel.setActiveSuperNode(getActiveSuperNode());
+    return getActiveSuperNode();
+  }
+
+  public SuperNode getActiveSuperNode() {
+    return mActiveSuperNodes.getLast();
   }
 
   public void setMessageLabelText(String value) {
@@ -264,10 +277,7 @@ public final class SceneFlowEditor extends JPanel {
   }
 
   public void close() {
-    // Delete all observers
-    // mObservable.deleteObservers();
-
-    // Cleanup worspace
+    // Cleanup workspace
     mWorkSpacePanel.cleanup();
   }
 
@@ -280,31 +290,11 @@ public final class SceneFlowEditor extends JPanel {
     return mFooterLabel;
   }
 
-//
-//  /**
-//   *
-//   *
-//   *
-//   *
-//   *
-//   */
-//  private class Observable extends java.util.Observable {
-//
-//      public void update(Object obj) {
-//          setChanged();
-//          notifyObservers(obj);
-//      }
-//  }
   public final void refresh() {
-
-    // Print some information
-    //mLogger.message("Refreshing '" + this + "'");
     // Refresh editor toolbar
     mSceneFlowToolBar.refresh();
-    mStaticElementsPanel.refresh();
     mDynamicElementsPanel.refresh();
     mWorkSpacePanel.refresh();
-    //mElementEditor.refresh();
   }
 
   private class SceneFlowImage extends TransferHandler implements Transferable {

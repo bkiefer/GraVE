@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
@@ -112,7 +113,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   // The parent sceneflow editor
   private final SceneFlowEditor mSceneFlowEditor;
   // The supernodes of the path display
-  private final LinkedList<SuperNode> mPathComponents = new LinkedList<>();
+  private final LinkedList<JButton> mPathComponents = new LinkedList<>();
 
   // The current editor project
   private final EditorProject mEditorProject;
@@ -204,21 +205,15 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
 
   //TODO: adding not explicit but via refresh method
   public void addPathComponent(SuperNode supernode) {
-    mPathComponents.addLast(supernode);
+    mPathComponents.addLast(createPathButton(supernode));
     refreshDisplay();
-
     int va = mPathScrollBar.getMaximum();
-
     mPathScrollBar.setValue(va);
   }
 
-  public SuperNode removePathComponent() {
-    SuperNode sn = mPathComponents.removeLast();
-
-    // String str = mPathComponents.removeLast();
+  public void removePathComponent() {
+    mPathComponents.removeLast();
     refreshDisplay();
-
-    return sn;
   }
 
   private void sanitizeButton(JButton b, Dimension bDim) {
@@ -574,52 +569,53 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
 
   }
 
+  private JButton createPathButton(SuperNode supernode) {
+    final Action action = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        //System.err.println("setting level to node " + getValue(Action.NAME));
+        mSceneFlowEditor.getWorkSpace().selectNewWorkSpaceLevel(supernode);
+      }
+    };
+    action.putValue(Action.NAME, supernode.getName());
+    action.putValue(Action.SHORT_DESCRIPTION, supernode.getName());
+    final JButton pathElement = new JButton(action);
+    pathElement.setUI(new BasicButtonUI());
+    pathElement.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+    pathElement.setMinimumSize(new Dimension(80, 18));
+    pathElement.setMaximumSize(new Dimension(80, 18));
+    pathElement.setPreferredSize(new Dimension(80, 18));
+    pathElement.setBackground(new Color(255, 255, 255));
+    pathElement.addMouseMotionListener(new MouseMotionAdapter() {
+      // TODO: Does not work smoothly, revise
+      @Override
+      public void mouseDragged(MouseEvent e) {
+        int dir = e.getX();
+
+        if (dir < 0) {
+          mPathScrollBar.setValue(mPathScrollBar.getValue() + 10);
+        } else {
+          mPathScrollBar.setValue(mPathScrollBar.getValue() - 10);
+        }
+      }
+    });
+    return pathElement;
+  }
+
   // Refresh the path display
   private void refreshDisplay() {
     // Remove all path components
     mPathDisplay.removeAll();
-    // Get the list of active nodes
-    // TODO: Maybe better to have this on sceneflow editor
-    final LinkedList<SuperNode> path = mSceneFlowEditor.getSceneFlowManager().getActiveSuperNodes();
-    // For each supernode in the path
-    for (final SuperNode supernode : path) {
-      final Action action = new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          //System.err.println("setting level to node " + getValue(Action.NAME));
-          mSceneFlowEditor.getWorkSpace().selectNewWorkSpaceLevel(supernode);
-        }
-      };
-      action.putValue(Action.NAME, supernode.getName());
-      action.putValue(Action.SHORT_DESCRIPTION, supernode.getName());
+    // For each supernode component in the path
+    for (final JButton pathElement : mPathComponents) {
       // Compute color intensity
       int index = mPathDisplay.getComponentCount();
       int intensity = 255 - 5 * index;
       intensity = (intensity < 0) ? 0 : intensity;
+      // Create a button with the name
+      pathElement.setBackground(new Color(intensity, intensity, intensity));
       // Create a label with an arrow
       final JLabel arrow = new JLabel("\u2192");
-      // Create a button with the name
-      final JButton pathElement = new JButton(action);
-      pathElement.setUI(new BasicButtonUI());
-      pathElement.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-      pathElement.setMinimumSize(new Dimension(80, 18));
-      pathElement.setMaximumSize(new Dimension(80, 18));
-      pathElement.setPreferredSize(new Dimension(80, 18));
-      pathElement.setBackground(new Color(intensity, intensity, intensity));
-      pathElement.addMouseMotionListener(new MouseMotionAdapter() {
-        // TODO: This does not work smouthly, please work over
-        @Override
-        public void mouseDragged(MouseEvent e) {
-          int dir = e.getX();
-
-          if (dir < 0) {
-            mPathScrollBar.setValue(mPathScrollBar.getValue() + 10);
-          } else {
-            mPathScrollBar.setValue(mPathScrollBar.getValue() - 10);
-          }
-        }
-      });
-
       if (index > 0) {
         mPathDisplay.add(arrow);
       }

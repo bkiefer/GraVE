@@ -224,7 +224,6 @@ public class RunTimeProject {
     mSceneFlow.establishParentNodes();
     mSceneFlow.establishStartNodes();
     mSceneFlow.establishTargetNodes();
-    mSceneFlow.establishAltStartNodes();
     // Print an information message in this case
     //mLogger.message("Loaded sceneflow configuration file in path '" + path + "'");
     // Return success if the project was loaded

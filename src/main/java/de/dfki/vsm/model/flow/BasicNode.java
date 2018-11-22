@@ -9,16 +9,15 @@ import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.model.flow.geom.Position;
-import de.dfki.vsm.util.cpy.CopyTool;
-import de.dfki.vsm.util.cpy.Copyable;
 
 /**
  * @author Gregor Mehlmann
  */
 @XmlType(name="Node")
 @XmlAccessorType(XmlAccessType.NONE)
-public class BasicNode implements Copyable {
+public class BasicNode {
 
   private static final Logger logger = LoggerFactory.getLogger(BasicNode.class);
 
@@ -50,6 +49,7 @@ public class BasicNode implements Copyable {
   @XmlAttribute(name="history")
   protected boolean mIsHistoryNode = false;
 
+  protected boolean mIsStartNode = false;
   protected boolean mIsEndNode = true;
 
   public Byte hasNone = new Byte("0");
@@ -63,8 +63,20 @@ public class BasicNode implements Copyable {
   public BasicNode() {
   }
 
-  public void setId(String value) {
-    mNodeId = value;
+  /** plain creation of new BasicNode, with no other side effects in the graph */
+  public BasicNode(IDManager mgr, Position p, SuperNode s) {
+    mNodeId = mNodeName = mgr.getNextFreeID(this);
+    mPosition = p;
+    mParentNode = s;
+  }
+
+  /** Create a HistoryNode for the SuperNode s */
+  protected BasicNode(SuperNode s) {
+    mNodeId = "History_" + s.mNodeId;
+    mNodeName = "History";
+    mPosition = new Position(0, 0);
+    mIsHistoryNode = true;
+    mParentNode = s;
   }
 
   public String getId() {
@@ -451,7 +463,7 @@ public class BasicNode implements Copyable {
   }
 
   public BasicNode getCopy() {
-    return (BasicNode) CopyTool.copy(this);
+    return (BasicNode) null;
   }
 
   public String getCmd() {

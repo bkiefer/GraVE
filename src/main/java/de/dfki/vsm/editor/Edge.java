@@ -19,8 +19,6 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.editor.action.RedoAction;
 import de.dfki.vsm.editor.action.UndoAction;
@@ -49,14 +47,8 @@ public class Edge extends JComponent implements Observer, MouseListener {
   private Node mSourceNode = null;
   private Node mTargetNode = null;
   private boolean hasAlternativeTargetNodes = false;
-  private boolean mPointingToSameNode = false;
   public EdgeGraphics mEg = null;
   private WorkSpacePanel mWorkSpace = null;
-
-  // rendering issues
-  private FontMetrics mFM = null;
-  private int mFontWidthCorrection = 0;
-  private int mFontHeightCorrection = 0;
 
   // For mouse interaction ...
   public boolean mIsSelected = false;
@@ -132,13 +124,17 @@ public class Edge extends JComponent implements Observer, MouseListener {
     mEditorConfig = mWorkSpace.getEditorConfig();
     mSourceNode = sourceNode;
     mTargetNode = targetNode;
-    mPointingToSameNode = (mTargetNode == mSourceNode);
 
     setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
     mEg = new EdgeGraphics(this, sourceDockPoint, targetDockpoint);
     update();
     setVisible(true);
     initEditBox();
+  }
+
+  /** Does this edge point back to the source node? */
+  private boolean isLoop() {
+    return mTargetNode == mSourceNode;
   }
 
   @Override
@@ -175,35 +171,12 @@ public class Edge extends JComponent implements Observer, MouseListener {
 
   private void update() {
     if (mDataEdge != null) {
-      if (mEdgeTextArea != null)
-        mEdgeTextArea.setForeground(color());
       hasAlternativeTargetNodes = !mDataEdge.getAltMap().isEmpty();
     }
 
-    // Update the font and the font metrics that have to be
-    // recomputed if the node's font size has changed
-    // TODO: Move attributes to preferences and make editable
-    /*Map<TextAttribute, Object> map = new Hashtable<TextAttribute, Object>();
-
-    map.put(TextAttribute.KERNING, TextAttribute.KERNING_ON);
-    map.put(TextAttribute.FAMILY, Font.SANS_SERIF);
-
-    // map.put(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
-    map.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_DEMIBOLD);
-    map.put(TextAttribute.SIZE, mEditorConfig.sWORKSPACEFONTSIZE);
-
-    // Derive the font from the attribute map
-    Font font = Font.getFont(map);*/
+    // Adapt font size
     if (mEditorConfig.sWORKSPACEFONTSIZE != getFont().getSize())
       getFont().deriveFont(mEditorConfig.sWORKSPACEFONTSIZE);
-
-    // Derive the node's font metrics from the font
-    mFM = getFontMetrics(getFont());
-
-    // Set the edge's font to the updated font
-    //setFont(font);
-    mFontWidthCorrection = mFM.stringWidth(name()) / 2;
-    mFontHeightCorrection = (mFM.getAscent() + mFM.getDescent()) / 2;
 
     if (mEdgeTextArea != null)
       // do an exact font positioning
@@ -234,7 +207,6 @@ public class Edge extends JComponent implements Observer, MouseListener {
     * Initialize mTextPane and mValueEditor
    */
   private void initEditBox() {
-    Color borderColor = color();
     mEdgeTextArea = new RSyntaxTextArea();
     this.add(mEdgeTextArea);
     mEdgeTextArea.setBackground(Color.WHITE);
@@ -243,7 +215,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
     mEdgeTextArea.setHighlightCurrentLine(false);
     mEdgeTextArea.setHighlightSecondaryLanguages(false);
 
-    mEdgeTextArea.setBorder(BorderFactory.createLineBorder(borderColor));
+    mEdgeTextArea.setBorder(BorderFactory.createLineBorder(color()));
     mEdgeTextArea.getDocument().addDocumentListener(new MyDocumentListener());
     mEdgeTextArea.addFocusListener(new FocusListener() {
       @Override
@@ -256,6 +228,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
 
     // Attributes
     mEdgeTextArea.setFont(this.getFont());
+    mEdgeTextArea.setForeground(color());
 
     if (mDataEdge != null) {
       mEdgeTextArea.setText(mDataEdge.getContent());
@@ -271,7 +244,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
         setDeselected();
 
         NodeSelectedEvent evt = new NodeSelectedEvent(mWorkSpace,
-                mWorkSpace.getSceneFlowManager().getCurrentActiveSuperNode());
+                mWorkSpace.getSceneFlowEditor().getActiveSuperNode());
 
         mDispatcher.convey(evt);
         updateFromTextEditor();
@@ -412,7 +385,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
       relPos.setLocation(e.getX() - relPos.x, e.getY() - relPos.y);
 
       // DEBUG System.out.println("set new dock point for pos " + relPos);
-      if (!mPointingToSameNode) {
+      if (!isLoop()) {
         mTargetNode.getDockingManager().freeDockPoint(this);
         mTargetNode.getDockingManager().getNearestDockPoint(this, relPos);
       } else {
@@ -426,7 +399,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
 
   public void mouseDragged(java.awt.event.MouseEvent e) {
     if (firstDrag) {
-      mUndoManager = EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getUndoManager();
+      UndoManager mUndoManager = EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getUndoManager();
       mUndoManager.addEdit(new UndoDragEdge(mEg.mCCrtl1.getLocation(), mEg.mCCrtl2.getLocation()));
       UndoAction.getInstance().refreshUndoState();
       RedoAction.getInstance().refreshRedoState();
@@ -444,7 +417,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
     if (mCP2Selected)
       mEg.mCCrtl2.setLocation(p);
     if (mCEPSelected) {
-      if (!mPointingToSameNode) {
+      if (!isLoop()) {
         mLastTargetNodeDockPoint = mTargetNode.getDockingManager().freeDockPoint(this);
       } else {
         mLastTargetNodeDockPoint = mTargetNode.getDockingManager().freeSecondDockPoint(this);
@@ -473,7 +446,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
   public void rebuildEdgeNicely() {
 
     // disconnectEdge
-    if (!mPointingToSameNode) {
+    if (!isLoop()) {
       mTargetNode.getDockingManager().freeDockPoint(this);
     } else {
       mTargetNode.getDockingManager().freeSecondDockPoint(this);
@@ -488,9 +461,10 @@ public class Edge extends JComponent implements Observer, MouseListener {
     FontMetrics fm = getFontMetrics(getFont());
     int height = fm.getHeight();
     int width = fm.stringWidth(mEdgeTextArea.getText() + "p");
-    mFontWidthCorrection = width / 2;
+    // Derive the node's font metrics from the font
+    int mFontHeightCorrection = (fm.getAscent() + fm.getDescent()) / 2;
 
-    mEdgeTextArea.setBounds((int) Math.round(mEg.mLeftCurve.x2 - mFontWidthCorrection),
+    mEdgeTextArea.setBounds((int) Math.round(mEg.mLeftCurve.x2 - width/2),
         (int) Math.round(mEg.mLeftCurve.y2 - mFontHeightCorrection), width, height);
   }
 
@@ -563,7 +537,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
       String targets = mDataEdge.getAltStartNodesAsString();
 
       // center the text
-      mFontWidthCorrection = mFM.stringWidth(targets);
+      //mFontWidthCorrection = mFM.stringWidth(targets);
 
       // Get the current transform
       AffineTransform currentAT = graphics.getTransform();

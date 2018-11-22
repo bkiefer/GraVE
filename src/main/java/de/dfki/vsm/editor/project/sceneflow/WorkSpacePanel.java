@@ -12,7 +12,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.text.AttributedString;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +28,6 @@ import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.editor.util.GridManager;
 import de.dfki.vsm.editor.util.SceneFlowLayoutManager;
-import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.util.evt.EventDispatcher;
@@ -49,7 +47,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   private final Set<Node> mNodeSet = new HashSet<>();
   private final Set<Edge> mEdgeSet = new HashSet<>();
   private final Set<Comment> mCmtSet = new HashSet<>();
-  private final HashMap<Node, CmdBadge> mCmdBadgeMap = new HashMap<>();
 
   // Flags for mouse interaction
   private Node mSelectedNode = null;
@@ -71,7 +68,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
   //
   private boolean mIgnoreMouseInput = false;
-  private boolean mSelectTargetNodeMode = false;
   private boolean mEdgeTargetNodeReassign = false;
   private Node mReassignNode = null;
 
@@ -81,9 +77,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   //
   public final Observable mObservable = new Observable();
   private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
-
-  //
-  private ArrayList<CmdBadge> mCmdBadgeList = new ArrayList<CmdBadge>();
 
   // Drag & Drop support
   private DropTarget mDropTarget;
@@ -200,16 +193,12 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     return mProject.getEditorConfig();
   }
 
-  public SceneFlowManager getSceneFlowManager() {
-    return mSceneFlowEditor.getSceneFlowManager();
-  }
-
   public SceneFlowEditor getSceneFlowEditor() {
     return mSceneFlowEditor;
   }
 
   public CmdBadge getCmdBadge(Node id) {
-    return mCmdBadgeMap.get(id);
+    return id.getCmdBadge();
   }
 
   public GridManager getGridManager() {
@@ -344,7 +333,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       if (node.getBounds().intersects(mDrawArea)) {
         if (node.getDataNode().isHistoryNode()) {
           mSceneFlowEditor.setMessageLabelText(
-                  "Copy, cut and remove actions are not allowed on History nodes!");
+              "Copy, cut and remove actions are not allowed on History nodes!");
         }
 
         node.mSelected = true;
@@ -388,43 +377,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   }
 
   /**
-   *
-   *
-   *
-    public void createPDA(Node node, String name) {
-        PlayDialogAction pdaCmd = new PlayDialogAction();
-
-        pdaCmd.setDialogueAct(new de.dfki.vsm.model.sceneflow.glue.command.expression.literal.StringLiteral(name));
-        node.getDataNode().addCmd(pdaCmd);
-    }
-
-    /**
-   *
-   *
-   *
-    public void createPSG(Node node, String name) {
-        PlayScenesActivity psgCmd = new PlayScenesActivity();
-
-        psgCmd.setArgument(new de.dfki.vsm.model.sceneflow.glue.command.expression.literal.StringLiteral(name));
-        node.getDataNode().addCmd(psgCmd);
-    }
-
-    /**
-   *
-   *
-   *
-    public void createFunCall(Node node, String name) {
-        CallingExpression cmd = new CallingExpression();
-
-        cmd.setName(name);
-
-//      Command newCmd = new CmdDialog(cmd).run();
-//      if (newCmd != null) {
-        node.getDataNode().addCmd(cmd);
-
-//      }
-    }*/
-  /**
    * AbstractEdge creation
    *
    */
@@ -443,23 +395,18 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       }
     }
 
-    if (sourceNode == null) {
-      return;
-    }
-
     // Check if the type of this edge is allowed to be connected to the
     // source c. If the edge is not allowed then we exit the method.
-    if (!sourceNode.isEdgeAllowed(edge)) {
+    if (sourceNode == null || !sourceNode.isEdgeAllowed(edge)) {
       return;
     }
 
     mSelectNodePoint = new Point(x, y);
 
     // Set the current edge in process, the cien colegaurrent source
-    // c and enter the target c selection mode.
+    // c and enter the target c selection mode --> edge creation starts
     mEdgeInProgress = edge;
     mEdgeSourceNode = sourceNode;
-    mSelectTargetNodeMode = true;
 
     // repaint(100);
     //
@@ -471,8 +418,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   private void createNewEdgeSelectTargetNode(int x, int y) {
-    mSelectTargetNodeMode = false;
-
     // repaint(100);
     mSceneFlowEditor.setMessageLabelText("");
 
@@ -489,13 +434,14 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       }
     }
 
-    if (targetNode == null) {
-      return;
+    if (targetNode != null) {
+      // If we found a target c, then we create a new edge
+      new CreateEdgeAction(this, mEdgeSourceNode, targetNode,
+          mEdgeInProgress).run();
     }
-
-    // If we found a target c, then we create a new edge
-    new CreateEdgeAction(this, mEdgeSourceNode, targetNode,
-        mEdgeInProgress).run();
+    // edge creation ends
+    mEdgeInProgress = null;
+    mEdgeSourceNode = null;
   }
 
   /**
@@ -529,7 +475,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     mNodeSet.clear();
     mEdgeSet.clear();
     mCmtSet.clear();
-    mCmdBadgeMap.clear();
     removeAll();
   }
 
@@ -593,7 +538,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   public void remove(Edge edge) {
-
     // TODO: deselect all components instead
     if (mSelectedEdge != null) {
       mSelectedEdge = (mSelectedEdge.equals(edge)) ? null : mSelectedEdge;
@@ -602,24 +546,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     mEdgeSet.remove(edge);
     super.remove(edge);
     mObservable.deleteObserver(edge);
-  }
-
-  /**
-   *
-   *
-   */
-  public void addCmdBadge(Node node, CmdBadge badge) {
-    super.add(badge);
-    mCmdBadgeMap.put(node, badge);
-  }
-
-  /**
-   *
-   *
-   */
-  public void removeCmdBadge(Node node) {
-    CmdBadge badge = mCmdBadgeMap.remove(node);
-    super.remove(badge);
   }
 
   /**
@@ -715,14 +641,12 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   public void showContextMenu(MouseEvent evt, Node node) {
     JPopupMenu pop = new JPopupMenu();
     JMenuItem item = null;
+    SuperNode current = mSceneFlowEditor.getActiveSuperNode();
 
     if (!node.getDataNode().isHistoryNode()) {
-      HashMap<String, de.dfki.vsm.model.flow.BasicNode> startNodes
-              = node.getDataNode().getParentNode().getStartNodeMap();
-
-      item = new JMenuItem((startNodes.containsKey(node.getDataNode().getId()))
-              ? "Unset Start"
-              : "Set Start");
+      item = new JMenuItem(current.isStartNode(node.getDataNode())
+          ? "Unset Start"
+          : "Set Start");
 
       ToggleStartNodeAction toggleStartnodeAction = new ToggleStartNodeAction(node, this);
 
@@ -730,7 +654,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       pop.add(item);
       pop.add(new JSeparator());
 
-      if (!(node.getDataNode() instanceof de.dfki.vsm.model.flow.SuperNode)) {
+      if (!(node.getDataNode() instanceof SuperNode)) {
         item = new JMenuItem("To Supernode");
 
         ChangeNodeTypeAction changetypeAction = new ChangeNodeTypeAction(this, node);
@@ -744,9 +668,10 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       if (node.getDataNode().getCmd() != null) {
         item = new JMenuItem("Edit Command");
 
-        EditCommandAction editCommandAction = new EditCommandAction(this, mCmdBadgeMap.get(node));
+        EditCommandAction editCommandAction =
+            new EditCommandAction(this, node.getCmdBadge());
 
-        mSelectedCmdBadge = mCmdBadgeMap.get(node);
+        mSelectedCmdBadge = node.getCmdBadge();
         item.addActionListener(editCommandAction.getActionListener());
         pop.add(item);
         pop.add(new JSeparator());
@@ -926,11 +851,12 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 //    }
   /**
    *
-   *
+   * TODO: NEEDS FULL REVAMP
    */
   public void pasteNodes() {
-    PasteNodesAction pasteAction = new PasteNodesAction(this);
-    pasteAction.run();
+
+    //PasteNodesAction pasteAction = new PasteNodesAction(this);
+    //pasteAction.run();
   }
 
   /**
@@ -946,54 +872,48 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
     SuperNode superNode = (SuperNode) node.getDataNode();
 
-    getSceneFlowManager().addActiveSuperNode(superNode);
-    mSceneFlowEditor.addPathComponent(superNode);
+    mSceneFlowEditor.addActiveSuperNode(superNode);
 
     mGridManager.update();
 
     showCurrentWorkSpace();
   }
 
+
   /**
-   *
-   *
+   *  Pop out to the specified SuperNode
    */
   public void selectNewWorkSpaceLevel(SuperNode supernode) {
-    if (getSceneFlowManager().getActiveSuperNodes().size() < 2) {
+    if (mSceneFlowEditor.getActiveSuperNode().equals(supernode)) {
       return;
     }
-
-    if (getSceneFlowManager().getCurrentActiveSuperNode().equals(supernode)) {
-      return;
+    SuperNode parent = mSceneFlowEditor.removeActiveSuperNode();
+    while (parent != null && parent != supernode) {
+      parent = mSceneFlowEditor.removeActiveSuperNode();
     }
-
     clearCurrentWorkspace();
-
-    SuperNode parent = getSceneFlowManager().getCurrentActiveSuperNode();
-
-    while (parent.equals(supernode) != true) {
-      decreaseWorkSpaceLevel();
-      parent = getSceneFlowManager().getCurrentActiveSuperNode();
+    NodeSelectedEvent e = new NodeSelectedEvent(this,
+        mSceneFlowEditor.getActiveSuperNode());
+    mEventCaster.convey(e);
+    if (e.getNode() instanceof SuperNode) {
+      mGridManager.update();
     }
-    //showCurrentWorkSpace();
-  }
+    showCurrentWorkSpace();
+ }
 
   /**
    *
    *
    */
   public void decreaseWorkSpaceLevel() {
-    if (getSceneFlowManager().getActiveSuperNodes().size() < 2) {
-      return;
-    }
+    SuperNode parent = mSceneFlowEditor.removeActiveSuperNode();
+    if (parent == null) return;
 
     clearCurrentWorkspace();
     // Pop the current active supernode from the list of
     // active supernodes and remove it's name from the path
-    //SuperNode s = getSceneFlowManager().removeActiveSuperNode();
-    //SuperNode sn = mSceneFlowEditor.removePathComponent();
     NodeSelectedEvent e = new NodeSelectedEvent(this,
-        getSceneFlowManager().getCurrentActiveSuperNode());
+        mSceneFlowEditor.getActiveSuperNode());
     mEventCaster.convey(e);
     if (e.getNode() instanceof SuperNode) {
       mGridManager.update();
@@ -1013,9 +933,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     // clear the selected edges and nodes of the workspace.
     mNodeSet.clear();
     mEdgeSet.clear();
-    mCmtSet.clear();
-    mCmdBadgeMap.clear();
-    mCmdBadgeList.clear();
     mCmtSet.clear();
     removeAll();
     super.removeAll();
@@ -1046,22 +963,20 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   public void showNodesOnWorkSpace() {
-    for (BasicNode n : getSceneFlowManager().getCurrentActiveSuperNode()) {
-      Point p = mGridManager.getNodeLocation(new Point(n.getPosition().getXPos(),
-              n.getPosition().getYPos()));
+    for (BasicNode n : mSceneFlowEditor.getActiveSuperNode()) {
+      Point p = mGridManager.getNodeLocation(
+          new Point(n.getPosition().getXPos(), n.getPosition().getYPos()));
 
       n.setPosition(new Position(p.x, p.y));
 
       Node guiNode = new Node(this, n);
-      CmdBadge cmdBadge = new CmdBadge(guiNode);
-
-      mCmdBadgeList.add(cmdBadge);
-      addNode(guiNode);
-      addCmdBadge(guiNode, cmdBadge);
+      mNodeSet.add(guiNode);
+      add(guiNode);
+      add(guiNode.getCmdBadge());
     }
 
-    ArrayList<de.dfki.vsm.model.flow.CommentBadge> commentList
-            = getSceneFlowManager().getCurrentActiveSuperNode().getCommentList();
+    ArrayList<CommentBadge> commentList =
+        mSceneFlowEditor.getActiveSuperNode().getCommentList();
 
     for (de.dfki.vsm.model.flow.CommentBadge n : commentList) {
       add(new Comment(this, n));
@@ -1181,7 +1096,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     mLastMousePosition = event.getPoint();
     launchWorkSpaceSelectedEvent();
 
-    if (mSelectTargetNodeMode) {
+    if (mEdgeSourceNode != null) {
       try {
         createNewEdgeSelectTargetNode(event.getX(), event.getY());
       } catch (Exception e) {
@@ -1329,7 +1244,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       }
 
       if (!entityClicked) {
-        NodeSelectedEvent e = new NodeSelectedEvent(this, getSceneFlowManager().getCurrentActiveSuperNode());
+        NodeSelectedEvent e = new NodeSelectedEvent(this, mSceneFlowEditor.getActiveSuperNode());
         mEventCaster.convey(e);
       }
     } else {
@@ -1367,7 +1282,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     mLastMousePosition = event.getPoint();
 
     // System.out.println("mouse pressed");
-    if (mSelectTargetNodeMode) {
+    if (mEdgeSourceNode != null) {
       try {
         createNewEdgeSelectTargetNode(event.getX(), event.getY());
       } catch (Exception e) {
@@ -1507,7 +1422,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       }
     }
 
-
+    /*
     if (mSelectedCmdBadge == null) {
 
       // look of mouse click was on a command badge
@@ -1526,6 +1441,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       mSelectedCmdBadge.endEditMode();
       mSelectedCmdBadge = null;
     }
+    */
 
     deselectAllNodes();
 
@@ -1562,7 +1478,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       return;
     }
 
-    if (mSelectTargetNodeMode) {
+    if (mEdgeSourceNode != null) {
       try {
         createNewEdgeSelectTargetNode(event.getX(), event.getY());
       } catch (Exception e) {
@@ -1695,7 +1611,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    */
   @Override
   public void mouseDragged(MouseEvent event) {
-    if (mSelectTargetNodeMode) {
+    if (mEdgeSourceNode != null) {
       try {
         createNewEdgeSelectTargetNode(event.getX(), event.getY());
         mSelectedEdge = null;
@@ -1854,7 +1770,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    */
   @Override
   public void mouseMoved(MouseEvent event) {
-    if (mSelectTargetNodeMode) {
+    if (mEdgeSourceNode != null) {
       mSelectNodePoint = event.getPoint();
 
       for (Node node : mNodeSet) {
@@ -1870,26 +1786,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
       return;
     }
-
-    /*
-        if ((event.getModifiersEx() == 128)) {
-            for (Node node : mNodeSet) {
-                if (node.containsPoint(event.getX(), event.getY())) {
-                    if (mNodeVariableDisplay != null) {
-                        remove(mNodeVariableDisplay);
-                    }
-
-                    showNodeVariables(node);
-                    repaint(100);
-
-                    return;
-                }
-            }
-        } else if (mNodeVariableDisplay != null) {
-            remove(mNodeVariableDisplay);
-            mNodeVariableDisplay = null;
-            repaint(100);
-        }*/
   }
 
   /**
@@ -1910,10 +1806,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       mGridManager.freeGridPosition(nodeLoc);
 
       node.updateLocation(moveVec);
-      CmdBadge badge = mCmdBadgeMap.get(node);
-      if (badge != null) {
-        badge.updateLocation(moveVec);
-      }
       if ((event.getModifiersEx() == 1024)) {
         node.mDragged = true;
       }
@@ -1987,10 +1879,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
         mGridManager.freeGridPosition(nodeLoc);
         node.updateLocation(moveVec);
-        CmdBadge badge = mCmdBadgeMap.get(node);
-        if (badge != null) {
-          badge.updateLocation(moveVec);
-        }
         if ((event.getModifiersEx() == 1024)) {
           node.mDragged = true;
         }
@@ -2086,7 +1974,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     // mLogger.message("Drawing Workspace");
     Graphics2D g2d = (Graphics2D) g;
 
-    if (mSelectTargetNodeMode) {
+    if (mEdgeSourceNode != null) {
       setBackground(Color.LIGHT_GRAY);
     } else {
       setBackground(Color.WHITE);
@@ -2115,7 +2003,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
     Color indicator = Color.WHITE;
 
-    switch (getSceneFlowManager().getCurrentActiveSuperNode().getFlavour()) {
+    switch (mSceneFlowEditor.getActiveSuperNode().getFlavour()) {
       case CNODE:
         indicator = sCEDGE_COLOR;
 
@@ -2148,7 +2036,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     //scrollRectToVisible(new Rectangle(mLastMousePosition));
 
     // draw line between source c and current mouse position
-    if (mSelectTargetNodeMode) {
+    if (mEdgeSourceNode != null) {
       if (mSelectNodePoint != null) {
         Point sourceNodeCenter = mEdgeSourceNode.getCenterPoint();
 
@@ -2211,4 +2099,5 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       notifyObservers(obj);
     }
   }
+
 }

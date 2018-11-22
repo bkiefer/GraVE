@@ -1,18 +1,19 @@
 package de.dfki.vsm.editor.project.sceneflow;
 
+import static de.dfki.vsm.Preferences.*;
+
 //~--- JDK imports ------------------------------------------------------------
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.*;
+import java.awt.event.MouseAdapter;
+import java.io.IOException;
 
-import javax.swing.JPanel;
-import javax.swing.ToolTipManager;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.swing.*;
 
 //~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.Preferences;
 import de.dfki.vsm.editor.Comment;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.model.flow.*;
@@ -23,60 +24,138 @@ import de.dfki.vsm.model.flow.*;
  */
 @SuppressWarnings("serial")
 public class SceneFlowPalettePanel extends JPanel {
+  public final class PaletteItem extends JLabel implements Transferable {
 
-  private final SceneFlowPaletteItem mSuperNodeEntry
-          = new SceneFlowPaletteItem("Super Node", "Holds Sub-Scences flow",
-                  Preferences.ICON_SUPERNODE_STANDARD, Preferences.ICON_SUPERNODE_ROLLOVER, Preferences.ICON_SUPERNODE_DRAGGING,
-                  Node.Type.SuperNode);
+    private final Object mDragableData;
 
-  private final SceneFlowPaletteItem mBasicNodeEntry
-          = new SceneFlowPaletteItem("Basic Node", "Holds Scenes Actions",
-                  Preferences.ICON_BASICNODE_STANDARD, Preferences.ICON_BASICNODE_ROLLOVER, Preferences.ICON_BASICNODE_DRAGGING,
-                  Node.Type.BasicNode);
+    // Drag & drop support
+    private final DragSource mDragSource;
 
-  private final SceneFlowPaletteItem mEEdgeEntry
-          = new SceneFlowPaletteItem("Epsilon Edge", "Creates Epsilon Transition",
-                  Preferences.ICON_EEDGE_ENTRY_STANDARD, Preferences.ICON_EEDGE_ENTRY_ROLLOVER, Preferences.ICON_EEDGE_ENTRY_DRAGGING,
-                  new EpsilonEdge());
+    // Create a sceneflow element item
+    public PaletteItem(final String text, final String info,
+        final ImageIcon stdIcon, final ImageIcon rollIcon,
+        final ImageIcon dragIcon, final Object data) {
+      //ICONS
+      mDragableData = data;
+      //setContentAreaFilled(false);
+      setFocusable(false);
+      setOpaque(false);
 
-  private final SceneFlowPaletteItem mTEdgeEntry
-          = new SceneFlowPaletteItem("Timeout Edge", "Creates Timeout Transition",
-                  Preferences.ICON_TEDGE_ENTRY_STANDARD, Preferences.ICON_TEDGE_ENTRY_ROLLOVER, Preferences.ICON_TEDGE_ENTRY_DRAGGING,
-                  new TimeoutEdge());
+      // to be transferred in the Drag
+      TransferHandler mTransferHandler = new TransferHandler(text);
+      setTransferHandler(mTransferHandler);
+      setHorizontalAlignment(JLabel.CENTER);
+      setToolTipText(text + ": " + info);
+      setPreferredSize(getPrefs().SF_PALETTEITEM_SIZE);
+      setMinimumSize(getPrefs().SF_PALETTEITEM_SIZE);
+      setMaximumSize(getPrefs().SF_PALETTEITEM_SIZE);
+      setIcon(stdIcon);
+      addMouseListener(new MouseAdapter() {
 
-  private final SceneFlowPaletteItem mPEdgeEntry
-          = new SceneFlowPaletteItem("Probability Edge", "Creates Probability Transition",
-                  Preferences.ICON_PEDGE_ENTRY_STANDARD, Preferences.ICON_PEDGE_ENTRY_ROLLOVER, Preferences.ICON_PEDGE_ENTRY_DRAGGING,
-                  new RandomEdge());
+        @Override
+        public void mouseEntered(java.awt.event.MouseEvent evt) {
+          setIcon(rollIcon);
+        }
 
-  private final SceneFlowPaletteItem mCEdgeEntry
-          = new SceneFlowPaletteItem("Conditional Edge", "Creates Conditional Transition",
-                  Preferences.ICON_CEDGE_ENTRY_STANDARD, Preferences.ICON_CEDGE_ENTRY_ROLLOVER, Preferences.ICON_CEDGE_ENTRY_DRAGGING,
-                  new GuardedEdge());
+        @Override
+        public void mouseExited(java.awt.event.MouseEvent evt) {
+          setIcon(stdIcon);
+        }
+      });
 
-  private final SceneFlowPaletteItem mIEdgeEntry
-          = new SceneFlowPaletteItem("Interruptive Edge", "Creates Interrutive Transition",
-                  Preferences.ICON_IEDGE_ENTRY_STANDARD, Preferences.ICON_IEDGE_ENTRY_ROLLOVER, Preferences.ICON_IEDGE_ENTRY_DRAGGING,
-                  new InterruptEdge());
+      // TODO: CURRENTLY, WE DON'T OVERRIDE ANYTHING HERE
+      final DragSourceListener mDragSourceListener = new DragSourceAdapter() {
+      };
 
-  private final SceneFlowPaletteItem mFEdgeEntry
-          = new SceneFlowPaletteItem("Fork Edge", "Creates Forked Transition",
-                  Preferences.ICON_FEDGE_ENTRY_STANDARD, Preferences.ICON_FEDGE_ENTRY_ROLLOVER, Preferences.ICON_FEDGE_ENTRY_DRAGGING,
-                  new ForkingEdge());
+      final DragGestureListener mDragGestureListener = new DragGestureListener() {
+        @Override
+        public void dragGestureRecognized(DragGestureEvent event) {
+          Image cursorIcon = dragIcon.getImage();
+          Cursor cur = Toolkit.getDefaultToolkit()
+              .createCustomCursor(cursorIcon, new Point(10, 10), text);
+          mDragSource.startDrag(event, cur,
+              (PaletteItem) event.getComponent(), mDragSourceListener);
+        }
+      };
+      // The Drag will copy the DnDButton rather than moving it
+      mDragSource = new DragSource();
+      mDragSource.createDefaultDragGestureRecognizer(this,
+          DnDConstants.ACTION_COPY, mDragGestureListener);
+    }
 
-  private final SceneFlowPaletteItem mCommentEntry
-          = new SceneFlowPaletteItem("Comment", "Adds a Comment",
-                  Preferences.ICON_COMMENT_ENTRY_STANDARD, Preferences.ICON_COMMENT_ENTRY_ROLLOVER, Preferences.ICON_COMMENT_ENTRY_DRAGGING,
-                  new Comment());
+    // Get the data for a drag & drop operation
+    @Override
+    public final Object getTransferData(final DataFlavor flavor)
+        throws UnsupportedFlavorException, IOException {
+      return mDragableData;
+    }
 
-  //
-  private static final Logger mLogger =
-      LoggerFactory.getLogger(SceneFlowPalettePanel.class);;
+    // Generally support all d&d data flavours
+    @Override
+    public final boolean isDataFlavorSupported(final DataFlavor flavor) {
+      return true;
+    }
+
+    //
+    @Override
+    public final DataFlavor[] getTransferDataFlavors() {
+      DataFlavor[] df = {};
+      return df;
+    }
+
+  }
+
+  private final PaletteItem[] items = {
+      new PaletteItem("Super Node", "Holds Sub-Scences flow",
+          ICON_SUPERNODE_STANDARD,
+          ICON_SUPERNODE_ROLLOVER,
+          ICON_SUPERNODE_DRAGGING, Node.Type.SuperNode),
+
+      new PaletteItem("Basic Node", "Holds Scenes Actions",
+          ICON_BASICNODE_STANDARD,
+          ICON_BASICNODE_ROLLOVER,
+          ICON_BASICNODE_DRAGGING, Node.Type.BasicNode),
+
+      new PaletteItem("Comment", "Adds a Comment",
+          ICON_COMMENT_ENTRY_STANDARD,
+          ICON_COMMENT_ENTRY_ROLLOVER,
+          ICON_COMMENT_ENTRY_DRAGGING, new Comment()),
+
+      new PaletteItem("Epsilon Edge", "Creates Epsilon Transition",
+          ICON_EEDGE_ENTRY_STANDARD,
+          ICON_EEDGE_ENTRY_ROLLOVER,
+          ICON_EEDGE_ENTRY_DRAGGING, new EpsilonEdge()),
+
+      new PaletteItem("Probability Edge", "Creates Probability Transition",
+          ICON_PEDGE_ENTRY_STANDARD,
+          ICON_PEDGE_ENTRY_ROLLOVER,
+          ICON_PEDGE_ENTRY_DRAGGING, new RandomEdge()),
+
+      new PaletteItem("Fork Edge", "Creates Forked Transition",
+          ICON_FEDGE_ENTRY_STANDARD,
+          ICON_FEDGE_ENTRY_ROLLOVER,
+          ICON_FEDGE_ENTRY_DRAGGING, new ForkingEdge()),
+
+      new PaletteItem("Conditional Edge", "Creates Conditional Transition",
+          ICON_CEDGE_ENTRY_STANDARD,
+          ICON_CEDGE_ENTRY_ROLLOVER,
+          ICON_CEDGE_ENTRY_DRAGGING, new GuardedEdge()),
+
+      new PaletteItem("Timeout Edge", "Creates Timeout Transition",
+          ICON_TEDGE_ENTRY_STANDARD,
+          ICON_TEDGE_ENTRY_ROLLOVER,
+          ICON_TEDGE_ENTRY_DRAGGING, new TimeoutEdge()),
+
+      new PaletteItem("Interruptive Edge", "Creates Interrutive Transition",
+          ICON_IEDGE_ENTRY_STANDARD,
+          ICON_IEDGE_ENTRY_ROLLOVER,
+          ICON_IEDGE_ENTRY_DRAGGING, new InterruptEdge())
+  };
 
   //
   private final int paletteDimension = 230;
-  // Construct the tool panel
 
+  // Construct the tool panel
   public SceneFlowPalettePanel() {
     setLayout(new GridLayout(0, 3));
     setBackground(Color.WHITE);
@@ -84,21 +163,9 @@ public class SceneFlowPalettePanel extends JPanel {
     setMinimumSize(new Dimension(paletteDimension, paletteDimension));
     setMaximumSize(new Dimension(paletteDimension, paletteDimension));
     //setBorder(BorderFactory.createEtchedBorder());
-    add(mSuperNodeEntry);
-    add(mBasicNodeEntry);
-    add(mCommentEntry);
-    add(mEEdgeEntry);
-    add(mPEdgeEntry);
-    add(mFEdgeEntry);
-    add(mCEdgeEntry);
-    add(mTEdgeEntry);
-    add(mIEdgeEntry);
+    for (PaletteItem item : items) {
+      add(item);
+    }
     ToolTipManager.sharedInstance().registerComponent(this);
-  }
-
-  public final void refresh() {
-    // Print some information
-    //mLogger.message("Refreshing '" + this + "'");
-    //
   }
 }

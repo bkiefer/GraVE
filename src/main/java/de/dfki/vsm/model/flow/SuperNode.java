@@ -9,8 +9,8 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.dfki.vsm.util.Pair;
-import de.dfki.vsm.util.cpy.CopyTool;
+import de.dfki.vsm.editor.util.IDManager;
+import de.dfki.vsm.model.flow.geom.Position;
 
 /**
  * @author Gregor Mehlmann
@@ -59,8 +59,9 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
   public SuperNode() {
   }
 
-  public SuperNode(final BasicNode node) {
-    mNodeId = node.mNodeId;
+  /** Create a SuperNode from an existing BasicNode: Node Type Change */
+  public SuperNode(IDManager mgr, final BasicNode node) {
+    mNodeId = mgr.getNextFreeID(this);
     mNodeName = node.mNodeName;
     mComment = node.mComment;
     mCmdList = node.mCmdList;
@@ -72,6 +73,35 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
     mPosition = node.mPosition;
     mParentNode = node.mParentNode;
     mIsHistoryNode = node.mIsHistoryNode;
+    mHistoryNode = new BasicNode(this);
+    mNodeList.add(mHistoryNode);
+  }
+
+  /** Create a new SuperNode from the GUI */
+  public SuperNode(IDManager mgr, Position pos, SuperNode s) {
+    mNodeId = mNodeName = mgr.getNextFreeID(this);
+    mPosition = pos;
+    mParentNode = s;
+    mParentNode.addSuperNode(this);
+    mHistoryNode = new BasicNode(this);
+    mNodeList.add(mHistoryNode);
+  }
+
+  @XmlTransient
+  public HashMap<String, BasicNode> getStartNodeMap() {
+    return mStartNodeMap;
+  }
+
+  public void setStartNodeMap(HashMap<String, BasicNode> value) {
+    mStartNodeMap = value;
+  }
+
+  public void addStartNode(BasicNode node) {
+    mStartNodeMap.put(node.getId(), node);
+  }
+
+  public void removeStartNode(BasicNode node) {
+    mStartNodeMap.remove(node.getId());
   }
 
   public void setComment(String value) {
@@ -119,27 +149,8 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
     return mHistoryNode;
   }
 
-  @XmlTransient
-  public HashMap<String, BasicNode> getStartNodeMap() {
-    return mStartNodeMap;
-  }
-
-  public void setStartNodeMap(HashMap<String, BasicNode> value) {
-    mStartNodeMap = value;
-  }
-
-  public void addStartNode(BasicNode node) {
-    mStartNodeMap.put(node.getId(), node);
-  }
-
-  public void removeStartNode(BasicNode node) {
-    mStartNodeMap.remove(node.getId());
-  }
-
-  // TODO: this is not a deep copy
-  public HashMap<String, BasicNode> getCopyOfStartNodeMap() {
-    HashMap<String, BasicNode> copy = new HashMap<>(mStartNodeMap);
-    return copy;
+  public boolean isStartNode(BasicNode value) {
+    return mStartNodeMap.containsKey(value.getId());
   }
 
   public void addSuperNode(SuperNode value) {
@@ -154,7 +165,7 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
     return mSuperNodeList;
   }
 
-  public ArrayList<SuperNode> getCopyOfSuperNodeList() {
+  ArrayList<SuperNode> getCopyOfSuperNodeList() {
     ArrayList<SuperNode> copy = new ArrayList<SuperNode>();
 
     for (SuperNode node : mSuperNodeList) {
@@ -164,19 +175,23 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
     return copy;
   }
 
+  /** Add a node, with side effects, such as adding it as a start node if it's
+   *  the first node added
+   */
   public void addNode(BasicNode value) {
     mNodeList.add(value);
   }
 
+  /** Remove a node */
   public void removeNode(BasicNode value) {
     mNodeList.remove(value);
   }
 
-  public ArrayList<BasicNode> getNodeList() {
+  public Iterable<BasicNode> getNodeList() {
     return mNodeList;
   }
 
-  public ArrayList<BasicNode> getCopyOfNodeList() {
+  ArrayList<BasicNode> getCopyOfNodeList() {
     ArrayList<BasicNode> copy = new ArrayList<BasicNode>();
 
     for (BasicNode node : mNodeList) {
@@ -255,6 +270,25 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
     }
   }
 
+  /*
+  public void establishStartNodes() {
+    for (SuperNode n : mSuperNodeList) {
+      n.establishStartNodes();
+      if (n.mIsStartNode) {
+        mStartNode = n;
+      }
+    }
+    if (mStartNode != null)
+      return;
+    for (BasicNode n : mNodeList) {
+      if (n.mIsStartNode) {
+        mStartNode = n;
+        return;
+      }
+    }
+  }
+  */
+
   public void establishStartNodes() {
     for (String id : mStartNodeMap.keySet()) {
       mStartNodeMap.put(id, getChildNodeById(id));
@@ -265,35 +299,8 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
     }
   }
 
-  // TODO:
-  public void establishAltStartNodes() {
-    for (BasicNode node : this) {
-      for (AbstractEdge edge : node.getEdgeList()) {
-        if (edge.getTargetNode() instanceof SuperNode) {
-
-          // First establish the start nodes
-          for (Pair<String, BasicNode> startNodePair : edge.getAltMap().keySet()) {
-            if (!startNodePair.getFirst().equals("")) {
-              BasicNode n = ((SuperNode) edge.getTargetNode()).getChildNodeById(startNodePair.getFirst());
-
-              startNodePair.setSecond(n);
-            }
-          }
-
-          // Second establish the alternative nodes
-          for (Pair<String, BasicNode> altStartNodePair : edge.getAltMap().values()) {
-            BasicNode n = ((SuperNode) edge.getTargetNode()).getChildNodeById(altStartNodePair.getFirst());
-
-            altStartNodePair.setSecond(n);
-          }
-        }
-      }
-    }
-  }
-
-  @Override
   public SuperNode getCopy() {
-    return (SuperNode) CopyTool.copy(this);
+    return (SuperNode) null;
   }
 
 }

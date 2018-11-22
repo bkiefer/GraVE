@@ -42,6 +42,8 @@ public final class Node extends JComponent implements Observer {
   private Type mType;
   private BasicNode mDataNode;
 
+  private CmdBadge mCmdBadge;
+
   //
   // TODO: move away
   private final WorkSpacePanel mWorkSpace;
@@ -69,6 +71,8 @@ public final class Node extends JComponent implements Observer {
     mDataNode = dataNode;
     // setToolTipText(mDataNode.getId());
     // the former overrides any MouseListener!!!
+    // Create the command badge of the GUI-BasicNode
+    mCmdBadge = new CmdBadge(this);
 
     if (mDataNode instanceof SuperNode) {
       mType = Type.SuperNode;
@@ -85,11 +89,7 @@ public final class Node extends JComponent implements Observer {
 
     setBounds(pos.x, pos.y, getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT);
 
-    // Set the initial start sign
-    HashMap<String, BasicNode> startNodeMap
-            = mWorkSpace.getSceneFlowManager().getCurrentActiveSuperNode().getStartNodeMap();
-
-    if (startNodeMap.containsKey(mDataNode.getId())) {
+    if (mWorkSpace.getSceneFlowEditor().getActiveSuperNode().isStartNode(mDataNode)) {
       addStartSign();
     }
     if (mDataNode.isHistoryNode()) {
@@ -110,6 +110,10 @@ public final class Node extends JComponent implements Observer {
 
   public BasicNode getDataNode() {
     return mDataNode;
+  }
+
+  public CmdBadge getCmdBadge() {
+    return mCmdBadge;
   }
 
   public boolean containsPoint(int x, int y) {
@@ -232,6 +236,10 @@ public final class Node extends JComponent implements Observer {
     }
 
     setLocation(location.x + vector.x, location.y + vector.y);
+    CmdBadge badge = getCmdBadge();
+    if (badge != null) {
+      badge.updateLocation(vector);
+    }
     updateDataModel();
   }
 

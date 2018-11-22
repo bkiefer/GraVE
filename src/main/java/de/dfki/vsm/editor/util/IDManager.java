@@ -11,15 +11,11 @@ public class IDManager {
   private int mNextNodeID = 0;
 
   /** Call this with the root node of the project only! */
-  public IDManager(SuperNode rootNode) {
-    if (rootNode != null) {
-      if (!(rootNode instanceof SceneFlow)) {
-        throw new IllegalArgumentException("May only be called with root node!");
-      }
-      getIDs(rootNode);
-      ++mNextNodeID;
-      ++mNextSuperNodeID;
-    }
+  public IDManager(SceneFlow rootNode) {
+    if (rootNode == null) return;
+    getIDs(rootNode);
+    ++mNextNodeID;
+    ++mNextSuperNodeID;
   }
 
   private int getInt(BasicNode n) {
@@ -37,12 +33,11 @@ public class IDManager {
     }
   }
 
-  public String getNextFreeSuperNodeID() {
-    return "S" + mNextSuperNodeID++;
-  }
-
-  public String getNextFreeNodeID() {
+  public String getNextFreeID(BasicNode b) {
     return "N" + mNextNodeID++;
   }
 
+  public String getNextFreeID(SuperNode b) {
+    return "S" + mNextSuperNodeID++;
+  }
 }

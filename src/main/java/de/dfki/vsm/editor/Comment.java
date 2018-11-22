@@ -12,6 +12,7 @@ import javax.swing.*;
 
 import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.model.flow.CommentBadge;
 import de.dfki.vsm.model.flow.geom.Boundary;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
@@ -42,7 +43,7 @@ implements Observer, MouseListener, MouseMotionListener {
   private Image mResizeMarker;
   private AlphaComposite mAC;
   private AlphaComposite mACFull;
-  private de.dfki.vsm.model.flow.CommentBadge mDataComment;
+  private CommentBadge mDataComment;
 
   // interaction flags
   private boolean mSelected;

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import javax.xml.bind.annotation.*;
 
-import de.dfki.vsm.util.cpy.CopyTool;
-
 /**
  * @author Gregor Mehlmann
  */
@@ -80,7 +78,7 @@ public final class SceneFlow extends SuperNode {
 
   @Override
   public SceneFlow getCopy() {
-    return (SceneFlow) CopyTool.copy(this);
+    return null;
   }
 
 }
