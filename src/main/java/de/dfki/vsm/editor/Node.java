@@ -71,8 +71,6 @@ public final class Node extends JComponent implements Observer {
     mDataNode = dataNode;
     // setToolTipText(mDataNode.getId());
     // the former overrides any MouseListener!!!
-    // Create the command badge of the GUI-BasicNode
-    mCmdBadge = new CmdBadge(this);
 
     if (mDataNode instanceof SuperNode) {
       mType = Type.SuperNode;
@@ -95,6 +93,9 @@ public final class Node extends JComponent implements Observer {
     if (mDataNode.isHistoryNode()) {
       addAltStartSign();
     }
+
+    // Create the command badge of the GUI-BasicNode, after setting Position!
+    mCmdBadge = new CmdBadge(this);
 
     // update
     update();

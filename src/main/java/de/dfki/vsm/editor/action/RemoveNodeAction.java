@@ -21,9 +21,8 @@ public class RemoveNodeAction extends NodeAction {
   public RemoveNodeAction(WorkSpacePanel workSpace, Node node) {
     mWorkSpace = workSpace;
     mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
-    mSceneFlowManager = mWorkSpace.getSceneFlowManager();
     mUndoManager = mSceneFlowPane.getUndoManager();
-    mIDManager = mSceneFlowManager.getIDManager();
+    mIDManager = mSceneFlowPane.getIDManager();
     mGUINode = node;
     mCmdBadge = mWorkSpace.getCmdBadge(mGUINode);
     mCoordinate = mGUINode.getLocation();

@@ -968,7 +968,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
           new Point(n.getPosition().getXPos(), n.getPosition().getYPos()));
 
       n.setPosition(new Position(p.x, p.y));
-
       Node guiNode = new Node(this, n);
       mNodeSet.add(guiNode);
       add(guiNode);
@@ -983,82 +982,30 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     }
   }
 
+  public void showEdge(Node sourceNode, AbstractEdge e) {
+    Node targetNode = getNode(e.getTargetUnid());
+    if (targetNode != null) {
+      Edge edge = new Edge(this, e, sourceNode, targetNode);
+      add(edge);
+    }
+  }
+
   /**
    *
    *
    */
   public void showEdgesOnWorkSpace() {
-    for (Node sourceNode : mNodeSet) {
-      Node targetNode = null;
-
-      for (GuardedEdge cedge : sourceNode.getDataNode().getCEdgeList()) {
-        targetNode = getNode(cedge.getTargetUnid());
-
-        if (targetNode != null) {
-
-          // Why should this be null????????
-          // Create a new GUI-AbstractEdge and add the new GUI-AbstractEdge to the workspace.
-          Edge edge = new Edge(this, cedge, sourceNode, targetNode);
-
-          add(edge);
-        }
-      }
-
-      for (RandomEdge pedge : sourceNode.getDataNode().getPEdgeList()) {
-        targetNode = getNode(pedge.getTargetUnid());
-
-        if (targetNode != null) {
-
-          // Why should this be null????????
-          // Create a new GUI-AbstractEdge and add the new GUI-AbstractEdge to the workspace.
-          Edge edge = new Edge(this, pedge, sourceNode, targetNode);
-
-          add(edge);
-        }
-      }
-
-      for (ForkingEdge fedge : sourceNode.getDataNode().getFEdgeList()) {
-        targetNode = getNode(fedge.getTargetUnid());
-
-        if (targetNode != null) {
-
-          // Why should this be null????????
-          // Create a new GUI-AbstractEdge and add the new GUI-AbstractEdge to the workspace.
-          Edge edge = new Edge(this, fedge, sourceNode, targetNode);
-
-          add(edge);
-        }
-      }
-
-      for (InterruptEdge iedge : sourceNode.getDataNode().getIEdgeList()) {
-        targetNode = getNode(iedge.getTargetUnid());
-
-        if (targetNode != null) {
-
-          // Why should this be null????????
-          // Create a new GUI-AbstractEdge and add the new GUI-AbstractEdge to the workspace.
-          Edge edge = new Edge(this, iedge, sourceNode, targetNode);
-
-          add(edge);
-        }
-      }
-
-      // Show the DEdge
-      de.dfki.vsm.model.flow.AbstractEdge dedge = sourceNode.getDataNode().getDedge();
-
-      if (dedge != null) {
-        targetNode = getNode(dedge.getTargetUnid());
-
-        // Create a new GUI-AbstractEdge and add the new GUI-AbstractEdge to the workspace.
-        Edge edge = new Edge(this, dedge, sourceNode, targetNode);
-
-        add(edge);
-      }
-
-      // Additionally update the appearance of the source c, which means
-      // that we update the color and the end c markings of the c.
-      // Editor.getInstance().update();
+    for (Node guiNode : mNodeSet) {
+      BasicNode n = guiNode.getDataNode();
+      for (GuardedEdge e : n.getCEdgeList()) showEdge(guiNode, e);
+      for (RandomEdge e : n.getPEdgeList()) showEdge(guiNode, e);
+      for (ForkingEdge e : n.getFEdgeList()) showEdge(guiNode, e);
+      for (InterruptEdge e : n.getIEdgeList()) showEdge(guiNode, e);
+      if (n.getDedge() != null) showEdge(guiNode, n.getDedge());
     }
+    // Additionally update the appearance of the source c, which means
+    // that we update the color and the end c markings of the c.
+    // Editor.getInstance().update();
   }
 
   /**

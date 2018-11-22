@@ -12,7 +12,6 @@ import javax.swing.undo.CannotUndoException;
 
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
-import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.model.flow.*;
 
 /**
@@ -39,7 +38,6 @@ public class PasteNodesAction extends EditorAction {
             ? "Pasting selected nodes"
             : "Pasting selected node");
 
-    IDManager im = mWorkSpace.getSceneFlowManager().getIDManager();
 
     // make a copy
     Set<BasicNode> nodes = new HashSet<BasicNode>();

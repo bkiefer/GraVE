@@ -42,7 +42,7 @@ public class TimeoutEdge extends AbstractEdge {
   }
 
   public void setContent(String s) {
-    mTimeout = Long.parseLong(s);
+    mTimeout = Long.parseLong(s.trim());
   }
 
   // TODO:

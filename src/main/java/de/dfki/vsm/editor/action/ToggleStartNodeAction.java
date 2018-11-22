@@ -20,9 +20,8 @@ public class ToggleStartNodeAction extends NodeAction {
     super();
     mWorkSpace = workSpace;
     mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
-    mSceneFlowManager = mWorkSpace.getSceneFlowManager();
     mUndoManager = mSceneFlowPane.getUndoManager();
-    mIDManager = mSceneFlowManager.getIDManager();
+    mIDManager = mSceneFlowPane.getIDManager();
     mGUINode = node;
     mGUINodeType = mGUINode.getType();
     mDataNode = node.getDataNode();
@@ -30,7 +29,7 @@ public class ToggleStartNodeAction extends NodeAction {
     mDataNodeId = mDataNode.getId();
 
     // check start node state
-    mStartNodes = mParentDataNode.getStartNodeMap();
+    //mStartNodes = mParentDataNode.getStartNodeMap();
     mIsStartNode = (mStartNodes.containsKey(mDataNodeId));
   }
 

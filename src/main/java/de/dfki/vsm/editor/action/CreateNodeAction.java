@@ -35,14 +35,13 @@ public class CreateNodeAction extends NodeAction {
             ? de.dfki.vsm.editor.Node.Type.SuperNode
             : de.dfki.vsm.editor.Node.Type.BasicNode;
     mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
-    mSceneFlowManager = mWorkSpace.getSceneFlowManager();
     mUndoManager = mSceneFlowPane.getUndoManager();
-    mIDManager = mSceneFlowManager.getIDManager();
+    mIDManager = mSceneFlowPane.getIDManager();
     mDataNodeId = node.getId();
     mDataNode = node;
 
     // DEBUG mDataNode.writeXML(new IndentOutputStream(System.out));
-    mParentDataNode = mSceneFlowManager.getCurrentActiveSuperNode();
+    mParentDataNode = mSceneFlowPane.getActiveSuperNode();
 
     // Create the GUI-BasicNode
     mGUINode = new de.dfki.vsm.editor.Node(mWorkSpace, mDataNode);
@@ -57,29 +56,28 @@ public class CreateNodeAction extends NodeAction {
     mCoordinate = coordinate;
     mGUINodeType = type;
     mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
-    mSceneFlowManager = mWorkSpace.getSceneFlowManager();
     mUndoManager = mSceneFlowPane.getUndoManager();
-    mIDManager = mSceneFlowManager.getIDManager();
+    mIDManager = mSceneFlowPane.getIDManager();
 
     if (mGUINodeType == BasicNode) {
-      mDataNodeId = mIDManager.getNextFreeNodeID();
       mDataNode = new BasicNode();
+      mDataNodeId = mIDManager.getNextFreeID(mDataNode);
       mDataNode.setNameAndId(mDataNodeId);
       mDataNode.setPosition(new Position(mCoordinate.x, mCoordinate.y));
-      mParentDataNode = mSceneFlowManager.getCurrentActiveSuperNode();
+      mParentDataNode = mSceneFlowPane.getActiveSuperNode();
     } else if (mGUINodeType == SuperNode) {
-      mDataNodeId = mIDManager.getNextFreeSuperNodeID();
       mDataNode = new SuperNode();
+      mDataNodeId = mIDManager.getNextFreeID(mDataNode);
       mDataNode.setNameAndId(mDataNodeId);
       mDataNode.setPosition(new Position(mCoordinate.x, mCoordinate.y));
-      mParentDataNode = mSceneFlowManager.getCurrentActiveSuperNode();
+      mParentDataNode = mSceneFlowPane.getActiveSuperNode();
 
       //////////////////
       BasicNode mHistoryDataNode = new BasicNode();
 
       mHistoryDataNode.setHistoryNodeFlag(true);
       mHistoryDataNode.setName("History");
-      mHistoryDataNode.setId(mIDManager.getNextFreeNodeID());
+      //mHistoryDataNode.setId(mIDManager.getNextFreeID(mHistoryDataNode));
       mHistoryDataNode.setPosition(new Position(0, 0));
       mHistoryDataNode.setParentNode((SuperNode) mDataNode);
       ((SuperNode) mDataNode).addNode(mHistoryDataNode);

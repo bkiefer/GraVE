@@ -30,9 +30,8 @@ public class ChangeNodeTypeAction extends NodeAction {
   public ChangeNodeTypeAction(WorkSpacePanel workSpace, Node node) {
     mWorkSpace = workSpace;
     mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
-    mSceneFlowManager = mWorkSpace.getSceneFlowManager();
     mUndoManager = mSceneFlowPane.getUndoManager();
-    mIDManager = mSceneFlowManager.getIDManager();
+    mIDManager = mSceneFlowPane.getIDManager();
     mGUINode = node;
     mOldGUINode = node;
     mCoordinate = mGUINode.getLocation();
@@ -55,7 +54,7 @@ public class ChangeNodeTypeAction extends NodeAction {
     mSceneFlowPane.setMessageLabelText("Convert Node to SuperNode");
 
     // create new data node
-    SuperNode newDataNode = new SuperNode(mDataNode);
+    SuperNode newDataNode = new SuperNode(mIDManager, mDataNode);
 
     // delete all edges and delete old node
     for (RemoveEdgeAction action : mRemoveEdgeActionList) {
@@ -66,7 +65,7 @@ public class ChangeNodeTypeAction extends NodeAction {
 
     // overwrite stored data node with new value
     mDataNode = newDataNode.getCopy();
-    mDataNodeId = mIDManager.getNextFreeSuperNodeID();
+    mDataNodeId = mIDManager.getNextFreeID(mDataNode);
     mDataNode.setNameAndId(mDataNodeId);
 
     if (newDataNode.getDedge() != null) {
@@ -79,7 +78,7 @@ public class ChangeNodeTypeAction extends NodeAction {
 
     mHistoryDataNode.setHistoryNodeFlag(true);
     mHistoryDataNode.setName("History");
-    mHistoryDataNode.setId(mWorkSpace.getSceneFlowManager().getIDManager().getNextFreeNodeID());
+    //mHistoryDataNode.setId(mIDManager.getNextFreeID(mHistoryDataNode));
     mHistoryDataNode.setPosition(new Position(0, 0));
     mHistoryDataNode.setParentNode((SuperNode) mDataNode);
     ((SuperNode) mDataNode).addNode(mHistoryDataNode);

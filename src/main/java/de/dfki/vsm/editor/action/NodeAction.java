@@ -15,7 +15,6 @@ import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.IDManager;
-import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
 
@@ -30,7 +29,6 @@ public abstract class NodeAction extends EditorAction {
   protected WorkSpacePanel mWorkSpace = null;
   protected Point mCoordinate = null;
   protected Type mGUINodeType = null;
-  protected SceneFlowManager mSceneFlowManager = null;
   protected IDManager mIDManager = null;
   protected String mDataNodeId = null;
   protected BasicNode mDataNode = null;
@@ -56,6 +54,7 @@ public abstract class NodeAction extends EditorAction {
 //             mParentDataNode.removeNode(mDataNode);
     }
 
+    /*
     // Check the start node status of the removed node
     HashMap<String, de.dfki.vsm.model.flow.BasicNode> startNodeMap = mParentDataNode.getStartNodeMap();
 
@@ -93,6 +92,7 @@ public abstract class NodeAction extends EditorAction {
         }
       }
     }
+      */
 
     ////////PROBLEM:
     // mDataNode.setParentNode(null);
@@ -108,7 +108,7 @@ public abstract class NodeAction extends EditorAction {
     //
     // System.err.println("Removing node and command badge");
     mWorkSpace.remove(mGUINode);
-    mWorkSpace.removeCmdBadge(mGUINode);
+    //mWorkSpace.removeCmdBadge(mGUINode);
 
     //////////// After paint, as in paint we access the parent node
     // Doesnt work
@@ -124,11 +124,13 @@ public abstract class NodeAction extends EditorAction {
     // System.err.println("Setting parent node to " + mParentDataNode.getId());
     mDataNode.setParentNode(mParentDataNode);
 
+    /*
     // Set the start node status
     if (mParentDataNode.getStartNodeMap().isEmpty()) {
       mParentDataNode.getStartNodeMap().put(mDataNode.getId(), mDataNode);
       mGUINode.addStartSign();
     }
+    */
 
     // Add the node as a child to the parent node
     if (mGUINodeType == BasicNode) {
@@ -142,7 +144,7 @@ public abstract class NodeAction extends EditorAction {
     // TODO: Take the grid position!!!!!!!!!!!
     // Add the GUI-BasicNode
     mWorkSpace.addNode(mGUINode);
-    mWorkSpace.addCmdBadge(mGUINode, mCmdBadge);
+    //mWorkSpace.addCmdBadge(mGUINode, mCmdBadge);
 
     //
     mWorkSpace.revalidate();

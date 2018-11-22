@@ -11,7 +11,6 @@ import javax.swing.undo.UndoManager;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Comment;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
-import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.flow.geom.Boundary;
 
@@ -28,7 +27,6 @@ public class CreateCommentAction extends EditorAction {
   private de.dfki.vsm.model.flow.CommentBadge mComment;
   private de.dfki.vsm.model.flow.SuperNode mParentDataNode;
   private SuperNode mSuperNode;
-  private SceneFlowManager mSceneFlowManager;
 
   public CreateCommentAction(WorkSpacePanel workSpace, Point coordinate) {
     mWorkSpace = workSpace;
@@ -36,9 +34,8 @@ public class CreateCommentAction extends EditorAction {
     mUndoManager = mWorkSpace.getSceneFlowEditor().getUndoManager();
     mComment = new de.dfki.vsm.model.flow.CommentBadge();
     mComment.setBoundary(new Boundary(coordinate.x, coordinate.y, 100, 100));
-    mParentDataNode = mWorkSpace.getSceneFlowManager().getCurrentActiveSuperNode();
-    mSceneFlowManager = mWorkSpace.getSceneFlowManager();
-    mSuperNode = mSceneFlowManager.getCurrentActiveSuperNode();
+    mParentDataNode = mWorkSpace.getSceneFlowEditor().getActiveSuperNode();
+    mSuperNode = mParentDataNode;
 
     //
     mGUIComment = new de.dfki.vsm.editor.Comment(mWorkSpace, mComment);

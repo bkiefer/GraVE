@@ -9,7 +9,6 @@ import javax.swing.undo.UndoManager;
 import de.dfki.vsm.editor.Comment;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
-import de.dfki.vsm.editor.util.SceneFlowManager;
 import de.dfki.vsm.model.flow.CommentBadge;
 import de.dfki.vsm.model.flow.SuperNode;
 
@@ -19,7 +18,6 @@ import de.dfki.vsm.model.flow.SuperNode;
 public class RemoveCommentAction extends EditorAction {
   private WorkSpacePanel mWorkSpace;
   private SceneFlowEditor mSceneFlowPane;
-  private SceneFlowManager mSceneFlowManager;
   private UndoManager mUndoManager;
   private SuperNode mSuperNode;
   private Comment mGUIComment;
@@ -28,8 +26,7 @@ public class RemoveCommentAction extends EditorAction {
   public RemoveCommentAction(WorkSpacePanel workSpace, Comment c) {
     mWorkSpace = workSpace;
     mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
-    mSceneFlowManager = mWorkSpace.getSceneFlowManager();
-    mSuperNode = mSceneFlowManager.getCurrentActiveSuperNode();
+    mSuperNode = mSceneFlowPane.getActiveSuperNode();
     mUndoManager = mSceneFlowPane.getUndoManager();
     mGUIComment = c;
     mDataComment = mGUIComment.getData();
