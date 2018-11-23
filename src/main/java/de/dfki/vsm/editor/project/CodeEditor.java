@@ -1,19 +1,25 @@
 package de.dfki.vsm.editor.project;
 
-import de.dfki.vsm.editor.CmdBadge;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
+import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.util.ios.ResourceLoader;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 @SuppressWarnings("serial")
 public class CodeEditor extends JPanel {
@@ -106,7 +112,7 @@ public class CodeEditor extends JPanel {
     //jsp.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     add(jsp, BorderLayout.CENTER);
   }
-  
+
   public void updateBorders(){
     mTextArea.setBounds(0, 0, 10000, this.getSize().height);
   }
@@ -128,6 +134,7 @@ public class CodeEditor extends JPanel {
   }
 
   public void setEditedNodeOrEdge(Object n) {
+    if (mEditedObject == n) return; // may be due to FocusGained
     String text;
     if (n == null) {
       // clear editor
@@ -139,6 +146,8 @@ public class CodeEditor extends JPanel {
       text = ((CmdBadge)n).getText();
     else if (n instanceof Edge)
       text = ((Edge)n).getDescription();
+    else if (n instanceof Node)
+      text = ((Node)n).getCmdBadge().getText();
     else
       return;
     // set new edited object
