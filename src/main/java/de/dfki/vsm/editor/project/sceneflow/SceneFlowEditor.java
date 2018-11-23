@@ -1,7 +1,15 @@
 package de.dfki.vsm.editor.project.sceneflow;
 
 //~--- JDK imports ------------------------------------------------------------
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -12,7 +20,15 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.TransferHandler;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -22,7 +38,7 @@ import javax.swing.undo.UndoManager;
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
 import de.dfki.vsm.editor.NameEditor;
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
+import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.model.flow.SceneFlow;
@@ -188,8 +204,7 @@ public final class SceneFlowEditor extends JPanel {
     });
 
     //ACTIVATE THE CONTENT OF THE ElementEditor
-    NodeSelectedEvent e = new NodeSelectedEvent(this, getActiveSuperNode());
-    mEventCaster.convey(e);
+    mEventCaster.convey(new ElementSelectedEvent(getActiveSuperNode()));
 
     //
     mFooterLabel.setForeground(Color.red);

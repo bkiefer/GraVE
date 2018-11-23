@@ -1,27 +1,19 @@
 package de.dfki.vsm.editor.event;
 
-import de.dfki.vsm.model.flow.BasicNode;
-
 /**
  * @author Gregor Mehlmann
  */
-public class NodeSelectedEvent  {
+public class ElementSelectedEvent  {
 
-  private Object mSource;
-  private BasicNode mNode;
+  private Object mElement;
 
-  public NodeSelectedEvent(Object source, BasicNode node) {
-    mSource = source;
-    mNode = node;
+  public ElementSelectedEvent(Object elt) {
+    mElement = elt;
   }
 
-  public BasicNode getNode() {
-    return mNode;
-  }
+  public Object getElement() { return mElement; }
 
   public String getEventDescription() {
-    return "NodeSelectedEvent(" + mNode.getId() + ")";
+    return "NodeSelectedEvent(" + mElement + ")";
   }
-
-  public Object getSource() { return mSource; }
 }

@@ -23,8 +23,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import de.dfki.vsm.editor.action.RedoAction;
 import de.dfki.vsm.editor.action.UndoAction;
 import de.dfki.vsm.editor.event.EdgeEditEvent;
-import de.dfki.vsm.editor.event.EdgeSelectedEvent;
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
+import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.EdgeGraphics;
@@ -183,25 +182,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
       computeTextBoxBounds();
   }
 
-  private class MyDocumentListener implements DocumentListener {
-    @Override
-    // character addsed
-    public void insertUpdate(DocumentEvent e) {
-      computeTextBoxBounds();
-    }
 
-    @Override
-    // character removed
-    public void removeUpdate(DocumentEvent e) {
-      computeTextBoxBounds();
-    }
-
-    @Override
-    public void changedUpdate(DocumentEvent e) {
-      //Plain text components do not fire these events
-      computeTextBoxBounds();
-    }
-  }
 
   /*
     * Initialize mTextPane and mValueEditor
@@ -216,11 +197,26 @@ public class Edge extends JComponent implements Observer, MouseListener {
     mEdgeTextArea.setHighlightSecondaryLanguages(false);
 
     mEdgeTextArea.setBorder(BorderFactory.createLineBorder(color()));
-    mEdgeTextArea.getDocument().addDocumentListener(new MyDocumentListener());
+    mEdgeTextArea.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
+      // character added
+      public void insertUpdate(DocumentEvent e) {
+        mDataEdge.setContent(mEdgeTextArea.getText());
+        computeTextBoxBounds();
+      }
+
+      @Override
+      // character removed
+      public void removeUpdate(DocumentEvent e) { insertUpdate(e); }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) { insertUpdate(e); }
+    });
+
     mEdgeTextArea.addFocusListener(new FocusListener() {
       @Override
       public void focusGained(FocusEvent e) {
-        mDispatcher.convey(new EdgeSelectedEvent(Edge.this, getDataEdge()));
+        mDispatcher.convey(new ElementSelectedEvent(Edge.this));
       }
       @Override
       public void focusLost(FocusEvent e) {}
@@ -238,30 +234,22 @@ public class Edge extends JComponent implements Observer, MouseListener {
     // do an exact font positioning
     computeTextBoxBounds();
 
-    Action pressedAction = new AbstractAction() {
+    mEdgeTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
+    mEdgeTextArea.getActionMap().put("enter", new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         setDeselected();
-
-        NodeSelectedEvent evt = new NodeSelectedEvent(mWorkSpace,
-                mWorkSpace.getSceneFlowEditor().getActiveSuperNode());
-
-        mDispatcher.convey(evt);
+        mDispatcher.convey(new ElementSelectedEvent(null));
         updateFromTextEditor();
       }
-    };
-
-    Action escapeAction = new AbstractAction() {
+    });
+    mEdgeTextArea.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
+    mEdgeTextArea.getActionMap().put("escape", new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         setDeselected();
       }
-    };
-
-    mEdgeTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
-    mEdgeTextArea.getActionMap().put("enter", pressedAction);
-    mEdgeTextArea.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
-    mEdgeTextArea.getActionMap().put("escape", escapeAction);
+    });
     update();
   }
 
@@ -304,7 +292,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
   @Override
   public void mouseClicked(java.awt.event.MouseEvent event) {
 
-    mDispatcher.convey(new EdgeSelectedEvent(this, this.getDataEdge()));
+    mDispatcher.convey(new ElementSelectedEvent(this));
     mIsSelected = true;
 
     if (mEg.controlPoint1HandlerContainsPoint(event.getPoint(), 10)) {

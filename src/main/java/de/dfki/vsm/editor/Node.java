@@ -3,18 +3,32 @@ package de.dfki.vsm.editor;
 import static de.dfki.vsm.Preferences.*;
 
 //~--- JDK imports ------------------------------------------------------------
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
 
 import javax.swing.JComponent;
 
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
+import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
 import de.dfki.vsm.editor.util.DockingManager;
-import de.dfki.vsm.model.flow.*;
+import de.dfki.vsm.model.flow.AbstractEdge;
+import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.util.evt.EventDispatcher;
 
@@ -191,7 +205,7 @@ public final class Node extends JComponent implements Observer {
 
     //TODO!!!
     // Update the display name that has to be changed if the
-    // node's size or the node's font size have chaged
+    // node's size or the node's font size have changed
     String prefix = "";
     if (fontMetrics.stringWidth(mDataNode.getName()) > getWidth() - 10) {
       for (char c : mDataNode.getName().toCharArray()) {
@@ -435,7 +449,7 @@ public final class Node extends JComponent implements Observer {
 
 //      ////////!!!!!!!!!!!!!!!!!!!!
     // System.err.println("Sending node selected event");
-    mEventMulticaster.convey(new NodeSelectedEvent(this, this.getDataNode()));
+    mEventMulticaster.convey(new ElementSelectedEvent(this));
   }
 
   public void mousePressed(MouseEvent event) {

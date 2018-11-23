@@ -4,10 +4,13 @@ import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
-import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 
@@ -17,10 +20,11 @@ import de.dfki.vsm.util.evt.EventListener;
  *
  *
  */
+@SuppressWarnings("serial")
 public class NameEditor extends JPanel implements EventListener {
 
   private JTextField mNameField;
-  private BasicNode mDataNode;
+  private Node mNode;
 
   public NameEditor() {
     initComponents();
@@ -54,19 +58,21 @@ public class NameEditor extends JPanel implements EventListener {
 
   @Override
   public void update(Object event) {
-    if (event instanceof NodeSelectedEvent) {
+    if (event instanceof ElementSelectedEvent) {
+      Object elt = ((ElementSelectedEvent) event).getElement();
+      if (elt instanceof Node) {
+        // Update the selected node
+        mNode = (Node)elt;
 
-      // Update the selected node
-      mDataNode = ((NodeSelectedEvent) event).getNode();
-
-      // Reload the node name
-      mNameField.setText(mDataNode.getName());
+        // Reload the node name
+        mNameField.setText(mNode.getDataNode().getName());
+      }
     }
   }
 
   private void save() {
-
-    mDataNode.setName(sanitizeString(mNameField.getText().trim()));
+    mNode.getDataNode().setName(sanitizeString(mNameField.getText().trim()));
+    mNode.update(null, null);
   }
 
   //ESCAPES STRINGS

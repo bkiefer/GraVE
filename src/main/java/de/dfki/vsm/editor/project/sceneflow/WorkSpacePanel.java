@@ -21,7 +21,7 @@ import javax.swing.*;
 import de.dfki.vsm.editor.*;
 import de.dfki.vsm.editor.action.*;
 import de.dfki.vsm.editor.event.ClearCodeEditorEvent;
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
+import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
 import de.dfki.vsm.editor.event.WorkSpaceSelectedEvent;
 import de.dfki.vsm.editor.project.EditorConfig;
@@ -892,12 +892,9 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       parent = mSceneFlowEditor.removeActiveSuperNode();
     }
     clearCurrentWorkspace();
-    NodeSelectedEvent e = new NodeSelectedEvent(this,
-        mSceneFlowEditor.getActiveSuperNode());
-    mEventCaster.convey(e);
-    if (e.getNode() instanceof SuperNode) {
-      mGridManager.update();
-    }
+    mEventCaster.convey(
+        new ElementSelectedEvent(mSceneFlowEditor.getActiveSuperNode()));
+    mGridManager.update();
     showCurrentWorkSpace();
  }
 
@@ -912,12 +909,9 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     clearCurrentWorkspace();
     // Pop the current active supernode from the list of
     // active supernodes and remove it's name from the path
-    NodeSelectedEvent e = new NodeSelectedEvent(this,
-        mSceneFlowEditor.getActiveSuperNode());
-    mEventCaster.convey(e);
-    if (e.getNode() instanceof SuperNode) {
-      mGridManager.update();
-    }
+    mEventCaster.convey(
+        new ElementSelectedEvent(mSceneFlowEditor.getActiveSuperNode()));
+    mGridManager.update();
     showCurrentWorkSpace();
   }
 
@@ -1191,8 +1185,8 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       }
 
       if (!entityClicked) {
-        NodeSelectedEvent e = new NodeSelectedEvent(this, mSceneFlowEditor.getActiveSuperNode());
-        mEventCaster.convey(e);
+        mEventCaster.convey(
+            new ElementSelectedEvent(mSceneFlowEditor.getActiveSuperNode()));
       }
     } else {
 

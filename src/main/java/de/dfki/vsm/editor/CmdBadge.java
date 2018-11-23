@@ -8,7 +8,7 @@ import java.util.Observer;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
+import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
 import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
@@ -59,7 +59,7 @@ public class CmdBadge extends RSyntaxTextArea {
     addFocusListener(new FocusListener() {
       public void focusGained(FocusEvent e) {
         setBackground(boxActiveColour);
-        mDispatcher.convey(new NodeSelectedEvent(CmdBadge.this, mNode.getDataNode()));
+        mDispatcher.convey(new ElementSelectedEvent(mNode));
       }
 
       public void focusLost(FocusEvent e) {
@@ -97,7 +97,7 @@ public class CmdBadge extends RSyntaxTextArea {
   public synchronized void endEditMode() {
     mNode.getDataNode().setCmd(getText());
     mDispatcher.convey(new ProjectChangedEvent(this));
-    mDispatcher.convey(new NodeSelectedEvent(this, mNode.getDataNode()));
+    mDispatcher.convey(new ElementSelectedEvent(mNode));
     update();
   }
 

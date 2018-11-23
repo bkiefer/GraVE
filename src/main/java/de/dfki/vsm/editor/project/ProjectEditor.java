@@ -16,13 +16,12 @@ import org.slf4j.LoggerFactory;
 //import org.fife.ui.autocomplete.AutoCompletion;
 
 import de.dfki.vsm.Preferences;
-import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.event.ClearCodeEditorEvent;
-import de.dfki.vsm.editor.event.EdgeSelectedEvent;
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
+import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
 import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
+import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 
@@ -148,7 +147,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     }
 
     if (mEditorProject.getEditorConfig().sSHOW_CODEEDITOR
-            && mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR) {
+        && mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR) {
       showAuxiliaryEditor();
     }
 
@@ -199,22 +198,12 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   public void update(final Object event) {
     if (event instanceof TreeEntrySelectedEvent) {
       // Show the auxiliary editor
-      showAuxiliaryEditor();
-    } else if (event instanceof NodeSelectedEvent) {
-      Object edited = null;
-      if (((NodeSelectedEvent) event).getSource() instanceof Node)
-        // the source of the event is the node object
-        edited = mSceneFlowEditor.getWorkSpace().getCmdBadge(
-                      (Node)((NodeSelectedEvent) event).getSource());
-      else if (((NodeSelectedEvent) event).getSource() instanceof CmdBadge)
-        // the source of the event is the node object
-        edited = ((NodeSelectedEvent) event).getSource();
+      //showAuxiliaryEditor();
+    } else if (event instanceof ElementSelectedEvent) {
+      Object edited = ((ElementSelectedEvent) event).getElement();
       mCodeEditor.setEditedNodeOrEdge(edited);
     } else if (event instanceof ClearCodeEditorEvent) {
       mCodeEditor.setEditedNodeOrEdge(null);
-    } else if (event instanceof EdgeSelectedEvent) {
-      // the source of the event is the node object
-      mCodeEditor.setEditedNodeOrEdge(((EdgeSelectedEvent) event).getSource());
     }
   }
 
