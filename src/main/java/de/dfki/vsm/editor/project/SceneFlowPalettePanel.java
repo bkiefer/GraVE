@@ -1,4 +1,4 @@
-package de.dfki.vsm.editor.project.sceneflow;
+package de.dfki.vsm.editor.project;
 
 import static de.dfki.vsm.Preferences.*;
 

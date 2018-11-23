@@ -1,4 +1,4 @@
-package de.dfki.vsm.runtime.project;
+package de.dfki.vsm.model.project;
 
 import java.io.*;
 
@@ -9,7 +9,6 @@ import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.model.flow.EpsilonEdge;
 import de.dfki.vsm.model.flow.SceneFlow;
 import de.dfki.vsm.model.flow.TimeoutEdge;
-import de.dfki.vsm.model.project.ProjectConfig;
 import de.dfki.vsm.util.JaxbUtilities;
 
 /**

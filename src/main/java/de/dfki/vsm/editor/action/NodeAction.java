@@ -11,12 +11,12 @@ import javax.swing.undo.UndoManager;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Node.Type;
-import de.dfki.vsm.editor.project.EditorConfig;
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.project.SceneFlowEditor;
+import de.dfki.vsm.editor.project.WorkSpacePanel;
 import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.project.EditorConfig;
 
 /**
  * @author Gregor Mehlmann

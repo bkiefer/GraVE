@@ -1,4 +1,4 @@
-package de.dfki.vsm.editor.project.sceneflow;
+package de.dfki.vsm.editor.project;
 
 import static de.dfki.vsm.Preferences.*;
 
@@ -24,12 +24,12 @@ import de.dfki.vsm.editor.event.ClearCodeEditorEvent;
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
 import de.dfki.vsm.editor.event.WorkSpaceSelectedEvent;
-import de.dfki.vsm.editor.project.EditorConfig;
-import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.editor.util.GridManager;
 import de.dfki.vsm.editor.util.SceneFlowLayoutManager;
 import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.model.flow.geom.Position;
+import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.model.project.EditorProject;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 

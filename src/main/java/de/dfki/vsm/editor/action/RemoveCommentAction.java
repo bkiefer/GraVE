@@ -7,8 +7,8 @@ import javax.swing.undo.UndoManager;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Comment;
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.project.SceneFlowEditor;
+import de.dfki.vsm.editor.project.WorkSpacePanel;
 import de.dfki.vsm.model.flow.CommentBadge;
 import de.dfki.vsm.model.flow.SuperNode;
 

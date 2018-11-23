@@ -10,8 +10,8 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.project.SceneFlowEditor;
+import de.dfki.vsm.editor.project.WorkSpacePanel;
 import de.dfki.vsm.model.flow.*;
 
 /**

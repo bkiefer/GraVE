@@ -11,10 +11,10 @@ import java.util.ArrayList;
 
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.EditorConfig;
 import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.model.flow.geom.ControlPoint;
 import de.dfki.vsm.model.flow.geom.EdgeArrow;
+import de.dfki.vsm.model.project.EditorConfig;
 
 /**
  * @author Patrick Gebhard

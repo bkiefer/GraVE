@@ -9,8 +9,8 @@ import de.dfki.vsm.editor.Edge;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.project.SceneFlowEditor;
+import de.dfki.vsm.editor.project.WorkSpacePanel;
 import de.dfki.vsm.editor.util.grid.*;
 import de.dfki.vsm.model.flow.*;
 

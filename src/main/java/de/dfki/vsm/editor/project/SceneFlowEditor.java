@@ -1,4 +1,4 @@
-package de.dfki.vsm.editor.project.sceneflow;
+package de.dfki.vsm.editor.project;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.BorderLayout;
@@ -39,10 +39,10 @@ import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
 import de.dfki.vsm.editor.NameEditor;
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
-import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.model.flow.SceneFlow;
 import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.project.EditorProject;
 import de.dfki.vsm.util.evt.EventDispatcher;
 
 /**

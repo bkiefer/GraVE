@@ -10,10 +10,10 @@ import java.util.Observer;
 
 import javax.swing.*;
 
-import de.dfki.vsm.editor.project.EditorConfig;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpacePanel;
 import de.dfki.vsm.model.flow.CommentBadge;
 import de.dfki.vsm.model.flow.geom.Boundary;
+import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**

@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.vsm.editor.project.EditorConfig;
+import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.JaxbUtilities;
 import de.dfki.vsm.util.ios.ResourceLoader;
 import java.io.File;

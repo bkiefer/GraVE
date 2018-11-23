@@ -26,8 +26,8 @@ import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
 import de.dfki.vsm.MainGrave;
 import de.dfki.vsm.editor.dialog.NewProjectDialog;
-import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.runtime.project.RunTimeProject;
+import de.dfki.vsm.model.project.EditorProject;
+import de.dfki.vsm.model.project.RunTimeProject;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**

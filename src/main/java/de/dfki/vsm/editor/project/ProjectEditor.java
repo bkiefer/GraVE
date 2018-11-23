@@ -20,8 +20,8 @@ import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.event.ClearCodeEditorEvent;
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
 import de.dfki.vsm.model.flow.AbstractEdge;
+import de.dfki.vsm.model.project.EditorProject;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 

@@ -10,7 +10,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
-import de.dfki.vsm.editor.project.EditorConfig;
+import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import java.util.Arrays;

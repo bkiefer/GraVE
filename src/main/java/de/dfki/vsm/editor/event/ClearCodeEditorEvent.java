@@ -5,7 +5,7 @@
  */
 package de.dfki.vsm.editor.event;
 
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpacePanel;
 
 /**
  *

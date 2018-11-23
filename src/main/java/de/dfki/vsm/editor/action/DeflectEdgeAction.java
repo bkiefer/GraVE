@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpacePanel;
 
 /**
  * @author Patrick Gebhard

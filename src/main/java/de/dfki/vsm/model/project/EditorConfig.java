@@ -1,4 +1,4 @@
-package de.dfki.vsm.editor.project;
+package de.dfki.vsm.model.project;
 
 import java.io.*;
 

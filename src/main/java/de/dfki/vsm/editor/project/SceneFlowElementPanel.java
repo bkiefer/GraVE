@@ -1,4 +1,4 @@
-package de.dfki.vsm.editor.project.sceneflow;
+package de.dfki.vsm.editor.project;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -23,8 +23,8 @@ import de.dfki.vsm.MainGrave;
 import de.dfki.vsm.Preferences;
 import de.dfki.vsm.editor.TreeEntry;
 import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
-import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.model.flow.SceneFlow;
+import de.dfki.vsm.model.project.EditorProject;
 import de.dfki.vsm.util.evt.EventDispatcher;
 
 /**

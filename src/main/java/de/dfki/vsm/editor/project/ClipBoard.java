@@ -1,4 +1,4 @@
-package de.dfki.vsm.editor.project.sceneflow;
+package de.dfki.vsm.editor.project;
 
 import java.util.HashSet;
 

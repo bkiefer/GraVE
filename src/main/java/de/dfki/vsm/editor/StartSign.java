@@ -7,7 +7,7 @@ import java.awt.*;
 
 import javax.swing.JComponent;
 
-import de.dfki.vsm.editor.project.EditorConfig;
+import de.dfki.vsm.model.project.EditorConfig;
 
 /**
  * @author Patrick Gebhard

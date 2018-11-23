@@ -19,6 +19,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.model.project.EditorProject;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
 @SuppressWarnings("serial")

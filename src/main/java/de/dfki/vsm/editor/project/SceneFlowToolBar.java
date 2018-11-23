@@ -1,4 +1,4 @@
-package de.dfki.vsm.editor.project.sceneflow;
+package de.dfki.vsm.editor.project;
 
 import static de.dfki.vsm.Preferences.getPrefs;
 
@@ -22,9 +22,9 @@ import de.dfki.vsm.editor.action.UndoAction;
 import de.dfki.vsm.editor.dialog.OptionsDialog;
 import de.dfki.vsm.editor.dialog.SaveFileDialog;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
-import de.dfki.vsm.editor.project.EditorConfig;
-import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.model.project.EditorProject;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.ios.ResourceLoader;

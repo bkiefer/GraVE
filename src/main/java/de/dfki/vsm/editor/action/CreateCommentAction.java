@@ -10,7 +10,7 @@ import javax.swing.undo.UndoManager;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Comment;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpacePanel;
 import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.flow.geom.Boundary;
 

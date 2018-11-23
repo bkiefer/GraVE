@@ -11,11 +11,11 @@ import java.util.HashSet;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.EditorConfig;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpacePanel;
 import de.dfki.vsm.editor.util.grid.GridConstants;
 import de.dfki.vsm.editor.util.grid.GridRectangle;
 import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.project.EditorConfig;
 
 /**
  * @author Patrick
