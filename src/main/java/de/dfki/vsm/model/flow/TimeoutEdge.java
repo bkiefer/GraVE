@@ -42,7 +42,14 @@ public class TimeoutEdge extends AbstractEdge {
   }
 
   public void setContent(String s) {
-    mTimeout = Long.parseLong(s.trim());
+    s = s.trim();
+    if (s.isEmpty()) return;
+    try {
+      long newTimeout = Long.parseLong(s);
+      mTimeout = newTimeout;
+    } catch (NumberFormatException ex) {
+      // keep old value
+    }
   }
 
   // TODO:
