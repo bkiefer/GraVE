@@ -36,6 +36,10 @@ import de.dfki.vsm.util.evt.EventListener;
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
+ *
+ * This is the View of the currently edited SuperNode, containing views for all
+ * the SuperNodes contained nodes and the edges between them, and their
+ * corresponding text badges.
  */
 @SuppressWarnings("serial")
 public final class WorkSpacePanel extends JPanel implements EventListener, MouseListener, MouseMotionListener {
@@ -1215,6 +1219,25 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   }
 
   /**
+   * Eventually show "Paste" menu item, when clicking on workspace
+   */
+  public void globalContextMenu(MouseEvent event) {
+    int eventX = event.getX();
+    int eventY = event.getY();
+    JPopupMenu pop = new JPopupMenu();
+    //PASTE NODES MENU ITEM
+    int nc = mClipboard.size();
+    if (nc > 0) {
+      JMenuItem itemPasteNodes = new JMenuItem(
+          (nc > 1) ? "Paste " + nc + " Nodes" : "Paste Node");
+      PasteNodesAction pasteAction = new PasteNodesAction(this);
+      itemPasteNodes.addActionListener(pasteAction.getActionListener());
+      pop.add(itemPasteNodes);
+      pop.show(this, eventX, eventY);
+    }
+  }
+
+  /**
    *
    *
    */
@@ -1387,15 +1410,13 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     deselectAllNodes();
 
     // enable global context menu for clipbaord actions
-    /*
-        if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
-            gobalAddVariableMenu(event.getX(), event.getY());
-//            if (mClipboard.size() > 0) {
-//                gobalContextMenu(event);
-//            }
+    if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
+      if (mClipboard.size() > 0) {
+        globalContextMenu(event);
+      }
 
-            return;
-        }*/
+      return;
+    }
     // get point as possible point for area selection!
     mAreaSelection.x = event.getX();
     mAreaSelection.width = event.getX();
