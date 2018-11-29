@@ -4,13 +4,16 @@ import static de.dfki.vsm.Preferences.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.List;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.undo.AbstractUndoableEdit;
@@ -27,6 +30,7 @@ import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.project.WorkSpacePanel;
 import de.dfki.vsm.editor.util.EdgeGraphics;
 import de.dfki.vsm.model.flow.*;
+import de.dfki.vsm.model.flow.geom.ControlPoint;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
 
@@ -45,8 +49,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
   // The two graphical nodes to which this edge is connected
   private Node mSourceNode = null;
   private Node mTargetNode = null;
-  private boolean hasAlternativeTargetNodes = false;
-  public EdgeGraphics mEg = null;
+  private EdgeGraphics mEg = null;
   private WorkSpacePanel mWorkSpace = null;
 
   // For mouse interaction ...
@@ -168,11 +171,41 @@ public class Edge extends JComponent implements Observer, MouseListener {
     mEdgeTextArea.setText(s);
   }
 
-  private void update() {
-    if (mDataEdge != null) {
-      hasAlternativeTargetNodes = !mDataEdge.getAltMap().isEmpty();
+  /** Disconnect this edge view from the node view it is connected to */
+  public void disconnect() {
+    mSourceNode.disconnectEdge(this);
+    if (isLoop()) {
+      mTargetNode.disconnectSelfPointingEdge(this);
+    } else {
+      mTargetNode.disconnectEdge(this);
     }
+  }
 
+  /** Disconnect this edge view from the node view it is connected to */
+  public void connect() {
+    List<ControlPoint> pl = mDataEdge.getArrow().getPointList();
+    mSourceNode.connectAsSource(this, pl.get(0).getPoint());
+    mTargetNode.connectAsTarget(this, pl.get(1).getPoint());
+  }
+
+  public boolean containsPoint(Point p) {
+    return mEg.curveContainsPoint(p);
+  }
+
+  public boolean outOfBounds() {
+    return (mEg.mCCrtl1.x < 0) || (mEg.mCCrtl1.y < 0)
+        || (mEg.mCCrtl2.x < 0) || (mEg.mCCrtl2.y < 0);
+  }
+
+  public boolean isIntersectByRectangle(double x1, double x2, double y1, double y2) {
+    return mEg.isIntersectByRectangle(x1, x2, y1, y2);
+  }
+
+  public void updateRelativeEdgeControlPointPos(Node n, int xOffset, int yOffset) {
+    mEg.updateRelativeEdgeControlPointPos(n, xOffset, yOffset);
+  }
+
+  private void update() {
     // Adapt font size
     if (mEditorConfig.sWORKSPACEFONTSIZE != getFont().getSize())
       getFont().deriveFont(mEditorConfig.sWORKSPACEFONTSIZE);
@@ -181,8 +214,6 @@ public class Edge extends JComponent implements Observer, MouseListener {
       // do an exact font positioning
       computeTextBoxBounds();
   }
-
-
 
   /*
     * Initialize mTextPane and mValueEditor
@@ -441,7 +472,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
     }
 
     mSourceNode.getDockingManager().freeDockPoint(this);
-    mEg.initEdgeGraphics(this, null, null);
+    mEg.initEdgeGraphics(null, null);
   }
 
   private void computeTextBoxBounds() {
@@ -469,12 +500,12 @@ public class Edge extends JComponent implements Observer, MouseListener {
     graphics.draw(mEg.mCurve);
 
     if (mEditMode == true) {
-      graphics.setColor(color());
+      //graphics.setColor(color());
       mEdgeTextArea.requestFocusInWindow();
     }
     computeTextBoxBounds();
 
-    graphics.setColor(color());
+    //graphics.setColor(color());
 
     // draw head
     mEg.computeHead();
@@ -517,28 +548,6 @@ public class Edge extends JComponent implements Observer, MouseListener {
       graphics.fillPolygon(mEg.mHead);
       graphics.setColor(color());
       graphics.drawPolygon(mEg.mHead);
-    }
-
-    if (hasAlternativeTargetNodes) {
-
-      // String targets = mDataEdge.getStart();
-      String targets = mDataEdge.getAltStartNodesAsString();
-
-      // center the text
-      //mFontWidthCorrection = mFM.stringWidth(targets);
-
-      // Get the current transform
-      AffineTransform currentAT = graphics.getTransform();
-
-      // Perform transformation
-      AffineTransform at = new AffineTransform();
-
-      graphics.translate(mEg.mAbsoluteEndPos.x, mEg.mAbsoluteEndPos.y);
-      at.setToRotation((2 * Math.PI) - (mEg.mArrowDir + (Math.PI / 2)));
-      graphics.transform(at);
-      graphics.setColor(Color.WHITE);
-      computeTextBoxBounds();
-      graphics.setTransform(currentAT);
     }
   }
 

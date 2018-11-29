@@ -156,6 +156,7 @@ public class NormalizeEdgeAction {
       BezierFit bezierFit = new BezierFit();
       BezierPoint[] controlPoint = bezierFit.bestFit(pathPoints);
 
+      /* TODO: MAYBE REACTIVATE
       // Manipulate the control point based on the BezierFit calculation
       if (((int) Math.round(controlPoint[1].getX()) + thresholdSourceX) > 0) {
         mGUIEdge.mEg.mCCrtl1.x = (int) Math.round(controlPoint[1].getX()) + thresholdSourceX;
@@ -198,10 +199,10 @@ public class NormalizeEdgeAction {
 
       if ((targetDockingPoint.getIntersectionX() > -1) && (targetDockingPoint.getIntersectionY() > -1)) {
         mTargetGUINode.disconnectEdge(mGUIEdge);
-        mTargetGUINodeDockPoint = mTargetGUINode.connectEdgetAtTargetNode(mGUIEdge,
+        mTargetGUINodeDockPoint = mTargetGUINode.connectEdgeAtTargetNode(mGUIEdge,
                 new Point(targetDockingPoint.getIntersectionX(), targetDockingPoint.getIntersectionY()));
       }
-
+       */
       mWorkSpace.add(mGUIEdge);
       mWorkSpace.revalidate();
       mWorkSpace.repaint(100);
@@ -262,7 +263,7 @@ public class NormalizeEdgeAction {
           }
         }
 
-        if (gridRectangle.isIntersectByRectangle(mGUIEdge.mEg)) {
+        if (gridRectangle.isIntersectByRectangle(mGUIEdge)) {
           gridRectangle.setIntersectionType(GridRectangle.EDGE_INTERSECTION);
           sumWeight += gridRectangle.getWeight();
         }

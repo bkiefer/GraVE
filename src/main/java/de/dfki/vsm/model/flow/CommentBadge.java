@@ -69,7 +69,7 @@ public class CommentBadge implements Copyable {
   }
 
   @Override
-  public CommentBadge getCopy() {
+  public CommentBadge deepCopy() {
     CommentBadge result = new CommentBadge();
     result.mBoundary = mBoundary;
     result.mFontSize = mFontSize;

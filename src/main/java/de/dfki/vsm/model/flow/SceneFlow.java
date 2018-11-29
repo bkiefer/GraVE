@@ -75,10 +75,4 @@ public final class SceneFlow extends SuperNode {
 
     return copy;
   }
-
-  @Override
-  public SceneFlow getCopy() {
-    return null;
-  }
-
 }

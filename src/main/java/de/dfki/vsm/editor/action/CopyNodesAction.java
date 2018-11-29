@@ -18,54 +18,34 @@ import de.dfki.vsm.editor.project.WorkSpacePanel;
  */
 public class CopyNodesAction extends EditorAction {
 
-  private Set<Node> mNodes = new HashSet<Node>();
-  Set<RemoveNodeAction> mRemoveNodeActions = new HashSet<RemoveNodeAction>();
+  private Set<Node> mNodes = null;
   WorkSpacePanel mWorkSpace = null;
-  SceneFlowEditor mSceneFlowEditor;
 
   public CopyNodesAction(WorkSpacePanel workSpace, Node node) {
     mWorkSpace = workSpace;
+    mNodes = new HashSet<Node>();
     mNodes.add(node);
   }
 
   public CopyNodesAction(WorkSpacePanel workSpace, Set<Node> nodes) {
     mWorkSpace = workSpace;
     mNodes = nodes;
-    mSceneFlowEditor = mWorkSpace.getSceneFlowEditor();
-  }
-
-  protected void copyNodes() {
-    mWorkSpace.clearClipBoard();
-
-    for (Node node : mNodes) {
-
-      // store a copy of each selected node
-      de.dfki.vsm.model.flow.BasicNode nodeCopy = node.getDataNode().getCopy();
-
-      mWorkSpace.getClipBoard().add(nodeCopy);
-    }
-  }
-
-  protected void uncopyNodes() {
-    mWorkSpace.clearClipBoard();
   }
 
   public void run() {
-    copyNodes();
-    UndoAction.getInstance().refreshUndoState();
-    RedoAction.getInstance().refreshRedoState();
+    mWorkSpace.copyNodesNew(mNodes);
   }
 
   private class Edit extends AbstractUndoableEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-      uncopyNodes();
+      //uncopyNodes();
     }
 
     @Override
     public void redo() throws CannotRedoException {
-      copyNodes();
+      //copyNodes();
     }
 
     @Override

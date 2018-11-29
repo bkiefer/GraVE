@@ -1,5 +1,7 @@
 package de.dfki.vsm.model.flow;
 
+import java.util.Map;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -31,10 +33,9 @@ public class GuardedEdge extends AbstractEdge {
     setCondition(s);
   }
 
-  // TODO:
-  public GuardedEdge getCopy() {
-    GuardedEdge result = copyFieldsTo(new GuardedEdge());
-    result.mCondition = this.mCondition.getCopy();
+  public GuardedEdge deepCopy(Map<BasicNode, BasicNode> orig2copy) {
+    GuardedEdge result = deepCopy(new GuardedEdge(), orig2copy);
+    result.mCondition = this.mCondition.deepCopy();
     return result;
   }
 

@@ -29,9 +29,13 @@ public class Code implements Copyable {
   public void setContent(String s) { content = s.trim(); }
 
   @Override
-  public Code getCopy() {
+  public Code deepCopy() {
     Code result = new Code();
     result.content = content;
     return result;
+  }
+
+  public String toString() {
+    return content;
   }
 }

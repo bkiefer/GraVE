@@ -1,5 +1,7 @@
 package de.dfki.vsm.model.flow;
 
+import java.util.Map;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -31,11 +33,10 @@ public class InterruptEdge extends AbstractEdge {
     setCondition(s);
   }
 
-  // TODO:
   @Override
-  public InterruptEdge getCopy() {
-    InterruptEdge result = copyFieldsTo(new InterruptEdge());
-    result.mCondition = this.mCondition.getCopy();
+  public InterruptEdge deepCopy(Map<BasicNode, BasicNode> orig2copy) {
+    InterruptEdge result = deepCopy(new InterruptEdge(), orig2copy);
+    result.mCondition = this.mCondition.deepCopy();
     return result;
   }
 

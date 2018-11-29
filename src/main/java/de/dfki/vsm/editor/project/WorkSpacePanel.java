@@ -11,9 +11,9 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.text.AttributedString;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.*;
 
@@ -26,22 +26,30 @@ import de.dfki.vsm.editor.event.ProjectChangedEvent;
 import de.dfki.vsm.editor.event.WorkSpaceSelectedEvent;
 import de.dfki.vsm.editor.util.GridManager;
 import de.dfki.vsm.editor.util.SceneFlowLayoutManager;
-import de.dfki.vsm.model.flow.*;
+import de.dfki.vsm.model.flow.AbstractEdge;
+import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.CommentBadge;
+import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.model.project.EditorProject;
+import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
+ *
+ * This is the View of the currently edited SuperNode, containing views for all
+ * the SuperNodes contained nodes and the edges between them, and their
+ * corresponding text badges.
  */
 @SuppressWarnings("serial")
 public final class WorkSpacePanel extends JPanel implements EventListener, MouseListener, MouseMotionListener {
 
   // The clipboard
-  private final ClipBoard mClipboard = ClipBoard.getsInstance();
+  private final ClipBoard mClipboard = ClipBoard.getInstance();
 
   // Elements to draw
   private final Set<Node> mNodeSet = new HashSet<>();
@@ -49,7 +57,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   private final Set<Comment> mCmtSet = new HashSet<>();
 
   // Flags for mouse interaction
-  private Node mSelectedNode = null;
+  //private Node mSelectedNode = null;
   private Edge mSelectedEdge = null;
   private Comment mSelectedComment = null;
   private CmdBadge mSelectedCmdBadge = null;
@@ -177,16 +185,17 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     }
   }
 
+  /** Return the SuperNode this WorkSpace currently displays */
+  private SuperNode getSuperNode() {
+    return mSceneFlowEditor.getActiveSuperNode();
+  }
+
   public void clearClipBoard() {
     mClipboard.clear();
   }
 
   public ClipBoard getClipBoard() {
     return mClipboard;
-  }
-
-  public EditorProject getProject() {
-    return mProject;
   }
 
   public EditorConfig getEditorConfig() {
@@ -331,11 +340,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
       // add node only if it is not a history node
       if (node.getBounds().intersects(mDrawArea)) {
-        if (node.getDataNode().isHistoryNode()) {
-          mSceneFlowEditor.setMessageLabelText(
-              "Copy, cut and remove actions are not allowed on History nodes!");
-        }
-
         node.mSelected = true;
         mSelectedNodes.add(node);
       } else {
@@ -354,7 +358,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     for (Node node : mNodeSet) {
       node.mSelected = false;
     }
-    mSelectedNode = null;
+    //mSelectedNode = null;
 
     repaint(100);
   }
@@ -364,8 +368,19 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   private void createNode(Point point, Node.Type type) {
-    Point correctedPoint = new Point(point.x, point.y);
-    new CreateNodeAction(this, mGridManager.getNodeLocation(correctedPoint), type).run();
+    point = mGridManager.getNodeLocation(point);
+    Position p = new Position(point.x, point.y);
+    BasicNode model;
+    if (type == Node.Type.BasicNode) {
+      model = new BasicNode(mSceneFlowEditor.getIDManager(), p, getSuperNode());
+    } else {
+      model = new SuperNode(mSceneFlowEditor.getIDManager(), p, getSuperNode());
+    }
+    Node node = new Node(this, model);
+    addNewNode(node);
+    // repaint
+    revalidate();
+    repaint(100);
   }
 
   /**
@@ -414,8 +429,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   }
 
   /**
-   *
-   *
+   * At the end of an edge drag, this function is called to create a new edge.
    */
   private void createNewEdgeSelectTargetNode(int x, int y) {
     // repaint(100);
@@ -429,15 +443,10 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     for (Node n : mNodeSet) {
       if (n.containsPoint(x, y)) {
         targetNode = n;
-
+        new CreateEdgeAction(this, mEdgeSourceNode, targetNode,
+            mEdgeInProgress).run();
         break;
       }
-    }
-
-    if (targetNode != null) {
-      // If we found a target c, then we create a new edge
-      new CreateEdgeAction(this, mEdgeSourceNode, targetNode,
-          mEdgeInProgress).run();
     }
     // edge creation ends
     mEdgeInProgress = null;
@@ -513,10 +522,13 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   public void remove(Node node) {
+    deselectAllNodes();
+    /*
     // TODO: deselect all components instead
     if (mSelectedNode != null) {
       mSelectedNode = (mSelectedNode.equals(node)) ? null : mSelectedNode;
     }
+    */
 
     super.remove(node);
     mNodeSet.remove(node);
@@ -562,10 +574,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
   private void straightenAllOutOfBoundEdges() {
     for (Edge edge : mEdgeSet) {
-      if ((edge.mEg.mCCrtl1.x < 0) || (edge.mEg.mCCrtl1.y < 0) || (edge.mEg.mCCrtl2.x < 0)
-              || (edge.mEg.mCCrtl2.y < 0)) {
-        edge.straightenEdge();
-      }
+      if (edge.outOfBounds()) { edge.straightenEdge(); }
     }
   }
 
@@ -641,84 +650,62 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
   public void showContextMenu(MouseEvent evt, Node node) {
     JPopupMenu pop = new JPopupMenu();
     JMenuItem item = null;
-    SuperNode current = mSceneFlowEditor.getActiveSuperNode();
+    SuperNode current = getSuperNode();
 
-    if (!node.getDataNode().isHistoryNode()) {
-      item = new JMenuItem(current.isStartNode(node.getDataNode())
-          ? "Unset Start"
-          : "Set Start");
+    item = new JMenuItem(
+        current.isStartNode(node.getDataNode()) ? "Unset Start" : "Set Start");
 
-      ToggleStartNodeAction toggleStartnodeAction = new ToggleStartNodeAction(node, this);
+    ToggleStartNodeAction toggleStartnodeAction = new ToggleStartNodeAction(
+        node, this);
 
-      item.addActionListener(toggleStartnodeAction.getActionListener());
-      pop.add(item);
-      pop.add(new JSeparator());
+    item.addActionListener(toggleStartnodeAction.getActionListener());
+    pop.add(item);
+    pop.add(new JSeparator());
 
-      if (!(node.getDataNode() instanceof SuperNode)) {
-        item = new JMenuItem("To Supernode");
+    if (!(node.getDataNode() instanceof SuperNode)) {
+      item = new JMenuItem("To Supernode");
 
-        ChangeNodeTypeAction changetypeAction = new ChangeNodeTypeAction(this, node);
+      ChangeNodeTypeAction changetypeAction = new ChangeNodeTypeAction(this,
+          node);
 
-        item.addActionListener(changetypeAction.getActionListener());
-        pop.add(item);
-        pop.add(new JSeparator());
-      }
-
-      // TODO: MAYBE INVERT: IF NO CMD, ADD ONE
-      if (node.getDataNode().getCmd() != null) {
-        item = new JMenuItem("Edit Command");
-
-        EditCommandAction editCommandAction =
-            new EditCommandAction(this, node.getCmdBadge());
-
-        mSelectedCmdBadge = node.getCmdBadge();
-        item.addActionListener(editCommandAction.getActionListener());
-        pop.add(item);
-        pop.add(new JSeparator());
-        /* }  else {
-                item = new JMenuItem("Add Command Execution");
-
-                AddCommandAction addCommandAction = new AddCommandAction(this, node);
-
-                item.addActionListener(addCommandAction.getActionListener());
-                pop.add(item);
-                pop.add(new JSeparator());
-
-                /*
-                 * // mListModel.addElement(cmd);
-                 *
-                 * EditCommandAction editCommandAction = new EditCommandAction(this, mCmdBadgeMap.get(node));
-                 * mSelectedCmdBadge = mCmdBadgeMap.get(node);
-                 *
-                 * item.addActionListener(editCommandAction.getActionListener());
-                 * pop.add(item);
-                 * pop.add(new JSeparator());
-         */
-      }
-
-      item = new JMenuItem("Copy");
-
-      CopyNodesAction copyAction = new CopyNodesAction(this, node);
-
-      item.addActionListener(copyAction.getActionListener());
-      pop.add(item);
-      item = new JMenuItem("Cut");
-
-      CutNodesAction cutAction = new CutNodesAction(this, node);
-
-      item.addActionListener(cutAction.getActionListener());
+      item.addActionListener(changetypeAction.getActionListener());
       pop.add(item);
       pop.add(new JSeparator());
     }
 
-    if (!node.getDataNode().isHistoryNode()) {
-      item = new JMenuItem("Delete");
+    // TODO: MAYBE INVERT: IF NO CMD, ADD ONE
+    if (node.getDataNode().getCmd() != null) {
+      item = new JMenuItem("Edit Command");
 
-      RemoveNodeAction deleteAction = new RemoveNodeAction(this, node);
+      EditCommandAction editCommandAction = new EditCommandAction(this,
+          node.getCmdBadge());
 
-      item.addActionListener(deleteAction.getActionListener());
+      mSelectedCmdBadge = node.getCmdBadge();
+      item.addActionListener(editCommandAction.getActionListener());
       pop.add(item);
+      pop.add(new JSeparator());
     }
+
+    item = new JMenuItem("Copy");
+
+    CopyNodesAction copyAction = new CopyNodesAction(this, node);
+
+    item.addActionListener(copyAction.getActionListener());
+    pop.add(item);
+    item = new JMenuItem("Cut");
+
+    CutNodesAction cutAction = new CutNodesAction(this, node);
+
+    item.addActionListener(cutAction.getActionListener());
+    pop.add(item);
+    pop.add(new JSeparator());
+
+    item = new JMenuItem("Delete");
+
+    RemoveNodesAction deleteAction = new RemoveNodesAction(this, node);
+
+    item.addActionListener(deleteAction.getActionListener());
+    pop.add(item);
 
     pop.show(this, node.getX() + node.getWidth(), node.getY());
   }
@@ -729,31 +716,22 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    */
   private void multipleNodesContextMenu(MouseEvent evt, Node node) {
 
-    // remove History node for actions
-    HashSet<Node> filteredSelectedNodes = new HashSet<>();
-
-    for (Node n : mSelectedNodes) {
-      if (!n.getDataNode().isHistoryNode()) {
-        filteredSelectedNodes.add(n);
-      }
-    }
-
     JPopupMenu pop = new JPopupMenu();
     JMenuItem item = new JMenuItem("Copy Nodes");
-    CopyNodesAction copyAction = new CopyNodesAction(this, filteredSelectedNodes);
+    CopyNodesAction copyAction = new CopyNodesAction(this, mSelectedNodes);
 
     item.addActionListener(copyAction.getActionListener());
     pop.add(item);
     item = new JMenuItem("Cut Nodes");
 
-    CutNodesAction cutAction = new CutNodesAction(this, filteredSelectedNodes);
+    CutNodesAction cutAction = new CutNodesAction(this, mSelectedNodes);
 
     item.addActionListener(cutAction.getActionListener());
     pop.add(item);
     pop.add(new JSeparator());
     item = new JMenuItem("Delete Nodes");
 
-    RemoveNodesAction deleteAction = new RemoveNodesAction(this, filteredSelectedNodes);
+    RemoveNodesAction deleteAction = new RemoveNodesAction(this, mSelectedNodes);
 
     item.addActionListener(deleteAction.getActionListener());
     pop.add(item);
@@ -765,6 +743,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   public void copyNodes() {
+    /*
     if ((mSelectedNode != null) && (mSelectedNodes.isEmpty())) {
       CopyNodesAction copyAction = new CopyNodesAction(this, mSelectedNode);
 
@@ -772,8 +751,9 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       copyAction.run();
       return;
     }
+    */
 
-    if ((mSelectedNode == null) && (mSelectedNodes.size() > 0)) {
+    if (mSelectedNodes.size() > 0) {
       CopyNodesAction copyAction = new CopyNodesAction(this, mSelectedNodes);
       String message = (mSelectedNodes.size() > 1)
               ? "Nodes copied"
@@ -789,6 +769,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *
    */
   public void cutNodes() {
+    /*
     if ((mSelectedNode != null) && (mSelectedNodes.isEmpty())) {
       CutNodesAction cutAction = new CutNodesAction(this, mSelectedNode);
 
@@ -796,8 +777,9 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       cutAction.run();
       return;
     }
+    */
 
-    if ((mSelectedNode == null) && (mSelectedNodes.size() > 0)) {
+    if (mSelectedNodes.size() > 0) {
       CutNodesAction cutAction = new CutNodesAction(this, mSelectedNodes);
       String message = (mSelectedNodes.size() > 1)
               ? "Nodes cut"
@@ -808,47 +790,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     }
   }
 
-  /**
-   *
-   *
-   *
-    public void gobalAddVariableMenu(int eventX, int eventY) {
-        JPopupMenu pop = new JPopupMenu();
-
-        //ADD VARIABLE MENU ITEM
-        JMenuItem itemAddVariable = new JMenuItem("Add Variable");
-        AddVariableAction addVariableAction = new AddVariableAction(this);
-        itemAddVariable.addActionListener(addVariableAction.getActionListener());
-        pop.add(itemAddVariable);
-        //PASTE NODES MENU ITEM
-        int nc = mClipboard.size();
-        if (nc > 0) {
-            JMenuItem itemPasteNodes = new JMenuItem((nc > 1)
-                    ? "Paste " + nc + " Nodes"
-                    : "Paste Node");
-            PasteNodesAction pasteAction = new PasteNodesAction(this);
-            itemPasteNodes.addActionListener(pasteAction.getActionListener());
-            pop.add(itemPasteNodes);
-        }
-
-        pop.show(this, eventX, eventY);
-    }*/
-  /**
-   *
-   *
-   */
-//    public void gobalContextMenu(MouseEvent evt) {
-//        JPopupMenu pop = new JPopupMenu();
-//        int nc = mClipboard.size();
-//        JMenuItem item = new JMenuItem((nc > 1)
-//                ? "Paste " + nc + " Nodes"
-//                : "Paste BasicNode");
-//        PasteNodesAction pasteAction = new PasteNodesAction(this);
-//
-//        item.addActionListener(pasteAction.getActionListener());
-//        pop.add(item);
-//        pop.show(this, evt.getX(), evt.getY());
-//    }
   /**
    *
    * TODO: NEEDS FULL REVAMP
@@ -884,7 +825,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
    *  Pop out to the specified SuperNode
    */
   public void selectNewWorkSpaceLevel(SuperNode supernode) {
-    if (mSceneFlowEditor.getActiveSuperNode().equals(supernode)) {
+    if (getSuperNode().equals(supernode)) {
       return;
     }
     SuperNode parent = mSceneFlowEditor.removeActiveSuperNode();
@@ -893,7 +834,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     }
     clearCurrentWorkspace();
     mEventCaster.convey(
-        new ElementSelectedEvent(mSceneFlowEditor.getActiveSuperNode()));
+        new ElementSelectedEvent(getSuperNode()));
     mGridManager.update();
     showCurrentWorkSpace();
  }
@@ -910,7 +851,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     // Pop the current active supernode from the list of
     // active supernodes and remove it's name from the path
     mEventCaster.convey(
-        new ElementSelectedEvent(mSceneFlowEditor.getActiveSuperNode()));
+        new ElementSelectedEvent(getSuperNode()));
     mGridManager.update();
     showCurrentWorkSpace();
   }
@@ -931,7 +872,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     removeAll();
     super.removeAll();
     mSelectedEdge = null;
-    mSelectedNode = null;
     mSelectedComment = null;
     // Create a new Gridmanager for the workspace
     mGridManager.update();
@@ -952,12 +892,9 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     repaint(100);
   }
 
-  /**
-   *
-   *
-   */
+  /** Add views for all the (sub)node models in this workspace's SuperNode */
   public void showNodesOnWorkSpace() {
-    for (BasicNode n : mSceneFlowEditor.getActiveSuperNode()) {
+    for (BasicNode n : getSuperNode()) {
       Point p = mGridManager.getNodeLocation(
           new Point(n.getPosition().getXPos(), n.getPosition().getYPos()));
 
@@ -968,38 +905,24 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       add(guiNode.getCmdBadge());
     }
 
-    ArrayList<CommentBadge> commentList =
-        mSceneFlowEditor.getActiveSuperNode().getCommentList();
+    ArrayList<CommentBadge> commentList = getSuperNode().getCommentList();
 
-    for (de.dfki.vsm.model.flow.CommentBadge n : commentList) {
+    for (CommentBadge n : commentList) {
       add(new Comment(this, n));
     }
   }
 
-  public void showEdge(Node sourceNode, AbstractEdge e) {
-    Node targetNode = getNode(e.getTargetUnid());
-    if (targetNode != null) {
-      Edge edge = new Edge(this, e, sourceNode, targetNode);
-      add(edge);
-    }
-  }
-
-  /**
-   *
-   *
-   */
+  /** Add views for all edges between nodes in this workspace */
   public void showEdgesOnWorkSpace() {
-    for (Node guiNode : mNodeSet) {
-      BasicNode n = guiNode.getDataNode();
-      for (GuardedEdge e : n.getCEdgeList()) showEdge(guiNode, e);
-      for (RandomEdge e : n.getPEdgeList()) showEdge(guiNode, e);
-      for (ForkingEdge e : n.getFEdgeList()) showEdge(guiNode, e);
-      for (InterruptEdge e : n.getIEdgeList()) showEdge(guiNode, e);
-      if (n.getDedge() != null) showEdge(guiNode, n.getDedge());
+    for (Node sourceNode : mNodeSet) {
+      BasicNode n = sourceNode.getDataNode();
+      for (AbstractEdge e : n.getEdgeList()) {
+        Node targetNode = getNode(e.getTargetUnid());
+        if (targetNode != null) {
+          add(new Edge(this, e, sourceNode, targetNode));
+        }
+      }
     }
-    // Additionally update the appearance of the source c, which means
-    // that we update the color and the end c markings of the c.
-    // Editor.getInstance().update();
   }
 
   /**
@@ -1017,10 +940,12 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       mSelectedCmdBadge = null;
     }
 
+    /*
     if ((!comp.equals(mSelectedNode)) && (mSelectedNode != null)) {
       mSelectedNode.setDeselected();
       mSelectedNode = null;
     }
+    */
 
     if ((!comp.equals(mSelectedEdge)) && (mSelectedEdge != null)) {
       mSelectedEdge.setDeselected();
@@ -1074,7 +999,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
             return;
           } else {
-            mSelectedNode = (Node) (mSelectedNodes.toArray())[0];
+            // mSelectedNode = mSelectedNodes.iterator().next();
             mDoAreaSelection = false;
             deselectAllNodes();
           }
@@ -1086,7 +1011,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
     // if there is a specific selected edge use it - much faster than checking all edges
     if (mSelectedEdge != null) {
-      if (mSelectedEdge.mEg.curveContainsPoint(new Point(event.getX(), event.getY()))) {
+      if (mSelectedEdge.containsPoint(new Point(event.getX(), event.getY()))) {
 
         // System.out.println(mSelectedEdge.getType() + " clicked - (re) selected");
         mSelectedEdge.mouseClicked(event);
@@ -1101,21 +1026,14 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     }
 
     // if there is a specific selected c use it - much faster than checking all nodes
-    if (mSelectedNode != null) {
-      if (mSelectedNodes.size() == 1) {
-        if (mSelectedNode.containsPoint(event.getX(), event.getY())) {
+    if (mSelectedNodes.size() == 1) {
+      if (mSelectedNodes.iterator().next().containsPoint(event.getX(), event.getY())) {
 
-          // DEBUG System.out.println(mSelectedNode.getDataNode().getName() + " clicked - (re) selected");
-          // tell c that it has been clicked
-          mSelectedNode.mouseClicked(event);
+        // DEBUG System.out.println(mSelectedNode.getDataNode().getName() + " clicked - (re) selected");
+        // tell c that it has been clicked
+        mSelectedNodes.iterator().next().mouseClicked(event);
 
-          return;
-        } else {
-
-          // System.out.println(mSelectedNode.getDataNode().getName() + " not clicked - deselected");
-          mSelectedNode.setDeselected();
-          mSelectedNode = null;
-        }
+        return;
       }
     }
 
@@ -1142,27 +1060,19 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       // look if mouse click was on a c
       for (Node node : mNodeSet) {
         if (node.containsPoint(event.getX(), event.getY())) {
-          mSelectedNode = node;
+          mSelectedNodes.add(node);
 
           // DEBUG System.out.println(mSelectedNode.getDataNode().getName() + " clicked - found and selected");
-          mSelectedNode.mouseClicked(event);
+          node.mouseClicked(event);
           entityClicked = true;
 
           return;
         }
       }
-//            for(CmdBadge badge: mCmdBadgeList){
-//                if(badge.containsPoint(event.getX(), event.getY())){
-//                    EditCommandAction editCommandAction = new EditCommandAction(this, badge);
-//                    editCommandAction.run();
-//                    entityClicked = true;
-//                    return;
-//                }
-//            }
 
       // look if mouse click was on a edge
       for (Edge edge : mEdgeSet) {
-        if (edge.mEg.curveContainsPoint(new Point(event.getX(), event.getY()))) {
+        if (edge.containsPoint(new Point(event.getX(), event.getY()))) {
           mSelectedEdge = edge;
 
           // System.out.println(mSelectedEdge.getType() + " clicked - found and selected");
@@ -1186,7 +1096,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
       if (!entityClicked) {
         mEventCaster.convey(
-            new ElementSelectedEvent(mSceneFlowEditor.getActiveSuperNode()));
+            new ElementSelectedEvent(getSuperNode()));
       }
     } else {
 
@@ -1198,20 +1108,29 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     if (!hasFocus()) {
       requestFocus();
     }
-
-    // enable global context menu for clipbaord actions
-//        if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
-//            gobalAddVariableMenu(event.getX(), event.getY());
-//            if (mClipboard.size() > 0) {
-//                gobalContextMenu(event);
-//            }
-//        }
   }
 
   private void launchWorkSpaceSelectedEvent() {
     WorkSpaceSelectedEvent ev = new WorkSpaceSelectedEvent(this);
 
     mEventCaster.convey(ev);
+  }
+
+  /**
+   * Eventually show "Paste" menu item, when clicking on workspace
+   */
+  public void globalContextMenu(MouseEvent event) {
+    int eventX = event.getX();
+    int eventY = event.getY();
+    JPopupMenu pop = new JPopupMenu();
+    //PASTE NODES MENU ITEM
+    if (! mClipboard.isEmpty()) {
+      JMenuItem itemPasteNodes = new JMenuItem("Paste");
+      PasteNodesAction pasteAction = new PasteNodesAction(this, event.getPoint());
+      itemPasteNodes.addActionListener(pasteAction.getActionListener());
+      pop.add(itemPasteNodes);
+      pop.show(this, eventX, eventY);
+    }
   }
 
   /**
@@ -1260,7 +1179,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
             return;
           } else {
-            mSelectedNode = (Node) (mSelectedNodes.toArray())[0];
+            //mSelectedNode = (Node) (mSelectedNodes.toArray())[0];
             mDoAreaSelection = false;
             deselectAllNodes();
           }
@@ -1270,7 +1189,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
     // if there is a specific selected edge use it - much faster than checking all edges
     if (mSelectedEdge != null) {
-      if (mSelectedEdge.mEg.curveContainsPoint(new Point(event.getX(), event.getY()))) {
+      if (mSelectedEdge.containsPoint(new Point(event.getX(), event.getY()))) {
 
         // System.out.println(mSelectedEdge.getType() + " pressed - (re) selected");
         mSelectedEdge.mousePressed(event);
@@ -1285,8 +1204,9 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     }
 
     // if there is a specific selected c use it - much faster than checking all nodes
-    if (mSelectedNode != null) {
+    //if (mSelectedNode != null) {
       if (mSelectedNodes.size() == 1) {
+        Node mSelectedNode = mSelectedNodes.iterator().next();
         if (mSelectedNode.containsPoint(event.getX(), event.getY())) {
 
           // System.out.println(mSelectedNode.getDataNode().getName() + " pressed");
@@ -1301,7 +1221,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
           mSelectedNode = null;
         }
       }
-    }
+    //}
 
     // if there is a specific selected comment use it - much faster than checking all nodes
     if (mSelectedComment != null) {
@@ -1328,12 +1248,12 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     for (Node node : mNodeSet) {
       if (node.containsPoint(event.getX(), event.getY())) {
         deselectAllNodes();
-        mSelectedNode = node;
+        mSelectedNodes.add(node);
         this.requestFocusInWindow();
-        deselectAllOtherComponents(mSelectedNode);
+        deselectAllOtherComponents(node);
 
         // System.out.println(mSelectedNode.getDataNode().getName() + " pressed - found and pressed");
-        mSelectedNode.mousePressed(event);
+        node.mousePressed(event);
 
         return;
       }
@@ -1341,7 +1261,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
     // look if mouse click was on a edge
     for (Edge edge : mEdgeSet) {
-      if (edge.mEg.curveContainsPoint(new Point(event.getX(), event.getY()))) {
+      if (edge.containsPoint(new Point(event.getX(), event.getY()))) {
         mSelectedEdge = edge;
         deselectAllOtherComponents(mSelectedEdge);
         this.requestFocusInWindow();
@@ -1363,39 +1283,16 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       }
     }
 
-    /*
-    if (mSelectedCmdBadge == null) {
-
-      // look of mouse click was on a command badge
-      for (CmdBadge cmdBadge : mCmdBadgeList) {
-        if (cmdBadge.containsPoint(event.getX(), event.getY())) {
-          mSelectedCmdBadge = cmdBadge;
-          EditCommandAction editCommandAction = new EditCommandAction(this, cmdBadge);
-          editCommandAction.run();
-          return;
-        }
-      }
-    }
-
-    // if there is a specific selected cmd diselect it
-    if (mSelectedCmdBadge != null) {
-      mSelectedCmdBadge.endEditMode();
-      mSelectedCmdBadge = null;
-    }
-    */
-
     deselectAllNodes();
 
     // enable global context menu for clipbaord actions
-    /*
-        if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
-            gobalAddVariableMenu(event.getX(), event.getY());
-//            if (mClipboard.size() > 0) {
-//                gobalContextMenu(event);
-//            }
+    if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
+      if (! mClipboard.isEmpty()) {
+        globalContextMenu(event);
+      }
+      return;
+    }
 
-            return;
-        }*/
     // get point as possible point for area selection!
     mAreaSelection.x = event.getX();
     mAreaSelection.width = event.getX();
@@ -1450,7 +1347,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
     // if there is a specific selected edge use it - much faster than checking all edges
     if (mSelectedEdge != null) {
-      if (mSelectedEdge.mEg.curveContainsPoint(event.getPoint())) {
+      if (mSelectedEdge.containsPoint(event.getPoint())) {
 
         // if the edge can be connected to an other node, do so!
         if (mEdgeTargetNodeReassign) {
@@ -1474,7 +1371,8 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     }
 
     // if there is a specific selected c use it - much faster than checking all nodes
-    if (mSelectedNode != null) {
+    if (mSelectedNodes.size() == 1) {
+      Node mSelectedNode = mSelectedNodes.iterator().next();
 
       if (mSelectedNode.mDragged) {
         Point p = mSelectedNode.getLocation();
@@ -1482,7 +1380,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
         mSelectedNode.resetLocation(mGridManager.getNodeLocation(p));
 
         // Update sceneflow with new node position
-        mSelectedNode.getDataNode().setPosition(new Position(mSelectedNode.getX(), mSelectedNode.getY()));
+        //mSelectedNode.getDataNode().setPosition(new Position(mSelectedNode.getX(), mSelectedNode.getY()));
 
         // update workspace area - if dragged beyond current borders
         // sWorkSpaceDrawArea = getSize();
@@ -1556,7 +1454,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       try {
         createNewEdgeSelectTargetNode(event.getX(), event.getY());
         mSelectedEdge = null;
-        mSelectedNode = null;
       } catch (Exception e) {
         e.printStackTrace(System.out);
       }
@@ -1627,7 +1524,8 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     }
 
     // if there is a specific selected c use it - much faster than checking all nodes
-    if (mSelectedNode != null) {
+    if (mSelectedNodes.size() == 1) {
+      Node mSelectedNode = mSelectedNodes.iterator().next();
       if (mSelectedNode.mPressed) {
 
         // compute movement trajectory vectors
@@ -1641,10 +1539,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
         return;
       } else {
-
-        // System.out.println(mSelectedNode.getDataNode().getName() + " not dragged - deselected");
-        mSelectedNode.setDeselected();
-        mSelectedNode = null;
+        deselectAllNodes();
       }
     }
 
@@ -1746,7 +1641,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
       mGridManager.freeGridPosition(nodeLoc);
 
-      node.updateLocation(moveVec);
+      node.translate(moveVec);
       if ((event.getModifiersEx() == 1024)) {
         node.mDragged = true;
       }
@@ -1819,7 +1714,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
         Point nodeLoc = node.getLocation();
 
         mGridManager.freeGridPosition(nodeLoc);
-        node.updateLocation(moveVec);
+        node.translate(moveVec);
         if ((event.getModifiersEx() == 1024)) {
           node.mDragged = true;
         }
@@ -1860,10 +1755,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
       removeNodes();
     }
 
-    if (mSelectedNode != null) {
-      removeNode();
-    }
-
     //EditorInstance.getInstance().refresh();
   }
 
@@ -1889,18 +1780,6 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     }
 
     RemoveNodesAction deleteAction = new RemoveNodesAction(this, mSelectedNodes);
-
-    deleteAction.run();
-  }
-
-  /**
-   *
-   *
-   */
-  private void removeNode() {
-    mSelectedNode.mSelected = false;
-
-    RemoveNodeAction deleteAction = new RemoveNodeAction(this, mSelectedNode);
 
     deleteAction.run();
   }
@@ -1944,7 +1823,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
     Color indicator = Color.WHITE;
 
-    switch (mSceneFlowEditor.getActiveSuperNode().getFlavour()) {
+    switch (getSuperNode().getFlavour()) {
       case CNODE:
         indicator = sCEDGE_COLOR;
 
@@ -2041,4 +1920,365 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     }
   }
 
+  // ######################################################################
+  // Helper functions for undoable actions for nodes and edges
+  // ######################################################################
+
+  /** For a given set of nodes that are subnodes of the same SuperNode, compute
+   *  all edge views that emerge from a node outside the set and end in a node
+   *  inside the set
+   */
+  private List<Edge> computeIncomingEdges(Collection<Node> nodes) {
+    return mEdgeSet.stream().filter(
+        (e) -> (!nodes.contains(e.getSourceNode()) &&
+            nodes.contains(e.getTargetNode()))).collect(Collectors.toList());
+  }
+
+  /** For a given set of nodes that are subnodes of the same SuperNode, compute
+   *  all edge views that emerge from a node inside the set and end in a node
+   *  inside the set
+   */
+  private List<Edge> computeInnerEdges(Collection<Node> nodes) {
+    return mEdgeSet.stream().filter(
+        (e) -> (nodes.contains(e.getSourceNode()) &&
+            nodes.contains(e.getTargetNode()))).collect(Collectors.toList());
+  }
+
+  private void removeFromWorkSpace(Edge e) {
+    mEdgeSet.remove(e);
+    // Free the docking points on source and target node
+    e.disconnect();
+    // remove from Panel
+    super.remove(e);
+    mObservable.deleteObserver(e);
+  }
+
+  private void addToWorkSpace(Edge e) {
+    mEdgeSet.add(e);
+    // Connect the docking points on source and target node
+    e.connect();
+    // add to from Panel
+    super.add(e);
+    mObservable.addObserver(e);
+  }
+
+  private void removeFromWorkSpace(Node n) {
+    mNodeSet.remove(n);
+    mGridManager.freeGridPosition(n.getLocation());
+    // remove from Panel
+    super.remove(n);
+    mObservable.deleteObserver(n);
+  }
+
+  private void addToWorkSpace(Node n) {
+    mNodeSet.add(n);
+    mGridManager.getNodeLocation(n.getLocation());
+    // add to Panel
+    super.add(n);
+    mObservable.addObserver(n);
+  }
+
+  private interface Undoable {}
+
+  private class CombinedUndoable implements Undoable {
+    public List<Undoable> undoables = new ArrayList<>(2);
+
+    public CombinedUndoable(Undoable ... us) {
+      undoables.addAll(Arrays.asList(us));
+    }
+
+    public void add(Undoable u) {
+      undoables.add(u);
+    }
+  }
+
+  private class UndoRemoveNodes implements Undoable {
+    /** The edges were removed from the view, the nodes from view and the
+     *  SuperNode
+     */
+    public UndoRemoveNodes(WorkSpacePanel wsp,
+        Collection<Edge> view, Collection<Node> nodes) {
+    }
+  }
+  private class UndoRemoveEdges implements Undoable {
+    /** The edges were removed from the view and the model */
+    public UndoRemoveEdges(WorkSpacePanel wsp, Collection<Edge> full){
+
+    }
+  }
+
+  private class UndoAddNodesEdges implements Undoable {
+    /** The edges were removed from the view and the model */
+    public UndoAddNodesEdges(WorkSpacePanel wsp,
+        Collection<Node> nodes, Collection<Edge> edges){
+
+    }
+  }
+
+
+  Deque<Undoable> undoList = new ArrayDeque<>();
+
+  /** Remove a set of edges, in an undoable way */
+  private Collection<Edge> removeEdges(Collection<Edge> edges) {
+    // remove these from the view AND the model (their source node), and store
+    // the views for an UNDO
+    for (Edge ve: edges) {
+      // remove edge from view
+      removeFromWorkSpace(ve);
+      // remove edge from model
+      AbstractEdge e = ve.getDataEdge();
+      // this destructively changes the source node of e, which must be
+      // UNDOne
+      e.getSourceNode().removeEdge(e);
+    }
+    return edges;
+  }
+
+  /** Add a set of edge views. Prerequisite: the node views and models the
+   *  edges and their respective models exist, and were not modified in a way
+   *  which interferes with, e.g., the docking points, or the positions.
+   */
+  private Collection<Edge> addEdges(Collection<Edge> edges) {
+    // add these to the view AND the model (their source node), and store
+    // the views for an UNDO
+    for (Edge ve: edges) {
+      // remove edge from view
+      addToWorkSpace(ve);
+      // remove edge from model
+      AbstractEdge e = ve.getDataEdge();
+      // this destructively changes the source node of e, which must be
+      // UNDOne
+      e.getSourceNode().addEdge(e);
+    }
+    return edges;
+  }
+
+
+  /** Remove and return all edges that start at a node outside the given set of
+   *  nodes, and end inside this set
+   */
+  private List<Edge> removeIncomingEdges(Collection<Node> nodes) {
+    List<Edge> incomingEdges = computeIncomingEdges(nodes);
+    removeEdges(incomingEdges);
+    return incomingEdges;
+  }
+
+  /** Remove the nodes in the given collection.
+   *  This is only legal if none of the selected nodes is a start node, and
+   *  no edges are pointing into the node set from the outside. To achieve
+   *  this in the general case, call removeIncomingEdges(nodes) first.
+   *
+   *  remove the nodes and all outgoing edges from these nodes from the view
+   *  and model graph.
+   */
+  private List<Edge> removeDisconnectedNodes(Iterable<Node> nodes) {
+    // A list of edges starting at a node in nodes
+    List<Edge> emergingEdges = new ArrayList<>();
+    SuperNode current = getSuperNode();
+    for (Node vn : nodes) {
+      // remove nodes from the view
+      removeFromWorkSpace(vn);
+      // remove nodes from model
+      // destructively changes the current SuperNode, which must be UNDOne
+      current.removeNode(vn.getDataNode());
+      // remove edges from the view
+      for(Edge e : vn.getConnectedEdges()) {
+        emergingEdges.add(e);
+        removeFromWorkSpace(e);
+      }
+    }
+    return emergingEdges;
+  }
+
+  /** Helper function, adjusting the positions of node views and models
+   *  such that the center of the covered area is at the given position.
+   */
+  private void translateNodes(Collection<Node> nodes, Point p) {
+    int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE,
+        maxX = 0, maxY = 0;
+    // compute the covered area
+    for (Node n : nodes) {
+      int x = n.getLocation().x;
+      int y = n.getLocation().y;
+      minX = Math.min(minX, x); minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+    }
+    // translate such that the center of the area is on p
+    int translateX = p.x < (maxX - minX) / 2 ? 0 : p.x - (maxX + minX) / 2;
+    int translateY = p.y < (maxY - minY) / 2 ? 0 : p.y - (maxY + minY) / 2;
+    // should move the edges, too
+    for (Node n : nodes) {
+      n.translate(new Point(translateX, translateY));
+      n.getDataNode().translate(translateX, translateY);
+    }
+  }
+
+  // ######################################################################
+  // Paired methods for action/undo/redo for nodes and edges
+  // ######################################################################
+
+  /** Add the given nodes and edges as is to the view and model. This is used
+   *  if re-inserted after a cut operation, or as part of an undo. If this is
+   *  used for undo, we must take care that this does not add another undoable
+   *  item.
+   *
+   *  The nodes should be selected after paste (not undo).
+   *
+   *  TODO: rename once finished
+   */
+  private void add(Collection<Node> nodes, Collection<Edge> edges) {
+    for (Node vn : nodes) {
+      BasicNode n = vn.getDataNode();
+      getSuperNode().addNode(n);
+      addToWorkSpace(vn);
+    }
+  }
+
+  /** Remove the nodes in the selected nodes set (mSelectedNodes).
+   *  This is only legal if none of the selected nodes is a start node!
+   *
+   *  This must first collect all edges pointing into the node set from the
+   *  outside and save them for an undo, remove them from the view and the
+   *  model, and then remove the nodes from the view and model graph.
+   *
+   *  If it's a cut operation, not a delete, put the nodes in the set into the
+   *  clipboard.
+   *
+  public void remove(Collection<Node> nodes, Collection<Edge> edges) {
+    // collect set of edges between nodes inside and outside the selected set
+    Collection<Edge> internalEdges = edges == null ? removeNodes(nodes): edges;
+  }*/
+
+  public void changeType(Node node) {
+    Collection<Edge> incoming =
+        computeIncomingEdges(new ArrayList<Node>(){{add(node);}});
+    if (! node.changeType(mSceneFlowEditor.getIDManager(), incoming)) {
+      // complain: operation not legal
+    }
+  }
+
+  // ######################################################################
+  // Undoable actions for nodes and edges
+  // ######################################################################
+
+  /** Add edge e, which was just created */
+  private void addNewEdge(Edge e) {
+    pasteNodes(Collections.emptyList(), new ArrayList<Edge>() {{ add(e); }});
+  }
+
+
+  /** Remove selected edge
+   *
+   *  As undo structure, we can use the same as for cut nodes: only put the
+   *  removed edge into the edge set, and the node set is empty.
+   */
+  public void removeEdge(Edge e) {
+    removeEdges(new ArrayList<Edge>() {{ add(e); }});
+  }
+
+  /** Add node n, which was just created. Avoid copy on add.
+   * @param n the new node to add
+   */
+  public void addNewNode(Node n) {
+    // upon creation, n has got the right position already
+    pasteNodes(new ArrayList<Node>() {{ add(n); }}, Collections.emptyList());
+  }
+
+  /** Add the given nodes and edges as is to the view and model. This is used
+   *  if re-inserted after a cut operation, or as part of an undo. If this is
+   *  used for undo, we must take care that this does not add another undoable
+   *  item.
+   *
+   *  The nodes should be selected after the paste.
+   *
+   *  TODO: rename once finished
+   */
+  private void pasteNodes(Collection<Node> nodes, Collection<Edge> edges) {
+    add(nodes, edges);
+    undoList.add(new UndoAddNodesEdges(this, nodes, edges));
+  }
+
+  /** paste nodes from the clipboard
+   *  This operates in two modes: if not in copy mode, the nodes are just
+   *  added. Otherwise:
+   *
+   *  Do a deep copy of the model and view nodes and edges in the set, assuming
+   *  there are no "dangling" edges, and add them to this workspace. Then,
+   *  adjust the positions of the new node views such that the center of the
+   *  paste area is at the given position
+   *
+   *  About the placement of the new nodes: They should keep their relative
+   *  positions for paste after copy, but at the location of the mouse. For
+   *  undo, they retain their old positions, but what after cut? Treat it like
+   *  undo, or copy? I favour undo, since the other can be achieved by dragging.
+   */
+  public void pasteNodesFromClipboard(Point mousePosition) {
+    List<Node> nodes = mClipboard.getNodes();
+    List<Edge> edges = computeInnerEdges(nodes);
+    if (mClipboard.needsCopy(this)) {
+      Pair<Collection<Node>, List<Edge>> toAdd =
+          Node.copyGraph(this, getSuperNode(), nodes, edges);
+      if (mousePosition != null)
+        translateNodes(toAdd.getFirst(), mousePosition);
+      pasteNodes(toAdd.getFirst(), toAdd.getSecond());
+    } else {
+      // just add nodes and edges to the view and model as is: same positions,
+      // etc.
+      pasteNodes(nodes, edges);
+      // now the clipboard must be set to copy: the nodes are used.
+      mClipboard.forceCopy();
+    }
+  }
+
+  /** Remove the nodes in the selected nodes set (mSelectedNodes).
+   *  This is only legal if none of the selected nodes is a start node!
+   *
+   *  This must first collect all edges pointing into the node set from the
+   *  outside and save them for an undo, remove them from the view and the
+   *  model, and then remove the nodes from the view and model graph.
+   *
+   *  If it's a cut operation, not a delete, put the nodes in the set into the
+   *  clipboard.
+   */
+  public void removeNodes(boolean isCutOperation, Collection<Node> nodes) {
+    // collect set of edges between nodes inside and outside the selected set
+    /** Remove the nodes in the given collection.
+     *  This is only legal if none of the selected nodes is a start node!
+     *
+     *  This must first collect all edges pointing into the node set from the
+     *  outside and save them for an undo, remove them from the view and the
+     *  model, and then remove the nodes and all outgoing edges from these nodes
+     *  from the view and model graph.
+     */
+    // collect set of edges between nodes inside and outside the selected set
+    List<Edge> incomingEdges = removeIncomingEdges(nodes);
+    List<Edge> emergingEdges = removeDisconnectedNodes(nodes);
+    CombinedUndoable u = new CombinedUndoable(
+        new UndoRemoveNodes(this, emergingEdges, nodes),
+        new UndoRemoveEdges(this, incomingEdges));
+    undoList.push(u);
+    if (isCutOperation) {
+      List<Edge> internalEdges = emergingEdges.stream()
+          .filter((e) -> (nodes.contains(e.getTargetNode())))
+          .collect(Collectors.toList());
+      mClipboard.set(this, nodes, internalEdges);
+    }
+  }
+
+  /** Copy nodes in the selected nodes set (mSelectedNodes) to the clipboard for
+   *  the Copy operation (lazy copy).
+   *
+   *  TODO: rename once finished
+   */
+  public void copyNodesNew(Collection<Node> nodes) {
+    mClipboard.setToCopy(this, nodes, Collections.emptyList());
+  }
+
+  /** Cut selected nodes: remove from graph and put into the clipboard.
+   *
+   *  TODO: rename once finished
+   */
+  public void cutNodesNew(Collection<Node> nodes) {
+    removeNodes(true, nodes);
+  }
 }
