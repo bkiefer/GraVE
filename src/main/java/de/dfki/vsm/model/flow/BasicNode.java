@@ -456,10 +456,37 @@ public class BasicNode  {
     mCmdList.setContent(s);
   }
 
+  @Override
   public int hashCode() {
-    // the id is unique, so it's absolutely OK to just use the id's hashcode.
-    // NO, it's not if it is to be used for checking if the model has changed.
-    return mNodeId.hashCode() + 91;
+    int result = 0;
+    result = 17 * Boolean.hashCode(mIsStartNode);
+    result = 17 * Boolean.hashCode(mIsEndNode);
+    result = 17 * Byte.hashCode(hasNone);
+    result = 17 * Byte.hashCode(hasOne);
+    result = 17 * Byte.hashCode(hasMany);
+
+    result = 31 * mNodeId.hashCode();
+    result = 31 * mNodeName.hashCode();
+    result = 31 * mComment.hashCode();
+    result = 31 * mCmdList.hashCode();
+
+    for (GuardedEdge e : mCEdgeList) {
+      result = 31 * result + e.hashCode();
+    }
+    for (RandomEdge e : mPEdgeList) {
+      result = 31 * result + e.hashCode();
+    }
+    for (InterruptEdge e : mIEdgeList) {
+      result = 31 * result + e.hashCode();
+    }
+    for (ForkingEdge e : mFEdgeList) {
+      result = 31 * result + e.hashCode();
+    }
+    if (mPosition != null) {
+      result = 31 * result + mPosition.hashCode();
+    }
+    // mDEdge and mParentNode should be covered by super node (?)...
+    return result;
   }
 
   /** Copy fields for deep copy */

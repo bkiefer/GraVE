@@ -153,4 +153,9 @@ public class CmdBadge extends RSyntaxTextArea {
     mNode.getDataNode().setCmd(text);
     computeAndSetNewSize();
   }
+
+  @Override
+  public int hashCode() {
+    return getText().hashCode();
+  }
 }

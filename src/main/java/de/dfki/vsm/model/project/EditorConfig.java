@@ -134,4 +134,32 @@ public class EditorConfig {
     }
     return result;
   }
+  
+  @Override
+  public int hashCode(){
+    int boolPart = 0;
+    boolPart = 23 * boolPart + Boolean.hashCode(sSHOWGRID);
+    boolPart = 23 * boolPart + Boolean.hashCode(sSHOW_VARIABLE_BADGE_ON_WORKSPACE);
+    boolPart = 23 * boolPart + Boolean.hashCode(sSHOW_SMART_PATH_DEBUG);
+    boolPart = 23 * boolPart + Boolean.hashCode(sSHOWIDSOFNODES);
+    boolPart = 23 * boolPart + Boolean.hashCode(sAUTOHIDE_BOTTOMPANEL);
+    boolPart = 23 * boolPart + Boolean.hashCode(sSHOW_ELEMENTS);
+    boolPart = 23 * boolPart + Boolean.hashCode(sSHOW_SCENEFLOWEDITOR);
+    boolPart = 23 * boolPart + Boolean.hashCode(sSHOW_CODEEDITOR);
+    int intPart = boolPart;
+    intPart = 31 * intPart + sNODEWIDTH;
+    intPart = 31 * intPart + sNODEHEIGHT;
+    intPart = 31 * intPart + (int) Math.floor(sGRID_SCALE * 10);
+    intPart = 31 * intPart + (int) Math.floor(sZOOM_FACTOR);
+    intPart = 31 * intPart + sWORKSPACEFONTSIZE;
+    intPart = 31 * intPart + (int) Math.floor(sEDITORFONTSIZE);
+    intPart = 31 * intPart + sSCRIPT_FONT_SIZE;
+    intPart = 31 * intPart + sELEMENTS_DIVIDER_LOCATION;
+    intPart = 31 * intPart + sCODE_DIVIDER_LOCATION;
+    intPart = 31 * intPart + (int) Math.floor(sSCENEFLOW_SCENE_EDITOR_RATIO);
+    int result = intPart;
+    result = 31 * result + sSCRIPT_FONT_TYPE.hashCode();
+    result = 31 * result + sMAINSUPERNODENAME.hashCode();
+    return result;
+  }
 }
