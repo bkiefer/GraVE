@@ -47,12 +47,7 @@ public abstract class NodeAction extends EditorAction {
     // remove the node from the from the parent nodes list of child
     // nodes and set the parent node of the node to null. Additionally
     // we have to update the start node status of the node.
-    if (mGUINodeType == BasicNode) {
-      mParentDataNode.removeNode(mDataNode);
-    } else if (mGUINodeType == SuperNode) {
-      mParentDataNode.removeSuperNode((SuperNode) mDataNode);
-//             mParentDataNode.removeNode(mDataNode);
-    }
+    mParentDataNode.removeNode(mDataNode);
 
     /*
     // Check the start node status of the removed node
@@ -137,7 +132,7 @@ public abstract class NodeAction extends EditorAction {
       mParentDataNode.addNode(mDataNode);
     } else if (mGUINodeType == SuperNode) {
       if (!mParentDataNode.getSuperNodeList().contains((SuperNode) mDataNode)) {
-        mParentDataNode.addSuperNode((SuperNode) mDataNode);
+        mParentDataNode.addNode(mDataNode);
       }
     }
 

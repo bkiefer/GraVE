@@ -17,7 +17,7 @@ import de.dfki.vsm.model.flow.geom.Position;
  */
 @XmlType(name="Node")
 @XmlAccessorType(XmlAccessType.NONE)
-public class BasicNode {
+public class BasicNode  {
 
   private static final Logger logger = LoggerFactory.getLogger(BasicNode.class);
 
@@ -31,7 +31,9 @@ public class BasicNode {
   protected Code mCmdList = new Code();
 
 
-  // TODO: MERGE INTO ONE LIST!
+  /** Edges leaving this node. Only outgoing, no storing of incoming edges
+   * TODO: MERGE INTO ONE LIST!?
+   */
   @XmlElement(name="CEdge")
   protected ArrayList<GuardedEdge> mCEdgeList = new ArrayList<>();
   @XmlElement(name="PEdge")
@@ -40,14 +42,13 @@ public class BasicNode {
   protected ArrayList<InterruptEdge> mIEdgeList = new ArrayList<>();
   @XmlElement(name="FEdge")
   protected ArrayList<ForkingEdge> mFEdgeList = new ArrayList<>();
-
+  // XML handling using access functions (see below)
   protected AbstractEdge mDEdge = null;
+
   @XmlElement(name="Position")
   protected Position mPosition = null;
 
   protected SuperNode mParentNode = null;
-  @XmlAttribute(name="history")
-  protected boolean mIsHistoryNode = false;
 
   protected boolean mIsStartNode = false;
   protected boolean mIsEndNode = true;
@@ -70,25 +71,30 @@ public class BasicNode {
     mParentNode = s;
   }
 
-  /** Create a HistoryNode for the SuperNode s */
-  protected BasicNode(SuperNode s) {
-    mNodeId = "History_" + s.mNodeId;
-    mNodeName = "History";
-    mPosition = new Position(0, 0);
-    mIsHistoryNode = true;
-    mParentNode = s;
+  protected void copyBasicFields(BasicNode node) {
+    mNodeName = node.mNodeName;
+    mComment = node.mComment;
+    mCmdList = node.mCmdList;
+    mCEdgeList = node.mCEdgeList;
+    mPEdgeList = node.mPEdgeList;
+    mIEdgeList = node.mIEdgeList;
+    mFEdgeList = node.mFEdgeList;
+    mDEdge = node.mDEdge;
+    mPosition = node.mPosition;
+    mParentNode = node.mParentNode;
+  }
+
+  /** Create a BasicNode from an existing SuperNode: Node Type Change, only
+   *  valid if the subnode list of the supernode is empty
+   */
+  public BasicNode(IDManager mgr, final SuperNode node) {
+    assert(! node.getNodeList().iterator().hasNext());
+    mNodeId = mgr.getNextFreeID(this);
+    copyBasicFields(node);
   }
 
   public String getId() {
     return mNodeId;
-  }
-
-  public boolean isHistoryNode() {
-    return mIsHistoryNode;
-  }
-
-  public void setHistoryNodeFlag(boolean value) {
-    mIsHistoryNode = value;
   }
 
   public void setName(String value) {
@@ -271,6 +277,12 @@ public class BasicNode {
     return mPosition;
   }
 
+  /** Translate this node's position by the given values */
+  public void translate(int x, int y) {
+    mPosition.setXPos(mPosition.getXPos() + x);
+    mPosition.setYPos(mPosition.getYPos() + y);
+  }
+
   public void setParentNode(SuperNode value) {
     mParentNode = value;
   }
@@ -297,16 +309,6 @@ public class BasicNode {
 
   public ArrayList<GuardedEdge> getCEdgeList() {
     return mCEdgeList;
-  }
-
-  public ArrayList<GuardedEdge> getCopyOfCEdgeList() {
-    ArrayList<GuardedEdge> copy = new ArrayList<GuardedEdge>();
-
-    for (GuardedEdge edge : mCEdgeList) {
-      copy.add(edge.getCopy());
-    }
-
-    return copy;
   }
 
   private void addFEdge(ForkingEdge value) {
@@ -345,16 +347,6 @@ public class BasicNode {
     return mPEdgeList;
   }
 
-  public ArrayList<RandomEdge> getCopyOfPEdgeList() {
-    ArrayList<RandomEdge> copy = new ArrayList<RandomEdge>();
-
-    for (RandomEdge edge : mPEdgeList) {
-      copy.add(edge.getCopy());
-    }
-
-    return copy;
-  }
-
   private void addIEdge(InterruptEdge value) {
     mIEdgeList.add(value);
   }
@@ -375,22 +367,23 @@ public class BasicNode {
     return mIEdgeList;
   }
 
-  public ArrayList<InterruptEdge> getCopyOfIEdgeList() {
-    ArrayList<InterruptEdge> copy = new ArrayList<InterruptEdge>();
-
-    for (InterruptEdge edge : mIEdgeList) {
-      copy.add(edge.getCopy());
-    }
-
-    return copy;
-  }
-
   private class EdgeIterable implements Iterable<AbstractEdge> {
 
-    private LinkedList<Iterator<? extends AbstractEdge>> iterators;
-    private AbstractEdge dEdge = null;
-
     private class EdgeIterator implements Iterator<AbstractEdge> {
+      private LinkedList<Iterator<? extends AbstractEdge>> iterators;
+      private AbstractEdge dEdge = null;
+
+      @SuppressWarnings("serial")
+      public EdgeIterator() {
+        iterators = new LinkedList<Iterator<? extends AbstractEdge>>() {{
+          add(mCEdgeList.iterator());
+          add(mIEdgeList.iterator());
+          add(mPEdgeList.iterator());
+          add(mFEdgeList.iterator());
+        }};
+        dEdge = mDEdge;
+      }
+
       @Override
       public boolean hasNext() {
         while (! iterators.isEmpty() && ! iterators.getFirst().hasNext()) {
@@ -413,15 +406,8 @@ public class BasicNode {
 
     @Override
     public Iterator<AbstractEdge> iterator() {
-      iterators = new LinkedList<>();
-      iterators.add(mCEdgeList.iterator());
-      iterators.add(mIEdgeList.iterator());
-      iterators.add(mPEdgeList.iterator());
-      iterators.add(mFEdgeList.iterator());
-      dEdge = mDEdge;
       return new EdgeIterator();
     }
-
   }
 
   public Iterable<AbstractEdge> getEdgeList() {
@@ -462,10 +448,6 @@ public class BasicNode {
     }
   }
 
-  public BasicNode getCopy() {
-    return (BasicNode) null;
-  }
-
   public String getCmd() {
     return mCmdList.getContent();
   }
@@ -475,7 +457,33 @@ public class BasicNode {
   }
 
   public int hashCode() {
-    // the id is unique, so it's absolutely OK to just use the id's hashcode
+    // the id is unique, so it's absolutely OK to just use the id's hashcode.
+    // NO, it's not if it is to be used for checking if the model has changed.
     return mNodeId.hashCode() + 91;
+  }
+
+  /** Copy fields for deep copy */
+  protected void copyFieldsFrom(BasicNode b) {
+    mNodeName = b.mNodeName;
+    mComment = b.mComment;
+    mCmdList = b.mCmdList.deepCopy();
+    // unfilled: mCEdgeList, mPEdgeList, mIEdgeList, mFEdgeList, mDEdge;
+    mPosition = b.mPosition.deepCopy();
+    // unfilled: mParentNode
+    mIsStartNode = b.mIsStartNode;
+    mIsEndNode = b.mIsEndNode;
+  }
+
+  /** Deep copy, without edges */
+  public BasicNode deepCopy(IDManager mgr, SuperNode parentCopy) {
+    BasicNode copy = new BasicNode();
+    copy.copyFieldsFrom(this);
+    copy.mNodeId = mgr.getNextFreeID(this);
+    copy.mParentNode = parentCopy;
+    return copy;
+  }
+
+  public String toString() {
+    return mNodeId + "[" + mNodeName + "]";
   }
 }

@@ -69,14 +69,14 @@ public class EdgeArrow implements Copyable {
   public final ArrayList<ControlPoint> getCopyOfPointList() {
     final ArrayList<ControlPoint> copy = new ArrayList<>();
     for (final ControlPoint point : mPointList) {
-      copy.add(point.getCopy());
+      copy.add(point.deepCopy());
     }
     return copy;
   }
 
   // Copy the connection
   @Override
-  public final EdgeArrow getCopy() {
+  public final EdgeArrow deepCopy() {
     return new EdgeArrow(getCopyOfPointList());
   }
 }

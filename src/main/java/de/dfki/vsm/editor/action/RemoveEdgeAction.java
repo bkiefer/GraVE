@@ -17,27 +17,10 @@ public class RemoveEdgeAction extends EdgeAction {
   public RemoveEdgeAction(WorkSpacePanel workSpace, de.dfki.vsm.editor.Edge edge) {
     mWorkSpace = workSpace;
     mGUIEdge = edge;
-    mDataEdge = edge.getDataEdge();
-    mSourceGUINode = edge.getSourceNode();
-    mTargetGUINode = edge.getTargetNode();
-
-    // store the dockpoints
-    mSourceGUINodeDockPoint = mSourceGUINode.getEdgeDockPoint(edge);
-    mTargetGUINodeDockPoint = (mSourceGUINode.equals(mTargetGUINode))
-            ? mSourceGUINode.getSelfPointingEdgeDockPoint(edge)
-            : mTargetGUINode.getEdgeDockPoint(edge);
-    mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
-    mUndoManager = mSceneFlowPane.getUndoManager();
   }
 
   public void run() {
-    delete();
-
-    // Update Redo/Undo state
-    mUndoManager.addEdit(new Edit());
-    UndoAction.getInstance().refreshUndoState();
-    RedoAction.getInstance().refreshRedoState();
-    EditorInstance.getInstance().refresh();
+    mWorkSpace.removeEdge(mGUIEdge);
   }
 
   private class Edit extends AbstractUndoableEdit {

@@ -1,5 +1,7 @@
 package de.dfki.vsm.model.flow;
 
+import java.util.Map;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -31,9 +33,8 @@ public class RandomEdge extends AbstractEdge {
     mProbability = Integer.parseInt(s);
   }
 
-  // TODO:
-  public RandomEdge getCopy() {
-    RandomEdge result = copyFieldsTo(new RandomEdge());
+  public RandomEdge deepCopy(Map<BasicNode, BasicNode> orig2copy) {
+    RandomEdge result = deepCopy(new RandomEdge(), orig2copy);
     result.mProbability = this.mProbability;
     return result;
   }

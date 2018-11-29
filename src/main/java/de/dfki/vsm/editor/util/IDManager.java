@@ -1,12 +1,17 @@
 package de.dfki.vsm.editor.util;
 
 //~--- JDK imports ------------------------------------------------------------
-import de.dfki.vsm.model.flow.*;
+import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.SceneFlow;
+import de.dfki.vsm.model.flow.SuperNode;
 
 /**
  * IDManager provides unique ids for nodes and supernodes
  */
 public class IDManager {
+  // We could try to be more clever, but why?
+  //private HashMap<String, BasicNode> mNodeIds, mSuperNodeIds;
+
   private int mNextSuperNodeID = 0;
   private int mNextNodeID = 0;
 

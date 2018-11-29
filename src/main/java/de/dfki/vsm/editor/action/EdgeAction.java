@@ -34,11 +34,7 @@ public abstract class EdgeAction extends EditorAction {
   private GridRectangle gridDestination = null;
 
   public void create() {
-    mDataEdge.setTargetNode(mTargetGUINode.getDataNode());
-    mDataEdge.setSourceNode(mSourceGUINode.getDataNode());
-    mDataEdge.setTargetUnid(mDataEdge.getTargetNode().getId());
-
-    mSourceGUINode.getDataNode().addEdge(mDataEdge);
+    mDataEdge.connect(mSourceGUINode.getDataNode(), mTargetGUINode.getDataNode());
 
     // Connect GUI AbstractEdge to Source GUI node
     // Connect GUI AbstractEdge to Target GUI node
@@ -46,14 +42,8 @@ public abstract class EdgeAction extends EditorAction {
     if (mGUIEdge == null) {
       mGUIEdge = new Edge(mWorkSpace, mDataEdge, mSourceGUINode, mTargetGUINode);
     } else {
-      mSourceGUINodeDockPoint = mSourceGUINode.connectEdgeAtSourceNode(mGUIEdge, mSourceGUINodeDockPoint);
-      if (mSourceGUINode.equals(mTargetGUINode)) {
-        // same nodes
-        mTargetGUINodeDockPoint = mTargetGUINode.connectSelfPointingEdge(mGUIEdge, mTargetGUINodeDockPoint);
-      } else {
-        // different nodes
-        mTargetGUINodeDockPoint = mTargetGUINode.connectEdgetAtTargetNode(mGUIEdge, new Point(50, 50));
-      }
+      mSourceGUINodeDockPoint = mSourceGUINode.connectAsSource(mGUIEdge, mSourceGUINodeDockPoint);
+      mTargetGUINodeDockPoint = mTargetGUINode.connectAsTarget(mGUIEdge, mTargetGUINodeDockPoint);
     }
 
     EditorInstance.getInstance().refresh();
@@ -108,7 +98,7 @@ public abstract class EdgeAction extends EditorAction {
           }
         }
 
-        if (gridRectangle.isIntersectByRectangle(mGUIEdge.mEg)) {
+        if (gridRectangle.isIntersectByRectangle(mGUIEdge)) {
           gridRectangle.setIntersectionType(GridRectangle.EDGE_INTERSECTION);
           sumWeight += gridRectangle.getWeight();
         }

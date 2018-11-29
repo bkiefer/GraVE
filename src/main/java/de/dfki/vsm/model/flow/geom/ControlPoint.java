@@ -1,5 +1,7 @@
 package de.dfki.vsm.model.flow.geom;
 
+import java.awt.Point;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
@@ -97,8 +99,11 @@ public final class ControlPoint implements Copyable {
     mCtrlYPos = value;
   }
 
+  public Point getPoint() { return new Point(mXPpos, mYPos); }
+  public Point getCtrlPoint() { return new Point(mCtrlXPos, mCtrlYPos); }
+
   @Override
-  public final ControlPoint getCopy() {
+  public final ControlPoint deepCopy() {
     return new ControlPoint(mXPpos, mCtrlXPos, mYPos, mCtrlYPos);
   }
 }

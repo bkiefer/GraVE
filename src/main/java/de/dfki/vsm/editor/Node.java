@@ -3,33 +3,24 @@ package de.dfki.vsm.editor;
 import static de.dfki.vsm.Preferences.*;
 
 //~--- JDK imports ------------------------------------------------------------
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 
 import javax.swing.JComponent;
 
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.project.WorkSpacePanel;
 import de.dfki.vsm.editor.util.DockingManager;
+import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.evt.EventDispatcher;
 
 /**
@@ -53,7 +44,7 @@ public final class Node extends JComponent implements Observer {
   public boolean mDragged = false;
 
   private final EventDispatcher mEventMulticaster = EventDispatcher.getInstance();
-  private Type mType;
+  private boolean isBasic;
   private BasicNode mDataNode;
 
   private CmdBadge mCmdBadge;
@@ -73,12 +64,47 @@ public final class Node extends JComponent implements Observer {
 
   private EditorConfig getEditorConfig() { return mWorkSpace.getEditorConfig(); }
 
+  /** This copies some subset of node and edge views and their underlying
+   *  models. One basic assumption is that there are no "dangling" edges which
+   *  either start or end at a node outside the given node set.
+   *
+   *  The copied views will be added to the given WorkSpace, and all copied
+   *  node models will be subnodes of the given SuperNode.
+   */
+  public static Pair<Collection<Node>, List<Edge>> copyGraph(WorkSpacePanel wsp,
+      SuperNode newParent, List<Node> nodeViews, List<Edge> edgeViews) {
+    IDManager mgr = wsp.getSceneFlowEditor().getIDManager();
+
+    Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
+    Map<Node, Node> origView2copy = new IdentityHashMap<>();
+    for (Node nodeView : nodeViews) {
+      BasicNode n = nodeView.getDataNode();
+      BasicNode cpy = n.deepCopy(mgr, newParent);
+      orig2copy.put(n, cpy);
+      // now create a new Node as view for the copy of n
+      Node newNode = new Node(wsp, cpy);
+      origView2copy.put(nodeView, newNode);
+    }
+
+    List<Edge> newEdges = new ArrayList<>();
+    for (Edge edgeView : edgeViews) {
+      AbstractEdge e = edgeView.getDataEdge().deepCopy(orig2copy);
+      // now create a new Edge as view for the copy of e
+      // TODO: TRANSLATE TO CURRENT MOUSE POSITION
+      Edge newEdge = new Edge(wsp, e,
+          origView2copy.get(edgeView.getSourceNode()),
+          origView2copy.get(edgeView.getTargetNode()));
+      newEdges.add(newEdge);
+    }
+    return new Pair<Collection<Node>, List<Edge>>(origView2copy.values(), newEdges);
+  }
+
   public enum Type {
     BasicNode, SuperNode
   }
 
   /**
-   *
+   *  Create new Node view from the node model
    */
   public Node(WorkSpacePanel workSpace, BasicNode dataNode) {
     mWorkSpace = workSpace;
@@ -86,11 +112,7 @@ public final class Node extends JComponent implements Observer {
     // setToolTipText(mDataNode.getId());
     // the former overrides any MouseListener!!!
 
-    if (mDataNode instanceof SuperNode) {
-      mType = Type.SuperNode;
-    } else {
-      mType = Type.BasicNode;
-    }
+    isBasic = !(mDataNode instanceof SuperNode);
 
     // Init docking manager
     mDockingManager = new DockingManager(this);
@@ -104,19 +126,16 @@ public final class Node extends JComponent implements Observer {
     if (mWorkSpace.getSceneFlowEditor().getActiveSuperNode().isStartNode(mDataNode)) {
       addStartSign();
     }
-    if (mDataNode.isHistoryNode()) {
-      addAltStartSign();
-    }
 
     // Create the command badge of the GUI-BasicNode, after setting Position!
-    mCmdBadge = new CmdBadge(this);
+    mCmdBadge = new CmdBadge(this, mWorkSpace.getEditorConfig());
 
     // update
     update();
   }
 
   public Type getType() {
-    return mType;
+    return isBasic ? Type.BasicNode : Type.SuperNode;
   }
 
   public WorkSpacePanel getWorkSpace() {
@@ -139,6 +158,30 @@ public final class Node extends JComponent implements Observer {
     return mDockingManager;
   }
 
+  public boolean changeType(IDManager mgr, Collection<Edge> incoming) {
+    BasicNode newNode;
+    if (! isBasic) {
+      SuperNode n = (SuperNode)getDataNode();
+      if (n.getNodeSize() > 0) {
+        // complain: this operation can not be done, SuperNode has subnodes
+        return false;
+      } else {
+        newNode = new BasicNode(mgr, n);
+      }
+    } else {
+      newNode = new SuperNode(mgr, getDataNode());
+    }
+    for (Edge in : incoming) {
+      AbstractEdge e = in.getDataEdge();
+      e.setTargetNode(newNode);
+      e.setTargetUnid(newNode.getId());
+    }
+    mDataNode = newNode;
+    update();
+    return true;
+  }
+
+
   @Override
   public void update(Observable o, Object obj) {
     update();
@@ -147,17 +190,9 @@ public final class Node extends JComponent implements Observer {
   private void setColor() {
     // Update the color of the node that has to be changed
     // if the type or the flavour of the node have changed
-    if (mType == Type.SuperNode)
-      mColor = sSUPER_NODE_COLOR;
-    else
-      mColor = sBASIC_NODE_COLOR;
+    mColor = (isBasic) ? sBASIC_NODE_COLOR : sSUPER_NODE_COLOR;
 
-    // Set the history node color
-    if (mDataNode.isHistoryNode()) {
-      mColor = sHISTORY_NODE_COLOR;
-    }
-
-    // Set the flavour dependend color
+    // Set the flavour dependent color
     switch (mDataNode.getFlavour()) {
       case ENODE: mColor = sEEDGE_COLOR; break;
       case FNODE: mColor = sFEDGE_COLOR; break;
@@ -234,36 +269,24 @@ public final class Node extends JComponent implements Observer {
   }
 
   public void resetLocation(Point newLocation) {
+    Position g = new Position(newLocation.x, newLocation.y);
+    mDataNode.setPosition(g);
     Point location = getLocation();
 
     for (Edge edge : mDockingManager.getConnectedEdges()) {
-      edge.mEg.updateRealtiveEdgeControlPointPos(this, newLocation.x - location.x, newLocation.y - location.y);
+      edge.updateRelativeEdgeControlPointPos(this, newLocation.x - location.x, newLocation.y - location.y);
     }
-
     setLocation(newLocation);
-  }
-
-  public void updateLocation(Point vector) {
-    Point location = getLocation();
-
-    for (Edge edge : mDockingManager.getConnectedEdges()) {
-      edge.mEg.updateRealtiveEdgeControlPointPos(this, vector.x, vector.y);
-    }
-
-    setLocation(location.x + vector.x, location.y + vector.y);
     CmdBadge badge = getCmdBadge();
     if (badge != null) {
-      badge.updateLocation(vector);
+      badge.setLocation();
     }
-    updateDataModel();
   }
 
-  // TODO - move to controler class - sceneflowManager!
-  private void updateDataModel() {
-//      mDataNode.getGraphics().setPosition(getLocation().x, getLocation().y);
-    Position g = new Position(getLocation().x, getLocation().y);
-
-    mDataNode.setPosition(g);
+  public void translate(Point vector) {
+    Point location = getLocation();
+    location.translate(vector.x, vector.y);
+    resetLocation(location);
   }
 
   // TODO: move to workspace
@@ -273,12 +296,6 @@ public final class Node extends JComponent implements Observer {
       mWorkSpace.remove(mStartSign);
       mStartSign = null;
     }
-
-//      if (mAltStartSign != null) {
-//        mDockingManager.releaseDockPointForStartSign();
-//        mWorkSpace.remove(mAltStartSign);
-//        mAltStartSign = null;
-//      }
   }
 
   // TODO: move to workspace
@@ -292,8 +309,8 @@ public final class Node extends JComponent implements Observer {
     mWorkSpace.add(mAltStartSign);
   }
 
-  // Tells the node that an edge connects and that node is sourcenode
-  public Point connectEdgeAtSourceNode(Edge edge, Point point) {
+  /** Tells the node that an edge connects and that node is sourcenode */
+  public Point connectAsSource(Edge edge, Point point) {
     // get location of node
     Point loc = getLocation();
 
@@ -310,27 +327,20 @@ public final class Node extends JComponent implements Observer {
     return dp;
   }
 
-  // Tells the node that an edge connects
-  public Point connectEdgetAtTargetNode(Edge e, Point p) {
+  /** Tells the node that an edge connects */
+  public Point connectAsTarget(Edge e, Point p) {
     // get location of node
     Point loc = getLocation();
     // get relative (to the current node) coordinates;
     p.setLocation(p.x - loc.x, p.y - loc.y);
-    Point dp = mDockingManager.getNearestDockPoint(e, p);
+    Point dp = (e.getSourceNode() != this)
+        ? mDockingManager.getNearestDockPoint(e, p)
+        : mDockingManager.getNearestSecondDockPoint(e, p);
     // make position absolute to underlying canvas
     dp.setLocation(dp.x + loc.x, dp.y + loc.y);
     return dp;
   }
 
-  public Point connectSelfPointingEdge(Edge e, Point p) {
-    Point loc = getLocation();
-    // get relative (to the current node) coordinates;
-    p.setLocation(p.x - loc.x, p.y - loc.y);
-    Point dp = mDockingManager.getNearestSecondDockPoint(e, p);
-    // make position absolute to underlying canvas
-    dp.setLocation(dp.x + loc.x, dp.y + loc.y);
-    return dp;
-  }
 
   public Point disconnectEdge(Edge e) {
     Point relPos = mDockingManager.freeDockPoint(e);
@@ -351,8 +361,8 @@ public final class Node extends JComponent implements Observer {
     return absLoc;
   }
 
-  /*
-     * Returns the center of a node
+  /**
+   * Returns the center of a node. The location is in the top left corner.
    */
   public Point getCenterPoint() {
     Point loc = getLocation();
@@ -436,7 +446,7 @@ public final class Node extends JComponent implements Observer {
 //      enter supernode, if it has been double clicked
     // TODO: move to workspace
     if ((event.getButton() == MouseEvent.BUTTON1) && (event.getClickCount() == 2)) {
-      if (mType == Type.SuperNode) {
+      if (! isBasic) {
         mWorkSpace.increaseWorkSpaceLevel(this);
       }
     }
@@ -464,13 +474,6 @@ public final class Node extends JComponent implements Observer {
     // mClickPosition.setLocation(clickLoc.x - loc.x, clickLoc.y - loc.y);
     repaint(100);
 
-//      enter supernode, if it has been double clicked
-    // TODO: move to workspace
-    if ((event.getButton() == MouseEvent.BUTTON1) && (event.getClickCount() == 2)) {
-      if (mType == Type.SuperNode) {
-        mWorkSpace.increaseWorkSpaceLevel(this);
-      }
-    }
 
     // show contect menu
     if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
@@ -518,7 +521,7 @@ public final class Node extends JComponent implements Observer {
     }
 
     // Draw the node as a supernode
-    if (mType == Type.SuperNode) {
+    if (!isBasic) {
       g2d.fillRect(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 1,
               nodeHeight - borderOffset * 2 - 1);
 
@@ -541,7 +544,7 @@ public final class Node extends JComponent implements Observer {
         g2d.fillRect(1, 1, nodeWidth - 1, nodeHeight - 1);
       }
 
-    } else if (mType == Type.BasicNode) {
+    } else {
       g2d.fillOval(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 1,
               nodeHeight - borderOffset * 2 - 1);
 
@@ -568,11 +571,7 @@ public final class Node extends JComponent implements Observer {
     }
 
     // Draw the node's display name
-    if (mDataNode.isHistoryNode()) {
-      g2d.setColor(Color.BLACK);
-    } else {
-      g2d.setColor(Color.WHITE);
-    }
+    g2d.setColor(Color.WHITE);
 
     if (!mDisplayName.isEmpty()) {
       final String[] lines = mDisplayName.split(";");

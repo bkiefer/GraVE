@@ -18,9 +18,14 @@ import de.dfki.vsm.editor.project.WorkSpacePanel;
  */
 public class RemoveNodesAction extends EditorAction {
 
-  private Set<Node> mNodes = new HashSet<Node>();
-  private Set<RemoveNodeAction> mRemoveNodeActions = new HashSet<RemoveNodeAction>();
+  private Set<Node> mNodes = null;
   private WorkSpacePanel mWorkSpace = null;
+
+  public RemoveNodesAction(WorkSpacePanel workSpace, Node node) {
+    mWorkSpace = workSpace;
+    mNodes = new HashSet<Node>();
+    mNodes.add(node);
+  }
 
   public RemoveNodesAction(WorkSpacePanel workSpace, Set<Node> nodes) {
     mWorkSpace = workSpace;
@@ -28,18 +33,10 @@ public class RemoveNodesAction extends EditorAction {
   }
 
   protected void deleteNodes() {
-    for (Node node : mNodes) {
-      RemoveNodeAction rma = new RemoveNodeAction(mWorkSpace, node);
-
-      mRemoveNodeActions.add(rma);
-      rma.run();
-    }
+    mWorkSpace.removeNodes(false, mNodes);
   }
 
   protected void createNodes() {
-    for (RemoveNodeAction action : mRemoveNodeActions) {
-      action.create();
-    }
   }
 
   public void run() {

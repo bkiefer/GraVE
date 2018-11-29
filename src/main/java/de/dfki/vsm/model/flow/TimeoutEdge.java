@@ -1,5 +1,7 @@
 package de.dfki.vsm.model.flow;
 
+import java.util.Map;
+
 import javax.xml.bind.annotation.*;
 
 /**
@@ -52,9 +54,8 @@ public class TimeoutEdge extends AbstractEdge {
     }
   }
 
-  // TODO:
-  public TimeoutEdge getCopy() {
-    TimeoutEdge result = copyFieldsTo(new TimeoutEdge());
+  public TimeoutEdge deepCopy(Map<BasicNode, BasicNode> orig2copy) {
+    TimeoutEdge result = deepCopy(new TimeoutEdge(), orig2copy);
     result.mTimeout = this.mTimeout;
     result.mExpression = this.mExpression;
     return result;

@@ -8,32 +8,38 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.model.flow.geom.ControlPoint;
 import de.dfki.vsm.model.flow.geom.EdgeArrow;
-import de.dfki.vsm.model.project.EditorConfig;
+import math.geom2d.Point2D;
+import math.geom2d.line.Line2D;
+import math.geom2d.spline.CubicBezierCurve2D;
 
 /**
  * @author Patrick Gebhard
- */
-
-/*
-* This class holds all graphical data that are needed to draw an edge
-* from a start node to an end node
+ * This class holds all graphical data that are needed to draw an edge
+ * from a start node to an end node
+ *
+ * TODO: start and end point are duplicated in the docking points on start and
+ * end node. Is that necessary? NO.
+ *
+ * TODO: the control points should be vectors *relative to the start resp end
+ * point*, and not absolute locations. That would make zooming a piece of cake.
+ *
+ * TODO: Like all classes in this project, i suspect that a lot of the fields
+ * in this class should rather be local variables of some functions.
  */
 public final class EdgeGraphics {
+  private final static int mCCtrmin = 15; //MIN POSITION OF THE CONTROLPOINTS OF THE EDGE
 
   private Edge mEdge = null;
-  private AbstractEdge mDataEdge = null;
   private Node mSourceNode = null;
   private Node mTargetNode = null;
-  private Point[] mCoordList = new Point[4];    // the edge curve control points
-  private int[] mXPoints = new int[4];
-  private int[] mYPoints = new int[4];
-  private Point[] mCurveControlPoints = new Point[4];
+
   public CubicCurve2D.Double mCurve = null;
   public CubicCurve2D.Double mLeftCurve = null;
   public Point mAbsoluteStartPos = new Point();
@@ -46,26 +52,21 @@ public final class EdgeGraphics {
 
   // general flags
   private boolean mPointingToSameNode = false;
-  private final EditorConfig mEditorConfig;
   public double mArrowDir;
-  private double mArrow1Point;
-  private double mArrow2Point;
-  private final int mCCtrmin = 15; //MIN POSITION OF THE CONTROLPOINTS OF THE EDGE
 
   public EdgeGraphics(Edge e, Point sourceDockpoint, Point targetDockpoint) {
-    mDataEdge = e.getDataEdge();
+    mEdge = e;
+    AbstractEdge mDataEdge = e.getDataEdge();
     mSourceNode = e.getSourceNode();
     mTargetNode = e.getTargetNode();
-    mEditorConfig = mSourceNode.getWorkSpace().getEditorConfig();
 
     // check if edge has already graphic information in data model
     if (mDataEdge.getArrow() != null) {
-      ArrayList<de.dfki.vsm.model.flow.geom.ControlPoint> curvePoints
-              = mDataEdge.getArrow().getPointList();
+      ArrayList<ControlPoint> curvePoints = mDataEdge.getArrow().getPointList();
 
       // if curve's data model isn't consistent on graphical data, init edge!
       if (curvePoints.size() != 2) {
-        initEdgeGraphics(e, sourceDockpoint, targetDockpoint);
+        initEdgeGraphics(sourceDockpoint, targetDockpoint);
       } else {
         if (mSourceNode.equals(mTargetNode)) {
           mPointingToSameNode = true;
@@ -75,18 +76,12 @@ public final class EdgeGraphics {
         mAbsoluteEndPos.setLocation(curvePoints.get(1).getXPos(), curvePoints.get(1).getYPos());
         mCCrtl1.setLocation(curvePoints.get(0).getCtrlXPos(), curvePoints.get(0).getCtrlYPos());
         mCCrtl2.setLocation(curvePoints.get(1).getCtrlXPos(), curvePoints.get(1).getCtrlYPos());
-        mEdge = e;
 
-        if (!mPointingToSameNode) {
-          mAbsoluteStartPos = mSourceNode.connectEdgeAtSourceNode(mEdge, mAbsoluteStartPos);
-          mAbsoluteEndPos = mTargetNode.connectEdgetAtTargetNode(mEdge, mAbsoluteEndPos);
-        } else {
-          mAbsoluteStartPos = mSourceNode.connectEdgeAtSourceNode(mEdge, mAbsoluteStartPos);
-          mAbsoluteEndPos = mTargetNode.connectSelfPointingEdge(mEdge, mAbsoluteEndPos);
-        }
+        mAbsoluteStartPos = mSourceNode.connectAsSource(mEdge, mAbsoluteStartPos);
+        mAbsoluteEndPos = mTargetNode.connectAsTarget(mEdge, mAbsoluteEndPos);
       }
     } else {
-      initEdgeGraphics(e, sourceDockpoint, targetDockpoint);
+      initEdgeGraphics(sourceDockpoint, targetDockpoint);
     }
 
     computeCurve();
@@ -99,6 +94,9 @@ public final class EdgeGraphics {
     // set bounds of edge
     Rectangle bounds = mCurve.getBounds();
 
+    Point[] mCurveControlPoints = {
+        mAbsoluteStartPos, mCCrtl1, mCCrtl2, mAbsoluteEndPos
+    };
     for (Point p : mCurveControlPoints) {
       bounds.add(p);
     }
@@ -129,7 +127,7 @@ public final class EdgeGraphics {
     mEdge.setSize(bounds.width, bounds.height);
   }
 
-  public void initEdgeGraphics(Edge e, Point sourceDockPoint, Point targetDockPoint) {
+  public void initEdgeGraphics(Point sourceDockPoint, Point targetDockPoint) {
     if ((sourceDockPoint != null) && (targetDockPoint != null)) {
       mAbsoluteStartPos = sourceDockPoint;
       mAbsoluteEndPos = targetDockPoint;
@@ -137,15 +135,8 @@ public final class EdgeGraphics {
       getShortestDistance();
     }
 
-    mEdge = e;
-
-    if (!mPointingToSameNode) {
-      mAbsoluteStartPos = mSourceNode.connectEdgeAtSourceNode(mEdge, mAbsoluteStartPos);
-      mAbsoluteEndPos = mTargetNode.connectEdgetAtTargetNode(mEdge, mAbsoluteEndPos);
-    } else {
-      mAbsoluteStartPos = mSourceNode.connectEdgeAtSourceNode(mEdge, mAbsoluteStartPos);
-      mAbsoluteEndPos = mTargetNode.connectSelfPointingEdge(mEdge, mAbsoluteEndPos);
-    }
+    mAbsoluteStartPos = mSourceNode.connectAsSource(mEdge, mAbsoluteStartPos);
+    mAbsoluteEndPos = mTargetNode.connectAsTarget(mEdge, mAbsoluteEndPos);
 
     initCurve();
   }
@@ -183,17 +174,17 @@ public final class EdgeGraphics {
     double distance = Point.distance(sNC.x, sNC.y, tNC.x, tNC.y);
     double scalingFactor = (mPointingToSameNode)
             ? 3
-            : ((distance / mEditorConfig.sNODEHEIGHT) - 0.5d);
+            : ((distance / mSourceNode.getHeight()) - 0.5d);
 
     scalingFactor = (scalingFactor < 1.0d)
             ? 1.25d
             : scalingFactor;
     mCCrtl1 = new Point((int) (sNC.x + scalingFactor * cES.x), (int) (sNC.y + scalingFactor * cES.y));
     mCCrtl2 = new Point((int) (tNC.x + scalingFactor * cET.x), (int) (tNC.y + scalingFactor * cET.y));
-    sanitizeControPoint();
+    sanitizeControlPoint();
   }
 
-  private void sanitizeControPoint() {
+  private void sanitizeControlPoint() {
     mCCrtl1.x = mCCrtl1.x < mCCtrmin ? mCCtrmin : mCCrtl1.x;
     mCCrtl1.y = mCCrtl1.y < mCCtrmin ? mCCtrmin : mCCrtl1.y;
     mCCrtl2.x = mCCrtl2.x < mCCtrmin ? mCCtrmin : mCCrtl2.x;
@@ -203,10 +194,9 @@ public final class EdgeGraphics {
   private void computeCurve() {
 
     // set bezier start end and control points
-    mCurveControlPoints[0] = mAbsoluteStartPos;
-    mCurveControlPoints[1] = mCCrtl1;
-    mCurveControlPoints[2] = mCCrtl2;
-    mCurveControlPoints[3] = mAbsoluteEndPos;
+    Point[] mCurveControlPoints = {
+        mAbsoluteStartPos, mCCrtl1, mCCrtl2, mAbsoluteEndPos
+    };
 
     // make sure that edge is still in the limits of the workspace
     if (mCurveControlPoints[1].y < 0) {
@@ -232,6 +222,8 @@ public final class EdgeGraphics {
     // double angletoEndPoints = Math.atan2(mAbsoluteStartPos.x - mAbsoluteEndPos.x, mAbsoluteStartPos.y - mAbsoluteEndPos.y);
     ////System.out.println("angle between end points " + Math.toDegrees(angletoEndPoints) + "(" + angletoEndPoints + ")");
     // mArrowDir = (mArrowDir * 9 + angletoEndPoints) / 10;
+    double mArrow1Point;
+    double mArrow2Point;
     mArrow1Point = Math.sin(mArrowDir - .5);
     mArrow2Point = Math.cos(mArrowDir - .5);
     mHead.addPoint(mAbsoluteEndPos.x + (int) (mArrow1Point * 12), mAbsoluteEndPos.y + (int) (mArrow2Point * 12));
@@ -310,7 +302,7 @@ public final class EdgeGraphics {
     }
   }
 
-  public void updateRealtiveEdgeControlPointPos(Node n, int xOffset, int yOffset) {
+  public void updateRelativeEdgeControlPointPos(Node n, int xOffset, int yOffset) {
     if (n.equals(mSourceNode)) {
       mCCrtl1.x = mCCrtl1.x + xOffset;
       mCCrtl1.y = mCCrtl1.y + yOffset;
@@ -322,7 +314,7 @@ public final class EdgeGraphics {
     }
 //        mCCrtl1.y = (mCCrtl1.y < mCCtrmin) ? mCCtrmin : mCCrtl1.y;
 //        mCCrtl2.y = (mCCrtl2.y < mCCtrmin) ? mCCtrmin : mCCrtl2.y;
-    sanitizeControPoint();
+    sanitizeControlPoint();
   }
 
   private boolean controlPointHandlerContainsPoint(Point point, int threshold) {
@@ -407,7 +399,7 @@ public final class EdgeGraphics {
     }
 
     double x1, x2, y1, y2;
-
+    Point[] mCoordList = new Point[4];    // the edge curve control points
     mCoordList[0] = new Point((int) mCurve.x1, (int) mCurve.y1);
     mCoordList[1] = new Point((int) mCurve.ctrlx1, (int) mCurve.ctrly1);
     mCoordList[2] = new Point((int) mCurve.ctrlx2, (int) mCurve.ctrly2);
@@ -453,6 +445,9 @@ public final class EdgeGraphics {
       // x---------->
       // |          |
       // 3----------2
+      int[] mXPoints = new int[4];
+      int[] mYPoints = new int[4];
+
       mXPoints[0] = (int) (x1 + ox);
       mYPoints[0] = (int) (y1 + oy);
       mXPoints[1] = (int) (x2 + ox);
@@ -499,9 +494,58 @@ public final class EdgeGraphics {
     xmlEdgePoints.add(startPoint);
     xmlEdgePoints.add(endPoint);
     arrow.setPointList(xmlEdgePoints);
-    mDataEdge.setArrow(arrow);
-    mDataEdge.setTargetUnid(mTargetNode.getDataNode().getId());
+    mEdge.getDataEdge().setArrow(arrow);
+    mEdge.getDataEdge().setTargetUnid(mTargetNode.getDataNode().getId());
 
     // TODO: straigthen edge, if source/targets node location has changed
+  }
+
+  public boolean isIntersectByRectangle(double x1, double x2, double y1, double y2) {
+    CubicBezierCurve2D edgeBezier = new CubicBezierCurve2D(mAbsoluteStartPos.getX(),
+            mAbsoluteStartPos.getY(), mCCrtl1.getX(), mCCrtl1.getY(),
+            mCCrtl2.getX(), mCCrtl2.getY(), mAbsoluteEndPos.getX(),
+            mAbsoluteEndPos.getY());
+
+    // Get point of intersections on upper rectangle
+    Line2D upperRect = new Line2D(x1, y1, x2, y1);
+    Collection<Point2D> upperIntersection = edgeBezier.intersections(upperRect);
+
+    if (!upperIntersection.isEmpty()) {
+
+      // System.out.println("Found intersection on: " + getRowIndex() + "," + getColumnIndex());
+      return true;
+    }
+
+    // Get point of intersections on left rectangle
+    Line2D leftRect = new Line2D(x1, y1, x1, y2);
+    Collection<Point2D> leftIntersection = edgeBezier.intersections(leftRect);
+
+    if (!leftIntersection.isEmpty()) {
+
+      // System.out.println("Found intersection on: " + getRowIndex() + "," + getColumnIndex());
+      return true;
+    }
+
+    // Get point of intersections on right rectangle
+    Line2D rightRect = new Line2D(x2, y1, x2, y2);
+    Collection<Point2D> rightIntersection = edgeBezier.intersections(rightRect);
+
+    if (!rightIntersection.isEmpty()) {
+
+      // System.out.println("Found intersection on: " + getRowIndex() + "," + getColumnIndex());
+      return true;
+    }
+
+    // Get point of intersections on right rectangle
+    Line2D bottomRect = new Line2D(x1, y2, x2, y2);
+    Collection<Point2D> bottomIntersection = edgeBezier.intersections(bottomRect);
+
+    if (!bottomIntersection.isEmpty()) {
+
+      // System.out.println("Found intersection on: " + getRowIndex() + "," + getColumnIndex());
+      return true;
+    }
+
+    return false;
   }
 }

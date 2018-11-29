@@ -72,17 +72,14 @@ public final class EditorInstance extends JFrame implements ChangeListener {
     ProjectEditor projectEditor = ((ProjectEditor) mProjectEditors.getSelectedComponent());
 
     if (projectEditor != null) {
+      /** ClipBoard is a singleton
       if (previousCB != null) {
         ClipBoard currentCB = projectEditor.getSceneFlowEditor().getWorkSpace().getClipBoard();
-
-        currentCB.clear();
-
-        for (BasicNode node : previousCB) {
-          currentCB.add(node);
-        }
+        currentCB.set(previousCB.get());
       }
 
       previousCB = projectEditor.getSceneFlowEditor().getWorkSpace().getClipBoard();
+      */
     }
   }
 

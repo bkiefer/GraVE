@@ -16,18 +16,6 @@ import de.dfki.vsm.model.flow.AbstractEdge;
  */
 public class CreateEdgeAction extends EdgeAction {
 
-  private boolean mShowDialog = true;
-
-  public CreateEdgeAction(WorkSpacePanel workSpace, Node sourceNode, Node targetNode, Edge e) {
-    mWorkSpace = workSpace;
-    mTargetGUINode = targetNode;
-    mSourceGUINode = sourceNode;
-    mGUIEdge = e;
-    mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
-    mUndoManager = mSceneFlowPane.getUndoManager();
-    mShowDialog = true;
-  }
-
   public CreateEdgeAction(WorkSpacePanel workSpace, Node sourceNode, Node targetNode,
           AbstractEdge dataEdge) {
     mWorkSpace = workSpace;
@@ -37,70 +25,11 @@ public class CreateEdgeAction extends EdgeAction {
 
     // TODO check data edge integrity (i.e. pedges!)
     mGUIEdge = null;
-    mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
     mUndoManager = mSceneFlowPane.getUndoManager();
-    mShowDialog = false;
   }
 
-  protected void showCreationDialog() {
-    /*
-    if (mShowDialog) {
-      switch (mGUIEdgeType) {
-        case EEDGE:
-          mDataEdge = new EpsilonEdge(mSourceGUINode.getDataNode(),
-              mTargetGUINode.getDataNode());
-
-          break;
-
-        case FEDGE:
-          mDataEdge = new ForkingEdge(mSourceGUINode.getDataNode(),
-              mTargetGUINode.getDataNode());
-
-          break;
-
-        case TEDGE:
-          //ModifyTEdgeDialog tedgeDialog = new ModifyTEdgeDialog(mSourceGUINode.getDataNode(),
-          //        mTargetGUINode.getDataNode());
-
-          mDataEdge = //tedgeDialog.run();
-              new TimeoutEdge(mSourceGUINode.getDataNode(),
-                  mTargetGUINode.getDataNode());
-          break;
-
-        case CEDGE:
-          //ModifyCEdgeDialog cedgeDialog = new ModifyCEdgeDialog(mSourceGUINode.getDataNode(),
-          //        mTargetGUINode.getDataNode());
-
-          mDataEdge = //cedgeDialog.run();
-
-          break;
-
-        case PEDGE:
-          if (mSourceGUINode.getDataNode().getPEdgeList().isEmpty()) {
-            mDataEdge = new RandomEdge();
-            ((RandomEdge) mDataEdge).setProbability(100);
-          } else {
-            ModifyPEdgeDialog pedgeDialog = new ModifyPEdgeDialog(mSourceGUINode.getDataNode(),
-                    mTargetGUINode.getDataNode());
-
-            mDataEdge = pedgeDialog.run();
-          }
-
-          break;
-
-        case IEDGE:
-          ModifyIEdgeDialog iedgeDialog = new ModifyIEdgeDialog(mSourceGUINode.getDataNode(),
-                  mTargetGUINode.getDataNode());
-
-          mDataEdge = iedgeDialog.run();
-
-          break;
-      }
-    }*/
-  }
 
   public void run() {
-    showCreationDialog();
 
     if (mDataEdge != null) {
       create();

@@ -2,8 +2,6 @@ package de.dfki.vsm.model.flow;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.bind.annotation.*;
@@ -12,14 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.model.flow.geom.EdgeArrow;
-import de.dfki.vsm.util.Pair;
-import de.dfki.vsm.util.cpy.Copyable;
 
 /**
  * @author Gregor Mehlmann
  */
 @XmlAccessorType(XmlAccessType.NONE)
-public abstract class AbstractEdge implements Copyable {
+public abstract class AbstractEdge {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractEdge.class);
 
@@ -30,8 +26,6 @@ public abstract class AbstractEdge implements Copyable {
   protected EdgeArrow mArrow = null;
   @XmlElement(name="Commands")
   protected String mCmdList = null;
-  protected HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> mAltMap =
-      new HashMap<>();
 
   @XmlAttribute(name="target")
   public final String getTargetUnid() {
@@ -68,6 +62,14 @@ public abstract class AbstractEdge implements Copyable {
     mSourceNode = value;
   }
 
+  public final void connect(final BasicNode source, final BasicNode target) {
+    mSourceNode = source;
+    mSourceUnid = source.getId();
+    source.addEdge(this);
+    mTargetNode = target;
+    mTargetUnid = target.getId();
+  }
+
   @XmlElement(name="Connection")
   public final EdgeArrow getArrow() {
     return mArrow;
@@ -97,32 +99,10 @@ public abstract class AbstractEdge implements Copyable {
   /** Get the content of an edge, as string (if applicable) */
   public String getContent() { return null; }
 
-
-  /*
-    public final ArrayList<BasicNode> getAltList() {
-        final ArrayList<BasicNode> altList = new ArrayList();
-        for (TPLTuple<String, BasicNode> pair : mAltMap.values()) {
-            altList.add(pair.getSecond());
-        }
-        return altList;
-    }
-   */
-  @XmlTransient
-  public final HashMap<
-        Pair<String, BasicNode>, Pair<String, BasicNode>> getAltMap() {
-    return mAltMap;
-  }
-
-  public final void setAltMap(final
-      HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> value) {
-    mAltMap = value;
-  }
-
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((mAltMap == null) ? 0 : mAltMap.hashCode());
     result = prime * result + ((mArrow == null) ? 0 : mArrow.hashCode());
     result = prime * result + ((mCmdList == null) ? 0 : mCmdList.hashCode());
     result = prime * result
@@ -141,11 +121,6 @@ public abstract class AbstractEdge implements Copyable {
     if (getClass() != obj.getClass())
       return false;
     AbstractEdge other = (AbstractEdge) obj;
-    if (mAltMap == null) {
-      if (other.mAltMap != null)
-        return false;
-    } else if (!mAltMap.equals(other.mAltMap))
-      return false;
     if (mArrow == null) {
       if (other.mArrow != null)
         return false;
@@ -169,62 +144,27 @@ public abstract class AbstractEdge implements Copyable {
     return true;
   }
 
-  // TODO: This is not yet a deep copy
-  public HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> getCopyOfAltStartNodeMap() {
-    HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>> copy =
-        new HashMap<Pair<String, BasicNode>, Pair<String, BasicNode>>();
-    Iterator<Map.Entry<Pair<String, BasicNode>, Pair<String, BasicNode>>> it =
-        mAltMap.entrySet().iterator();
-
-    while (it.hasNext()) {
-      Map.Entry<Pair<String, BasicNode>, Pair<String, BasicNode>> pairs = it.next();
-      Pair<String, BasicNode> startNodePair = (Pair<String, BasicNode>) pairs.getKey();
-      Pair<String, BasicNode> altStartNodePair = (Pair<String, BasicNode>) pairs.getValue();
-      Pair<String, BasicNode> startNodePairCopy = new Pair<String, BasicNode>(startNodePair.getFirst(),
-              startNodePair.getSecond());
-      Pair<String, BasicNode> altStartNodePairCopy = new Pair<String, BasicNode>(altStartNodePair.getFirst(),
-              altStartNodePair.getSecond());
-
-      copy.put(startNodePairCopy, altStartNodePairCopy);
-    }
-
-    return copy;
-  }
-
-  // TODO: do this over the list of strings
-  public String getAltStartNodesAsString() {
-    String result = "";
-    Iterator<Map.Entry<Pair<String, BasicNode>,Pair<String, BasicNode>>> it =
-        mAltMap.entrySet().iterator();
-
-    while (it.hasNext()) {
-      Map.Entry<Pair<String, BasicNode>,Pair<String, BasicNode>> pairs = it.next();
-      Pair<String, BasicNode> start = pairs.getKey();
-      Pair<String, BasicNode> alt = pairs.getValue();
-      result += start.getFirst() + "/" + alt.getFirst() + ";";
-    }
-
-    return result;
-  }
-
   public boolean isGuardedEdge() { return this instanceof GuardedEdge; }
   public boolean isInterruptEdge() { return this instanceof InterruptEdge; }
   public boolean isRandomEdge() { return this instanceof RandomEdge; }
   public boolean isTimeoutEdge() { return this instanceof TimeoutEdge; }
 
-  @Override
-  public abstract AbstractEdge getCopy();
+  /** Do a deep copy of AbstractEdge, remapping nodes, and adding new edge to
+   *  the copied source node.
+   */
+  public abstract AbstractEdge deepCopy(Map<BasicNode, BasicNode> orig2copy);
 
-  /** Copy helper. TODO: deep copy */
-  protected <T extends AbstractEdge> T copyFieldsTo(T e) {
-    mTargetUnid = e.mTargetUnid;
-    mSourceUnid = e.mSourceUnid;
-    mTargetNode = e.mTargetNode;
-    mSourceNode = e.mSourceNode;
-    mArrow = e.mArrow;
-    mCmdList = e.mCmdList;
-    mAltMap = e.getCopyOfAltStartNodeMap();
-    return e;
+  /** Do a deep copy of AbstractEdge into edgeCopy, remapping nodes.
+   *  Adds edge to the copied source node.
+   */
+  protected <T extends AbstractEdge> T deepCopy(T edgeCopy,
+      Map<BasicNode, BasicNode> orig2copy) {
+    BasicNode sourceCopy = orig2copy.get(mSourceNode);
+    BasicNode targetCopy = orig2copy.get(mTargetNode);
+    edgeCopy.connect(sourceCopy, targetCopy);
+    edgeCopy.mArrow = mArrow.deepCopy();
+    edgeCopy.mCmdList = mCmdList;
+    return edgeCopy;
   }
 
   /** Factory method to create new edges from prototypes */

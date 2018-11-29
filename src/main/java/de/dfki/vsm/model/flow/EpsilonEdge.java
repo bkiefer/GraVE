@@ -1,5 +1,7 @@
 package de.dfki.vsm.model.flow;
 
+import java.util.Map;
+
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -8,9 +10,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name="EEdge")
 public class EpsilonEdge extends AbstractEdge {
 
-  // TODO:
-  public EpsilonEdge getCopy() {
-    return copyFieldsTo(new EpsilonEdge());
+  public EpsilonEdge deepCopy(Map<BasicNode, BasicNode> orig2copy) {
+    return deepCopy(new EpsilonEdge(), orig2copy);
   }
 
   public int getHashCode() {

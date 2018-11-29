@@ -69,7 +69,7 @@ public final class Boundary implements Copyable {
   }
 
   @Override
-  public final Boundary getCopy() {
+  public final Boundary deepCopy() {
     return new Boundary(mXPos, mYPos, mWidth, mHeight);
   }
 }

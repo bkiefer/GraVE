@@ -288,7 +288,7 @@ public class GridManager {
   public void setEdgeWeight(Edge edge) {
     for (GridRectangle[] gridParent : mTransitionArea) {
       for (GridRectangle gridRectangle : gridParent) {
-        if (gridRectangle.isIntersectByRectangle(edge.mEg)) {
+        if (gridRectangle.isIntersectByRectangle(edge)) {
           gridRectangle.setWeight(GridConstants.EDGE_WEIGHT);
 
 //                  System.out.println("Setting weight of " +
@@ -303,7 +303,7 @@ public class GridManager {
   public void resetGridWeight(Edge edge) {
     for (GridRectangle[] gridParent : mTransitionArea) {
       for (GridRectangle gridRectangle : gridParent) {
-        if (gridRectangle.isIntersectByRectangle(edge.mEg)) {
+        if (gridRectangle.isIntersectByRectangle(edge)) {
           gridRectangle.setWeight(GridConstants.INITIAL_WEIGHT);
 
 //                  System.out.println("Setting weight of " +
@@ -336,7 +336,7 @@ public class GridManager {
         boolean isGridInteresected = false;
 
         for (Edge edge : mWorkSpacePanel.getEdges()) {
-          if (gridRectangle.isIntersectByRectangle(edge.mEg)) {
+          if (gridRectangle.isIntersectByRectangle(edge)) {
             gridRectangle.setWeight(GridConstants.EDGE_WEIGHT);
             isGridInteresected = true;
           }

@@ -41,7 +41,7 @@ public class CmdBadge extends RSyntaxTextArea {
 
   /**
    */
-  public CmdBadge(Node node) {
+  public CmdBadge(Node node, EditorConfig cfg) {
     super(30, 40);
     setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
     setCodeFoldingEnabled(true);
@@ -82,7 +82,7 @@ public class CmdBadge extends RSyntaxTextArea {
       }
     });
     mNode = node;
-    mEditorConfig = mNode.getWorkSpace().getEditorConfig();
+    mEditorConfig = cfg;
     mFont = new Font("Monospaced",
             Font.ITALIC,
             mEditorConfig.sWORKSPACEFONTSIZE);
@@ -101,9 +101,10 @@ public class CmdBadge extends RSyntaxTextArea {
     update();
   }
 
-  public void updateLocation(Point vector) {
-    Point location = getLocation();
-    setLocation(location.x + vector.x, location.y + vector.y);
+  public void translate(Point vector) {
+    Point p = getLocation();
+    p.translate(vector.x, vector.y);
+    setLocation(p);
   }
 
   public boolean containsPoint(int x, int y) {
@@ -134,7 +135,11 @@ public class CmdBadge extends RSyntaxTextArea {
     newWidth = newWidth > maxWidth? maxWidth : newWidth;
     newHeight = newHeight > maxHeight? maxHeight : newHeight;
     setSize(new Dimension(newWidth, newHeight));
-    setLocation(mNode.getLocation().x + (mNode.getWidth() - newWidth)/2,
+    setLocation();
+  }
+
+  public void setLocation() {
+    setLocation(mNode.getLocation().x + (mNode.getWidth() - getSize().width)/2,
         mNode.getLocation().y + mNode.getHeight());
   }
 
