@@ -144,6 +144,11 @@ public final class Node extends JComponent implements Observer {
     update();
   }
 
+  public void setText(String text) {
+    // this automatically sets the text in DataNode, too...
+    mCmdBadge.setText(text);
+  }
+
   private void setColor() {
     // Update the color of the node that has to be changed
     // if the type or the flavour of the node have changed
