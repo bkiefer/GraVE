@@ -1,17 +1,14 @@
 package de.dfki.vsm.editor.action;
 
+import java.util.Collection;
 //~--- JDK imports ------------------------------------------------------------
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpace;
+import de.dfki.vsm.util.Triple;
 
 /**
  * @author Patrick Gebhard
@@ -19,63 +16,33 @@ import de.dfki.vsm.editor.project.WorkSpacePanel;
 public class RemoveNodesAction extends EditorAction {
 
   private Set<Node> mNodes = null;
-  private WorkSpacePanel mWorkSpace = null;
+  private boolean isCutOperation;
+  private Triple<Collection<Edge>, Collection<Node>, Collection<Edge>> mAffected;
 
-  public RemoveNodesAction(WorkSpacePanel workSpace, Node node) {
+
+  public RemoveNodesAction(WorkSpace workSpace, Set<Node> mSelectedNodes,
+      boolean toClipboard) {
     mWorkSpace = workSpace;
-    mNodes = new HashSet<Node>();
-    mNodes.add(node);
+    mNodes = new HashSet<Node>(mSelectedNodes);
+    isCutOperation = toClipboard;
   }
 
-  public RemoveNodesAction(WorkSpacePanel workSpace, Set<Node> nodes) {
-    mWorkSpace = workSpace;
-    mNodes = nodes;
+  @SuppressWarnings("serial")
+  public RemoveNodesAction(WorkSpace workSpace, Node node, boolean toClipboard) {
+    this(workSpace, new HashSet<Node>(){{ add(node); }}, toClipboard);
   }
 
-  protected void deleteNodes() {
-    mWorkSpace.removeNodes(false, mNodes);
+  protected void doIt() {
+    mAffected = mWorkSpace.removeNodes(isCutOperation, mNodes);
   }
 
-  protected void createNodes() {
+  protected void undoIt() {
+    mWorkSpace.pasteNodesAndEdges(mAffected.getSecond(), mAffected.getThird());
+    mWorkSpace.addEdges(mAffected.getFirst());
   }
 
-  public void run() {
-    deleteNodes();
-    UndoAction.getInstance().refreshUndoState();
-    RedoAction.getInstance().refreshRedoState();
-    EditorInstance.getInstance().refresh();
-  }
-
-  private class Edit extends AbstractUndoableEdit {
-
-    @Override
-    public void undo() throws CannotUndoException {
-      createNodes();
-    }
-
-    @Override
-    public void redo() throws CannotRedoException {
-      deleteNodes();
-    }
-
-    @Override
-    public boolean canUndo() {
-      return true;
-    }
-
-    @Override
-    public boolean canRedo() {
-      return true;
-    }
-
-    @Override
-    public String getUndoPresentationName() {
-      return "Undo Deletion Of Nodes ";
-    }
-
-    @Override
-    public String getRedoPresentationName() {
-      return "Redo Deletion Of Nodes ";
-    }
+  @Override
+  public String msg() {
+    return "Deletion Of Nodes ";
   }
 }

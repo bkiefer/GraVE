@@ -29,29 +29,29 @@ public class ClipBoard {
   private List<Edge> mEdges = new ArrayList<>();
 
   private boolean needsCopy = true;
-  private WorkSpacePanel origin;
+  private WorkSpace origin;
 
   public void clear() {
     mNodes.clear(); mEdges.clear();
   }
 
-  private void set(WorkSpacePanel wsp, Collection<Node> nodes,
+  private void set(WorkSpace workSpace, Collection<Node> nodes,
       Collection<Edge> edges, boolean copy) {
     clear();
-    origin = wsp;
+    origin = workSpace;
     needsCopy = copy;
     mNodes.addAll(nodes);
     mEdges.addAll(edges);
   }
 
-  public void setToCopy(WorkSpacePanel wsp, Collection<Node> nodes,
+  public void setToCopy(WorkSpace workSpace, Collection<Node> nodes,
       Collection<Edge> edges) {
-    set(wsp, nodes, edges, true);
+    set(workSpace, nodes, edges, true);
   }
 
-  public void set(WorkSpacePanel wsp, Collection<Node> nodes,
+  public void set(WorkSpace workSpace, Collection<Node> nodes,
       Collection<Edge> edges) {
-    set(wsp, nodes, edges, false);
+    set(workSpace, nodes, edges, false);
   }
 
   public List<Node> getNodes() {
@@ -66,8 +66,8 @@ public class ClipBoard {
     return mNodes.isEmpty() && mEdges.isEmpty();
   }
 
-  public boolean needsCopy(WorkSpacePanel wsp) {
-    return needsCopy || origin != wsp;
+  public boolean needsCopy(WorkSpace workSpace) {
+    return needsCopy || origin != workSpace;
   }
 
   public void forceCopy() {

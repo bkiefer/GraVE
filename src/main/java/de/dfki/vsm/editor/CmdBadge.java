@@ -116,7 +116,7 @@ public class CmdBadge extends RSyntaxTextArea {
     if (content == null) return;
     // Sets visibility of the component to true only if there is something to display
     setVisible(!content.isEmpty());
-    setText(content);
+    super.setText(content);
     if (!content.isEmpty()) {
       computeAndSetNewSize();
     } else {
@@ -149,9 +149,8 @@ public class CmdBadge extends RSyntaxTextArea {
 
   @Override
   public void setText(String text) {
-    super.setText(text);
     mNode.getDataNode().setCmd(text);
-    computeAndSetNewSize();
+    update();
   }
 
   @Override

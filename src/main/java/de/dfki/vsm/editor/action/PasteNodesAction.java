@@ -1,69 +1,35 @@
 package de.dfki.vsm.editor.action;
 
 import java.awt.Point;
+import java.util.Collection;
 
-//~--- JDK imports ------------------------------------------------------------
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.project.WorkSpace;
 
 /**
  * @author Patrick Gebhard
  */
 public class PasteNodesAction extends EditorAction {
 
-  WorkSpacePanel mWorkSpace = null;
   Point mMousePosition;
+  Collection<Node> mAffected;
 
-  public PasteNodesAction(WorkSpacePanel workSpace, Point p) {
+  public PasteNodesAction(WorkSpace workSpace, Point p) {
     mWorkSpace = workSpace;
     mMousePosition = p;
   }
 
-  protected void pasteNodes() {
-    mWorkSpace.pasteNodesFromClipboard(mMousePosition);
+  protected void doIt() {
+    mAffected = mWorkSpace.pasteNodesFromClipboard(mMousePosition);
   }
 
-  protected void deleteNodes() {
-
+  protected void undoIt() {
+    mWorkSpace.removeNodes(false, mAffected);
   }
 
-  public void run() {
-    pasteNodes();
+  @Override
+  public String msg() {
+    return "Pasting Of Nodes ";
   }
 
-  private class Edit extends AbstractUndoableEdit {
-
-    @Override
-    public void undo() throws CannotUndoException {
-      deleteNodes();
-    }
-
-    @Override
-    public void redo() throws CannotRedoException {
-      pasteNodes();
-    }
-
-    @Override
-    public boolean canUndo() {
-      return true;
-    }
-
-    @Override
-    public boolean canRedo() {
-      return true;
-    }
-
-    @Override
-    public String getUndoPresentationName() {
-      return "Undo Pasting Of Nodes ";
-    }
-
-    @Override
-    public String getRedoPresentationName() {
-      return "Redo Pasting Of Nodes ";
-    }
-  }
 }

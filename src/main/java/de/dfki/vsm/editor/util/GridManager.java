@@ -11,10 +11,11 @@ import java.util.HashSet;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpace;
 import de.dfki.vsm.editor.util.grid.GridConstants;
 import de.dfki.vsm.editor.util.grid.GridRectangle;
 import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.project.EditorConfig;
 
 /**
@@ -50,12 +51,14 @@ public class GridManager {
   private int width = 0;
   private int columns = 0;  // x
   private int rows = 0; // y
-  private final WorkSpacePanel mWorkSpacePanel;
+  private final WorkSpace mWorkSpacePanel;
+  private final SuperNode mSuperNode;
   private ArrayList<Rectangle> mNodeAreas;
   private boolean isDebug;
 
-  public GridManager(WorkSpacePanel ws) {
-    mWorkSpacePanel = ws;
+  public GridManager(WorkSpace workSpace, SuperNode s) {
+    mWorkSpacePanel = workSpace;
+    mSuperNode = s;
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
     isDebug = config.sSHOW_SMART_PATH_DEBUG;
     compute();
@@ -66,7 +69,7 @@ public class GridManager {
   private Dimension calculateWorkArea(int nodeWidth, int nodeHeight) {
     int width = mWorkSpacePanel.getSize().width;
     int height = mWorkSpacePanel.getSize().height;
-    for (BasicNode n : mWorkSpacePanel.getSceneFlowEditor().getSceneFlow()) {
+    for (BasicNode n : mSuperNode.getNodes()) {
       if (n.getPosition().getYPos() > height) {
         height = n.getPosition().getYPos() + nodeHeight;
       }

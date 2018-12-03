@@ -1,104 +1,40 @@
 package de.dfki.vsm.editor.action;
 
-//~--- JDK imports ------------------------------------------------------------
-import java.util.HashMap;
-
-//~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.project.WorkSpace;
 import de.dfki.vsm.model.flow.BasicNode;
 
 /**
  * @author Patrick Gebhard
  */
-public class ToggleStartNodeAction extends NodeAction {
+public class ToggleStartNodeAction extends EditorAction {
 
-  private boolean mIsStartNode = false;
-  private HashMap<String, BasicNode> mStartNodes = null;
+  private Node mGUINode;
 
-  public ToggleStartNodeAction(de.dfki.vsm.editor.Node node, WorkSpacePanel workSpace) {
-    super();
+  public ToggleStartNodeAction(WorkSpace workSpace, Node node) {
     mWorkSpace = workSpace;
-    mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
-    mUndoManager = mSceneFlowPane.getUndoManager();
-    mIDManager = mSceneFlowPane.getIDManager();
     mGUINode = node;
-    mGUINodeType = mGUINode.getType();
-    mDataNode = node.getDataNode();
-    mParentDataNode = mDataNode.getParentNode();
-    mDataNodeId = mDataNode.getId();
-
-    // check start node state
-    mStartNodes = mParentDataNode.getStartNodeMap();
-    mIsStartNode = (mStartNodes.containsKey(mDataNodeId));
   }
 
   @Override
-  protected void run() {
-    if (mIsStartNode) {
+  protected void doIt() {
+    BasicNode mDataNode = mGUINode.getDataNode();
+    if (mDataNode.isStartNode()) {
       mGUINode.removeStartSign();
-      mStartNodes.remove(mDataNode.getId());
-      mIsStartNode = false;
+      mDataNode.getParentNode().removeStartNode(mDataNode);
     } else {
-      mStartNodes.put(mDataNode.getId(), mDataNode);
-      mIsStartNode = true;
+      mDataNode.getParentNode().addStartNode(mDataNode);
       mGUINode.addStartSign();
     }
-
-    EditorInstance.getInstance().refresh();
-    UndoAction.getInstance().refreshUndoState();
-    RedoAction.getInstance().refreshRedoState();
   }
 
-//  private class Edit extends AbstractUndoableEdit {
-//
-//      @Override
-//      public void undo() throws CannotUndoException {
-//          if (mIsStartNode) {
-//              mGUINode.removeStartSign();
-//              mStartNodes.remove(mDataNode.getId());
-//              mIsStartNode = false;
-//          } else {
-//              mStartNodes.put(mDataNode.getId(), mDataNode);
-//              mIsStartNode = true;
-//              mGUINode.addStartSign();
-//          }
-//          Editor.getInstance().update();
-//      }
-//
-//      @Override
-//      public void redo() throws CannotRedoException {
-//          if (mIsStartNode) {
-//              mGUINode.removeStartSign();
-//              mStartNodes.remove(mDataNode.getId());
-//              mIsStartNode = false;
-//          } else {
-//              mStartNodes.put(mDataNode.getId(), mDataNode);
-//              mIsStartNode = true;
-//              mGUINode.addStartSign();
-//
-//          }
-//          Editor.getInstance().update();
-//      }
-//
-//      @Override
-//      public boolean canUndo() {
-//          return true;
-//      }
-//
-//      @Override
-//      public boolean canRedo() {
-//          return true;
-//      }
-//
-//      @Override
-//      public String getUndoPresentationName() {
-//          return "Undo toggle start flag of node " + mDataNode.getName();
-//      }
-//
-//      @Override
-//      public String getRedoPresentationName() {
-//          return "Redo toggle start flag of node " + mDataNode.getName();
-//      }
-//  }
+  @Override
+  public void undoIt() {
+    doIt();
+  }
+
+  @Override
+  public String msg() {
+    return "Toggle Node Being Start Node";
+  }
 }

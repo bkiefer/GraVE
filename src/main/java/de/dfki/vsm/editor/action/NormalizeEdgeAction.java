@@ -10,11 +10,11 @@ package de.dfki.vsm.editor.action;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Set;
 
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.project.WorkSpace;
 import de.dfki.vsm.editor.util.grid.*;
 import de.dfki.vsm.editor.util.grid.pathfinding.Path;
 
@@ -24,8 +24,8 @@ import de.dfki.vsm.editor.util.grid.pathfinding.Path;
  */
 public class NormalizeEdgeAction {
 
-  private WorkSpacePanel mWorkSpace = null;
-  private de.dfki.vsm.editor.Edge mGUIEdge = null;
+  private WorkSpace mWorkSpace = null;
+  private Edge mGUIEdge = null;
   protected GridRectangle gridSource = null;
   protected GridRectangle gridDestination = null;
   protected de.dfki.vsm.editor.Node mSourceGUINode = null;
@@ -33,7 +33,7 @@ public class NormalizeEdgeAction {
   protected Point mSourceGUINodeDockPoint = null;
   protected Point mTargetGUINodeDockPoint = null;
 
-  public NormalizeEdgeAction(WorkSpacePanel workSpace, de.dfki.vsm.editor.Edge edge) {
+  public NormalizeEdgeAction(WorkSpace workSpace, de.dfki.vsm.editor.Edge edge) {
     mWorkSpace = workSpace;
     mGUIEdge = edge;
     mSourceGUINode = mGUIEdge.getSourceNode();
@@ -56,10 +56,7 @@ public class NormalizeEdgeAction {
 
   public void recalculateWeight() {
     mWorkSpace.getGridManager().resetAllGridWeight();
-
-    Set<de.dfki.vsm.editor.Edge> edgeSet = mWorkSpace.getEdges();
-
-    for (de.dfki.vsm.editor.Edge edge : edgeSet) {
+    for (de.dfki.vsm.editor.Edge edge : mWorkSpace.getEdges()) {
       if (!edge.getName().equals(mGUIEdge.getName())) {
         mWorkSpace.getGridManager().setEdgeWeight(edge);
         mWorkSpace.getGridManager().setNodeWeight(edge.getSourceNode());
@@ -74,7 +71,8 @@ public class NormalizeEdgeAction {
     if (isReroutingNeeded()) {
 
       // System.out.println("Smart Path initiated!");
-      AStarEdgeFinder aStarPath = new AStarEdgeFinder(mWorkSpace.mGridManager.getmTransitionArea());
+      GridRectangle[][] transArea = mWorkSpace.getTransitionArea();
+      AStarEdgeFinder aStarPath = new AStarEdgeFinder(transArea);
 
       aStarPath.setDiagonalPathCost(GridConstants.DIAGONAL_PATH_COST);
 
@@ -91,12 +89,11 @@ public class NormalizeEdgeAction {
       int deviationTargetY = 0;
 
       for (int i = 0; i < alternatePath.getLength(); i++) {
-        BezierPoint point
-                = new BezierPoint(mWorkSpace.mGridManager
-                        .getmTransitionArea()[alternatePath.getY(i)][alternatePath.getX(i)].getCenterX(), mWorkSpace.mGridManager.getmTransitionArea()[alternatePath.getY(i)][alternatePath.getX(i)].getCenterY());
+        BezierPoint point = new BezierPoint(
+            transArea[alternatePath.getY(i)][alternatePath.getX(i)].getCenterX(),
+            transArea[alternatePath.getY(i)][alternatePath.getX(i)].getCenterY());
 
-        mWorkSpace.mGridManager.getmTransitionArea()[alternatePath.getY(i)][alternatePath.getX(i)].setaStarPath(
-                true);
+        transArea[alternatePath.getY(i)][alternatePath.getX(i)].setaStarPath(true);
         pathPoints.add(point);
 
         if (i < alternatePath.getLength() / 2 + 2) {
@@ -233,7 +230,7 @@ public class NormalizeEdgeAction {
     gridSource = null;
     gridDestination = null;
 
-    for (GridRectangle[] gridParent : mWorkSpace.mGridManager.getmTransitionArea()) {
+    for (GridRectangle[] gridParent : mWorkSpace.getTransitionArea()) {
       for (GridRectangle gridRectangle : gridParent) {
         gridRectangle.setaStarPath(false);
 

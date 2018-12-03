@@ -37,8 +37,6 @@ public final class EdgeGraphics {
   private final static int mCCtrmin = 15; //MIN POSITION OF THE CONTROLPOINTS OF THE EDGE
 
   private Edge mEdge = null;
-  private Node mSourceNode = null;
-  private Node mTargetNode = null;
 
   public CubicCurve2D.Double mCurve = null;
   public CubicCurve2D.Double mLeftCurve = null;
@@ -57,8 +55,6 @@ public final class EdgeGraphics {
   public EdgeGraphics(Edge e, Point sourceDockpoint, Point targetDockpoint) {
     mEdge = e;
     AbstractEdge mDataEdge = e.getDataEdge();
-    mSourceNode = e.getSourceNode();
-    mTargetNode = e.getTargetNode();
 
     // check if edge has already graphic information in data model
     if (mDataEdge.getArrow() != null) {
@@ -68,17 +64,14 @@ public final class EdgeGraphics {
       if (curvePoints.size() != 2) {
         initEdgeGraphics(sourceDockpoint, targetDockpoint);
       } else {
-        if (mSourceNode.equals(mTargetNode)) {
-          mPointingToSameNode = true;
-        }
 
         mAbsoluteStartPos.setLocation(curvePoints.get(0).getXPos(), curvePoints.get(0).getYPos());
         mAbsoluteEndPos.setLocation(curvePoints.get(1).getXPos(), curvePoints.get(1).getYPos());
         mCCrtl1.setLocation(curvePoints.get(0).getCtrlXPos(), curvePoints.get(0).getCtrlYPos());
         mCCrtl2.setLocation(curvePoints.get(1).getCtrlXPos(), curvePoints.get(1).getCtrlYPos());
 
-        mAbsoluteStartPos = mSourceNode.connectAsSource(mEdge, mAbsoluteStartPos);
-        mAbsoluteEndPos = mTargetNode.connectAsTarget(mEdge, mAbsoluteEndPos);
+        mAbsoluteStartPos = mEdge.getSourceNode().connectAsSource(mEdge, mAbsoluteStartPos);
+        mAbsoluteEndPos = mEdge.getTargetNode().connectAsTarget(mEdge, mAbsoluteEndPos);
       }
     } else {
       initEdgeGraphics(sourceDockpoint, targetDockpoint);
@@ -135,27 +128,22 @@ public final class EdgeGraphics {
       getShortestDistance();
     }
 
-    mAbsoluteStartPos = mSourceNode.connectAsSource(mEdge, mAbsoluteStartPos);
-    mAbsoluteEndPos = mTargetNode.connectAsTarget(mEdge, mAbsoluteEndPos);
+    mAbsoluteStartPos = mEdge.getSourceNode().connectAsSource(mEdge, mAbsoluteStartPos);
+    mAbsoluteEndPos = mEdge.getTargetNode().connectAsTarget(mEdge, mAbsoluteEndPos);
 
     initCurve();
   }
 
   public void updateDrawingParameters() {
-    if (!mPointingToSameNode) {
-      mAbsoluteStartPos = (!mEdge.mCSPSelected)
-              ? mSourceNode.getEdgeDockPoint(mEdge)
-              : mAbsoluteStartPos;
-      mAbsoluteEndPos = (!mEdge.mCEPSelected)
-              ? mTargetNode.getEdgeDockPoint(mEdge)
-              : mAbsoluteEndPos;
-    } else {
-      mAbsoluteStartPos = (!mEdge.mCSPSelected)
-              ? mSourceNode.getEdgeDockPoint(mEdge)
-              : mAbsoluteStartPos;
-      mAbsoluteEndPos = (!mEdge.mCEPSelected)
-              ? mTargetNode.getSelfPointingEdgeDockPoint(mEdge)
-              : mAbsoluteEndPos;
+    Node source = mEdge.getSourceNode();
+    Node target = mEdge.getTargetNode();
+    if (!mEdge.mCEPSelected) {
+      mAbsoluteStartPos = source.getEdgeDockPoint(mEdge);
+      if (source != target) {
+        mAbsoluteEndPos = target.getEdgeDockPoint(mEdge);
+      } else {
+        mAbsoluteEndPos = target.getSelfPointingEdgeDockPoint(mEdge);
+      }
     }
 
     computeCurve();
@@ -164,17 +152,19 @@ public final class EdgeGraphics {
   }
 
   public void initCurve() {
+    Node source = mEdge.getSourceNode();
+    Node target = mEdge.getTargetNode();
 
     // compute bezier control points (using node center point and edge connection points)
-    Point sNC = mSourceNode.getCenterPoint();
-    Point tNC = mTargetNode.getCenterPoint();
+    Point sNC = source.getCenterPoint();
+    Point tNC = target.getCenterPoint();
     Point cES = new Point(mAbsoluteStartPos.x - sNC.x, mAbsoluteStartPos.y - sNC.y);
     Point cET = new Point(mAbsoluteEndPos.x - tNC.x, mAbsoluteEndPos.y - tNC.y);
     // scale control point in relation to distance between nodes
     double distance = Point.distance(sNC.x, sNC.y, tNC.x, tNC.y);
     double scalingFactor = (mPointingToSameNode)
             ? 3
-            : ((distance / mSourceNode.getHeight()) - 0.5d);
+            : ((distance / source.getHeight()) - 0.5d);
 
     scalingFactor = (scalingFactor < 1.0d)
             ? 1.25d
@@ -212,7 +202,6 @@ public final class EdgeGraphics {
   }
 
   public void computeHead() {
-
     // build arrow head
     mHead.reset();
     mArrowDir = Math.atan2(mCurve.ctrlx2 - mAbsoluteEndPos.x, mCurve.ctrly2 - mAbsoluteEndPos.y);
@@ -234,14 +223,17 @@ public final class EdgeGraphics {
   }
 
   private void getShortestDistance() {
-    ArrayList<Point> freeSourceNodeDockPoints = mSourceNode.getEdgeStartPoints();
-    ArrayList<Point> freeTargetNodeDockPoints = mTargetNode.getEdgeStartPoints();
+    Node source = mEdge.getSourceNode();
+    Node target = mEdge.getTargetNode();
+
+    ArrayList<Point> freeSourceNodeDockPoints = source.getEdgeStartPoints();
+    ArrayList<Point> freeTargetNodeDockPoints = target.getEdgeStartPoints();
     Point startPos = new Point();
     Point endPos = new Point();
 
     // 1. case - start node and target node are different
     // 2. case - start node and target node are the same
-    if (!mSourceNode.equals(mTargetNode)) {
+    if (!source.equals(target)) {
 
       // figure the shortest distance
       double dist = -1.0d;
@@ -253,9 +245,9 @@ public final class EdgeGraphics {
           double actualDist = Point.distance(p.x, p.y, q.x, q.y);
 
           // add distance from dockPoint to nodes' center point
-          actualDist += Point.distance(mSourceNode.getCenterPoint().x, mSourceNode.getCenterPoint().y, p.x,
+          actualDist += Point.distance(source.getCenterPoint().x, source.getCenterPoint().y, p.x,
                   p.y);
-          actualDist += Point.distance(mTargetNode.getCenterPoint().x, mTargetNode.getCenterPoint().y, q.x,
+          actualDist += Point.distance(target.getCenterPoint().x, target.getCenterPoint().y, q.x,
                   q.y);
           dist = (dist == -1.0d)
                   ? actualDist
@@ -282,7 +274,7 @@ public final class EdgeGraphics {
 
       // let the start and end point bet placed at least one third of the mean
       // of width and height od nodes away from each other
-      double minDist = (mSourceNode.getHeight() + mSourceNode.getWidth()) / 2 / 3;
+      double minDist = (source.getHeight() + source.getWidth()) / 2 / 3;
 
       for (Point p : freeSourceNodeDockPoints) {
         for (Point q : freeSourceNodeDockPoints) {
@@ -303,18 +295,19 @@ public final class EdgeGraphics {
   }
 
   public void updateRelativeEdgeControlPointPos(Node n, int xOffset, int yOffset) {
-    if (n.equals(mSourceNode)) {
+    if (n.equals(mEdge.getSourceNode())) {
       mCCrtl1.x = mCCrtl1.x + xOffset;
       mCCrtl1.y = mCCrtl1.y + yOffset;
     }
 
-    if (n.equals(mTargetNode)) {
+    if (n.equals(mEdge.getTargetNode())) {
       mCCrtl2.x = mCCrtl2.x + xOffset;
       mCCrtl2.y = mCCrtl2.y + yOffset;
     }
 //        mCCrtl1.y = (mCCrtl1.y < mCCtrmin) ? mCCtrmin : mCCrtl1.y;
 //        mCCrtl2.y = (mCCrtl2.y < mCCtrmin) ? mCCtrmin : mCCrtl2.y;
     sanitizeControlPoint();
+    updateDataModel();
   }
 
   private boolean controlPointHandlerContainsPoint(Point point, int threshold) {
@@ -495,7 +488,7 @@ public final class EdgeGraphics {
     xmlEdgePoints.add(endPoint);
     arrow.setPointList(xmlEdgePoints);
     mEdge.getDataEdge().setArrow(arrow);
-    mEdge.getDataEdge().setTargetUnid(mTargetNode.getDataNode().getId());
+    mEdge.getDataEdge().setTargetUnid(mEdge.getTargetNode().getDataNode().getId());
 
     // TODO: straigthen edge, if source/targets node location has changed
   }

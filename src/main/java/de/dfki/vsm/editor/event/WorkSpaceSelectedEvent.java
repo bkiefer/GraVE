@@ -1,6 +1,6 @@
 package de.dfki.vsm.editor.event;
 
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpace;
 
 //~--- non-JDK imports --------------------------------------------------------
 
@@ -8,11 +8,11 @@ import de.dfki.vsm.editor.project.WorkSpacePanel;
  *     @author Martin Fallas
  */
 public class WorkSpaceSelectedEvent {
-  private WorkSpacePanel mSource;
+  private WorkSpace mSource;
 
-  public WorkSpaceSelectedEvent(WorkSpacePanel source) {
-    mSource = source;
+  public WorkSpaceSelectedEvent(WorkSpace workSpace) {
+    mSource = workSpace;
   }
 
-  public WorkSpacePanel getSource() { return mSource; }
+  public WorkSpace getSource() { return mSource; }
 }

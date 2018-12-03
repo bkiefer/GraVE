@@ -14,7 +14,7 @@ import de.dfki.vsm.model.flow.geom.Position;
  */
 @XmlType(name="SuperNode")
 @XmlAccessorType(XmlAccessType.NONE)
-public class SuperNode extends BasicNode implements Iterable<BasicNode> {
+public class SuperNode extends BasicNode {
 
   public static class StartNodeAdapter extends XmlAdapter<String, Map<String, BasicNode>> {
     @Override
@@ -150,7 +150,7 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
   }
 
 
-  public ArrayList<SuperNode> getSuperNodeList() {
+  public Iterable<SuperNode> getSuperNodeList() {
     return mSuperNodeList;
   }
 
@@ -178,8 +178,11 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
     public BasicNode next() { return impl.next(); }
   }
 
-  public Iterator<BasicNode> iterator() {
-    return new NodeIterator();
+  public Iterable<BasicNode> getNodes() {
+    return new Iterable<BasicNode>() {
+      @Override
+      public Iterator<BasicNode> iterator() { return new NodeIterator(); }
+    };
   }
 
   public int getNodeSize() {
@@ -187,7 +190,7 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
   }
 
   public BasicNode getChildNodeById(String id) {
-    for (BasicNode node : this) {
+    for (BasicNode node : getNodes()) {
       if (node.getId().equals(id)) {
         return node;
       }
@@ -213,7 +216,7 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
   public void establishTargetNodes() {
     super.establishTargetNodes();
 
-    for (BasicNode node : this) {
+    for (BasicNode node : getNodes()) {
       node.establishTargetNodes();
     }
   }
@@ -246,13 +249,13 @@ public class SuperNode extends BasicNode implements Iterable<BasicNode> {
     copy.mParentNode = newParent;
     Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
     // copy all subnodes in this SuperNode
-    for (BasicNode n : this) {
+    for (BasicNode n : getNodes()) {
       BasicNode nCopy = n.deepCopy(mgr, copy);
       orig2copy.put(n, nCopy);
       copy.mNodeList.add(nCopy);
     }
     // copy all edges between nodes inside this SuperNode
-    for (BasicNode n : this) {
+    for (BasicNode n : getNodes()) {
       for (AbstractEdge e: n.getEdgeList()) {
         e.deepCopy(orig2copy);
       }

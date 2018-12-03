@@ -5,15 +5,12 @@ import static de.dfki.vsm.Preferences.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.List;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.undo.AbstractUndoableEdit;
@@ -23,11 +20,10 @@ import javax.swing.undo.UndoManager;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
-import de.dfki.vsm.editor.action.RedoAction;
-import de.dfki.vsm.editor.action.UndoAction;
+import de.dfki.vsm.editor.action.*;
 import de.dfki.vsm.editor.event.EdgeEditEvent;
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpace;
 import de.dfki.vsm.editor.util.EdgeGraphics;
 import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.model.flow.geom.ControlPoint;
@@ -50,7 +46,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
   private Node mSourceNode = null;
   private Node mTargetNode = null;
   private EdgeGraphics mEg = null;
-  private WorkSpacePanel mWorkSpace = null;
+  private WorkSpace mWorkSpace = null;
 
   // For mouse interaction ...
   public boolean mIsSelected = false;
@@ -113,12 +109,12 @@ public class Edge extends JComponent implements Observer, MouseListener {
     return edgeProperties.get(mDataEdge.getClass()).mName;
   }
 
-  public Edge(WorkSpacePanel ws, AbstractEdge edge, Node sourceNode, Node targetNode) {
-    this(ws, edge, sourceNode, targetNode, null, null);
+  public Edge(WorkSpace workSpace, AbstractEdge edge, Node sourceNode, Node targetNode) {
+    this(workSpace, edge, sourceNode, targetNode, null, null);
   }
 
   // TODO: Neuer Konstruktor, der Source und Target dockpoint "mitbekommt"
-  public Edge(WorkSpacePanel ws, AbstractEdge edge, Node sourceNode, Node targetNode,
+  public Edge(WorkSpace ws, AbstractEdge edge, Node sourceNode, Node targetNode,
           Point sourceDockPoint, Point targetDockpoint) {
     setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
     mDataEdge = edge;
@@ -186,6 +182,10 @@ public class Edge extends JComponent implements Observer, MouseListener {
     List<ControlPoint> pl = mDataEdge.getArrow().getPointList();
     mSourceNode.connectAsSource(this, pl.get(0).getPoint());
     mTargetNode.connectAsTarget(this, pl.get(1).getPoint());
+  }
+
+  public void deflect(Node newTarget, Point newDockingPoint) {
+
   }
 
   public boolean containsPoint(Point p) {
@@ -320,6 +320,42 @@ public class Edge extends JComponent implements Observer, MouseListener {
     mCEPSelected = false;
   }
 
+  /**
+   *
+   *
+   */
+  public void showContextMenu(MouseEvent evt, Edge edge) {
+    JPopupMenu pop = new JPopupMenu();
+    JMenuItem item;// = new JMenuItem("Modify");
+    //ModifyEdgeAction modifyAction = new ModifyEdgeAction(edge, this);
+
+    //item.addActionListener(modifyAction.getActionListener());
+    //pop.add(item);
+    item = new JMenuItem("Delete");
+    RemoveEdgesAction deleteAction = new RemoveEdgesAction(mWorkSpace, edge);
+    item.addActionListener(deleteAction.getActionListener());
+    pop.add(item);
+
+    item = new JMenuItem("Shortest Path");
+    item.setEnabled(true);
+    ShortestEdgeAction shortestAction = new ShortestEdgeAction(mWorkSpace, edge);
+    item.addActionListener(shortestAction.getActionListener());
+    pop.add(item);
+
+    item = new JMenuItem("Straighten");
+    StraightenEdgeAction renameAction = new StraightenEdgeAction(mWorkSpace, edge);
+    item.addActionListener(renameAction.getActionListener());
+    pop.add(item);
+
+    item = new JMenuItem("Smart Path");
+    NormalizeEdgeAction normalizeAction = new NormalizeEdgeAction(mWorkSpace, edge);
+    item.addActionListener(normalizeAction.getActionListener());
+    pop.add(item);
+
+    pop.show(this, evt.getX(), evt.getY());
+  }
+
+
   @Override
   public void mouseClicked(java.awt.event.MouseEvent event) {
 
@@ -346,7 +382,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
 
     // show context menu
     if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
-      mWorkSpace.showContextMenu(event, this);
+      showContextMenu(event, this);
     } else if ((event.getClickCount() == 2) && getDescription() != null) {
       mEdgeTextArea.requestFocus();
       mEditMode = true;

@@ -10,9 +10,13 @@ import java.util.*;
 import java.util.List;
 
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 
+import de.dfki.vsm.editor.action.*;
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpace;
 import de.dfki.vsm.editor.util.DockingManager;
 import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.model.flow.AbstractEdge;
@@ -51,7 +55,7 @@ public final class Node extends JComponent implements Observer {
 
   //
   // TODO: move away
-  private final WorkSpacePanel mWorkSpace;
+  private final WorkSpace mWorkSpace;
 
   // The name which will be displayed on the node
   private String mDisplayName;
@@ -71,9 +75,9 @@ public final class Node extends JComponent implements Observer {
    *  The copied views will be added to the given WorkSpace, and all copied
    *  node models will be subnodes of the given SuperNode.
    */
-  public static Pair<Collection<Node>, List<Edge>> copyGraph(WorkSpacePanel wsp,
+  public static Pair<Collection<Node>, List<Edge>> copyGraph(WorkSpace workSpace,
       SuperNode newParent, List<Node> nodeViews, List<Edge> edgeViews) {
-    IDManager mgr = wsp.getSceneFlowEditor().getIDManager();
+    IDManager mgr = workSpace.getSceneFlowEditor().getIDManager();
 
     Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
     Map<Node, Node> origView2copy = new IdentityHashMap<>();
@@ -82,7 +86,7 @@ public final class Node extends JComponent implements Observer {
       BasicNode cpy = n.deepCopy(mgr, newParent);
       orig2copy.put(n, cpy);
       // now create a new Node as view for the copy of n
-      Node newNode = new Node(wsp, cpy);
+      Node newNode = new Node(workSpace, cpy);
       origView2copy.put(nodeView, newNode);
     }
 
@@ -91,7 +95,7 @@ public final class Node extends JComponent implements Observer {
       AbstractEdge e = edgeView.getDataEdge().deepCopy(orig2copy);
       // now create a new Edge as view for the copy of e
       // TODO: TRANSLATE TO CURRENT MOUSE POSITION
-      Edge newEdge = new Edge(wsp, e,
+      Edge newEdge = new Edge(workSpace, e,
           origView2copy.get(edgeView.getSourceNode()),
           origView2copy.get(edgeView.getTargetNode()));
       newEdges.add(newEdge);
@@ -99,6 +103,29 @@ public final class Node extends JComponent implements Observer {
     return new Pair<Collection<Node>, List<Edge>>(origView2copy.values(), newEdges);
   }
 
+  /** This copies some subset of node and edge views and their underlying
+   *  models. One basic assumption is that there are no "dangling" edges which
+   *  either start or end at a node outside the given node set.
+   *
+   *  The copied views will be added to the given WorkSpace, and all copied
+   *  node models will be subnodes of the given SuperNode.
+   */
+  public static Collection<BasicNode> copyGraphModel(IDManager mgr,
+      SuperNode newParent, List<Node> nodeViews, List<Edge> edgeViews) {
+
+
+    Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
+    for (Node nodeView : nodeViews) {
+      BasicNode n = nodeView.getDataNode();
+      orig2copy.put(n, n.deepCopy(mgr, newParent));
+    }
+
+    for (Edge edgeView : edgeViews) {
+      // connects the new edges in the copied model nodes
+      edgeView.getDataEdge().deepCopy(orig2copy);
+    }
+    return orig2copy.values();
+  }
   public enum Type {
     BasicNode, SuperNode
   }
@@ -106,7 +133,7 @@ public final class Node extends JComponent implements Observer {
   /**
    *  Create new Node view from the node model
    */
-  public Node(WorkSpacePanel workSpace, BasicNode dataNode) {
+  public Node(WorkSpace workSpace, BasicNode dataNode) {
     mWorkSpace = workSpace;
     mDataNode = dataNode;
     // setToolTipText(mDataNode.getId());
@@ -123,7 +150,7 @@ public final class Node extends JComponent implements Observer {
 
     setBounds(pos.x, pos.y, getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT);
 
-    if (mWorkSpace.getSceneFlowEditor().getActiveSuperNode().isStartNode(mDataNode)) {
+    if (mDataNode.getParentNode().isStartNode(mDataNode)) {
       addStartSign();
     }
 
@@ -138,7 +165,7 @@ public final class Node extends JComponent implements Observer {
     return isBasic ? Type.BasicNode : Type.SuperNode;
   }
 
-  public WorkSpacePanel getWorkSpace() {
+  public WorkSpace getWorkSpace() {
     return mWorkSpace;
   }
 
@@ -165,9 +192,8 @@ public final class Node extends JComponent implements Observer {
       if (n.getNodeSize() > 0) {
         // complain: this operation can not be done, SuperNode has subnodes
         return false;
-      } else {
-        newNode = new BasicNode(mgr, n);
       }
+      newNode = new BasicNode(mgr, n);
     } else {
       newNode = new SuperNode(mgr, getDataNode());
     }
@@ -291,6 +317,7 @@ public final class Node extends JComponent implements Observer {
   public void translate(Point vector) {
     Point location = getLocation();
     location.translate(vector.x, vector.y);
+    // also translate all edge points
     resetLocation(location);
   }
 
@@ -437,6 +464,63 @@ public final class Node extends JComponent implements Observer {
     repaint(100);
   }
 
+    /**
+   *
+   * TODO: ADD "CREATE XEDGE" FOR ALL LEGAL EDGES STARTING AT THIS NODE
+   */
+  public void showContextMenu(MouseEvent evt, Node node) {
+    JPopupMenu pop = new JPopupMenu();
+    JMenuItem item = null;
+    SuperNode current = mDataNode.getParentNode();
+    EditorAction action;
+
+    item = new JMenuItem(
+        current.isStartNode(node.getDataNode()) ? "Unset Start" : "Set Start");
+    action = new ToggleStartNodeAction(mWorkSpace, node);
+    item.addActionListener(action.getActionListener());
+    pop.add(item);
+
+    pop.add(new JSeparator());
+
+    if (!(node.getDataNode() instanceof SuperNode)) {
+      item = new JMenuItem("To Supernode");
+      action = new ChangeNodeTypeAction(mWorkSpace, node);
+      item.addActionListener(action.getActionListener());
+      pop.add(item);
+
+      pop.add(new JSeparator());
+    }
+
+    // TODO: MAYBE INVERT: IF NO CMD, ADD ONE
+    if (node.getDataNode().getCmd() != null) {
+      item = new JMenuItem("Edit Command");
+      action = new EditCommandAction(mWorkSpace, node.getCmdBadge());
+      item.addActionListener(action.getActionListener());
+      pop.add(item);
+
+      pop.add(new JSeparator());
+    }
+
+    item = new JMenuItem("Copy");
+    action = new CopyNodesAction(mWorkSpace, node);
+    item.addActionListener(action.getActionListener());
+    pop.add(item);
+
+    item = new JMenuItem("Cut");
+    action = new RemoveNodesAction(mWorkSpace, node, true);
+    item.addActionListener(action.getActionListener());
+    pop.add(item);
+
+    pop.add(new JSeparator());
+
+    item = new JMenuItem("Delete");
+    action = new RemoveNodesAction(mWorkSpace, node, false);
+    item.addActionListener(action.getActionListener());
+    pop.add(item);
+
+    pop.show(this, node.getX() + node.getWidth(), node.getY());
+  }
+
   public void mouseClicked(MouseEvent event) {
     mPressed = false;
     mSelected = true;
@@ -448,7 +532,7 @@ public final class Node extends JComponent implements Observer {
     // mClickPosition.setLocation(clickLoc.x - loc.x, clickLoc.y - loc.y);
     repaint(100);
 
-//      enter supernode, if it has been double clicked
+    // enter supernode, if it has been double clicked
     // TODO: move to workspace
     if ((event.getButton() == MouseEvent.BUTTON1) && (event.getClickCount() == 2)) {
       if (! isBasic) {
@@ -459,15 +543,17 @@ public final class Node extends JComponent implements Observer {
     // show contect menu
     // TODO: move to workspace
     if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
-      mWorkSpace.showContextMenu(event, this);
+      showContextMenu(event, this);
     }
 
-//      ////////!!!!!!!!!!!!!!!!!!!!
+    // !!!!!!!!!!!!!!!!!!!!
     // System.err.println("Sending node selected event");
     mEventMulticaster.convey(new ElementSelectedEvent(this));
   }
 
   public void mousePressed(MouseEvent event) {
+    mouseClicked(event);
+    /*
     mPressed = true;
     mSelected = true;
 
@@ -482,8 +568,8 @@ public final class Node extends JComponent implements Observer {
 
     // show contect menu
     if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
-      mWorkSpace.showContextMenu(event, this);
-    }
+      showContextMenu(event, this);
+    }*/
   }
 
   public void mouseReleased(MouseEvent e) {

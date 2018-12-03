@@ -10,6 +10,8 @@ import java.util.Observer;
 
 import javax.swing.*;
 
+import de.dfki.vsm.editor.action.RemoveCommentAction;
+import de.dfki.vsm.editor.project.WorkSpace;
 import de.dfki.vsm.editor.project.WorkSpacePanel;
 import de.dfki.vsm.model.flow.CommentBadge;
 import de.dfki.vsm.model.flow.geom.Boundary;
@@ -36,7 +38,7 @@ implements Observer, MouseListener, MouseMotionListener {
 
   // edit
   private boolean mEditMode = false;
-  private WorkSpacePanel mWorkSpace;
+  private WorkSpace mWorkSpace;
   private EditorConfig mEditorConfig;
 
   // image
@@ -57,10 +59,10 @@ implements Observer, MouseListener, MouseMotionListener {
     mDataComment = null;
   }
 
-  public Comment(WorkSpacePanel ws, de.dfki.vsm.model.flow.CommentBadge dataComment) {
+  public Comment(WorkSpace workSpace, de.dfki.vsm.model.flow.CommentBadge dataComment) {
     mAC = AlphaComposite.getInstance(AlphaComposite.XOR, 0.15f);
     mACFull = AlphaComposite.getInstance(AlphaComposite.SRC, 1.0f);
-    mWorkSpace = ws;
+    mWorkSpace = workSpace;
     mEditorConfig = mWorkSpace.getEditorConfig();
     mDataComment = dataComment;
 
@@ -133,7 +135,7 @@ implements Observer, MouseListener, MouseMotionListener {
     return toString();
   }
 
-  public de.dfki.vsm.model.flow.CommentBadge getData() {
+  public CommentBadge getData() {
     return mDataComment;
   }
 
@@ -169,20 +171,8 @@ implements Observer, MouseListener, MouseMotionListener {
   public void resize(Point p) {
     Rectangle r = getBounds();
 
-    if (!((r.width <= 50) && (p.x < 0))) {
-      r.width = r.width + p.x;
-      r.width = (r.width < 50)
-              ? 50
-              : r.width;
-    }
-
-    if (!((r.height <= 50) && (p.y < 0))) {
-      r.height = r.height + p.y;
-      r.height = (r.height < 50)
-              ? 50
-              : r.height;
-    }
-
+    r.width = Math.max(50, r.width + p.x);
+    r.height = Math.max(50, r.height + p.y);
     setBounds(r);
     setSize(r.width, r.height);
 
@@ -190,8 +180,6 @@ implements Observer, MouseListener, MouseMotionListener {
     Rectangle r2 = getBounds();
 
     mDataComment.setBoundary(new Boundary(r2.x, r2.y, r2.width, r2.height));
-
-    // DEBUG System.out.println("size " + getBounds());
   }
 
   public boolean containsPoint(Point p) {
@@ -221,6 +209,19 @@ implements Observer, MouseListener, MouseMotionListener {
     }
   }
 
+  /**
+   * Show the context menu for a comment
+   */
+  public void showContextMenu(MouseEvent evt, Comment comment) {
+    JPopupMenu pop = new JPopupMenu();
+    JMenuItem item = new JMenuItem("Delete");
+    RemoveCommentAction deleteAction =
+        new RemoveCommentAction(mWorkSpace, comment);
+    item.addActionListener(deleteAction.getActionListener());
+    pop.add(item);
+    pop.show(this, comment.getX() + comment.getWidth(), comment.getY());
+  }
+
   @Override
   public void mouseClicked(MouseEvent e) {
 
@@ -247,9 +248,9 @@ implements Observer, MouseListener, MouseMotionListener {
       mEditMode = true;
     }
 
-    // show contect menu
+    // show context menu
     if ((e.getButton() == MouseEvent.BUTTON3) && (e.getClickCount() == 1)) {
-      mWorkSpace.showContextMenu(e, this);
+      showContextMenu(e, this);
     }
 
     revalidate();

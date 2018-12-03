@@ -1,88 +1,43 @@
 package de.dfki.vsm.editor.action;
 
-//~--- JDK imports ------------------------------------------------------------
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
-//~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpace;
 import de.dfki.vsm.model.flow.AbstractEdge;
 
 /**
  * @author Gregor Mehlmann
  */
-public class CreateEdgeAction extends EdgeAction {
+public class CreateEdgeAction extends EditorAction {
 
-  public CreateEdgeAction(WorkSpacePanel workSpace, Node sourceNode, Node targetNode,
+  private Collection<Edge> mGUIEdge;
+  private Node mSourceGUINode, mTargetGUINode;
+  private AbstractEdge mEdge;
+
+  public CreateEdgeAction(WorkSpace workSpace, Node sourceNode, Node targetNode,
           AbstractEdge dataEdge) {
     mWorkSpace = workSpace;
-    mTargetGUINode = targetNode;
+    mGUIEdge = new ArrayList<>();
     mSourceGUINode = sourceNode;
-    mDataEdge = dataEdge;
-
-    // TODO check data edge integrity (i.e. pedges!)
-    mGUIEdge = null;
-    mUndoManager = mSceneFlowPane.getUndoManager();
+    mTargetGUINode = targetNode;
+    mEdge = dataEdge;
   }
 
 
-  public void run() {
-
-    if (mDataEdge != null) {
-      create();
-
-      //
-      mWorkSpace.revalidate();
-      mWorkSpace.repaint(100);
-
-      //
-      mUndoManager.addEdit(new Edit());
-      UndoAction.getInstance().refreshUndoState();
-      RedoAction.getInstance().refreshRedoState();
-    }
+  public void doIt() {
+    if (mGUIEdge.isEmpty())
+      mGUIEdge.add(mWorkSpace.createEdge(mEdge, mSourceGUINode, mTargetGUINode));
+    mWorkSpace.addEdges(mGUIEdge);
   }
 
-  private class Edit extends AbstractUndoableEdit {
-
-    @Override
-    public void undo() throws CannotUndoException {
-      delete();
-      mGUIEdge.repaint(100);
-
-//          mWorkSpace.revalidate();
-//          mWorkSpace.repaint(100);
-    }
-
-    @Override
-    public void redo() throws CannotRedoException {
-      create();
-      mGUIEdge.repaint(100);
-
-//          mWorkSpace.revalidate();
-//          mWorkSpace.repaint(100);
-    }
-
-    @Override
-    public boolean canUndo() {
-      return true;
-    }
-
-    @Override
-    public boolean canRedo() {
-      return true;
-    }
-
-    @Override
-    public String getUndoPresentationName() {
-      return "Undo creation of edge";
-    }
-
-    @Override
-    public String getRedoPresentationName() {
-      return "Redo creation of edge";
-    }
+  public void undoIt() {
+    mWorkSpace.removeEdges(mGUIEdge);
   }
+
+  public String msg() { return "creation of edge"; }
+
 }

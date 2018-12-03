@@ -4,14 +4,9 @@ package de.dfki.vsm.editor.action;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.SceneFlowEditor;
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpace;
 
 /**
  * @author Patrick Gebhard
@@ -19,53 +14,25 @@ import de.dfki.vsm.editor.project.WorkSpacePanel;
 public class CopyNodesAction extends EditorAction {
 
   private Set<Node> mNodes = null;
-  WorkSpacePanel mWorkSpace = null;
 
-  public CopyNodesAction(WorkSpacePanel workSpace, Node node) {
+  @SuppressWarnings("serial")
+  public CopyNodesAction(WorkSpace workSpace, Node node) {
     mWorkSpace = workSpace;
-    mNodes = new HashSet<Node>();
-    mNodes.add(node);
+    mNodes = new HashSet<Node>(){{ add(node); }};
   }
 
-  public CopyNodesAction(WorkSpacePanel workSpace, Set<Node> nodes) {
+  public CopyNodesAction(WorkSpace workSpace, Set<Node> mSelectedNodes) {
     mWorkSpace = workSpace;
-    mNodes = nodes;
+    mNodes = new HashSet<Node>(mSelectedNodes);
   }
 
-  public void run() {
+  protected void doIt() {
     mWorkSpace.copyNodesNew(mNodes);
   }
 
-  private class Edit extends AbstractUndoableEdit {
-
-    @Override
-    public void undo() throws CannotUndoException {
-      //uncopyNodes();
-    }
-
-    @Override
-    public void redo() throws CannotRedoException {
-      //copyNodes();
-    }
-
-    @Override
-    public boolean canUndo() {
-      return true;
-    }
-
-    @Override
-    public boolean canRedo() {
-      return true;
-    }
-
-    @Override
-    public String getUndoPresentationName() {
-      return "Undo Copying Of Nodes ";
-    }
-
-    @Override
-    public String getRedoPresentationName() {
-      return "Redo Copying Of Nodes ";
-    }
+  protected void undoIt() {
+    mWorkSpace.clearClipBoard();
   }
+
+  protected String msg() { return "Copying Of Nodes "; }
 }

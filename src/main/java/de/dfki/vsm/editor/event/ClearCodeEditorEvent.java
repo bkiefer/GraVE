@@ -5,7 +5,7 @@
  */
 package de.dfki.vsm.editor.event;
 
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpace;
 
 /**
  *
@@ -13,10 +13,10 @@ import de.dfki.vsm.editor.project.WorkSpacePanel;
  */
 public class ClearCodeEditorEvent {
 
-  public WorkSpacePanel panel;
+  public WorkSpace panel;
 
-  public ClearCodeEditorEvent(WorkSpacePanel source) {
-    panel = source;
+  public ClearCodeEditorEvent(WorkSpace workSpace) {
+    panel = workSpace;
   }
 
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import javax.xml.bind.annotation.*;
 
+import de.dfki.vsm.model.flow.geom.Position;
+
 /**
  * @author Gregor Mehlmann
  */
@@ -26,6 +28,7 @@ public final class SceneFlow extends SuperNode {
   protected String mModifDate = new String();
 
   public SceneFlow() {
+    mPosition = new Position(0,0);
   }
 
   @XmlTransient

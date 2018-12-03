@@ -1,59 +1,27 @@
 package de.dfki.vsm.editor.action;
 
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpace;
 
 /**
  * @author Patrick Gebhard
  */
 public class ChangeNodeTypeAction extends EditorAction {
 
-  private WorkSpacePanel mWorkSpace;
   private Node mGUINode = null;
 
-  public ChangeNodeTypeAction(WorkSpacePanel workSpace, Node node) {
+  public ChangeNodeTypeAction(WorkSpace workSpace, Node node) {
     mWorkSpace = workSpace;
     mGUINode = node;
   }
 
-  public void run() {
+  public void doIt() {
     mWorkSpace.changeType(mGUINode);
   }
 
-  private class Edit extends AbstractUndoableEdit {
-
-    @Override
-    public void undo() throws CannotUndoException {
-      run();
-    }
-
-    @Override
-    public void redo() throws CannotRedoException {
-      run();
-    }
-
-    @Override
-    public boolean canUndo() {
-      return true;
-    }
-
-    @Override
-    public boolean canRedo() {
-      return true;
-    }
-
-    @Override
-    public String getUndoPresentationName() {
-      return "Undo Copying Of Nodes ";
-    }
-
-    @Override
-    public String getRedoPresentationName() {
-      return "Redo Copying Of Nodes ";
-    }
+  public void undoIt() {
+    mWorkSpace.changeType(mGUINode);
   }
+
+  protected String msg() { return "Change Node Type"; }
 }

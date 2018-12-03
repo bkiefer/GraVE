@@ -21,6 +21,7 @@ public class Code implements Copyable {
   }
 
   public Code() {
+    content = "";
   }
 
   @XmlTransient

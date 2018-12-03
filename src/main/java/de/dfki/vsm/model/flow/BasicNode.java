@@ -50,7 +50,6 @@ public class BasicNode  {
 
   protected SuperNode mParentNode = null;
 
-  protected boolean mIsStartNode = false;
   protected boolean mIsEndNode = true;
 
   public Byte hasNone = new Byte("0");
@@ -69,6 +68,7 @@ public class BasicNode  {
     mNodeId = mNodeName = mgr.getNextFreeID(this);
     mPosition = p;
     mParentNode = s;
+    mParentNode.mNodeList.add(this);
   }
 
   protected void copyBasicFields(BasicNode node) {
@@ -88,7 +88,7 @@ public class BasicNode  {
    *  valid if the subnode list of the supernode is empty
    */
   public BasicNode(IDManager mgr, final SuperNode node) {
-    assert(! node.getNodeList().iterator().hasNext());
+    assert(node.mNodeList.isEmpty() && node.mSuperNodeList.isEmpty());
     mNodeId = mgr.getNextFreeID(this);
     copyBasicFields(node);
   }
@@ -119,15 +119,7 @@ public class BasicNode  {
   }
 
   public boolean hasComment() {
-    if (mComment == null) {
-      return false;
-    }
-
-    if (mComment.length() == 0) {
-      return false;
-    }
-
-    return true;
+    return ! (mComment == null || mComment.isEmpty());
   }
 
   public boolean hasEdge() {
@@ -191,6 +183,10 @@ public class BasicNode  {
       removePEdge((RandomEdge) e); return;
     } else if (e instanceof InterruptEdge)
       removeIEdge((InterruptEdge) e);
+  }
+
+  public boolean isStartNode() {
+    return mParentNode.mStartNodeMap.containsKey(mNodeId);
   }
 
   public boolean isEndNode() {
@@ -367,51 +363,49 @@ public class BasicNode  {
     return mIEdgeList;
   }
 
-  private class EdgeIterable implements Iterable<AbstractEdge> {
 
-    private class EdgeIterator implements Iterator<AbstractEdge> {
-      private LinkedList<Iterator<? extends AbstractEdge>> iterators;
-      private AbstractEdge dEdge = null;
+  private class EdgeIterator implements Iterator<AbstractEdge> {
+    private LinkedList<Iterator<? extends AbstractEdge>> iterators;
+    private AbstractEdge dEdge = null;
 
-      @SuppressWarnings("serial")
-      public EdgeIterator() {
-        iterators = new LinkedList<Iterator<? extends AbstractEdge>>() {{
-          add(mCEdgeList.iterator());
-          add(mIEdgeList.iterator());
-          add(mPEdgeList.iterator());
-          add(mFEdgeList.iterator());
-        }};
-        dEdge = mDEdge;
-      }
-
-      @Override
-      public boolean hasNext() {
-        while (! iterators.isEmpty() && ! iterators.getFirst().hasNext()) {
-          iterators.removeFirst();
-        }
-        return ! iterators.isEmpty() || dEdge != null;
-      }
-
-      @Override
-      public AbstractEdge next() {
-        if (! hasNext()) throw new IllegalStateException("No next Element");
-        if (iterators.isEmpty()) {
-          AbstractEdge e = dEdge;
-          dEdge = null;
-          return e;
-        }
-        return iterators.getFirst().next();
-      }
+    @SuppressWarnings("serial")
+    public EdgeIterator() {
+      iterators = new LinkedList<Iterator<? extends AbstractEdge>>() {{
+        add(mCEdgeList.iterator());
+        add(mIEdgeList.iterator());
+        add(mPEdgeList.iterator());
+        add(mFEdgeList.iterator());
+      }};
+      dEdge = mDEdge;
     }
 
     @Override
-    public Iterator<AbstractEdge> iterator() {
-      return new EdgeIterator();
+    public boolean hasNext() {
+      while (! iterators.isEmpty() && ! iterators.getFirst().hasNext()) {
+        iterators.removeFirst();
+      }
+      return ! iterators.isEmpty() || dEdge != null;
+    }
+
+    @Override
+    public AbstractEdge next() {
+      if (! hasNext()) throw new IllegalStateException("No next Element");
+      if (iterators.isEmpty()) {
+        AbstractEdge e = dEdge;
+        dEdge = null;
+        return e;
+      }
+      return iterators.getFirst().next();
     }
   }
 
   public Iterable<AbstractEdge> getEdgeList() {
-    return new EdgeIterable();
+    return new Iterable<AbstractEdge>() {
+      @Override
+      public Iterator<AbstractEdge> iterator() {
+        return new EdgeIterator();
+      }
+    };
   }
 
   protected void establishTargetNodes() {
@@ -459,7 +453,6 @@ public class BasicNode  {
   @Override
   public int hashCode() {
     int result = 0;
-    result = 17 * Boolean.hashCode(mIsStartNode);
     result = 17 * Boolean.hashCode(mIsEndNode);
     result = 17 * Byte.hashCode(hasNone);
     result = 17 * Byte.hashCode(hasOne);
@@ -497,7 +490,6 @@ public class BasicNode  {
     // unfilled: mCEdgeList, mPEdgeList, mIEdgeList, mFEdgeList, mDEdge;
     mPosition = b.mPosition.deepCopy();
     // unfilled: mParentNode
-    mIsStartNode = b.mIsStartNode;
     mIsEndNode = b.mIsEndNode;
   }
 

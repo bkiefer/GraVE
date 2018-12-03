@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.vsm.model.flow.geom.ControlPoint;
 import de.dfki.vsm.model.flow.geom.EdgeArrow;
 
 /**
@@ -178,6 +179,13 @@ public abstract class AbstractEdge {
       logger.error("Error constructing edge: {}", ex);
     }
     return null;
+  }
+
+  public void translate(int deltaX, int deltaY) {
+    for (ControlPoint cp : mArrow.getPointList()) {
+      cp.setCtrlXPos(cp.getCtrlXPos() + deltaX);
+      cp.setCtrlYPos(cp.getCtrlYPos() + deltaY);
+    }
   }
 
 }

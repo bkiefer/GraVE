@@ -10,7 +10,7 @@ package de.dfki.vsm.editor.action;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpace;
 
 /**
  *
@@ -19,9 +19,9 @@ import de.dfki.vsm.editor.project.WorkSpacePanel;
 public class ShortestEdgeAction {
 
   private de.dfki.vsm.editor.Edge mGUIEdge = null;
-  private WorkSpacePanel mWorkSpace;
+  private WorkSpace mWorkSpace;
 
-  public ShortestEdgeAction(WorkSpacePanel workSpace, de.dfki.vsm.editor.Edge edge) {
+  public ShortestEdgeAction(WorkSpace workSpace, de.dfki.vsm.editor.Edge edge) {
     mWorkSpace = workSpace;
     mGUIEdge = edge;
   }
