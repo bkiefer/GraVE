@@ -60,7 +60,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
   public boolean mCSPSelected = false;
 
   // last dockpoints
-  public Point mLastTargetNodeDockPoint = null;
+  private Point mLastTargetNodeDockPoint = null;
 
   // edit panel
   private RSyntaxTextArea mEdgeTextArea = null;
@@ -171,7 +171,7 @@ public class Edge extends JComponent implements Observer, MouseListener {
   public void disconnect() {
     mSourceNode.disconnectEdge(this);
     if (isLoop()) {
-      mTargetNode.disconnectSelfPointingEdge(this);
+      mSourceNode.disconnectSelfPointingEdge(this);
     } else {
       mTargetNode.disconnectEdge(this);
     }
