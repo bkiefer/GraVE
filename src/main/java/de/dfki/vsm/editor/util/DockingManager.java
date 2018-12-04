@@ -6,9 +6,13 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.project.WorkSpace;
 
 /**
  * EdgeNodeDockingManager manages incoming and outgoing edges of a
@@ -18,6 +22,8 @@ import de.dfki.vsm.editor.Node;
  * @author Patrick Gebhard
  */
 public class DockingManager {
+
+  private static final Logger logger = LoggerFactory.getLogger(WorkSpace.class);
 
   private Node mGUINode = null;
   private Node.Type mNodeType = null;    // The type defines the location of the dock points
@@ -89,7 +95,7 @@ public class DockingManager {
     }
   }
 
-  public Point getNearestDockPoint(Edge e, Point p) {
+  public DockPoint getNearestDock(Edge e, Point p) {
     DockPoint rp = null;
     int lastXDist = -1;
     int lastYDist = -1;
@@ -114,69 +120,39 @@ public class DockingManager {
           lastYDist = actualYDist;
           rp = dp;
         }
-      } else {
-
-//              System.out.println("\tdock point (" + dp.mPos.x + "," +dp.mPos.y + ") is occupied!");
       }
     }
-
-    // mark DockPoint as used and store edge
     if (rp != null) {
-      rp.use();
-      mEdgeDockPoints.put(e, rp);
+      rp.use(); // mark DockPoint as used
     } else {
-
-      // System.out.println("Warning! No more docking points available! Edge will not connected!");
+      logger.error("No more docking points available! Edge will not connected!");
     }
+    return rp;
+  }
 
-    // return a new Point intance that can be altered
-    return (rp != null)
-            ? (Point) rp.mPos.clone()
-            : null;
+  public Point getNearestDockPoint(Edge e, Point p) {
+    DockPoint rp = getNearestDock(e, p);
+    // mark DockPoint for edge
+    if (rp != null) {
+      mEdgeDockPoints.put(e, rp);
+      // return a new Point instance that can be altered
+      return (Point) rp.mPos.clone();
+    }
+    return null;
   }
 
   /*
      * This method finds a dockpoint for edges that point to the same node
    */
   public Point getNearestSecondDockPoint(Edge e, Point p) {
-    DockPoint rp = null;
-    int lastXDist = -1;
-    int lastYDist = -1;
-    int actualXDist = -1;
-    int actualYDist = -1;
-
-    for (DockPoint dp : mDockPoints) {
-      if (!dp.mOccupied) {
-        actualXDist = Math.abs(p.x - dp.mPos.x);
-        actualYDist = Math.abs(p.y - dp.mPos.y);
-
-        // Store first free Dockpoint
-        if ((lastXDist == -1) && (lastYDist == -1)) {
-          lastXDist = actualXDist;
-          lastYDist = actualYDist;
-          rp = dp;
-        }
-
-        // Store nearest free DockPoint
-        if ((actualXDist + actualYDist) < (lastXDist + lastYDist)) {
-          lastXDist = actualXDist;
-          lastYDist = actualYDist;
-          rp = dp;
-        }
-      }
-    }
-
-    // mark DockPoint as used and store edge
+    DockPoint rp = getNearestDock(e, p);
+    // mark DockPoint for edge
     if (rp != null) {
-      rp.use();
       mEdgeSecondDockPoints.put(e, rp);
-    } else {
-
-      // System.out.println("Warning! No more docking points available! Edge will not connected!");
+      // return a new Point instance that can be altered
+      return (Point) rp.mPos.clone();
     }
-
-    // return a new Point intance that can be altered
-    return (rp == null) ? null : (Point) rp.mPos.clone();
+    return null;
 
   }
 
