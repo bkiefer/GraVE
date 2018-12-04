@@ -9,7 +9,6 @@ import java.awt.font.TextAttribute;
 import java.util.*;
 import java.util.List;
 
-import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -32,7 +31,7 @@ import de.dfki.vsm.util.evt.EventDispatcher;
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public final class Node extends JComponent implements Observer {
+public final class Node extends EditorComponent {
 
   // ToDO: move to workspace - just have a link here
   private StartSign mStartSign = null;
@@ -43,7 +42,7 @@ public final class Node extends JComponent implements Observer {
   private DockingManager mDockingManager = null;
 
   // interaction flags
-  public boolean mSelected = false;
+  private boolean mSelected = false;
   public boolean mPressed = false;
   public boolean mDragged = false;
 
@@ -179,6 +178,19 @@ public final class Node extends JComponent implements Observer {
 
   public boolean containsPoint(int x, int y) {
     return getBounds().contains(x, y);
+  }
+
+  public void setSelected() {
+    mSelected = true;
+    repaint(100);
+  }
+
+  /** Resets the node to its default visual behavior */
+  public void setDeselected() {
+    mSelected = false;
+    mPressed = false;
+    mDragged = false;
+    repaint(100);
   }
 
   public DockingManager getDockingManager() {
@@ -454,17 +466,7 @@ public final class Node extends JComponent implements Observer {
     return mDataNode.canAddEdge(e);
   }
 
-  /*
-     * Resets the node to its default visual behavior
-   */
-  public void setDeselected() {
-    mSelected = false;
-    mPressed = false;
-    mDragged = false;
-    repaint(100);
-  }
-
-    /**
+  /**
    *
    * TODO: ADD "CREATE XEDGE" FOR ALL LEGAL EDGES STARTING AT THIS NODE
    */
@@ -518,31 +520,24 @@ public final class Node extends JComponent implements Observer {
     item.addActionListener(action.getActionListener());
     pop.add(item);
 
-    pop.show(this, node.getX() + node.getWidth(), node.getY());
+    pop.show(this, node.getWidth(), 0);
   }
 
   public void mouseClicked(MouseEvent event) {
     mPressed = false;
     mSelected = true;
-    //Point loc = getLocation();
-    //Point clickLoc = event.getPoint();
-
-    // mLastMousePosition = new Point(clickLoc);
-    // save click location relavitvely to node postion
-    // mClickPosition.setLocation(clickLoc.x - loc.x, clickLoc.y - loc.y);
     repaint(100);
 
     // enter supernode, if it has been double clicked
     // TODO: move to workspace
-    if ((event.getButton() == MouseEvent.BUTTON1) && (event.getClickCount() == 2)) {
-      if (! isBasic) {
+    if (! isBasic && event.getButton() == MouseEvent.BUTTON1
+        && event.getClickCount() == 2) {
         mWorkSpace.increaseWorkSpaceLevel(this);
-      }
     }
 
-    // show contect menu
+    // show context menu
     // TODO: move to workspace
-    if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
+    if (event.getButton() == MouseEvent.BUTTON3 && event.getClickCount() == 1) {
       showContextMenu(event, this);
     }
 
@@ -552,24 +547,8 @@ public final class Node extends JComponent implements Observer {
   }
 
   public void mousePressed(MouseEvent event) {
-    mouseClicked(event);
-    /*
+    //mouseClicked(event);
     mPressed = true;
-    mSelected = true;
-
-    //Point loc = getLocation();
-    //Point clickLoc = event.getPoint();
-
-    // mLastMousePosition =                new Point(clickLoc);
-    // save click location relavitvely to node postion
-    // mClickPosition.setLocation(clickLoc.x - loc.x, clickLoc.y - loc.y);
-    repaint(100);
-
-
-    // show contect menu
-    if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
-      showContextMenu(event, this);
-    }*/
   }
 
   public void mouseReleased(MouseEvent e) {
@@ -689,5 +668,13 @@ public final class Node extends JComponent implements Observer {
                 + lines.length * fontMetrics.getHeight());
       }
     }
+  }
+
+  @Override
+  public void mouseEntered(MouseEvent e) {
+  }
+
+  @Override
+  public void mouseExited(MouseEvent e) {
   }
 }

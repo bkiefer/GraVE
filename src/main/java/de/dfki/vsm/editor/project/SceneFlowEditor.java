@@ -217,11 +217,6 @@ public final class SceneFlowEditor extends JPanel {
   }
 
   /**
-   *
-   *
-   *
-   *
-   *
    */
   public void toggleElementEditor() {
     if (mEditorProject.getEditorConfig().sSHOW_ELEMENTS) {

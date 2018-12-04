@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -35,7 +34,7 @@ import de.dfki.vsm.util.evt.EventDispatcher;
  * @author Gregor Mehlmann
  */
 @SuppressWarnings("serial")
-public class Edge extends JComponent implements Observer, MouseListener {
+public class Edge extends EditorComponent implements MouseListener {
 
   private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
 
@@ -303,6 +302,9 @@ public class Edge extends JComponent implements Observer, MouseListener {
       }
     }
     EditorInstance.getInstance().refresh();
+  }
+
+  public void setSelected() {
   }
 
   public void setDeselected() {

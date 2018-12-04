@@ -12,7 +12,6 @@ import javax.swing.*;
 
 import de.dfki.vsm.editor.action.RemoveCommentAction;
 import de.dfki.vsm.editor.project.WorkSpace;
-import de.dfki.vsm.editor.project.WorkSpacePanel;
 import de.dfki.vsm.model.flow.CommentBadge;
 import de.dfki.vsm.model.flow.geom.Boundary;
 import de.dfki.vsm.model.project.EditorConfig;
@@ -23,8 +22,8 @@ import de.dfki.vsm.util.ios.ResourceLoader;
  * @author Gregor Mehlmann
  */
 @SuppressWarnings("serial")
-public class Comment extends JComponent
-implements Observer, MouseListener, MouseMotionListener {
+public class Comment extends EditorComponent
+implements MouseListener, MouseMotionListener {
 
   private JEditorPane mTextEditor = null;
   private JLabel mTextLabel = null;
@@ -299,9 +298,9 @@ implements Observer, MouseListener, MouseMotionListener {
   public void mouseMoved(MouseEvent e) {
   }
 
-  /*
-     * Resets the comment to its default visual behavior
-   */
+  public void setSelected(){};
+
+  /** Resets the comment to its default visual behavior */
   public void setDeselected() {
 
     // DEBUG System.out.println("Comment Deselected!");

@@ -3,7 +3,11 @@ package de.dfki.vsm.editor;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.Observer;
+import java.util.Arrays;
+import java.util.Comparator;
+
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -12,18 +16,13 @@ import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.evt.EventListener;
-import java.util.Arrays;
-import java.util.Comparator;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public class CmdBadge extends RSyntaxTextArea {
+public class CmdBadge extends RSyntaxTextArea implements Selectable {
 
   //
   private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
@@ -58,13 +57,11 @@ public class CmdBadge extends RSyntaxTextArea {
 
     addFocusListener(new FocusListener() {
       public void focusGained(FocusEvent e) {
-        setBackground(boxActiveColour);
-        mDispatcher.convey(new ElementSelectedEvent(mNode));
+        setSelected();
       }
 
       public void focusLost(FocusEvent e) {
-        setBackground(new Color(175, 175, 175, 100));
-        endEditMode();
+        setDeselected();
       }
     });
     getDocument().addDocumentListener(new DocumentListener() {
@@ -91,10 +88,15 @@ public class CmdBadge extends RSyntaxTextArea {
     update();
   }
 
-  /*
-   * Resets badge to its default visual behavior
-   */
-  public synchronized void endEditMode() {
+  @Override
+  public void setSelected() {
+    setBackground(boxActiveColour);
+    mDispatcher.convey(new ElementSelectedEvent(mNode));
+  }
+
+  @Override
+  public synchronized void setDeselected() {
+    setBackground(new Color(175, 175, 175, 100));
     mNode.getDataNode().setCmd(getText());
     mDispatcher.convey(new ProjectChangedEvent(this));
     mDispatcher.convey(new ElementSelectedEvent(mNode));
@@ -157,4 +159,5 @@ public class CmdBadge extends RSyntaxTextArea {
   public int hashCode() {
     return getText().hashCode();
   }
+
 }

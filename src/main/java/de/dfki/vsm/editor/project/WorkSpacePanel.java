@@ -1,5 +1,4 @@
 package de.dfki.vsm.editor.project;
-import static de.dfki.vsm.Preferences.*;
 
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -41,9 +40,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   private Comment mSelectedComment = null;
   private CmdBadge mSelectedCmdBadge = null;
   private Rectangle2D.Double mAreaSelection = null;
-  private boolean mDoAreaAction = false;
   private boolean mDoAreaSelection = false;
-  private Rectangle2D.Double mDrawArea = null;
   protected Set<Node> mSelectedNodes = new HashSet<>();
 
   private AbstractEdge mEdgeInProgress = null;
@@ -67,7 +64,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     initDnDSupport();
     mSelectedEdge = null;
     mSelectedComment = null;
-    mDrawArea = new Rectangle2D.Double();
   }
 
   /** Inhibit mouse actions for a while */
@@ -98,7 +94,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
         if (!mSelectedNodes.isEmpty()) {
           new RemoveNodesAction(WorkSpacePanel.this, mSelectedNodes, false).run();
-          deselectAllNodes();
         }
 
         if (mSelectedComment != null) {
@@ -107,6 +102,16 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         deselectAll();
       }
     });
+  }
+
+  /** If there's a node in the set under p, return it, otherwise null */
+  private Node findNodeAtPoint(Iterable<Node> nodes, Point p) {
+    for (Node node : nodes) {
+      if (node.containsPoint(p.x, p.y)) {
+        return node;
+      }
+    }
+    return null;
   }
 
   /**
@@ -132,18 +137,15 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
         if (data instanceof Comment) {
           dtde.acceptDrag(dtde.getDropAction());
-
-          // System.err.println("Accept Drag over");
         }
 
         if (data instanceof AbstractEdge) {
           Point pos = dtde.getLocation();
           dtde.acceptDrag(dtde.getDropAction());
           setMessageLabelText("Drag edge on a node to select edge source");
-          for (Node node : getNodes()) {
-            if (node.containsPoint(pos.x, pos.y) && !node.isEdgeAllowed((AbstractEdge)data)) {
-              setMessageLabelText("Edge is not allowed at this node");
-            }
+          Node node = findNodeAtPoint(getNodes(), pos);
+          if (node != null && ! node.isEdgeAllowed((AbstractEdge)data)) {
+            setMessageLabelText("Edge is not allowed at this node");
           }
         }
       }
@@ -156,33 +158,22 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       @Override
       public void drop(DropTargetDropEvent dtde) {
         setMessageLabelText("");
-
         try {
-
           // Get the data of the transferable
-          Object data
-                  = dtde.getTransferable().getTransferData(new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType));
+          Object data = dtde.getTransferable().getTransferData(
+              new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType));
 
           if (data instanceof Node.Type) {
             new CreateNodeAction(WorkSpacePanel.this, dtde.getLocation(), (Node.Type) data).run();
-
-            // revalidate();
-            // repaint(100);
             dtde.acceptDrop(mAcceptableActions);
             dtde.getDropTargetContext().dropComplete(true);
           } else if (data instanceof AbstractEdge) {
             AbstractEdge e = AbstractEdge.getNewEdge((AbstractEdge)data);
-            createNewEdgeSelectSourceNode(e, dtde.getLocation().x, dtde.getLocation().y);
-
-            // revalidate();
-            // repaint(100);
+            createNewEdgeSelectSourceNode(e, dtde.getLocation());
             dtde.acceptDrop(mAcceptableActions);
             dtde.getDropTargetContext().dropComplete(true);
           } else if (data instanceof Comment) {
             new CreateCommentAction(WorkSpacePanel.this, dtde.getLocation()).run();
-
-            // revalidate();
-            // repaint(100);
             dtde.acceptDrop(mAcceptableActions);
             dtde.getDropTargetContext().dropComplete(true);
           } else {
@@ -219,7 +210,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     }
 
     if ((mSelectedCmdBadge != null) && (!mSelectedCmdBadge.equals(comp)) ) {
-      mSelectedCmdBadge.endEditMode();
+      mSelectedCmdBadge.setDeselected();
       mSelectedCmdBadge = null;
     }
 
@@ -230,7 +221,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         n.setDeselected();
       }
     }
-
 
     if ((mSelectedEdge != null) && (!mSelectedEdge.equals(comp))) {
       mSelectedEdge.setDeselected();
@@ -244,6 +234,48 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
    */
   private void deselectAll() {
     deselectAllOtherComponents(null);
+  }
+
+
+  private void selectComponent(EditorComponent compo, MouseEvent event) {
+    deselectAll();
+    if (compo == null) return;
+    if (compo instanceof Edge) {
+      mSelectedEdge = (Edge)compo;
+    } else if (compo instanceof Comment) {
+      mSelectedComment = (Comment)compo;
+    }
+    compo.mouseClicked(event);
+    compo.setSelected();
+  }
+
+  private void selectNode(Node n, MouseEvent event) {
+    mSelectedNodes.add(n);
+    n.setSelected();
+    n.mouseClicked(event);
+  }
+
+  private void deselectNode(Node n, MouseEvent event) {
+    mSelectedNodes.remove(n);
+    n.setDeselected();
+  }
+
+  private void selectSingleNode(Node n, MouseEvent event) {
+    mDoAreaSelection = false;
+    deselectAllNodes();
+    selectNode(n, event);
+  }
+
+  /** Select all nodes intersecting the given area */
+  private void selectNodesInArea(Rectangle2D area) {
+    deselectAllNodes();
+    for (Node node : getNodes()) {
+      // add node only if it is not a history node
+      if (node.getBounds().intersects(area)) {
+        node.setSelected();
+        mSelectedNodes.add(node);
+      }
+    }
   }
 
   protected void clearCurrentWorkspace() {
@@ -272,7 +304,9 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     action.run();
   }
 
-  /** Paste nodes in the upper left corner */
+  /** To provide the functionality to the global menu bar:
+   *  Paste nodes in the upper left corner
+   */
   public void pasteNodesFromClipboard() {
     PasteNodesAction action = new PasteNodesAction(this, new Point(0, 0));
     action.run();
@@ -306,9 +340,11 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     pop.show(this, node.getX() + node.getWidth(), node.getY());
   }
 
-
-  private void createNewEdgeSelectSourceNode(AbstractEdge edge, int x, int y) {
-    Node sourceNode = findNode(x, y);
+  /**
+   * this function starts the creation of a new edge.
+   */
+  private void createNewEdgeSelectSourceNode(AbstractEdge edge, Point p) {
+    Node sourceNode = findNodeAtPoint(getNodes(), p);
 
     // Check if the type of this edge is allowed to be connected to the
     // source c. If the edge is not allowed then we exit the method.
@@ -316,7 +352,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       return;
     }
 
-    mSelectNodePoint = new Point(x, y);
+    mSelectNodePoint = new Point(p);
 
     // Set the current edge in process, the cien colegaurrent source
     // c and enter the target c selection mode --> edge creation starts
@@ -329,16 +365,15 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   /**
    * At the end of an edge drag, this function is called to create a new edge.
    */
-  private void createNewEdgeSelectTargetNode(int x, int y) {
+  private void createNewEdgeSelectTargetNode(Point p) {
     setMessageLabelText("");
 
     // Try to find the c on which the mouse was clicked. If we do not find
     // such a c then the mouse was clicked on the drawing area of the workspace
     // and we exit the method without creating a new edge.
-    Node targetNode = findNode(x, y);
+    Node targetNode = findNodeAtPoint(getNodes(), p);
     if (targetNode != null) {
-      new CreateEdgeAction(this, mEdgeSourceNode, targetNode,
-          mEdgeInProgress).run();
+      new CreateEdgeAction(this, mEdgeSourceNode, targetNode, mEdgeInProgress).run();
     }
 
     // edge creation ends
@@ -354,123 +389,85 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     mLastMousePosition = event.getPoint();
     launchWorkSpaceSelectedEvent();
 
+    // TODO: undisputed
     if (mEdgeSourceNode != null) {
       try {
-        createNewEdgeSelectTargetNode(event.getX(), event.getY());
+        createNewEdgeSelectTargetNode(event.getPoint());
       } catch (Exception e) {
         e.printStackTrace(System.out);
       }
-
       return;
     }
 
-    // handle mouse click for area selections
+    // handle mouse click for node selections: undisputed
     if (!mSelectedNodes.isEmpty()) {
-      //if (mSelectedNodes.size() > 1) {
-        mDoAreaAction = false;
-
-        Node clickedNode = null;
-
-        for (Node node : mSelectedNodes) {
-          if (node.containsPoint(event.getX(), event.getY())) {
-            clickedNode = node;
-            mDoAreaAction = true;
-          }
-        }
-
-        if (!mDoAreaAction) {
-          mDoAreaSelection = false;
-          deselectAllNodes();
-        } else {
-
-          // show contect menu
-          if (mSelectedNodes.size() > 1) {
-            if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
+      Node clickedNode = findNodeAtPoint(mSelectedNodes, event.getPoint());
+      if (clickedNode != null) {
+        // show contect menu on right click
+        if (mSelectedNodes.size() > 1) {
+          if (event.getClickCount() == 1) {
+            if (event.getButton() == MouseEvent.BUTTON3) {
               multipleNodesContextMenu(event, clickedNode);
+            } else if (event.getButton() == MouseEvent.BUTTON1) {
+              if ((event.getModifiers() & MouseEvent.CTRL_MASK) != 0) {
+                deselectNode(clickedNode, event);
+              } else {
+                selectSingleNode(clickedNode, event);
+              }
             }
-
-            return;
-          } else {
-            // mSelectedNode = mSelectedNodes.iterator().next();
-            mDoAreaSelection = false;
-            deselectAllNodes();
           }
+        } else {
+          selectSingleNode(clickedNode, event);
         }
-      //}
-    } else {
-      mDoAreaAction = false;
+        return;
+      }
     }
 
     // if there is a specific selected edge use it - much faster than checking all edges
     if (mSelectedEdge != null) {
       if (mSelectedEdge.containsPoint(new Point(event.getX(), event.getY()))) {
-
-        // System.out.println(mSelectedEdge.getType() + " clicked - (re) selected");
         mSelectedEdge.mouseClicked(event);
-
         return;
       } else {
-
-        // System.out.println(mSelectedEdge.getType() + " not clicked - deselected");
         mSelectedEdge.setDeselected();
         mSelectedEdge = null;
-      }
-    }
-
-    // if there is a specific selected c use it - much faster than checking all nodes
-    if (mSelectedNodes.size() == 1) {
-      if (mSelectedNodes.iterator().next().containsPoint(event.getX(), event.getY())) {
-
-        // DEBUG System.out.println(mSelectedNode.getDataNode().getName() + " clicked - (re) selected");
-        // tell c that it has been clicked
-        mSelectedNodes.iterator().next().mouseClicked(event);
-
-        return;
       }
     }
 
     // if there is a specific selected comment use it - much faster than checking all nodes
     if (mSelectedComment != null) {
       if (mSelectedComment.containsPoint(event.getPoint())) {
-
-        // DEBUG System.out.println(mSelectedNode.getDataNode().getName() + " clicked - (re) selected");
         // tell c that it has been clicked
         mSelectedComment.mouseClicked(event);
-
         return;
       } else {
-
-        // System.out.println(mSelectedNode.getDataNode().getName() + " not clicked - deselected");
         mSelectedComment.setDeselected();
         mSelectedComment = null;
       }
     }
 
     if (!mIgnoreMouseInput) {
-      boolean entityClicked = false;
-
-      // look if mouse click was on a c
-      for (Node node : getNodes()) {
-        if (node.containsPoint(event.getX(), event.getY())) {
+      // look if mouse click was on a node
+      Node node = findNodeAtPoint(getNodes(), event.getPoint());
+      if (node != null) {
+        // Ctrl-Click with area selection?
+        if (event.getButton() == MouseEvent.BUTTON1
+            && (event.getModifiers() & MouseEvent.CTRL_MASK) != 0) {
+          // Yes: add the clicked node to the selected nodes
           mSelectedNodes.add(node);
-
-          // DEBUG System.out.println(mSelectedNode.getDataNode().getName() + " clicked - found and selected");
+          node.setSelected();
           node.mouseClicked(event);
-          entityClicked = true;
-
-          return;
+        } else {
+          selectSingleNode(node, event);
         }
+        return;
       }
 
       // look if mouse click was on a edge
       for (Edge edge : getEdges()) {
         if (edge.containsPoint(new Point(event.getX(), event.getY()))) {
           mSelectedEdge = edge;
-
-          // System.out.println(mSelectedEdge.getType() + " clicked - found and selected");
           mSelectedEdge.mouseClicked(event);
-          entityClicked = true;
-
           return;
         }
       }
@@ -480,14 +477,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         if (comment.containsPoint(event.getPoint())) {
           mSelectedComment = comment;
           mSelectedComment.mouseClicked(event);
-          entityClicked = true;
-
           return;
         }
-      }
-
-      if (!entityClicked) {
-        launchElementSelectedEvent(null);
       }
     } else {
 
@@ -496,6 +487,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     }
 
     deselectAllNodes();
+    mAreaSelection = null;
     if (!hasFocus()) {
       requestFocus();
     }
@@ -529,7 +521,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     pop.show(this, eventX, eventY);
   }
 
-    /**
+  /**
    *
    *
    */
@@ -541,134 +533,43 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       mAreaSelection = new Rectangle2D.Double(event.getX(), event.getY(), 0, 0);
     }
 
-    // System.out.println("mouse pressed");
-    if (mEdgeSourceNode != null) {
-      try {
-        createNewEdgeSelectTargetNode(event.getX(), event.getY());
-      } catch (Exception e) {
-        e.printStackTrace(System.out);
-      }
-
-      return;
-    }
-
     /** handle mouse pressed for area selections */
     if (!mSelectedNodes.isEmpty()) {
-      if (mSelectedNodes.size() > 1) {
-        mDoAreaAction = false;
-
-        Node clickedNode = null;
-
-        for (Node node : mSelectedNodes) {
-          if (node.containsPoint(event.getX(), event.getY())) {
-            clickedNode = node;
-            mDoAreaAction = true;
-          }
-        }
-
-        if (!mDoAreaAction) {
-          mDoAreaSelection = false;
-          deselectAllNodes();
-        } else {
-
-          // show contect menu
-          if (mSelectedNodes.size() > 1) {
-            if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
-              multipleNodesContextMenu(event, clickedNode);
-            }
-
-            return;
-          } else {
-            //mSelectedNode = (Node) (mSelectedNodes.toArray())[0];
-            mDoAreaSelection = false;
-            deselectAllNodes();
-          }
-        }
-      } else {
-        Node mSelectedNode = mSelectedNodes.iterator().next();
-        if (mSelectedNode.containsPoint(event.getX(), event.getY())) {
-
-          // System.out.println(mSelectedNode.getDataNode().getName() + " pressed");
-          // tell c that it has been clicked
-          mSelectedNode.mousePressed(event);
-
-          return;
-        } else {
-
-          // System.out.println(mSelectedNode.getDataNode().getName() + " not pressed - deselected");
-          mSelectedNode.setDeselected();
-          mSelectedNode = null;
-        }
-      }
+      Node clickedNode = findNodeAtPoint(mSelectedNodes, event.getPoint());
+      mDoAreaSelection = false;
+      if (clickedNode != null) return;
     }
+
 
     // if there is a specific selected edge use it - much faster than checking all edges
     if (mSelectedEdge != null) {
-      if (mSelectedEdge.containsPoint(new Point(event.getX(), event.getY()))) {
-
-        // System.out.println(mSelectedEdge.getType() + " pressed - (re) selected");
+      if (mSelectedEdge.containsPoint(event.getPoint())) {
         mSelectedEdge.mousePressed(event);
-
         return;
       } else {
-
-        // System.out.println(mSelectedEdge.getType() + " not pressed - deselected");
         mSelectedEdge.setDeselected();
         mSelectedEdge = null;
       }
     }
 
-    // if there is a specific selected c use it - much faster than checking all nodes
-    //if (mSelectedNode != null) {
-    /**
-
-    //}**/
-
     // if there is a specific selected comment use it - much faster than checking all nodes
     if (mSelectedComment != null) {
       if (mSelectedComment.containsPoint(event.getPoint())) {
-
-        // System.out.println(mSelectedNode.getDataNode().getName() + " pressed");
-        // tell c that it has been clicked
         mSelectedComment.mousePressed(event);
-
         return;
       } else {
-
-        // System.out.println(mSelectedNode.getDataNode().getName() + " not pressed - deselected");
         mSelectedComment.setDeselected();
         mSelectedComment = null;
       }
     }
 
-
-    //
-    // Fall back cases - lookup
-    //
-    // look if mouse pressed (without a click) was on a c
-    for (Node node : getNodes()) {
-      if (node.containsPoint(event.getX(), event.getY())) {
-        deselectAllNodes();
-        mSelectedNodes.add(node);
-        this.requestFocusInWindow();
-        deselectAllOtherComponents(node);
-
-        // System.out.println(mSelectedNode.getDataNode().getName() + " pressed - found and pressed");
-        node.mousePressed(event);
-
-        return;
-      }
-    }
-
     // look if mouse click was on a edge
     for (Edge edge : getEdges()) {
-      if (edge.containsPoint(new Point(event.getX(), event.getY()))) {
+      if (edge.containsPoint(event.getPoint())) {
         mSelectedEdge = edge;
         deselectAllOtherComponents(mSelectedEdge);
         this.requestFocusInWindow();
-        // System.out.println(mSelectedEdge.getType() + " pressed - found and selected");
         mSelectedEdge.mousePressed(event);
-
         return;
       }
     }
@@ -679,15 +580,15 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         mSelectedComment = comment;
         deselectAllOtherComponents(mSelectedComment);
         mSelectedComment.mousePressed(event);
-
         return;
       }
     }
 
-    deselectAllNodes();
+    //deselectAllNodes();
 
     // enable global context menu for clipbaord actions
-    if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
+    if ((event.getButton() == MouseEvent.BUTTON3)
+        && (event.getClickCount() == 1)) {
       globalContextMenu(event);
       return;
     }
@@ -702,24 +603,20 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
   /**
    *
-   *
    */
   @Override
   public void mouseReleased(MouseEvent event) {
     launchProjectChangedEvent();
     straightenAllOutOfBoundEdges();
 
-    if (mDoAreaSelection) {
-      mDoAreaSelection = false;
+    if (mAreaSelection != null) {
       mAreaSelection = null;
       repaint(100);
-
-      return;
     }
 
     if (mEdgeSourceNode != null) {
       try {
-        createNewEdgeSelectTargetNode(event.getX(), event.getY());
+        createNewEdgeSelectTargetNode(event.getPoint());
       } catch (Exception e) {
         e.printStackTrace(System.out);
       }
@@ -778,30 +675,10 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     }
   }
 
-
   /**
    *
    *
    */
-  private Set<Node> selectNodesInArea(Rectangle2D area) {
-    mSelectedNodes.clear();
-
-    for (Node node : getNodes()) {
-      // add node only if it is not a history node
-      if (node.getBounds().intersects(area)) {
-        node.mSelected = true;
-        mSelectedNodes.add(node);
-      } else {
-        node.mSelected = false;
-      }
-    }
-    return mSelectedNodes;
-  }
-
-  /**
-  *
-  *
-  */
   private void dragComment(Comment comment, MouseEvent event, Point moveVec) {
     boolean validDragging = true;
     Point commentPos = comment.getLocation();
@@ -848,7 +725,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   public void mouseDragged(MouseEvent event) {
     if (mEdgeSourceNode != null) {
       try {
-        createNewEdgeSelectTargetNode(event.getX(), event.getY());
+        createNewEdgeSelectTargetNode(event.getPoint());
         mSelectedEdge = null;
       } catch (Exception e) {
         e.printStackTrace(System.out);
@@ -919,27 +796,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       return;
     }
 
-    /*
-    // if there is a specific selected c use it - much faster than checking all nodes
-    if (mSelectedNodes.size() == 1) {
-      Node mSelectedNode = mSelectedNodes.iterator().next();
-      if (mSelectedNode.mPressed) {
-
-        // compute movement trajectory vectors
-        Point currentMousePosition = event.getPoint();
-        Point mouseMoveVector = new Point(currentMousePosition.x - mLastMousePosition.x,
-                currentMousePosition.y - mLastMousePosition.y);
-
-        mLastMousePosition = new Point(currentMousePosition.x, currentMousePosition.y);
-        dragNode(mSelectedNode, event, mouseMoveVector);
-        checkChangesOnWorkspace();
-
-        return;
-      } else {
-        deselectAllNodes();
-      }
-    }*/
-
     // if there is a specific selected comment use it
     if (mSelectedComment != null) {
       Point currentMousePosition = event.getPoint();
@@ -967,7 +823,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
         return;
       } else {
-
         // System.out.println(mSelectedNode.getDataNode().getName() + " not dragged - deselected");
         mSelectedComment = null;
       }
@@ -980,19 +835,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     mAreaSelection.x = Math.min(mLastMousePosition.x, event.getX());
     mAreaSelection.y = Math.min(mLastMousePosition.y, event.getY());
     selectNodesInArea(mAreaSelection);
-    logger.error("Area:" + mAreaSelection);
-    logger.error("Nodes:" + mSelectedNodes.size());
-    // comment this to avoid bug but eliminate selection (??)
-    //repaint(100);
-  }
-
-  private Node findNode(int x, int y) {
-    for (Node node : getNodes()) {
-      if (node.containsPoint(x, y)) {
-        return node;
-      }
-    }
-    return null;
   }
 
   /**
@@ -1005,15 +847,13 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       mSelectNodePoint = event.getPoint();
       // TODO: MAYBE REACTIVATE
       /*
-      Node n = findNode(mSelectNodePoint.x, mSelectNodePoint.y);
+      Node n = findNodeAtPoint(getNodes(), mSelectNodePoint);
       if (n != null) {
          node.highlightNode();
       }
       */
     }
-
     repaint(100);
-
     return;
   }
 
@@ -1046,20 +886,11 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       }
     }
 
-    if (mDoAreaSelection) {
-      g2d.setColor(Color.blue);
-      g2d.setPaint(Color.BLACK);
-      g2d.setBackground(Color.LIGHT_GRAY);
+    if (mAreaSelection != null) {
+      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       g2d.setStroke(new BasicStroke(3.0f));
-      mDrawArea.x = (mAreaSelection.width > 0)
-              ? mAreaSelection.x
-              : mAreaSelection.x + mAreaSelection.width;
-      mDrawArea.y = (mAreaSelection.height > 0)
-              ? mAreaSelection.y
-              : mAreaSelection.y + mAreaSelection.height;
-      mDrawArea.width = Math.abs(mAreaSelection.width);
-      mDrawArea.height = Math.abs(mAreaSelection.height);
-      g2d.draw(mDrawArea);
+      g2d.setColor(Color.LIGHT_GRAY);
+      g2d.draw(mAreaSelection);
     }
 
     // draw line between source node and current mouse position

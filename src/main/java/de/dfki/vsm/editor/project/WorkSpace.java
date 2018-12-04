@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -55,7 +56,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   // Elements to draw
   private final Set<Node> mNodeSet = new HashSet<>();
-  private final Set<Edge> mEdgeSet = new HashSet<>();
+  //private final Set<Edge> mEdgeSet = new HashSet<>();
   private final Set<Comment> mCmtSet = new HashSet<>();
 
   // Snap to grid support
@@ -197,8 +198,8 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     Node current;
     Iterator<Edge> edgeIt;
 
-    EdgeIterator() {
-      nodeIt = mNodeSet.iterator();
+    EdgeIterator(Iterable<Node> nodes) {
+      nodeIt = nodes.iterator();
       current = nodeIt.hasNext() ? nodeIt.next() : null;
       edgeIt = current == null ? null : current.getConnectedEdges().iterator();
     }
@@ -221,7 +222,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   public Iterable<Edge> getEdges() {
     return new Iterable<Edge>(){
       @Override
-      public Iterator<Edge> iterator() { return new EdgeIterator(); }
+      public Iterator<Edge> iterator() {
+        return new EdgeIterator(getNodes());
+      }
     };
   }
 
@@ -237,7 +240,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     // Clear the list of currently shown nodes and edges and
     // remove all components from the workspace.
     mNodeSet.clear();
-    mEdgeSet.clear();
     mCmtSet.clear();
     removeAll();
 
@@ -258,7 +260,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** Try to get all edges as straight as possible */
   public void straightenAllEdges() {
-    for (Edge edge : mEdgeSet) {
+    for (Edge edge : getEdges()) {
       edge.straightenEdge();
     }
     repaint(100);
@@ -266,7 +268,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** Try to find nice paths for all edges */
   public void normalizeAllEdges() {
-    for (Edge edge : mEdgeSet) {
+    for (Edge edge : getEdges()) {
       edge.rebuildEdgeNicely();
     }
     repaint(100);
@@ -455,14 +457,19 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** For a given set of nodes that are subnodes of the same SuperNode, compute
    *  all edge views that emerge from a node outside the set and end in a node
-   *  inside the set.
+   *  inside the set. nodes must be a subset of the current mNodeSet.
    *
    *  Only returns edges, no change in model or view
    */
-  private List<Edge> computeIncomingEdges(Collection<Node> nodes) {
-    return mEdgeSet.stream().filter(
-        (e) -> (!nodes.contains(e.getSourceNode()) &&
-            nodes.contains(e.getTargetNode()))).collect(Collectors.toList());
+  private Collection<Edge> computeIncomingEdges(Collection<Node> nodes) {
+    List<Edge> result = new ArrayList<>();
+    for(Edge e : getEdges()) {
+      if (!nodes.contains(e.getSourceNode()) &&
+          nodes.contains(e.getTargetNode())) {
+        result.add(e);
+      }
+    }
+    return result;
   }
 
   /** For a given set of nodes that are subnodes of the same SuperNode, compute
@@ -472,14 +479,19 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *  Only returns edges, no change in model or view
    */
   private List<Edge> computeInnerEdges(Collection<Node> nodes) {
-    return mEdgeSet.stream().filter(
-        (e) -> (nodes.contains(e.getSourceNode()) &&
-            nodes.contains(e.getTargetNode()))).collect(Collectors.toList());
+    List<Edge> result = new ArrayList<>();
+    for(Iterator<Edge> it = new EdgeIterator(nodes); it.hasNext();) {
+      Edge e = it.next();
+      if (nodes.contains(e.getSourceNode()) &&
+          nodes.contains(e.getTargetNode())) {
+        result.add(e);
+      }
+    }
+    return result;
   }
 
   /** Removes view edge from workspace, no change in model */
   private void removeFromWorkSpace(Edge e) {
-    mEdgeSet.remove(e);
     // Free the docking points on source and target node
     e.disconnect();
     // remove from Panel
@@ -489,7 +501,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** Add edge to workspace, no change in model */
   private void addToWorkSpace(Edge e) {
-    mEdgeSet.add(e);
     // Connect the docking points on source and target node
     e.connect();
     // add to from Panel
@@ -743,7 +754,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
     // Remove all edges that start at a node outside the given set of
     // nodes, and end inside this set
-    List<Edge> incomingEdges = computeIncomingEdges(nodes);
+    Collection<Edge> incomingEdges = computeIncomingEdges(nodes);
     removeEdges(incomingEdges);
     List<Edge> emergingEdges = removeDisconnectedNodes(nodes);
     if (isCutOperation) {
