@@ -455,7 +455,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** For a given set of nodes that are subnodes of the same SuperNode, compute
    *  all edge views that emerge from a node outside the set and end in a node
-   *  inside the set
+   *  inside the set.
+   *
+   *  Only returns edges, no change in model or view
    */
   private List<Edge> computeIncomingEdges(Collection<Node> nodes) {
     return mEdgeSet.stream().filter(
@@ -466,6 +468,8 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** For a given set of nodes that are subnodes of the same SuperNode, compute
    *  all edge views that emerge from a node inside the set and end in a node
    *  inside the set
+   *
+   *  Only returns edges, no change in model or view
    */
   private List<Edge> computeInnerEdges(Collection<Node> nodes) {
     return mEdgeSet.stream().filter(
@@ -473,6 +477,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
             nodes.contains(e.getTargetNode()))).collect(Collectors.toList());
   }
 
+  /** Removes view edge from workspace, no change in model */
   private void removeFromWorkSpace(Edge e) {
     mEdgeSet.remove(e);
     // Free the docking points on source and target node
@@ -482,7 +487,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mObservable.deleteObserver(e);
   }
 
-  /** Add edge to workspace */
+  /** Add edge to workspace, no change in model */
   private void addToWorkSpace(Edge e) {
     mEdgeSet.add(e);
     // Connect the docking points on source and target node
@@ -492,6 +497,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mObservable.addObserver(e);
   }
 
+  /** Removes node view from workspace, no change in model */
   private void removeFromWorkSpace(Node n) {
     mNodeSet.remove(n);
     mGridManager.freeGridPosition(n.getLocation());
@@ -501,6 +507,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mObservable.deleteObserver(n);
   }
 
+  /** Add node view to workspace, no change in model */
   private void addToWorkSpace(Node n) {
     mNodeSet.add(n);
     //mGridManager.getNodeLocation(n.getLocation()); // ?
@@ -510,6 +517,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mObservable.addObserver(n);
   }
 
+  /** Remove comment view from workspace, AND from model */
   private void removeFromWorkSpace(Comment c) {
     mCmtSet.remove(c);
     super.remove(c);
@@ -526,13 +534,13 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   }
 
 
-  /** Remove the nodes in the given collection.
+  /** Remove the nodes in the given collection and all outgoing edges from these
+   *  nodes from the view as well as the model. The model edges stay unchanged
+   *  in the removed nodes.
+   *
    *  This is only legal if none of the selected nodes is a start node, and
    *  no edges are pointing into the node set from the outside. To achieve
    *  this in the general case, call removeIncomingEdges(nodes) first.
-   *
-   *  remove the nodes and all outgoing edges from these nodes from the view
-   *  and model graph.
    */
   private List<Edge> removeDisconnectedNodes(Iterable<Node> nodes) {
     // A list of edges starting at a node in nodes
@@ -583,9 +591,10 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   // actions for edges
   // ######################################################################
 
-  /** Add the given nodes and edges as is to the view and model. This is used
-   *  if re-inserted after a cut operation, or as part of an undo. The nodes
-   *  and edges are just added, without further ado.
+  /** Add the given nodes and edges of a disconnected subgraph of nodes as is
+   *  to the view and model. This is used if re-inserted after a cut operation,
+   *  or as part of an undo. The nodes and edges are just added, without further
+   *  modifications.
    *
    *  TODO: The nodes should be selected after the paste.
    */
@@ -600,7 +609,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     }
   }
 
-  /** Create a new edge view from the given data */
+  /** Complete the edge model, and create a new edge view from the given data */
   public Edge createEdge(AbstractEdge edge, Node source, Node target) {
     edge.setSourceNode(source.getDataNode());
     edge.setSourceUnid(source.getDataNode().getId());
@@ -609,7 +618,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     return new Edge(this, edge, source, target);
   }
 
-  /** Remove a set of edges, view AND model, in an undoable way */
+  /** Remove a set of edges, view AND model */
   public Collection<Edge> removeEdges(Collection<Edge> edges) {
     // remove these from the view AND the model (their source node), and store
     // the views for an UNDO
@@ -708,7 +717,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
         translateNodeViews(toAdd.getFirst(), mousePosition);
       }
       pasteNodesAndEdges(toAdd.getFirst(), toAdd.getSecond());
-      toAdd.getFirst();
+      return toAdd.getFirst();
     }
     // just add nodes and edges to the view and model as is: same positions,
     // etc.
