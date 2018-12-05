@@ -50,6 +50,9 @@ public final class Node extends EditorComponent {
   private boolean isBasic;
   private BasicNode mDataNode;
 
+  /** The list of outgoing edge views, representing the edges of the model */
+  private Set<Edge> mEdges = new HashSet<>();
+
   private CmdBadge mCmdBadge;
 
   //
@@ -355,6 +358,7 @@ public final class Node extends EditorComponent {
 
   /** Tells the node that an edge connects and that node is sourcenode */
   public Point connectAsSource(Edge edge, Point point) {
+    mEdges.add(edge);
     // get location of node
     Point loc = getLocation();
 
@@ -385,8 +389,9 @@ public final class Node extends EditorComponent {
     return dp;
   }
 
-
+  /** Disconnect the edge, we are its source node */
   public Point disconnectEdge(Edge e) {
+    mEdges.remove(e);
     Point relPos = mDockingManager.freeDockPoint(e);
     Point pos = getLocation();
     Point absLoc;
@@ -415,8 +420,8 @@ public final class Node extends EditorComponent {
     return c;
   }
 
-  public Set<Edge> getConnectedEdges() {
-    return mDockingManager.getConnectedEdges();
+  public Iterable<Edge> getConnectedEdges() {
+    return mEdges;
   }
 
   public Point getEdgeDockPoint(Edge e) {
