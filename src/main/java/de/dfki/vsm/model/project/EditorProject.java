@@ -120,7 +120,7 @@ public class EditorProject extends RunTimeProject {
     if (super.parse(mProjectFile.getPath())
         && loadEditorConfig(mProjectFile.getPath())) {
       // Set the initial hash code
-      mInitialHash = getHashCode();
+      mInitialHash = hashCode();
       // Return true if project is saved
       return true;
     } else {
@@ -160,7 +160,7 @@ public class EditorProject extends RunTimeProject {
     // Save the project data
     if (super.write(mProjectFile) && mEditorConfig.save(mProjectFile)) {
       // Reset the initial hash code here
-      mInitialHash = getHashCode();
+      mInitialHash = hashCode();
       // Return true when project is saved
       return true;
     } else {
@@ -196,6 +196,14 @@ public class EditorProject extends RunTimeProject {
   public final boolean hasChanged() {
 
     // TODO: PG: DEBUG: mLogger.failure(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> HAS CHANGED was called! " + mInitialHash + " vs " + getHashCode());
-    return (mInitialHash != getHashCode());
+    return (mInitialHash != hashCode());
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = mEditorConfig != null? 79 * hash + this.mEditorConfig.hashCode() : hash;
+    hash = mProjectFile != null? 79 * hash + this.mProjectFile.hashCode() : hash;
+    return hash;
   }
 }

@@ -264,4 +264,16 @@ public class SuperNode extends BasicNode {
     return copy;
   }
 
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 53 * hash + this.mCommentList.hashCode();
+    hash = 53 * hash + this.mNodeList.hashCode();
+    hash = 53 * hash + this.mSuperNodeList.hashCode();
+    hash = 53 * hash + this.mStartNodeMap.hashCode();
+    hash = 53 * hash + Boolean.hashCode(this.mHideLocalVarBadge);
+    hash = 53 * hash + Boolean.hashCode(this.mHideGlobalVarBadge);
+    return hash;
+  }
+
 }

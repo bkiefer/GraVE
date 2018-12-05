@@ -39,8 +39,9 @@ public class RandomEdge extends AbstractEdge {
     return result;
   }
 
-  public int getHashCode() {
-    return super.hashCode() + 73;
+  @Override
+  public int hashCode() {
+    return super.hashCode() * 31 + Integer.hashCode(mProbability);
   }
 
   public boolean equals(Object o) {

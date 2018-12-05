@@ -259,13 +259,14 @@ public class RunTimeProject {
     return true;
   }
 
-  // Get the hash code of the project
-  protected synchronized int getHashCode() {
-    int hashCode = ((mSceneFlow == null) ? 0 : mSceneFlow.hashCode());
-    // TODO: Why Is The Hash Computed
-    // Only Based On The SceneFlow's
-    // Hash And Not Based Also On The
-    // Other Project Data Structures?
-    return hashCode;
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 59 * hash + (this.isNewProject ? 1 : 0);
+    hash = 59 * hash + this.mProjectPath.hashCode();
+    hash = mSceneFlow != null? 59 * hash + this.mSceneFlow.hashCode() : hash;
+    hash = mProjectConfig != null? 59 * hash + this.mProjectConfig.hashCode() : hash;
+    return hash;
   }
+
 }

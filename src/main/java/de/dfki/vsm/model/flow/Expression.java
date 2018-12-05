@@ -34,4 +34,9 @@ public class Expression implements Copyable {
     result.content = content;
     return result;
   }
+
+  @Override
+  public int hashCode() {
+    return content != null? this.content.hashCode() : 31;
+  }
 }

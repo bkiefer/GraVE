@@ -101,15 +101,12 @@ public abstract class AbstractEdge {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((mArrow == null) ? 0 : mArrow.hashCode());
-    result = prime * result + ((mCmdList == null) ? 0 : mCmdList.hashCode());
-    result = prime * result
-        + ((mSourceUnid == null) ? 0 : mSourceUnid.hashCode());
-    result = prime * result
-        + ((mTargetUnid == null) ? 0 : mTargetUnid.hashCode());
-    return result;
+    int hash = 3;
+    hash = mTargetUnid != null? 31 * hash + this.mTargetUnid.hashCode() : hash;
+    hash = mSourceUnid != null? 31 * hash + this.mSourceUnid.hashCode() : hash;
+    hash = mArrow != null? 31 * hash + this.mArrow.hashCode() : hash;
+    hash = mCmdList != null? 31 * hash + this.mCmdList.hashCode() : hash;
+    return hash;
   }
 
   @Override

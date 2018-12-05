@@ -65,6 +65,14 @@ public class TimeoutEdge extends AbstractEdge {
     return super.hashCode() + 67;
   }
 
+  @Override
+  public int hashCode() {
+    int hash = super.hashCode();
+    hash = 59 * hash + mExpression.hashCode();
+    hash = 59 * hash + Long.hashCode(mTimeout);
+    return hash;
+  }
+
   public boolean equals(Object o) {
     return o.getClass().equals(this.getClass())
         && getTimeout() == ((TimeoutEdge)o).getTimeout()

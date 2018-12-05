@@ -40,8 +40,11 @@ public class InterruptEdge extends AbstractEdge {
     return result;
   }
 
-  public int getHashCode() {
-    return super.hashCode() + 71;
+  @Override
+  public int hashCode() {
+    int hash = super.hashCode() + 71;
+    hash = 59 * hash + mCondition.hashCode();
+    return hash;
   }
 
   public boolean equals(Object o) {
