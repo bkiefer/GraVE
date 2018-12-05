@@ -66,7 +66,6 @@ public abstract class AbstractEdge {
   public final void connect(final BasicNode source, final BasicNode target) {
     mSourceNode = source;
     mSourceUnid = source.getId();
-    source.addEdge(this);
     mTargetNode = target;
     mTargetUnid = target.getId();
   }
@@ -163,6 +162,7 @@ public abstract class AbstractEdge {
     BasicNode sourceCopy = orig2copy.get(mSourceNode);
     BasicNode targetCopy = orig2copy.get(mTargetNode);
     edgeCopy.connect(sourceCopy, targetCopy);
+    sourceCopy.addEdge(edgeCopy);
     edgeCopy.mArrow = mArrow.deepCopy();
     edgeCopy.mCmdList = mCmdList;
     return edgeCopy;
