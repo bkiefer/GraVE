@@ -28,6 +28,9 @@ import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.model.flow.geom.ControlPoint;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.BadLocationException;
 
 /**
  * @author Patrick Gebhard
@@ -66,6 +69,7 @@ public class Edge extends EditorComponent implements MouseListener {
   //private JTextPane mValueEditor = null;
   private boolean mEditMode = false;
 
+  private ObserverDocument edgeCodeDocument = null;
 
   //
   // other stuff
@@ -124,9 +128,19 @@ public class Edge extends EditorComponent implements MouseListener {
 
     setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
     mEg = new EdgeGraphics(this, sourceDockPoint, targetDockpoint);
+
     update();
     setVisible(true);
     initEditBox();
+    if (mEdgeTextArea != null) {
+      edgeCodeDocument = new ObserverDocument();
+      try {
+        edgeCodeDocument.insertString(0, getDescription(), null);
+      } catch (BadLocationException ex) {
+        Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      mEdgeTextArea.setDocument(edgeCodeDocument);
+    }
   }
 
   /** Does this edge point back to the source node? */
@@ -155,6 +169,10 @@ public class Edge extends EditorComponent implements MouseListener {
   @Override
   public String getName() {
     return name() + "(" + mSourceNode.getDataNode().getId() + "->" + mTargetNode.getDataNode().getId() + ")";
+  }
+
+  public ObserverDocument getCodeDocument() {
+    return edgeCodeDocument;
   }
 
   public String getDescription() {

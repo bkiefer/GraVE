@@ -6,16 +6,13 @@ import java.awt.event.FocusListener;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
+import javax.swing.text.Document;
 
 /**
  * @author Gregor Mehlmann
@@ -40,9 +37,8 @@ public class CmdBadge extends RSyntaxTextArea implements Selectable {
 
   /**
    */
-  public CmdBadge(Node node, EditorConfig cfg) {
+  public CmdBadge(Node node, EditorConfig cfg, Document d) {
     super(30, 40);
-    setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
     setCodeFoldingEnabled(true);
     this.setLineWrap(true);
     this.setWrapStyleWord(true);
@@ -64,20 +60,6 @@ public class CmdBadge extends RSyntaxTextArea implements Selectable {
         setDeselected();
       }
     });
-    getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        mNode.getDataNode().setCmd(getText());
-      }
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        removeUpdate(e);
-      }
-      @Override
-      public void changedUpdate(DocumentEvent arg0) {
-        removeUpdate(arg0);
-      }
-    });
     mNode = node;
     mEditorConfig = cfg;
     mFont = new Font("Monospaced",
@@ -85,7 +67,8 @@ public class CmdBadge extends RSyntaxTextArea implements Selectable {
             mEditorConfig.sWORKSPACEFONTSIZE);
     setFont(mFont);
     setLayout(new BorderLayout());
-    update();
+    this.setDocument(d);
+    computeAndSetNewSize();
   }
 
   @Override
@@ -100,7 +83,7 @@ public class CmdBadge extends RSyntaxTextArea implements Selectable {
     mNode.getDataNode().setCmd(getText());
     mDispatcher.convey(new ProjectChangedEvent(this));
     mDispatcher.convey(new ElementSelectedEvent(mNode));
-    update();
+    computeAndSetNewSize();
   }
 
   public void translate(Point vector) {
@@ -111,19 +94,6 @@ public class CmdBadge extends RSyntaxTextArea implements Selectable {
 
   public boolean containsPoint(int x, int y) {
     return getBounds().contains(x, y);
-  }
-
-  private void update() {
-    String content = mNode.getDataNode().getCmd();
-    if (content == null) return;
-    // Sets visibility of the component to true only if there is something to display
-    setVisible(!content.isEmpty());
-    super.setText(content);
-    if (!content.isEmpty()) {
-      computeAndSetNewSize();
-    } else {
-      setSize(new Dimension(getWidth(), getHeight()));
-    }
   }
 
   private void computeAndSetNewSize() {
@@ -149,11 +119,12 @@ public class CmdBadge extends RSyntaxTextArea implements Selectable {
     return mNode;
   }
 
+  /* Should not be called!
   @Override
   public void setText(String text) {
     mNode.getDataNode().setCmd(text);
     update();
-  }
+  }*/
 
   @Override
   public int hashCode() {

@@ -25,6 +25,11 @@ import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.evt.EventDispatcher;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
 
 /**
  * @author Gregor Mehlmann
@@ -54,6 +59,7 @@ public final class Node extends EditorComponent {
   private Set<Edge> mEdges = new HashSet<>();
 
   private CmdBadge mCmdBadge;
+  private Document nodeCodeDocument;
 
   //
   // TODO: move away
@@ -156,8 +162,14 @@ public final class Node extends EditorComponent {
       addStartSign();
     }
 
+    nodeCodeDocument = new ObserverDocument();
+    try {
+      nodeCodeDocument.insertString(0, mDataNode.getCmd(), null);
+    } catch (BadLocationException ex) {
+      Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
+    }
     // Create the command badge of the GUI-BasicNode, after setting Position!
-    mCmdBadge = new CmdBadge(this, mWorkSpace.getEditorConfig());
+    mCmdBadge = new CmdBadge(this, mWorkSpace.getEditorConfig(), nodeCodeDocument);
 
     // update
     update();
@@ -165,6 +177,10 @@ public final class Node extends EditorComponent {
 
   public Type getType() {
     return isBasic ? Type.BasicNode : Type.SuperNode;
+  }
+
+  public Document getCodeDocument() {
+    return nodeCodeDocument;
   }
 
   public WorkSpace getWorkSpace() {

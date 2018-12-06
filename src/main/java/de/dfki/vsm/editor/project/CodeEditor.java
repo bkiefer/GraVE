@@ -21,10 +21,6 @@ import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.model.project.EditorProject;
 import de.dfki.vsm.util.ios.ResourceLoader;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
@@ -90,26 +86,6 @@ public class CodeEditor extends JPanel {
     splitPane.setLeftComponent(mLeftTextArea);
     //jsp.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     add(splitPane, BorderLayout.CENTER);
-    /*splitPane.addComponentListener(new ComponentListener() {
-      @Override
-      public void componentResized(ComponentEvent e) {
-        //pane.setBounds(pane.getParent().getBounds());
-        int x = splitPane.getBounds().x;
-        int y = splitPane.getBounds().y;
-        int w = splitPane.getBounds().width;
-        int h = splitPane.getBounds().height;
-        jspR.setBounds(x, y, w/2, h);
-        jspL.setBounds(x, y, w/2, h);
-        mRightTextArea.setBounds(jspR.getBounds());
-        mLeftTextArea.setBounds(jspL.getBounds());
-      }
-      @Override
-      public void componentMoved(ComponentEvent ce) {}
-      @Override
-      public void componentShown(ComponentEvent ce) {}
-      @Override
-      public void componentHidden(ComponentEvent ce) {}
-    });*/
   }
 
   private class EditCodeArea extends JPanel {
@@ -121,7 +97,6 @@ public class CodeEditor extends JPanel {
     public EditCodeArea(int dividerLocation) {
       super(new BorderLayout());
       textArea = new RSyntaxTextArea();
-      textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
       textArea.setCodeFoldingEnabled(true);
       textArea.setLineWrap(true);
       textArea.setWrapStyleWord(true);
@@ -132,29 +107,6 @@ public class CodeEditor extends JPanel {
       // Get rid of annoying yellow line
       textArea.setHighlightCurrentLine(false);
       textArea.setHighlightSecondaryLanguages(false);
-      textArea.getDocument().addDocumentListener(new DocumentListener() {
-          @Override
-          public void removeUpdate(DocumentEvent e) {
-            if (editedObject instanceof CmdBadge) {
-              ((CmdBadge)editedObject).setText(textArea.getText());
-              ((CmdBadge)editedObject).repaint();
-            } else if (editedObject instanceof Node) {
-              ((Node)editedObject).setText(textArea.getText());
-              ((Node)editedObject).repaint();
-            } else if (editedObject instanceof Edge) {
-              ((Edge)editedObject).setDescription(textArea.getText());
-              ((Edge)editedObject).repaint();
-            }
-          }
-          @Override
-          public void insertUpdate(DocumentEvent e) {
-            removeUpdate(e);
-          }
-          @Override
-          public void changedUpdate(DocumentEvent arg0) {
-            removeUpdate(arg0);
-          }
-      });
       s = new JScrollPane();
       s.add(textArea);
       add(s, BorderLayout.CENTER);
@@ -168,11 +120,11 @@ public class CodeEditor extends JPanel {
       }
       editedObject = n;
       if (n instanceof CmdBadge)
-        textArea.setText(((CmdBadge)n).getText());
+        textArea.setDocument(((CmdBadge)n).getDocument());
       else if (n instanceof Edge)
-        textArea.setText(((Edge)n).getDescription());
+        textArea.setDocument(((Edge)n).getCodeDocument());
       else if (n instanceof Node)
-        textArea.setText(((Node)n).getCmdBadge().getText());
+        textArea.setDocument(((Node)n).getCodeDocument());
       //else
         // TODO: Might want to throw exception here
       //  return;

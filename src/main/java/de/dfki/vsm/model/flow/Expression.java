@@ -1,11 +1,12 @@
 package de.dfki.vsm.model.flow;
 
 import de.dfki.vsm.util.cpy.Copyable;
+import java.util.Observable;
 
 /**
  * @author Gregor Mehlmann
  */
-public class Expression implements Copyable {
+public class Expression extends Observable implements Copyable {
 
   protected String content;
 
@@ -20,6 +21,8 @@ public class Expression implements Copyable {
 
   public void setContent(String s) {
     content = s.trim();
+    setChanged();
+    notifyObservers();
   }
 
   @Override
