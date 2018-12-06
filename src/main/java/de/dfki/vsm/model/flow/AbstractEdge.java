@@ -1,5 +1,8 @@
 package de.dfki.vsm.model.flow;
 
+import static de.dfki.vsm.model.flow.geom.Geom.*;
+
+import java.awt.Point;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -24,6 +27,14 @@ public abstract class AbstractEdge {
   protected String mSourceUnid = new String();
   protected BasicNode mTargetNode = null;
   protected BasicNode mSourceNode = null;
+
+  // Replaces EdgeArrow
+  public int mTargetDock;
+  public int mSourceDock;
+  public Point mSourceCtrlPoint;
+  public Point mTargetCtrlPoint;
+
+  // DEPRECATED
   protected EdgeArrow mArrow = null;
   @XmlElement(name="Commands")
   protected String mCmdList = null;
@@ -178,11 +189,11 @@ public abstract class AbstractEdge {
     return null;
   }
 
+  // TODO: DROP AFTER REVAMP
   public void translate(int deltaX, int deltaY) {
     for (ControlPoint cp : mArrow.getPointList()) {
       cp.setCtrlXPos(cp.getCtrlXPos() + deltaX);
       cp.setCtrlYPos(cp.getCtrlYPos() + deltaY);
     }
   }
-
 }

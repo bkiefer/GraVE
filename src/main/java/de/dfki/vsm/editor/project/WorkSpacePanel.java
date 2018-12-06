@@ -104,19 +104,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     });
   }
 
-  /** If there's a node in the set under p, return it, otherwise null */
-  private Node findNodeAtPoint(Iterable<Node> nodes, Point p) {
-    for (Node node : nodes) {
-      if (node.containsPoint(p.x, p.y)) {
-        return node;
-      }
-    }
-    return null;
-  }
 
   /**
-   *
-   *
    */
   private void initDnDSupport() {
     mAcceptableActions = DnDConstants.ACTION_COPY;
@@ -143,7 +132,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
           Point pos = dtde.getLocation();
           dtde.acceptDrag(dtde.getDropAction());
           setMessageLabelText("Drag edge on a node to select edge source");
-          Node node = findNodeAtPoint(getNodes(), pos);
+          Node node = findNodeAtPoint(pos);
           if (node != null && ! node.isEdgeAllowed((AbstractEdge)data)) {
             setMessageLabelText("Edge is not allowed at this node");
           }
@@ -344,7 +333,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
    * this function starts the creation of a new edge.
    */
   private void createNewEdgeSelectSourceNode(AbstractEdge edge, Point p) {
-    Node sourceNode = findNodeAtPoint(getNodes(), p);
+    Node sourceNode = findNodeAtPoint(p);
 
     // Check if the type of this edge is allowed to be connected to the
     // source c. If the edge is not allowed then we exit the method.
@@ -371,7 +360,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     // Try to find the c on which the mouse was clicked. If we do not find
     // such a c then the mouse was clicked on the drawing area of the workspace
     // and we exit the method without creating a new edge.
-    Node targetNode = findNodeAtPoint(getNodes(), p);
+    Node targetNode = findNodeAtPoint(p);
     if (targetNode != null) {
       new CreateEdgeAction(this, mEdgeSourceNode, targetNode, mEdgeInProgress).run();
     }
@@ -738,39 +727,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
     // if there is a specific selected edge use it - much faster than checking all edges
     if (mSelectedEdge != null) {
-
       // DEBUG //System.out.println("EDGE SELECTED!");
-      if (mSelectedEdge.mCP1Selected || mSelectedEdge.mCP2Selected
-          || mSelectedEdge.mCSPSelected || mSelectedEdge.mCEPSelected) {
-        if (mSelectedEdge.mCSPSelected) {
-
-          // look if mouse pressed (without a click) was on a c
-          for (Node node : getNodes()) {
-            if (node != mSelectedEdge.getSourceNode()) {
-              if (node.containsPoint(event.getX(), event.getY())) {
-                mReassignNode = node;
-                break;
-              }
-            }
-          }
-        }
-
-        if (mSelectedEdge.mCEPSelected) {
-
-          // look if mouse pressed (without a click) was on a c
-          mEdgeTargetNodeReassign = false;
-
-          for (Node node : getNodes()) {
-            if (node != mSelectedEdge.getTargetNode()) {
-              if (node.containsPoint(event.getX(), event.getY())) {
-                mReassignNode = node;
-                mEdgeTargetNodeReassign = true;
-
-                break;
-              }
-            }
-          }
-        }
+      if (mSelectedEdge.controlPointSelected()) {
 
         mSelectedEdge.mouseDragged(event);
         revalidate();

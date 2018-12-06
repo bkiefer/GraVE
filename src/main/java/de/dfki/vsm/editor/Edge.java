@@ -4,6 +4,7 @@ import static de.dfki.vsm.Preferences.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,10 @@ import de.dfki.vsm.editor.project.WorkSpace;
 import de.dfki.vsm.editor.util.EdgeGraphics;
 import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.model.flow.geom.ControlPoint;
+import de.dfki.vsm.model.flow.geom.Geom;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
+
 
 /**
  * @author Patrick Gebhard
@@ -47,25 +50,13 @@ public class Edge extends EditorComponent implements MouseListener {
   private EdgeGraphics mEg = null;
   private WorkSpace mWorkSpace = null;
 
-  // For mouse interaction ...
-  public boolean mIsSelected = false;
-
-  // edge control points
-  public boolean mCP1Selected = false;
-  public boolean mCP2Selected = false;
-
-  // start an end points of edge
-  public boolean mCEPSelected = false;
-  public boolean mCSPSelected = false;
-
-  // last dockpoints
-  private Point mLastTargetNodeDockPoint = null;
-
   // edit panel
-  private RSyntaxTextArea mEdgeTextArea = null;
+  private RSyntaxTextArea mTextArea = null;
   //private JTextPane mValueEditor = null;
   private boolean mEditMode = false;
 
+  // For changing the edge's start or end node with a mouse drag
+  private Node mReassignNode = null;
 
   //
   // other stuff
@@ -74,6 +65,7 @@ public class Edge extends EditorComponent implements MouseListener {
       mName = n; mDescription = d; mColor = c;
     }
     String mName;
+    @SuppressWarnings("unused")
     String mDescription;
     Color mColor;
   }
@@ -108,13 +100,13 @@ public class Edge extends EditorComponent implements MouseListener {
     return edgeProperties.get(mDataEdge.getClass()).mName;
   }
 
-  public Edge(WorkSpace workSpace, AbstractEdge edge, Node sourceNode, Node targetNode) {
-    this(workSpace, edge, sourceNode, targetNode, null, null);
-  }
-
-  // TODO: Neuer Konstruktor, der Source und Target dockpoint "mitbekommt"
-  public Edge(WorkSpace ws, AbstractEdge edge, Node sourceNode, Node targetNode,
-          Point sourceDockPoint, Point targetDockpoint) {
+  /** This constructor assumes that the edge model has reasonable values for
+   *  the docks and control points.
+   *
+   *  So either they come from file input, or they have to be set properly when
+   *  a new edge is created.
+   */
+  public Edge(WorkSpace ws, AbstractEdge edge, Node sourceNode, Node targetNode) {
     setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
     mDataEdge = edge;
     mWorkSpace = ws;
@@ -123,7 +115,7 @@ public class Edge extends EditorComponent implements MouseListener {
     mTargetNode = targetNode;
 
     setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-    mEg = new EdgeGraphics(this, sourceDockPoint, targetDockpoint);
+    mEg = new EdgeGraphics(this);
     update();
     setVisible(true);
     initEditBox();
@@ -163,17 +155,13 @@ public class Edge extends EditorComponent implements MouseListener {
 
   public void setDescription(String s) {
     mDataEdge.setContent(s);
-    mEdgeTextArea.setText(s);
+    mTextArea.setText(s);
   }
 
   /** Disconnect this edge view from the node view it is connected to */
   public void disconnect() {
-    mSourceNode.disconnectEdge(this);
-    if (isLoop()) {
-      mSourceNode.disconnectSelfPointingEdge(this);
-    } else {
-      mTargetNode.disconnectEdge(this);
-    }
+    mSourceNode.disconnectSource(this);
+    mTargetNode.disconnectTarget(this);
   }
 
   /** Disconnect this edge view from the node view it is connected to */
@@ -192,16 +180,18 @@ public class Edge extends EditorComponent implements MouseListener {
   }
 
   public boolean outOfBounds() {
-    return (mEg.mCCrtl1.x < 0) || (mEg.mCCrtl1.y < 0)
-        || (mEg.mCCrtl2.x < 0) || (mEg.mCCrtl2.y < 0);
+    Point ctrl1 = getStartCtrl();
+    Point ctrl2 = getEndCtrl();
+    return ctrl1.x < 0 || ctrl1.y < 0 || ctrl2.x < 0 || ctrl2.y < 0;
   }
 
   public boolean isIntersectByRectangle(double x1, double x2, double y1, double y2) {
     return mEg.isIntersectByRectangle(x1, x2, y1, y2);
   }
 
+  // TODO: STILL NECESSARY?
   public void updateRelativeEdgeControlPointPos(Node n, int xOffset, int yOffset) {
-    mEg.updateRelativeEdgeControlPointPos(n, xOffset, yOffset);
+    //mEg.updateRelativeEdgeControlPointPos(n, xOffset, yOffset);
   }
 
   private void update() {
@@ -209,7 +199,7 @@ public class Edge extends EditorComponent implements MouseListener {
     if (mEditorConfig.sWORKSPACEFONTSIZE != getFont().getSize())
       getFont().deriveFont(mEditorConfig.sWORKSPACEFONTSIZE);
 
-    if (mEdgeTextArea != null)
+    if (mTextArea != null)
       // do an exact font positioning
       computeTextBoxBounds();
   }
@@ -218,20 +208,20 @@ public class Edge extends EditorComponent implements MouseListener {
     * Initialize mTextPane and mValueEditor
    */
   private void initEditBox() {
-    mEdgeTextArea = new RSyntaxTextArea();
-    this.add(mEdgeTextArea);
-    mEdgeTextArea.setBackground(Color.WHITE);
+    mTextArea = new RSyntaxTextArea();
+    this.add(mTextArea);
+    mTextArea.setBackground(Color.WHITE);
     // Get rid of annoying yellow line
-    mEdgeTextArea.setHighlighter(null);
-    mEdgeTextArea.setHighlightCurrentLine(false);
-    mEdgeTextArea.setHighlightSecondaryLanguages(false);
+    mTextArea.setHighlighter(null);
+    mTextArea.setHighlightCurrentLine(false);
+    mTextArea.setHighlightSecondaryLanguages(false);
 
-    mEdgeTextArea.setBorder(BorderFactory.createLineBorder(color()));
-    mEdgeTextArea.getDocument().addDocumentListener(new DocumentListener() {
+    mTextArea.setBorder(BorderFactory.createLineBorder(color()));
+    mTextArea.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       // character added
       public void insertUpdate(DocumentEvent e) {
-        mDataEdge.setContent(mEdgeTextArea.getText());
+        mDataEdge.setContent(mTextArea.getText());
         computeTextBoxBounds();
       }
 
@@ -243,7 +233,7 @@ public class Edge extends EditorComponent implements MouseListener {
       public void changedUpdate(DocumentEvent e) { insertUpdate(e); }
     });
 
-    mEdgeTextArea.addFocusListener(new FocusListener() {
+    mTextArea.addFocusListener(new FocusListener() {
       @Override
       public void focusGained(FocusEvent e) {
         mDispatcher.convey(new ElementSelectedEvent(Edge.this));
@@ -253,19 +243,19 @@ public class Edge extends EditorComponent implements MouseListener {
     });
 
     // Attributes
-    mEdgeTextArea.setFont(this.getFont());
-    mEdgeTextArea.setForeground(color());
+    mTextArea.setFont(this.getFont());
+    mTextArea.setForeground(color());
 
     if (mDataEdge != null) {
-      mEdgeTextArea.setText(mDataEdge.getContent());
-      mEdgeTextArea.setVisible(mEdgeTextArea.getText().trim().length() > 0);
+      mTextArea.setText(mDataEdge.getContent());
+      mTextArea.setVisible(mTextArea.getText().trim().length() > 0);
     }
 
     // do an exact font positioning
     computeTextBoxBounds();
 
-    mEdgeTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
-    mEdgeTextArea.getActionMap().put("enter", new AbstractAction() {
+    mTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
+    mTextArea.getActionMap().put("enter", new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         setDeselected();
@@ -273,8 +263,8 @@ public class Edge extends EditorComponent implements MouseListener {
         updateFromTextEditor();
       }
     });
-    mEdgeTextArea.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
-    mEdgeTextArea.getActionMap().put("escape", new AbstractAction() {
+    mTextArea.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
+    mTextArea.getActionMap().put("escape", new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         setDeselected();
@@ -287,7 +277,7 @@ public class Edge extends EditorComponent implements MouseListener {
     *   Take input value of mValueEditor and set it as value of the edge
    */
   private void updateFromTextEditor() {
-    String input = mEdgeTextArea.getText();
+    String input = mTextArea.getText();
     if (mDataEdge != null) {
       try {
         mDataEdge.setContent(input);
@@ -308,23 +298,13 @@ public class Edge extends EditorComponent implements MouseListener {
   }
 
   public void setDeselected() {
-    deselectMCs();
-    mIsSelected = false;
+    mEg.deselectMCs();
     mEditMode = false;
     //remove(mEdgeTextArea);
     repaint(100);
   }
 
-  private void deselectMCs() {
-    mCP1Selected = false;
-    mCP2Selected = false;
-    mCSPSelected = false;
-    mCEPSelected = false;
-  }
-
   /**
-   *
-   *
    */
   public void showContextMenu(MouseEvent evt, Edge edge) {
     JPopupMenu pop = new JPopupMenu();
@@ -357,36 +337,22 @@ public class Edge extends EditorComponent implements MouseListener {
     pop.show(this, evt.getX(), evt.getY());
   }
 
+  /** Return true if one of the control points is selected */
+  public boolean controlPointSelected() {
+    return mEg.mSelected >= EdgeGraphics.S && mEg.mSelected <= EdgeGraphics.E;
+  }
 
   @Override
   public void mouseClicked(java.awt.event.MouseEvent event) {
 
     mDispatcher.convey(new ElementSelectedEvent(this));
-    mIsSelected = true;
-
-    if (mEg.controlPoint1HandlerContainsPoint(event.getPoint(), 10)) {
-      deselectMCs();
-      mCP1Selected = true;
-    }
-    if (mEg.controlPoint2HandlerContainsPoint(event.getPoint(), 10)) {
-      deselectMCs();
-      mCP2Selected = true;
-    }
-    if (!(mCP1Selected || mCP2Selected) && mEg.curveStartPointContainsPoint(event.getPoint(), 10)) {
-      deselectMCs();
-      mCSPSelected = true;
-    }
-    if (!(mCP1Selected || mCP2Selected) && mEg.curveEndPointContainsPoint(event.getPoint(), 10)) {
-      deselectMCs();
-      mCEPSelected = true;
-    }
-    repaint(100);
+    mousePressed(event);
 
     // show context menu
     if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
       showContextMenu(event, this);
     } else if ((event.getClickCount() == 2) && getDescription() != null) {
-      mEdgeTextArea.requestFocus();
+      mTextArea.requestFocus();
       mEditMode = true;
       mDispatcher.convey(new EdgeEditEvent(this, this.getDataEdge()));
     }
@@ -397,71 +363,76 @@ public class Edge extends EditorComponent implements MouseListener {
    */
   @Override
   public void mousePressed(java.awt.event.MouseEvent e) {
-    mIsSelected = true;
-
-    if (mEg.controlPoint1HandlerContainsPoint(e.getPoint(), 10)) {
-      firstDrag = true;
-      deselectMCs();
-      mCP1Selected = true;
-    }
-    if (mEg.controlPoint2HandlerContainsPoint(e.getPoint(), 10)) {
-      firstDrag = true;
-      deselectMCs();
-      mCP2Selected = true;
-    }
-    if (!(mCP1Selected || mCP2Selected) && mEg.curveStartPointContainsPoint(e.getPoint(), 10)) {
-      deselectMCs();
-      mCSPSelected = true;
-    }
-    if (!(mCP1Selected || mCP2Selected) && mEg.curveEndPointContainsPoint(e.getPoint(), 10)) {
-      deselectMCs();
-      mCEPSelected = true;
-    }
-
+    mEg.edgeSelected(e.getPoint());
     // revalidate();
     repaint(100);
   }
 
+  /** This takes all the responsibility for edge changes using the mouse, except
+   *  creation of a new edge:
+   *  - Assigning a new dock to the start point
+   *  - Modification of a control point
+   *  - Assigning a new dock, possibly at a new target node, to the end point
+   *
+   *  TODO: Here, any change that has happened during drag should be registered in an
+   *  undoable way
+   */
   @Override
   public void mouseReleased(java.awt.event.MouseEvent e) {
 
     // System.out.println("edge - mouse released");
-    if (mCSPSelected) {
+    if (mEg.mSelected == EdgeGraphics.S) {
       Point relPos = (Point) mSourceNode.getLocation().clone();
 
       relPos.setLocation(e.getX() - relPos.x, e.getY() - relPos.y);
 
       // DEBUG System.out.println("set new dock point for pos " + relPos);
-      mSourceNode.getDockingManager().freeDockPoint(this);
-      mSourceNode.getDockingManager().getNearestDockPoint(this, relPos);
+      freeSourceDock();
+      mSourceNode.getNearestDockPoint(this, relPos);
     }
 
-    if (mCEPSelected) {
+    if (mEg.mSelected == EdgeGraphics.E) {
       Point relPos = (Point) mTargetNode.getLocation().clone();
 
       relPos.setLocation(e.getX() - relPos.x, e.getY() - relPos.y);
 
       // DEBUG System.out.println("set new dock point for pos " + relPos);
+      freeTargetDock();
       if (!isLoop()) {
-        mTargetNode.getDockingManager().freeDockPoint(this);
-        mTargetNode.getDockingManager().getNearestDockPoint(this, relPos);
+        mTargetNode.getNearestDockPoint(this, relPos);
       } else {
-        mTargetNode.getDockingManager().freeSecondDockPoint(this);
-        mTargetNode.getDockingManager().getNearestSecondDockPoint(this, relPos);
+        //mTargetNode.getNearestSecondDockPoint(this, relPos);
+        mTargetNode.getNearestDockPoint(this, relPos);
       }
     }
-    deselectMCs();
+    mEg.deselectMCs();
     repaint(100);
   }
 
   public void mouseDragged(java.awt.event.MouseEvent e) {
+    if (mEg.mSelected == EdgeGraphics.S) {
+      mReassignNode = mWorkSpace.findNodeAtPoint(e.getPoint());
+      if (mReassignNode == mSourceNode) {
+        mReassignNode = null;
+      }
+    } else if (mEg.mSelected == EdgeGraphics.E) {
+      // look if mouse pressed (without a click) was on a c
+      mReassignNode = mWorkSpace.findNodeAtPoint(e.getPoint());
+      if (mReassignNode == mTargetNode) {
+        mReassignNode = null;
+      }
+    }
+    /* UNDO SHOULD BE DONE ON RELEASE
     if (firstDrag) {
-      UndoManager mUndoManager = EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getUndoManager();
-      mUndoManager.addEdit(new UndoDragEdge(mEg.mCCrtl1.getLocation(), mEg.mCCrtl2.getLocation()));
+      UndoManager mUndoManager =
+          EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getUndoManager();
+      mUndoManager.addEdit(new
+          UndoDragEdge(mEg.mCCrtl1.getLocation(), mEg.mCCrtl2.getLocation()));
       UndoAction.getInstance().refreshUndoState();
       RedoAction.getInstance().refreshRedoState();
       firstDrag = false;
     }
+    */
     Point p = e.getPoint();
 
     // do not allow x and y values below 10
@@ -469,24 +440,24 @@ public class Edge extends EditorComponent implements MouseListener {
       p.x = 10;
     if (p.y - 10 < 0)
       p.y = 10;
+
+    /*
     if (mCP1Selected)
       mEg.mCCrtl1.setLocation(p);
     if (mCP2Selected)
       mEg.mCCrtl2.setLocation(p);
     if (mCEPSelected) {
-      if (!isLoop()) {
-        mLastTargetNodeDockPoint = mTargetNode.getDockingManager().freeDockPoint(this);
-      } else {
-        mLastTargetNodeDockPoint = mTargetNode.getDockingManager().freeSecondDockPoint(this);
-      }
+      freeTargetDock(); // TODO: DO AT RELEASE
       mEg.mAbsoluteEndPos.setLocation(p);
     }
 
     if (mCSPSelected) {
-      mSourceNode.getDockingManager().freeDockPoint(this);
+      freeSourceDock(); // TODO: DO AT RELEASE
       // TODO store last start /end node and start and end pos
       mEg.mAbsoluteStartPos.setLocation(p);
     }
+    */
+    mEg.mouseDragged(p);
     repaint(100);
   }
 
@@ -500,16 +471,22 @@ public class Edge extends EditorComponent implements MouseListener {
     mEg.initCurve();
   }
 
-  public void rebuildEdgeNicely() {
-
-    // disconnectEdge
+  private void freeTargetDock() {
     if (!isLoop()) {
-      mTargetNode.getDockingManager().freeDockPoint(this);
+      mTargetNode.freeDockPoint(this.mDataEdge.mTargetDock);
     } else {
-      mTargetNode.getDockingManager().freeSecondDockPoint(this);
+      mTargetNode.freeSecondDockPoint(this.mDataEdge.mTargetDock);
     }
+  }
 
-    mSourceNode.getDockingManager().freeDockPoint(this);
+  private void freeSourceDock() {
+    mSourceNode.freeDockPoint(this.mDataEdge.mSourceDock);
+  }
+
+  public void rebuildEdgeNicely() {
+    // disconnectEdge
+    freeTargetDock();
+    freeSourceDock();
     mEg.initEdgeGraphics(null, null);
   }
 
@@ -517,11 +494,11 @@ public class Edge extends EditorComponent implements MouseListener {
     // do an exact font positioning
     FontMetrics fm = getFontMetrics(getFont());
     int height = fm.getHeight();
-    int width = fm.stringWidth(mEdgeTextArea.getText() + "p");
+    int width = fm.stringWidth(mTextArea.getText() + "p");
     // Derive the node's font metrics from the font
     int mFontHeightCorrection = (fm.getAscent() + fm.getDescent()) / 2;
 
-    mEdgeTextArea.setBounds((int) Math.round(mEg.mLeftCurve.x2 - width/2),
+    mTextArea.setBounds((int) Math.round(mEg.mLeftCurve.x2 - width/2),
         (int) Math.round(mEg.mLeftCurve.y2 - mFontHeightCorrection), width, height);
   }
 
@@ -529,64 +506,20 @@ public class Edge extends EditorComponent implements MouseListener {
   public void paintComponent(java.awt.Graphics g) {
     float lineWidth = mSourceNode.getWidth() / 30.0f;
     Graphics2D graphics = (Graphics2D) g;
-    mEg.updateDrawingParameters();
 
     graphics.setColor(color());
     graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     graphics.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
             BasicStroke.JOIN_MITER));
-    graphics.draw(mEg.mCurve);
+
+    // draw the arrow
+    mEg.paintArrow(graphics, lineWidth, color());
 
     if (mEditMode == true) {
       //graphics.setColor(color());
-      mEdgeTextArea.requestFocusInWindow();
+      mTextArea.requestFocusInWindow();
     }
     computeTextBoxBounds();
-
-    //graphics.setColor(color());
-
-    // draw head
-    mEg.computeHead();
-
-    // if selected draw interface control points
-    if (mIsSelected) {
-      graphics.setColor(Color.DARK_GRAY);
-      graphics.setStroke(new BasicStroke(0.5f));
-      graphics.drawLine((int) mEg.mCurve.x1, (int) mEg.mCurve.y1, (int) mEg.mCurve.ctrlx1,
-              (int) mEg.mCurve.ctrly1);
-      graphics.drawLine((int) mEg.mCurve.x2, (int) mEg.mCurve.y2, (int) mEg.mCurve.ctrlx2,
-              (int) mEg.mCurve.ctrly2);
-      graphics.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
-              BasicStroke.JOIN_MITER));
-
-      if (mCP1Selected) {
-        graphics.setColor(color());
-      }
-
-      graphics.drawOval((int) mEg.mCurve.ctrlx1 - 7, (int) mEg.mCurve.ctrly1 - 7, 14, 14);
-      graphics.fillOval((int) mEg.mCurve.ctrlx1 - 7, (int) mEg.mCurve.ctrly1 - 7, 14, 14);
-      graphics.setColor(Color.DARK_GRAY);
-
-      if (mCP2Selected) {
-        graphics.setColor(color());
-      }
-
-      graphics.drawOval((int) mEg.mCurve.ctrlx2 - 7, (int) mEg.mCurve.ctrly2 - 7, 14, 14);
-      graphics.fillOval((int) mEg.mCurve.ctrlx2 - 7, (int) mEg.mCurve.ctrly2 - 7, 14, 14);
-      graphics.setColor(Color.DARK_GRAY);
-      graphics.drawRect((int) mEg.mCurve.x1 - 7, (int) mEg.mCurve.y1 - 7, 14, 14);
-      graphics.drawPolygon(mEg.mHead);
-      graphics.fillRect((int) mEg.mCurve.x1 - 7, (int) mEg.mCurve.y1 - 7, 14, 14);
-      // This draws the arrow head
-      graphics.fillPolygon(mEg.mHead);
-    } else {
-      graphics.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
-              BasicStroke.JOIN_MITER));
-      // This draws the arrow head
-      graphics.fillPolygon(mEg.mHead);
-      graphics.setColor(color());
-      graphics.drawPolygon(mEg.mHead);
-    }
   }
 
   public boolean isInEditMode() {
@@ -595,7 +528,7 @@ public class Edge extends EditorComponent implements MouseListener {
 
   /**
    * UNDOABLE ACTION
-   */
+   *
   private class UndoDragEdge extends AbstractUndoableEdit {
 
     Point oldCP1;
@@ -645,5 +578,29 @@ public class Edge extends EditorComponent implements MouseListener {
       return "Redo creation of edge";
     }
   }
+  */
 
+  // **********************************************************************
+  // New AbstractEdge functionality
+  // **********************************************************************
+
+  /** Absolute position of edge start */
+  public Point getStart() {
+    return mSourceNode.getDockPoint(mDataEdge.mSourceDock);
+  }
+
+  /** Absolute position of edge end */
+  public Point getEnd() {
+    return mTargetNode.getDockPoint(mDataEdge.mTargetDock);
+  }
+
+  /** Absolute position of edge start control point */
+  public Point getStartCtrl() {
+    return Geom.add(getStart(), mDataEdge.mSourceCtrlPoint);
+  }
+
+  /** Absolute position of edge end control point */
+  public Point getEndCtrl() {
+    return Geom.add(getEnd(), mDataEdge.mTargetCtrlPoint);
+  }
 }

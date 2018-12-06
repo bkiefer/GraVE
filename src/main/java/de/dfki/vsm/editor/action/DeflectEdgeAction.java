@@ -39,7 +39,8 @@ public class DeflectEdgeAction extends EditorAction {
 
     // create a new gui edge
     mNewEdge = new Edge(mWorkSpace, mDataEdge, mSourceGUINode, mTargetGUINode,
-        mSourceGUINode.getEdgeDockPoint(mNewEdge), mDropPoint);
+        mSourceGUINode.getEdgeDockPoint(mNewEdge),
+        mDropPoint);
     mNewEdge.straightenEdge();
     mWorkSpace.pasteNodesAndEdges(Collections.emptyList(),
         new ArrayList<Edge>(){{add(mNewEdge);}});

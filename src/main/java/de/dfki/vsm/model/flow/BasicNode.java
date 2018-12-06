@@ -1,5 +1,6 @@
 package de.dfki.vsm.model.flow;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -505,4 +506,5 @@ public class BasicNode  {
   public String toString() {
     return mNodeId + "[" + mNodeName + "]";
   }
+
 }

@@ -21,6 +21,7 @@ import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
+import de.dfki.vsm.model.flow.geom.Geom;
 import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.Pair;
@@ -39,7 +40,7 @@ public final class Node extends EditorComponent {
 
   // private Point mStartSignPosition;
   //
-  private DockingManager mDockingManager = null;
+  //private DockingManager mDockingManager = null;
 
   // interaction flags
   private boolean mSelected = false;
@@ -144,7 +145,8 @@ public final class Node extends EditorComponent {
     isBasic = !(mDataNode instanceof SuperNode);
 
     // Init docking manager
-    mDockingManager = new DockingManager(this);
+    //mDockingManager = new DockingManager(this);
+    mDocksTaken = new BitSet();
 
     // Set initial position
     Point pos = new Point(mDataNode.getPosition().getXPos(),
@@ -196,9 +198,11 @@ public final class Node extends EditorComponent {
     repaint(100);
   }
 
+  /*
   public DockingManager getDockingManager() {
     return mDockingManager;
   }
+  */
 
   public boolean changeType(IDManager mgr, Collection<Edge> incoming) {
     BasicNode newNode;
@@ -256,7 +260,7 @@ public final class Node extends EditorComponent {
     // Recompute the node's docking positions.
     // Free all docking points that have to be
     // recomputed if the node's size has changed
-    mDockingManager.update();
+    // mDockingManager.update();
 
     if (mStartSign != null) {
       mStartSign.update();
@@ -319,9 +323,11 @@ public final class Node extends EditorComponent {
     mDataNode.setPosition(g);
     Point location = getLocation();
 
+    /* TODO: NOT NECESSARY AFTER REVAMP
     for (Edge edge : mDockingManager.getConnectedEdges()) {
       edge.updateRelativeEdgeControlPointPos(this, newLocation.x - location.x, newLocation.y - location.y);
     }
+    */
     setLocation(newLocation);
     CmdBadge badge = getCmdBadge();
     if (badge != null) {
@@ -339,7 +345,7 @@ public final class Node extends EditorComponent {
   // TODO: move to workspace
   public void removeStartSign() {
     if (mStartSign != null) {
-      mDockingManager.releaseDockPointForStartSign();
+      releaseDockPointForStartSign();
       mWorkSpace.remove(mStartSign);
       mStartSign = null;
     }
@@ -365,7 +371,7 @@ public final class Node extends EditorComponent {
     // get relative (to the current node) coordinates;
     point.setLocation(point.x - loc.x, point.y - loc.y);
 
-    Point dp = mDockingManager.getNearestDockPoint(edge, point);
+    Point dp = getNearestDockPoint(edge, point);
 
     // make position absolute to underlying canvas
     dp.setLocation(dp.x + loc.x, dp.y + loc.y);
@@ -381,33 +387,25 @@ public final class Node extends EditorComponent {
     Point loc = getLocation();
     // get relative (to the current node) coordinates;
     p.setLocation(p.x - loc.x, p.y - loc.y);
+    Point dp = getNearestDockPoint(e, p);
+    /*
     Point dp = (e.getSourceNode() != this)
         ? mDockingManager.getNearestDockPoint(e, p)
         : mDockingManager.getNearestSecondDockPoint(e, p);
+        */
     // make position absolute to underlying canvas
     dp.setLocation(dp.x + loc.x, dp.y + loc.y);
     return dp;
   }
 
   /** Disconnect the edge, we are its source node */
-  public Point disconnectEdge(Edge e) {
+  public void disconnectSource(Edge e) {
     mEdges.remove(e);
-    Point relPos = mDockingManager.freeDockPoint(e);
-    Point pos = getLocation();
-    Point absLoc;
-    if (relPos != null) {
-      absLoc = new Point(relPos.x + pos.x, relPos.y + pos.y);
-    } else {
-      absLoc = new Point(pos.x, pos.y);
-    }
-    return absLoc;
+    freeDockPoint(e.getDataEdge().mSourceDock);
   }
 
-  public Point disconnectSelfPointingEdge(Edge e) {
-    Point relPos = mDockingManager.freeSecondDockPoint(e);
-    Point pos = getLocation();
-    Point absLoc = new Point(relPos.x + pos.x, relPos.y + pos.y);
-    return absLoc;
+  public void disconnectTarget(Edge e) {
+    freeDockPoint(e.getDataEdge().mTargetDock);
   }
 
   /**
@@ -424,6 +422,7 @@ public final class Node extends EditorComponent {
     return mEdges;
   }
 
+  /*
   public Point getEdgeDockPoint(Edge e) {
     Point loc = getLocation();
     Point dp = mDockingManager.getDockPoint(e);
@@ -466,6 +465,7 @@ public final class Node extends EditorComponent {
     }
     return points;
   }
+   */
 
   public boolean isEdgeAllowed(AbstractEdge e) {
     return mDataNode.canAddEdge(e);
@@ -681,5 +681,61 @@ public final class Node extends EditorComponent {
 
   @Override
   public void mouseExited(MouseEvent e) {
+  }
+
+
+  // **********************************************************************
+  // New Node functionality
+  // **********************************************************************
+
+  BitSet mDocksTaken = new BitSet();
+
+  private Point getCenter() {
+    Position p = mDataNode.getPosition();
+    return new Point(p.getXPos(), p.getXPos());
+  }
+
+  public int getNearestFreeDock(Point p) {
+    // start with the closest angle with a reasonable representation
+    double alpha = Geom.angle(getCenter(), p);
+    return Geom.findClosestDock(mDocksTaken, alpha);
+  }
+
+  public Point getDockPoint(int which) {
+    double angle = Geom.dockToAngle(which);
+    return new Point((int)(Math.sin(angle) * this.getWidth() / 2),
+        (int)(Math.cos(angle) * this.getWidth() / 2));
+  }
+
+  /////////// LEGACY
+
+  public void freeDockPoint(int which) {
+    //return mDockingManager.freeDockPoint();
+    mDocksTaken.clear(which);
+  }
+
+  public void freeSecondDockPoint(int which) {
+    //return mDockingManager.freeSecondDockPoint();
+    mDocksTaken.clear(which);
+  }
+
+  private void releaseDockPointForStartSign(){
+    // TODO: FILL
+  }
+
+  public Point getNearestDockPoint(Edge e, Point relPos) {
+    //return mDockingManager.getNearestDockPoint(e, relPos);
+    // TODO: FILL
+  }
+
+  /*
+  public Point getNearestSecondDockPoint(Edge e, Point relPos) {
+    return mDockingManager.getNearestSecondDockPoint(e, relPos);
+  }
+  */
+
+  public void occupyDockPointForStartSign() {
+    //return mDockingManager.occupyDockPointForStartSign();
+    // TODO: FILL
   }
 }

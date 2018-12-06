@@ -47,7 +47,7 @@ public class StartSign extends JComponent {
     setSize(mWidth + 4 * mStrokeSize, mHalfHeight * 2 + 4 * mStrokeSize);
 
     //
-    mNode.getDockingManager().occupyDockPointForStartSign();
+    mNode.occupyDockPointForStartSign();
   }
 
   @Override

@@ -416,6 +416,22 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     // mGridManager.normalizeGridWeight();
   }
 
+
+  /** If there's a node in the set under p, return it, otherwise null */
+  public Node findNodeAtPoint(Iterable<Node> nodes, Point p) {
+    for (Node node : nodes) {
+      if (node.containsPoint(p.x, p.y)) {
+        return node;
+      }
+    }
+    return null;
+  }
+
+  /** If there's a node on this workspace under p, return it, otherwise null */
+  public Node findNodeAtPoint(Point p) {
+    return findNodeAtPoint(getNodes(), p);
+  }
+
   /**
    */
   @Override
