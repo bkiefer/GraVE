@@ -472,15 +472,15 @@ public class BasicNode  {
   @Override
   public int hashCode() {
     int result = 0;
-    result = 17 * Boolean.hashCode(mIsEndNode);
-    result = 17 * Byte.hashCode(hasNone);
-    result = 17 * Byte.hashCode(hasOne);
-    result = 17 * Byte.hashCode(hasMany);
+    result = 17 * result + Boolean.hashCode(mIsEndNode);
+    result = 17 * result + Byte.hashCode(hasNone);
+    result = 17 * result + Byte.hashCode(hasOne);
+    result = 17 * result + Byte.hashCode(hasMany);
 
-    result = 31 * mNodeId.hashCode();
-    result = 31 * mNodeName.hashCode();
-    result = 31 * mComment.hashCode();
-    result = 31 * mCmdList.hashCode();
+    result = 31 * result + mNodeId.hashCode();
+    result = 31 * result + mNodeName.hashCode();
+    result = 31 * result + mComment.hashCode();
+    result = 31 * result + mCmdList.hashCode();
 
     for (GuardedEdge e : mCEdgeList) {
       result = 31 * result + e.hashCode();

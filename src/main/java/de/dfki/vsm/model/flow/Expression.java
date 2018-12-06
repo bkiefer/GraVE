@@ -29,4 +29,9 @@ public class Expression extends Observable implements Copyable {
   public Expression deepCopy() {
     return new Expression(content);
   }
+
+  @Override
+  public int hashCode() {
+    return content != null? this.content.hashCode() : 31;
+  }
 }

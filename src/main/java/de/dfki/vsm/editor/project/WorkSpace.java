@@ -622,10 +622,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** Complete the edge model, and create a new edge view from the given data */
   public Edge createEdge(AbstractEdge edge, Node source, Node target) {
-    edge.setSourceNode(source.getDataNode());
-    edge.setSourceUnid(source.getDataNode().getId());
-    edge.setTargetNode(target.getDataNode());
-    edge.setTargetUnid(target.getDataNode().getId());
+    edge.connect(source.getDataNode(), target.getDataNode());
     return new Edge(this, edge, source, target);
   }
 

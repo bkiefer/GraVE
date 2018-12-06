@@ -78,4 +78,18 @@ public final class SceneFlow extends SuperNode {
 
     return copy;
   }
+
+  @Override
+  public int hashCode() {
+    int hash = super.hashCode();
+    hash = 59 * hash + this.mXMLNameSpace.hashCode();
+    hash = 59 * hash + this.mXMLSchemeInstance.hashCode();
+    hash = 59 * hash + this.mXMLSchemeLocation.hashCode();
+    hash = 59 * hash + this.mPackageName.hashCode();
+    hash = 59 * hash + this.mContextClass.hashCode();
+    hash = 59 * hash + this.mContextCode.hashCode();
+    hash = 59 * hash + this.mClassPathList.hashCode();
+    hash = 59 * hash + this.mModifDate.hashCode();
+    return hash;
+  }
 }
