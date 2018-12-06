@@ -1,19 +1,11 @@
 package de.dfki.vsm.model.flow;
 
-import javax.xml.bind.annotation.*;
-
-import org.eclipse.persistence.oxm.annotations.XmlCDATA;
-
 import de.dfki.vsm.util.cpy.Copyable;
 
 /**
  * @author Gregor Mehlmann
  */
-@XmlType(name="Code")
-@XmlAccessorType(XmlAccessType.NONE)
 public class Code implements Copyable {
-  @XmlValue
-  @XmlCDATA
   private String content;
 
   public Code(String c) {
@@ -24,16 +16,15 @@ public class Code implements Copyable {
     content = "";
   }
 
-  @XmlTransient
   public String getContent() { return content; }
 
-  public void setContent(String s) { content = s.trim(); }
+  public void setContent(String s) {
+    content = s.trim();
+  }
 
   @Override
   public Code deepCopy() {
-    Code result = new Code();
-    result.content = content;
-    return result;
+    return new Code(content);
   }
 
   public String toString() {

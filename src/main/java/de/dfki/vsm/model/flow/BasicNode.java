@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.model.flow.geom.Position;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * @author Gregor Mehlmann
@@ -21,6 +23,18 @@ public class BasicNode  {
 
   private static final Logger logger = LoggerFactory.getLogger(BasicNode.class);
 
+  public static class CodeAdapter extends XmlAdapter<String, Code> {
+    @Override
+    public String marshal(Code v) throws Exception {
+      return v.getContent();
+    }
+
+    @Override
+    public Code unmarshal(String v) throws Exception {
+      return new Code(v);
+    }
+  }
+
   @XmlAttribute(name="id")
   protected String mNodeId = new String();
   @XmlAttribute(name="name")
@@ -28,6 +42,7 @@ public class BasicNode  {
   @XmlAttribute(name="comment")
   protected String mComment = new String();
   @XmlElement(name="Commands")
+  @XmlJavaTypeAdapter(CodeAdapter.class)
   protected Code mCmdList = new Code();
 
 
@@ -91,6 +106,10 @@ public class BasicNode  {
     assert(node.mNodeList.isEmpty() && node.mSuperNodeList.isEmpty());
     mNodeId = mgr.getNextFreeID(this);
     copyBasicFields(node);
+  }
+
+  public Code getCode() {
+    return mCmdList;
   }
 
   public String getId() {

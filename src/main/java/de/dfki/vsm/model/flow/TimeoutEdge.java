@@ -3,6 +3,7 @@ package de.dfki.vsm.model.flow;
 import java.util.Map;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * @author Gregor Mehlmann
@@ -16,6 +17,7 @@ public class TimeoutEdge extends AbstractEdge {
   @XmlAttribute(name="timeout")
   protected long mTimeout = DEFAULT_TIMEOUT;
   @XmlElement(name="Commands", nillable=true)
+  @XmlJavaTypeAdapter(ExpressionAdapter.class)
   protected Expression mExpression = new Expression();
 
   public long getTimeout() {
@@ -29,10 +31,6 @@ public class TimeoutEdge extends AbstractEdge {
       throw new NumberFormatException("Invalid Timeout Value");
     }
     // mTimeout = value;
-  }
-
-  public String getExpression() {
-    return mExpression.getContent();
   }
 
   public void setExpression(String value) {
@@ -68,7 +66,7 @@ public class TimeoutEdge extends AbstractEdge {
   public boolean equals(Object o) {
     return o.getClass().equals(this.getClass())
         && getTimeout() == ((TimeoutEdge)o).getTimeout()
-        && getExpression().equals(((TimeoutEdge)o).getExpression())
+        && mExpression.content.equals(((TimeoutEdge)o).mExpression.content)
         && super.equals(o);
   }
 
