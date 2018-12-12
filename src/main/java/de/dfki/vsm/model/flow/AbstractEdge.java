@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.model.flow.geom.ControlPoint;
 import de.dfki.vsm.model.flow.geom.EdgeArrow;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * @author Gregor Mehlmann
@@ -22,6 +23,18 @@ import de.dfki.vsm.model.flow.geom.EdgeArrow;
 public abstract class AbstractEdge {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractEdge.class);
+
+  public static class ExpressionAdapter extends XmlAdapter<String, Expression> {
+    @Override
+    public String marshal(Expression v) throws Exception {
+      return v.getContent();
+    }
+
+    @Override
+    public Expression unmarshal(String v) throws Exception {
+      return new Expression(v);
+    }
+  }
 
   protected String mTargetUnid = new String();
   protected String mSourceUnid = new String();
@@ -72,6 +85,16 @@ public abstract class AbstractEdge {
 
   public final void setSourceNode(final BasicNode value) {
     mSourceNode = value;
+  }
+
+  public Expression getExpression() {
+    if (this instanceof TimeoutEdge)
+      return ((TimeoutEdge)this).mExpression;
+    else if (this instanceof GuardedEdge)
+      return ((GuardedEdge)this).mCondition;
+    else if (this instanceof InterruptEdge)
+      return ((InterruptEdge)this).mCondition;
+    return null;
   }
 
   public final void connect(final BasicNode source, final BasicNode target) {
