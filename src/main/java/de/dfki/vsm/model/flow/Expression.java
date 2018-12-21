@@ -29,9 +29,14 @@ public class Expression implements Copyable {
   public void setContent(String s) { content = s.trim(); }
 
   @Override
-  public Expression getCopy() {
+  public Expression deepCopy() {
     Expression result = new Expression();
     result.content = content;
     return result;
+  }
+
+  @Override
+  public int hashCode() {
+    return content != null? this.content.hashCode() : 31;
   }
 }

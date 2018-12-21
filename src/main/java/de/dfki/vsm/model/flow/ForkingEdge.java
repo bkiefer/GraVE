@@ -1,5 +1,7 @@
 package de.dfki.vsm.model.flow;
 
+import java.util.Map;
+
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -8,9 +10,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name="FEdge")
 public class ForkingEdge extends AbstractEdge {
 
-  // TODO:
-  public ForkingEdge getCopy() {
-    return copyFieldsTo(new ForkingEdge());
+  public ForkingEdge deepCopy(Map<BasicNode, BasicNode> orig2copy) {
+    return deepCopy(new ForkingEdge(), orig2copy);
   }
 
   public int getHashCode() {

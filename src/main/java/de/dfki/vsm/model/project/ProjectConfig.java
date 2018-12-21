@@ -71,7 +71,7 @@ public final class ProjectConfig implements Copyable {
 
   // Get a copy of the project configuration
   @Override
-  public ProjectConfig getCopy() {
+  public ProjectConfig deepCopy() {
     // TODO: Use copies of the lists
     return new ProjectConfig(mProjectName);
   }

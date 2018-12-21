@@ -1,15 +1,13 @@
 package de.dfki.vsm.model.flow;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.dfki.vsm.util.Pair;
-import de.dfki.vsm.util.cpy.CopyTool;
+import de.dfki.vsm.editor.util.IDManager;
+import de.dfki.vsm.model.flow.geom.Position;
 
 /**
  * @author Gregor Mehlmann
@@ -49,7 +47,6 @@ public class SuperNode extends BasicNode {
   @XmlAttribute(name="start")
   @XmlJavaTypeAdapter(StartNodeAdapter.class)
   protected HashMap<String, BasicNode> mStartNodeMap = new HashMap<String, BasicNode>();
-  protected BasicNode mHistoryNode = null;
   @XmlAttribute(name="hideLocalVar")
   protected boolean mHideLocalVarBadge = false;
   @XmlAttribute(name="hideGlobalVar")
@@ -58,64 +55,18 @@ public class SuperNode extends BasicNode {
   public SuperNode() {
   }
 
-  public SuperNode(final BasicNode node) {
-    mNodeId = node.mNodeId;
-    mNodeName = node.mNodeName;
-    mComment = node.mComment;
-    mCmdList = node.mCmdList;
-    mCEdgeList = node.mCEdgeList;
-    mPEdgeList = node.mPEdgeList;
-    mIEdgeList = node.mIEdgeList;
-    mFEdgeList = node.mFEdgeList;
-    mDEdge = node.mDEdge;
-    mPosition = node.mPosition;
-    mParentNode = node.mParentNode;
-    mIsHistoryNode = node.mIsHistoryNode;
+  /** Create a SuperNode from an existing BasicNode: Node Type Change */
+  public SuperNode(IDManager mgr, final BasicNode node) {
+    mNodeId = mgr.getNextFreeID(this);
+    copyBasicFields(node);
   }
 
-  public void setComment(String value) {
-    mComment = value;
-  }
-
-  public String getComment() {
-    return mComment;
-  }
-
-  public void addComment(CommentBadge value) {
-    mCommentList.add(value);
-  }
-
-  public void hideGlobalVarBadge(Boolean value) {
-    mHideGlobalVarBadge = value;
-  }
-
-  public Boolean isGlobalVarBadgeHidden() {
-    return mHideGlobalVarBadge;
-  }
-
-  public void hideLocalVarBadge(Boolean value) {
-    mHideLocalVarBadge = value;
-  }
-
-  public Boolean isLocalVarBadgeHidden() {
-    return mHideLocalVarBadge;
-  }
-
-  public void removeComment(CommentBadge value) {
-    mCommentList.remove(value);
-  }
-
-  public ArrayList<CommentBadge> getCommentList() {
-    return mCommentList;
-  }
-
-  @XmlTransient
-  public void setHistoryNode(BasicNode value) {
-    mHistoryNode = value;
-  }
-
-  public BasicNode getHistoryNode() {
-    return mHistoryNode;
+  /** Create a new SuperNode from the GUI */
+  public SuperNode(IDManager mgr, Position pos, SuperNode s) {
+    mNodeId = mNodeName = mgr.getNextFreeID(this);
+    mPosition = pos;
+    mParentNode = s;
+    mParentNode.mSuperNodeList.add(this);
   }
 
   @XmlTransient
@@ -135,94 +86,111 @@ public class SuperNode extends BasicNode {
     mStartNodeMap.remove(node.getId());
   }
 
-  // TODO: this is not a deep copy
-  public HashMap<String, BasicNode> getCopyOfStartNodeMap() {
-    HashMap<String, BasicNode> copy = new HashMap<>(mStartNodeMap);
-    return copy;
+  public void setComment(String value) {
+    mComment = value;
   }
 
-  public void addSuperNode(SuperNode value) {
-    mSuperNodeList.add(value);
+  public String getComment() {
+    return mComment;
   }
 
-  public void removeSuperNode(SuperNode value) {
-    mSuperNodeList.remove(value);
+  public void addComment(CommentBadge value) {
+    mCommentList.add(value);
   }
 
-  public SuperNode getSuperNodeAt(int index) {
-    return mSuperNodeList.get(index);
+
+  public void removeComment(CommentBadge value) {
+    mCommentList.remove(value);
   }
 
-  public ArrayList<SuperNode> getSuperNodeList() {
+  public ArrayList<CommentBadge> getCommentList() {
+    return mCommentList;
+  }
+
+  /*
+  public void hideGlobalVarBadge(Boolean value) {
+    mHideGlobalVarBadge = value;
+  }
+
+  public Boolean isGlobalVarBadgeHidden() {
+    return mHideGlobalVarBadge;
+  }
+
+  public void hideLocalVarBadge(Boolean value) {
+    mHideLocalVarBadge = value;
+  }
+
+  public Boolean isLocalVarBadgeHidden() {
+    return mHideLocalVarBadge;
+  }
+  */
+
+  public boolean isStartNode(BasicNode value) {
+    return mStartNodeMap.containsKey(value.getId());
+  }
+
+  /** Add a node to the list of nodes */
+  public void addNode(BasicNode value) {
+    if (value instanceof SuperNode) {
+      mSuperNodeList.add((SuperNode)value);
+    } else {
+      mNodeList.add(value);
+    }
+  }
+
+  /** Add a node, with side effects, such as adding it as a start node if it's
+   *  the first node added
+   */
+  public void removeNode(BasicNode value) {
+    if (value instanceof SuperNode) {
+      mSuperNodeList.remove((SuperNode)value);
+    } else {
+      mNodeList.remove(value);
+    }
+  }
+
+
+  public Iterable<SuperNode> getSuperNodeList() {
     return mSuperNodeList;
   }
 
-  public ArrayList<SuperNode> getCopyOfSuperNodeList() {
-    ArrayList<SuperNode> copy = new ArrayList<SuperNode>();
-
-    for (SuperNode node : mSuperNodeList) {
-      copy.add(node.getCopy());
-    }
-
-    return copy;
-  }
-
-  public void addNode(BasicNode value) {
-    mNodeList.add(value);
-  }
-
-  public void removeNode(BasicNode value) {
-    mNodeList.remove(value);
-  }
-
-  public BasicNode getNodeAt(int index) {
-    return mNodeList.get(index);
-  }
-
-  public ArrayList<BasicNode> getNodeList() {
+  public Iterable<BasicNode> getNodeList() {
     return mNodeList;
   }
 
-  public ArrayList<BasicNode> getCopyOfNodeList() {
-    ArrayList<BasicNode> copy = new ArrayList<BasicNode>();
 
-    for (BasicNode node : mNodeList) {
-      copy.add(node.getCopy());
+  private class NodeIterator implements Iterator<BasicNode> {
+    Iterator<? extends BasicNode> impl = mNodeList.iterator();
+    boolean basic = true;
+
+    @Override
+    public boolean hasNext() {
+      boolean result = impl.hasNext();
+      if (!result && basic) {
+        basic = false;
+        impl = mSuperNodeList.iterator();
+        result = impl.hasNext();
+      }
+      return result;
     }
 
-    return copy;
+    @Override
+    public BasicNode next() { return impl.next(); }
   }
 
-  public ArrayList<BasicNode> getNodeAndSuperNodeList() {
-    ArrayList<BasicNode> list = new ArrayList<BasicNode>();
-
-    for (BasicNode n : mNodeList) {
-      list.add(n);
-    }
-
-    for (SuperNode sn : mSuperNodeList) {
-      list.add(sn);
-    }
-
-    return list;
+  public Iterable<BasicNode> getNodes() {
+    return new Iterable<BasicNode>() {
+      @Override
+      public Iterator<BasicNode> iterator() { return new NodeIterator(); }
+    };
   }
 
-  public ArrayList<BasicNode> getCopyOfNodeAndSuperNodeList() {
-    ArrayList<BasicNode> copy = new ArrayList<BasicNode>();
-
-    for (BasicNode n : mNodeList) {
-      copy.add(n.getCopy());
-    }
-
-    for (SuperNode sn : mSuperNodeList) {
-      copy.add(sn.getCopy());
-    }
-
-    return copy;
+  public int getNodeSize() {
+    return mNodeList.size() + mSuperNodeList.size();
   }
 
   public BasicNode getChildNodeById(String id) {
-    for (BasicNode node : getNodeAndSuperNodeList()) {
+    for (BasicNode node : getNodes()) {
       if (node.getId().equals(id)) {
         return node;
       }
@@ -248,7 +216,7 @@ public class SuperNode extends BasicNode {
   public void establishTargetNodes() {
     super.establishTargetNodes();
 
-    for (BasicNode node : getNodeAndSuperNodeList()) {
+    for (BasicNode node : getNodes()) {
       node.establishTargetNodes();
     }
   }
@@ -263,35 +231,49 @@ public class SuperNode extends BasicNode {
     }
   }
 
-  // TODO:
-  public void establishAltStartNodes() {
-    for (BasicNode node : getNodeAndSuperNodeList()) {
-      for (AbstractEdge edge : node.getEdgeList()) {
-        if (edge.getTargetNode() instanceof SuperNode) {
+  /** Copy constructor */
+  protected void copyFieldsFrom(final SuperNode node) {
+    super.copyFieldsFrom(node);
+    // unfilled: mCommentList, mNodeList, mSuperNodeList, mStartNodeMap
+    mHideLocalVarBadge = node.mHideLocalVarBadge;
+    mHideGlobalVarBadge = node.mHideGlobalVarBadge;
+  }
 
-          // First establish the start nodes
-          for (Pair<String, BasicNode> startNodePair : edge.getAltMap().keySet()) {
-            if (!startNodePair.getFirst().equals("")) {
-              BasicNode n = ((SuperNode) edge.getTargetNode()).getChildNodeById(startNodePair.getFirst());
-
-              startNodePair.setSecond(n);
-            }
-          }
-
-          // Second establish the alternative nodes
-          for (Pair<String, BasicNode> altStartNodePair : edge.getAltMap().values()) {
-            BasicNode n = ((SuperNode) edge.getTargetNode()).getChildNodeById(altStartNodePair.getFirst());
-
-            altStartNodePair.setSecond(n);
-          }
-        }
+  /** This copies all nodes and edges *inside* this SuperNode, but not the
+   *  edges starting at this node.
+   */
+  public BasicNode deepCopy(IDManager mgr, SuperNode newParent) {
+    SuperNode copy = new SuperNode();
+    copy.copyFieldsFrom(this);
+    copy.mNodeId = mgr.getNextFreeID(this);
+    copy.mParentNode = newParent;
+    Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
+    // copy all subnodes in this SuperNode
+    for (BasicNode n : getNodes()) {
+      BasicNode nCopy = n.deepCopy(mgr, copy);
+      orig2copy.put(n, nCopy);
+      copy.mNodeList.add(nCopy);
+    }
+    // copy all edges between nodes inside this SuperNode
+    for (BasicNode n : getNodes()) {
+      for (AbstractEdge e: n.getEdgeList()) {
+        e.deepCopy(orig2copy);
       }
     }
+
+    return copy;
   }
 
   @Override
-  public SuperNode getCopy() {
-    return (SuperNode) CopyTool.copy(this);
+  public int hashCode() {
+    int hash = 5;
+    hash = 53 * hash + this.mCommentList.hashCode();
+    hash = 53 * hash + this.mNodeList.hashCode();
+    hash = 53 * hash + this.mSuperNodeList.hashCode();
+    hash = 53 * hash + this.mStartNodeMap.hashCode();
+    hash = 53 * hash + Boolean.hashCode(this.mHideLocalVarBadge);
+    hash = 53 * hash + Boolean.hashCode(this.mHideGlobalVarBadge);
+    return hash;
   }
 
 }

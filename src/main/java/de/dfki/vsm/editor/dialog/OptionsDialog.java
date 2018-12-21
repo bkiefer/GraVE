@@ -21,7 +21,7 @@ import de.dfki.vsm.editor.CancelButton;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.OKButton;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
-import de.dfki.vsm.editor.project.EditorConfig;
+import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
@@ -59,10 +59,9 @@ public class OptionsDialog extends JDialog {
   private JComboBox mScriptFontComboBox;
   private JLabel mGridScaleLabel;
   private JSpinner mGridScaleSpinner;
-  private JCheckBox mLaunchDefaultPlayerCheckBox;
+  private JLabel mZoomFactorLabel;
+  private JSpinner mZoomFactorSpinner;
   private JCheckBox mGridCheckBox;
-  private JCheckBox mVisualizationCheckBox;
-  private JCheckBox mVisualizationTraceCheckBox;
   private JCheckBox mShowNodeIDCheckBox;
   private JCheckBox mShowVariablesCheckBox;
   private JCheckBox mShowSmartPathDebugCheckBox;
@@ -301,7 +300,6 @@ public class OptionsDialog extends JDialog {
   }
 
   private void initGraphicsPanel() {
-    mGridScaleLabel = new JLabel("Grid Scale:");
     mWorkspaceFontSizeLabel = new JLabel("Font Size:");
     mGridCheckBox = new JCheckBox("Draw Grid", true);
     mGridCheckBox.setOpaque(false);
@@ -316,28 +314,13 @@ public class OptionsDialog extends JDialog {
     // Node size stuff
     mNodeSizeLabel = new JLabel("Node Size:");
     mNodeSizeSpinner = new JSpinner(new SpinnerNumberModel(mEditorConfig.sNODEHEIGHT, 20, 200, 2));
-    mGridScaleSpinner = new JSpinner(new SpinnerNumberModel(mEditorConfig.sGRID_YSCALE, 1, 8, 1));
+    mGridScaleLabel = new JLabel("Grid Scale:");
+    mGridScaleSpinner = new JSpinner(new SpinnerNumberModel(mEditorConfig.sGRID_SCALE, 1, 4, .25));
+    mZoomFactorLabel = new JLabel("Zoom Factor:");
+    mZoomFactorSpinner = new JSpinner(new SpinnerNumberModel(mEditorConfig.sZOOM_FACTOR, 1, 5, .25));
     mWorkspaceFontSizeSpinner = new JSpinner(new SpinnerNumberModel(mEditorConfig.sWORKSPACEFONTSIZE, 8, 16, 1));
     ((JSpinner.NumberEditor) mNodeSizeSpinner.getEditor()).getTextField().setEditable(false);
     ((JSpinner.NumberEditor) mGridScaleSpinner.getEditor()).getTextField().setEditable(false);
-    mVisualizationCheckBox = new JCheckBox("Activitiy Visualization", true);
-    mVisualizationCheckBox.setOpaque(false);
-    mVisualizationCheckBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        saveEditorConfig(false);
-        mEditor.refresh();
-      }
-    });
-    mVisualizationTraceCheckBox = new JCheckBox("Activity Trace", true);
-    mVisualizationTraceCheckBox.setOpaque(false);
-    mVisualizationTraceCheckBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        saveEditorConfig(false);
-        mEditor.refresh();
-      }
-    });
     mShowNodeIDCheckBox = new JCheckBox("Draw Node ID", true);
     mShowNodeIDCheckBox.setOpaque(false);
     mShowNodeIDCheckBox.addActionListener(new ActionListener() {
@@ -383,6 +366,9 @@ public class OptionsDialog extends JDialog {
     fontAndSize.add(mGridScaleLabel);
     fontAndSize.add(mGridScaleSpinner);
     fontAndSize.add(Box.createRigidArea(new Dimension(5, 0)));
+    fontAndSize.add(mZoomFactorLabel);
+    fontAndSize.add(mZoomFactorSpinner);
+    fontAndSize.add(Box.createRigidArea(new Dimension(5, 0)));
 
     JPanel drawOptions = new JPanel();
 
@@ -394,13 +380,6 @@ public class OptionsDialog extends JDialog {
     drawOptions.add(mShowVariablesCheckBox);
     drawOptions.add(mShowSmartPathDebugCheckBox);
 
-    JPanel activityOptions = new JPanel();
-
-    activityOptions.setOpaque(false);
-    activityOptions.setLayout(new BoxLayout(activityOptions, BoxLayout.Y_AXIS));
-    activityOptions.add(mVisualizationCheckBox);
-    activityOptions.add(mVisualizationTraceCheckBox);
-
     JPanel graphicOptions = new JPanel();
 
     graphicOptions.setOpaque(false);
@@ -408,7 +387,6 @@ public class OptionsDialog extends JDialog {
     graphicOptions.add(Box.createRigidArea(new Dimension(5, 0)));
     graphicOptions.add(drawOptions);
     graphicOptions.add(Box.createHorizontalGlue());
-    graphicOptions.add(activityOptions);
     graphicOptions.add(Box.createRigidArea(new Dimension(5, 0)));
     mGraphicsPanel = new JPanel();
     mGraphicsPanel.setBackground(Color.white);
@@ -478,12 +456,11 @@ public class OptionsDialog extends JDialog {
 
     mEditorConfig.sNODEWIDTH = ((SpinnerNumberModel) mNodeSizeSpinner.getModel()).getNumber().intValue();
     mEditorConfig.sNODEHEIGHT = ((SpinnerNumberModel) mNodeSizeSpinner.getModel()).getNumber().intValue();
-    mEditorConfig.sGRID_XSPACE = ((SpinnerNumberModel) mGridScaleSpinner.getModel()).getNumber().intValue();
-    mEditorConfig.sGRID_YSPACE = ((SpinnerNumberModel) mGridScaleSpinner.getModel()).getNumber().intValue();
+    mEditorConfig.sGRID_SCALE = ((SpinnerNumberModel) mGridScaleSpinner.getModel()).getNumber().intValue();
+    mEditorConfig.sZOOM_FACTOR = ((SpinnerNumberModel) mZoomFactorSpinner.getModel()).getNumber().intValue();
+
     mEditorConfig.sWORKSPACEFONTSIZE = ((SpinnerNumberModel) mWorkspaceFontSizeSpinner.getModel()).getNumber().intValue();
     mEditorConfig.sSHOWGRID = mGridCheckBox.isSelected();
-    mEditorConfig.sVISUALISATION = mVisualizationCheckBox.isSelected();
-    mEditorConfig.sVISUALIZATIONTRACE = mVisualizationTraceCheckBox.isSelected();
     mEditorConfig.sSHOWIDSOFNODES = mShowNodeIDCheckBox.isSelected();
     mEditorConfig.sSHOW_VARIABLE_BADGE_ON_WORKSPACE = mShowVariablesCheckBox.isSelected();
     mEditorConfig.sSHOW_SMART_PATH_DEBUG = mShowSmartPathDebugCheckBox.isSelected();
@@ -506,15 +483,14 @@ public class OptionsDialog extends JDialog {
       ((SpinnerNumberModel) mNodeSizeSpinner.getModel()).setValue(
               mEditorConfig.sNODEHEIGHT);
       ((SpinnerNumberModel) mGridScaleSpinner.getModel()).setValue(
-              mEditorConfig.sGRID_XSPACE);
-      ((SpinnerNumberModel) mGridScaleSpinner.getModel()).setValue(
-              mEditorConfig.sGRID_YSPACE);
+              mEditorConfig.sGRID_SCALE);
+      ((SpinnerNumberModel) mZoomFactorSpinner.getModel()).setValue(
+              mEditorConfig.sZOOM_FACTOR);
 
       mGridCheckBox.setSelected(mEditorConfig.sSHOWGRID);
       ((SpinnerNumberModel) mScriptFontSizeSpinner.getModel()).setValue(
               mEditorConfig.sSCRIPT_FONT_SIZE);
       mScriptFontComboBox.setSelectedItem(mEditorConfig.sSCRIPT_FONT_TYPE);
-      mVisualizationTraceCheckBox.setSelected(mEditorConfig.sVISUALIZATIONTRACE);
       //mLaunchDefaultPlayerCheckBox.setSelected(Boolean.valueOf(mEditorConfig.getProperty(key)));
       mShowNodeIDCheckBox.setSelected(mEditorConfig.sSHOWIDSOFNODES);
       mShowVariablesCheckBox.setSelected(mEditorConfig.sSHOW_VARIABLE_BADGE_ON_WORKSPACE);

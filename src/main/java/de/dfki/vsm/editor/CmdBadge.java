@@ -3,25 +3,26 @@ package de.dfki.vsm.editor;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.Observer;
+import java.util.Arrays;
+import java.util.Comparator;
+
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
+import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
-import de.dfki.vsm.editor.project.EditorConfig;
+import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
-public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer {
+@SuppressWarnings("serial")
+public class CmdBadge extends RSyntaxTextArea implements Selectable {
 
   //
   private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
@@ -32,14 +33,14 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
 
   // TODO: put preferences into external yml
   private final Font mFont;
-  private final int maxWidth = 200;
-  private final int maxHeight = 100;
+  private final int maxWidth = 800;
+  private final int maxHeight = 300;
 
   private Color boxActiveColour = new Color(255, 255, 255, 100);
 
   /**
    */
-  public CmdBadge(Node node) {
+  public CmdBadge(Node node, EditorConfig cfg) {
     super(30, 40);
     setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
     setCodeFoldingEnabled(true);
@@ -56,12 +57,11 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
 
     addFocusListener(new FocusListener() {
       public void focusGained(FocusEvent e) {
-        setBackground(boxActiveColour);
+        setSelected();
       }
 
       public void focusLost(FocusEvent e) {
-        setBackground(new Color(175, 175, 175, 100));
-        endEditMode();
+        setDeselected();
       }
     });
     getDocument().addDocumentListener(new DocumentListener() {
@@ -79,7 +79,7 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
       }
     });
     mNode = node;
-    mEditorConfig = mNode.getWorkSpace().getEditorConfig();
+    mEditorConfig = cfg;
     mFont = new Font("Monospaced",
             Font.ITALIC,
             mEditorConfig.sWORKSPACEFONTSIZE);
@@ -88,28 +88,29 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
     update();
   }
 
-  /*
-   * Resets badge to its default visual behavior
-   */
-  public synchronized void endEditMode() {
+  @Override
+  public void setSelected() {
+    setBackground(boxActiveColour);
+    mDispatcher.convey(new ElementSelectedEvent(mNode));
+  }
+
+  @Override
+  public synchronized void setDeselected() {
+    setBackground(new Color(175, 175, 175, 100));
     mNode.getDataNode().setCmd(getText());
     mDispatcher.convey(new ProjectChangedEvent(this));
-    mDispatcher.convey(new NodeSelectedEvent(this, mNode.getDataNode()));
+    mDispatcher.convey(new ElementSelectedEvent(mNode));
     update();
   }
 
-  public void updateLocation(Point vector) {
-    Point location = getLocation();
-    setLocation(location.x + vector.x, location.y + vector.y);
+  public void translate(Point vector) {
+    Point p = getLocation();
+    p.translate(vector.x, vector.y);
+    setLocation(p);
   }
 
   public boolean containsPoint(int x, int y) {
     return getBounds().contains(x, y);
-  }
-
-  @Override
-  public void update(java.util.Observable obs, Object obj) {
-    update();
   }
 
   private void update() {
@@ -117,19 +118,31 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
     if (content == null) return;
     // Sets visibility of the component to true only if there is something to display
     setVisible(!content.isEmpty());
-    setText(content);
+    super.setText(content);
     if (!content.isEmpty()) {
-      int newWidth = getColumns() * getColumnWidth();
-      newWidth = newWidth > maxWidth? maxWidth : newWidth;
-      int newHeight = getLineCount() * getLineHeight();
-      newHeight = newHeight > maxHeight? maxHeight : newHeight;
-      setSize(new Dimension(newWidth, newHeight));
-      setLocation(mNode.getLocation().x + (mEditorConfig.sNODEWIDTH / 2)
-              - (newWidth / 2),
-              mNode.getLocation().y + mEditorConfig.sNODEHEIGHT);
+      computeAndSetNewSize();
     } else {
       setSize(new Dimension(getWidth(), getHeight()));
     }
+  }
+
+  private void computeAndSetNewSize() {
+    int lines = (int) getText().chars().filter(x -> x == '\n').count() + 1;
+    String longestLine = Arrays.asList(getText().split("\n")).stream()
+            .max(Comparator.comparingInt(String::length)).get();
+    FontMetrics fm = getFontMetrics(getFont());
+    int newHeight = fm.getHeight() * lines;
+    // font is monospaced, so this always works
+    int newWidth = fm.stringWidth("p") * longestLine.length();
+    newWidth = newWidth > maxWidth? maxWidth : newWidth;
+    newHeight = newHeight > maxHeight? maxHeight : newHeight;
+    setSize(new Dimension(newWidth, newHeight));
+    setLocation();
+  }
+
+  public void setLocation() {
+    setLocation(mNode.getLocation().x + (mNode.getWidth() - getSize().width)/2,
+        mNode.getLocation().y + mNode.getHeight());
   }
 
   public Node getNode() {
@@ -138,11 +151,13 @@ public class CmdBadge extends RSyntaxTextArea implements EventListener, Observer
 
   @Override
   public void setText(String text) {
-    super.setText(text);
     mNode.getDataNode().setCmd(text);
+    update();
   }
 
   @Override
-  public void update(EventObject event) {
+  public int hashCode() {
+    return getText().hashCode();
   }
+
 }

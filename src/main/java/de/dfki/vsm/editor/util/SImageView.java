@@ -63,7 +63,7 @@ public class SImageView extends ImageView implements ImageObserver, MouseListene
   private static final boolean DEBUG = false;
 
   // $ move this someplace public
-  static final String IMAGE_CACHE_PROPERTY = "imageCache";
+  private static final String IMAGE_CACHE_PROPERTY = "imageCache";
 
   // Height/width to use before we know the real size:
   private static final int DEFAULT_WIDTH = 32,
@@ -72,7 +72,7 @@ public class SImageView extends ImageView implements ImageObserver, MouseListene
           DEFAULT_BORDER = 2;
 
   // --- Attribute Values ------------------------------------------
-  public static final String TOP = "top",
+  private static final String TOP = "top",
           TEXTTOP = "texttop",
           MIDDLE = "middle",
           ABSMIDDLE = "absmiddle",
@@ -91,7 +91,7 @@ public class SImageView extends ImageView implements ImageObserver, MouseListene
   private static Icon sPendingImageIcon, sMissingImageIcon;
 
   // --- Application path ------------------------------------------
-  String applicationImagePath = null;
+  private String applicationImagePath = null;
 
   // --- member variables ------------------------------------------------
   private AttributeSet attr;

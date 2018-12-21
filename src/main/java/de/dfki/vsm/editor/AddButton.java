@@ -15,6 +15,7 @@ import de.dfki.vsm.Preferences;
  *
  * @author mfallas
  */
+@SuppressWarnings("serial")
 public class AddButton extends JLabel {
 
   private final Dimension buttonSize = new Dimension(20, 20);

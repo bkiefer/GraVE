@@ -10,11 +10,11 @@ package de.dfki.vsm.editor.action;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Set;
 
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.project.WorkSpace;
 import de.dfki.vsm.editor.util.grid.*;
 import de.dfki.vsm.editor.util.grid.pathfinding.Path;
 
@@ -24,8 +24,8 @@ import de.dfki.vsm.editor.util.grid.pathfinding.Path;
  */
 public class NormalizeEdgeAction {
 
-  private WorkSpacePanel mWorkSpace = null;
-  private de.dfki.vsm.editor.Edge mGUIEdge = null;
+  private WorkSpace mWorkSpace = null;
+  private Edge mGUIEdge = null;
   protected GridRectangle gridSource = null;
   protected GridRectangle gridDestination = null;
   protected de.dfki.vsm.editor.Node mSourceGUINode = null;
@@ -33,7 +33,7 @@ public class NormalizeEdgeAction {
   protected Point mSourceGUINodeDockPoint = null;
   protected Point mTargetGUINodeDockPoint = null;
 
-  public NormalizeEdgeAction(WorkSpacePanel workSpace, de.dfki.vsm.editor.Edge edge) {
+  public NormalizeEdgeAction(WorkSpace workSpace, de.dfki.vsm.editor.Edge edge) {
     mWorkSpace = workSpace;
     mGUIEdge = edge;
     mSourceGUINode = mGUIEdge.getSourceNode();
@@ -56,10 +56,7 @@ public class NormalizeEdgeAction {
 
   public void recalculateWeight() {
     mWorkSpace.getGridManager().resetAllGridWeight();
-
-    Set<de.dfki.vsm.editor.Edge> edgeSet = mWorkSpace.getEdges();
-
-    for (de.dfki.vsm.editor.Edge edge : edgeSet) {
+    for (de.dfki.vsm.editor.Edge edge : mWorkSpace.getEdges()) {
       if (!edge.getName().equals(mGUIEdge.getName())) {
         mWorkSpace.getGridManager().setEdgeWeight(edge);
         mWorkSpace.getGridManager().setNodeWeight(edge.getSourceNode());
@@ -68,106 +65,14 @@ public class NormalizeEdgeAction {
     }
   }
 
-//  public void setEdgePath_deprecated() {
-//      //if weight of grid intersection is larger than max weight threshold, rerouting needed.
-//      if(isReroutingNeeded()) {
-//          AStarEdgeFinder aStarPath = new AStarEdgeFinder(mWorkSpace.mGridManager.getmTransitionArea());
-//          Path alternatePath = aStarPath.getPath(gridSource.getColumnIndex(), gridSource.getRowIndex(),
-//                  gridDestination.getColumnIndex(), gridDestination.getRowIndex());
-//
-////          aStarPath.printPath(gridSource.getColumnIndex(), gridSource.getRowIndex(),
-////                  gridDestination.getColumnIndex(), gridDestination.getRowIndex());
-//
-//          // Calculate the control point of the bezier curve that should be made
-//          ArrayList<BezierPoint> pathPoints = new ArrayList<BezierPoint>();
-//          int deviationX = 0;
-//          int deviationY = 0;
-//          for(int i = 0; i < alternatePath.getLength(); i++) {
-//              BezierPoint point = new BezierPoint(
-//                  mWorkSpace.mGridManager.getmTransitionArea()[alternatePath.getY(i)][alternatePath.getX(i)].getCenterX(),
-//                  mWorkSpace.mGridManager.getmTransitionArea()[alternatePath.getY(i)][alternatePath.getX(i)].getCenterY());
-//              pathPoints.add(point);
-//              if(i < alternatePath.getLength()-1) {
-//                  deviationX += (alternatePath.getX(i+1) - alternatePath.getX(i));
-//                  deviationY += (alternatePath.getY(i+1) - alternatePath.getY(i));
-//              }
-//          }
-//
-//          BezierFit bezierFit = new BezierFit();
-//          BezierPoint[] controlPoint = bezierFit.bestFit(pathPoints);
-//
-//          //Check direction from target node, this means a vertical movement
-//          if(Math.abs(deviationY) > Math.abs(deviationX)) {
-//              int deviationVert = 0;
-//              for(int i = 0; i < alternatePath.getLength()/3; i++) {
-//                  deviationVert += (alternatePath.getX(i+1) - alternatePath.getX(i));
-//              }
-//
-//              //This means the direction is downward
-//              if(deviationVert > 0) {
-//                  mSourceGUINodeDockPoint = mSourceGUINode.connectEdgeAtSourceNode(mGUIEdge, new Point(
-//                                              mSourceGUINode.getX() + 50, mSourceGUINode.getY() + 100));
-//                  mTargetGUINodeDockPoint = mTargetGUINode.connectEdgeAtSourceNode(mGUIEdge, new Point(
-//                                              mTargetGUINode.getX() + 50, mTargetGUINode.getY() + 100));
-//              }
-//              //This means the direction is upward
-//              else {
-//                  mSourceGUINodeDockPoint = mSourceGUINode.connectEdgeAtSourceNode(mGUIEdge, new Point(
-//                                              mSourceGUINode.getX() + 50, mSourceGUINode.getY()));
-//                  mTargetGUINodeDockPoint = mTargetGUINode.connectEdgeAtSourceNode(mGUIEdge, new Point(
-//                                              mTargetGUINode.getX() + 50, mTargetGUINode.getY()));
-//              }
-//          }
-//          //Check direction from target node, this means a horizontal movement
-//          else {
-//              int deviationHorz = 0;
-//              for(int i = 0; i < alternatePath.getLength()/3; i++) {
-//                  deviationHorz += (alternatePath.getY(i+1) - alternatePath.getY(i));
-//              }
-//              //This means the direction is to the right
-//              if(deviationHorz > 0) {
-//                  mSourceGUINodeDockPoint = mSourceGUINode.connectEdgeAtSourceNode(mGUIEdge, new Point(
-//                                              mSourceGUINode.getX() + 100, mSourceGUINode.getY() + 50));
-//                  mTargetGUINodeDockPoint = mTargetGUINode.connectEdgeAtSourceNode(mGUIEdge, new Point(
-//                                              mTargetGUINode.getX() + 100, mTargetGUINode.getY() + 50));
-//              }
-//              //This means the direction is to the left
-//              else {
-//                  mSourceGUINodeDockPoint = mSourceGUINode.connectEdgeAtSourceNode(mGUIEdge, new Point(
-//                                              mSourceGUINode.getX(), mSourceGUINode.getY() + 50));
-//                  mTargetGUINodeDockPoint = mTargetGUINode.connectEdgeAtSourceNode(mGUIEdge, new Point(
-//                                              mTargetGUINode.getX(), mTargetGUINode.getY() + 50));
-//              }
-//          }
-//
-//          //Manipulate the control point based on the BezierFit calculation
-//          mGUIEdge.mEg.mCCrtl1.x = (int) Math.round(controlPoint[1].getX());
-//          mGUIEdge.mEg.mCCrtl1.y = (int) Math.round(controlPoint[1].getY());
-//
-//          mGUIEdge.mEg.mCCrtl2.x = (int) Math.round(controlPoint[2].getX());
-//          mGUIEdge.mEg.mCCrtl2.y = (int) Math.round(controlPoint[2].getY());
-//
-//          getEdgeTotalWeight();
-//          setGridWeight();
-//          mWorkSpace.add(mGUIEdge);
-//          mWorkSpace.revalidate();
-//          mWorkSpace.repaint(100);
-//      }
-//
-//      else {
-//          setGridWeight();
-//          mWorkSpace.add(mGUIEdge);
-//          mWorkSpace.revalidate();
-//          mWorkSpace.repaint(100);
-//      }
-//  }
   public void setEdgePath() {
 
     // if weight of grid intersection is larger than max weight threshold, rerouting needed.
     if (isReroutingNeeded()) {
 
       // System.out.println("Smart Path initiated!");
-      AStarEdgeFinder aStarPath = new AStarEdgeFinder(mWorkSpace.mGridManager.getmTransitionArea());
+      GridRectangle[][] transArea = mWorkSpace.getTransitionArea();
+      AStarEdgeFinder aStarPath = new AStarEdgeFinder(transArea);
 
       aStarPath.setDiagonalPathCost(GridConstants.DIAGONAL_PATH_COST);
 
@@ -184,12 +89,11 @@ public class NormalizeEdgeAction {
       int deviationTargetY = 0;
 
       for (int i = 0; i < alternatePath.getLength(); i++) {
-        BezierPoint point
-                = new BezierPoint(mWorkSpace.mGridManager
-                        .getmTransitionArea()[alternatePath.getY(i)][alternatePath.getX(i)].getCenterX(), mWorkSpace.mGridManager.getmTransitionArea()[alternatePath.getY(i)][alternatePath.getX(i)].getCenterY());
+        BezierPoint point = new BezierPoint(
+            transArea[alternatePath.getY(i)][alternatePath.getX(i)].getCenterX(),
+            transArea[alternatePath.getY(i)][alternatePath.getX(i)].getCenterY());
 
-        mWorkSpace.mGridManager.getmTransitionArea()[alternatePath.getY(i)][alternatePath.getX(i)].setaStarPath(
-                true);
+        transArea[alternatePath.getY(i)][alternatePath.getX(i)].setaStarPath(true);
         pathPoints.add(point);
 
         if (i < alternatePath.getLength() / 2 + 2) {
@@ -249,6 +153,7 @@ public class NormalizeEdgeAction {
       BezierFit bezierFit = new BezierFit();
       BezierPoint[] controlPoint = bezierFit.bestFit(pathPoints);
 
+      /* TODO: MAYBE REACTIVATE
       // Manipulate the control point based on the BezierFit calculation
       if (((int) Math.round(controlPoint[1].getX()) + thresholdSourceX) > 0) {
         mGUIEdge.mEg.mCCrtl1.x = (int) Math.round(controlPoint[1].getX()) + thresholdSourceX;
@@ -287,16 +192,14 @@ public class NormalizeEdgeAction {
         mSourceGUINode.disconnectEdge(mGUIEdge);
         mSourceGUINodeDockPoint = mSourceGUINode.connectEdgeAtSourceNode(mGUIEdge,
                 new Point(sourceDockingPoint.getIntersectionX(), sourceDockingPoint.getIntersectionY()));
-        this.mWorkSpace.mGridManager.addDockingPoints(mSourceGUINodeDockPoint);
       }
 
       if ((targetDockingPoint.getIntersectionX() > -1) && (targetDockingPoint.getIntersectionY() > -1)) {
         mTargetGUINode.disconnectEdge(mGUIEdge);
-        mTargetGUINodeDockPoint = mTargetGUINode.connectEdgetAtTargetNode(mGUIEdge,
+        mTargetGUINodeDockPoint = mTargetGUINode.connectEdgeAtTargetNode(mGUIEdge,
                 new Point(targetDockingPoint.getIntersectionX(), targetDockingPoint.getIntersectionY()));
-        this.mWorkSpace.mGridManager.addDockingPoints(mTargetGUINodeDockPoint);
       }
-
+       */
       mWorkSpace.add(mGUIEdge);
       mWorkSpace.revalidate();
       mWorkSpace.repaint(100);
@@ -327,7 +230,7 @@ public class NormalizeEdgeAction {
     gridSource = null;
     gridDestination = null;
 
-    for (GridRectangle[] gridParent : mWorkSpace.mGridManager.getmTransitionArea()) {
+    for (GridRectangle[] gridParent : mWorkSpace.getTransitionArea()) {
       for (GridRectangle gridRectangle : gridParent) {
         gridRectangle.setaStarPath(false);
 
@@ -357,7 +260,7 @@ public class NormalizeEdgeAction {
           }
         }
 
-        if (gridRectangle.isIntersectByRectangle(mGUIEdge.mEg)) {
+        if (gridRectangle.isIntersectByRectangle(mGUIEdge)) {
           gridRectangle.setIntersectionType(GridRectangle.EDGE_INTERSECTION);
           sumWeight += gridRectangle.getWeight();
         }
@@ -366,10 +269,4 @@ public class NormalizeEdgeAction {
 
     return sumWeight;
   }
-
-//  public void setGridWeight() {
-//      mWorkSpace.getGridManager().setEdgeWeight(mGUIEdge);
-//      mWorkSpace.getGridManager().setNodeWeight(mSourceGUINode);
-//      mWorkSpace.getGridManager().setNodeWeight(mTargetGUINode);
-//  }
 }

@@ -12,6 +12,6 @@ public interface Copyable {
    *
    * @return A deep copy of the copyable object.
    */
-  public abstract Copyable getCopy();
+  public abstract Copyable deepCopy();
 
 }

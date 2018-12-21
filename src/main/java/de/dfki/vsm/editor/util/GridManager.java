@@ -1,245 +1,194 @@
-
 /*
-* SceneflowEditor - GridManager
+ * SceneflowEditor - GridManager
  */
 package de.dfki.vsm.editor.util;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.EditorConfig;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpace;
 import de.dfki.vsm.editor.util.grid.GridConstants;
 import de.dfki.vsm.editor.util.grid.GridRectangle;
+import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.graphics.workspace.WorkAreaSize;
-import de.dfki.vsm.model.flow.graphics.workspace.WorkSpaceInitNodeSize;
-import de.dfki.vsm.model.flow.graphics.workspace.WorkSpaceSuperNode;
+import de.dfki.vsm.model.project.EditorConfig;
 
-/*
-* @author Patrick
-* This class manages the node placement on the workspace.
-* Additional methods are provided for an intelligent placement
-* of nodes
+/**
+ * @author Patrick
+ * This class manages the node placement on the workspace.
+ * Additional methods are provided for an intelligent placement
+ * of nodes
+ *
+ * BK: I think this class should consider three dimensions:
+ * - node dimension
+ * - grid size (as a factor of node dimension: max(height, width))
+ * - zoom factor
+ *
+ * What's the purpose of this class?
+ * a) return the "closest" free node position in the grid
+ *    1. on the grid (snap to grid active)
+ *    2. not covering another node (inactive)
+ * b) provide routing hints for edges, either new or during straighten/normalize
+ *
+ * Positions of GUI elements should be mapped to abstract positions, so that
+ * all positions and dimensions are divided by zoomFactor
  */
 public class GridManager {
 
   private HashSet<Point> mPlacedNodes = new HashSet<>();
-  private int mNodesinRow = 0;
 
   // Subgrid for A* algorithm
   private GridRectangle[][] mTransitionArea = null;
-  private GridRectangle[][] mTempTransitions = null;
+  //private GridRectangle[][] mTempTransitions = null;
   private boolean isSubgridEstablished = false;
+  //private boolean firstRoundOfComputeWasFinished = false;
   private int height = 0;
   private int width = 0;
-  private final ArrayList<Point2D> dockingPoints = new ArrayList<>();
-  private final WorkSpacePanel mWorkSpacePanel;
+  private int columns = 0;  // x
+  private int rows = 0; // y
+  private final WorkSpace mWorkSpacePanel;
+  private final SuperNode mSuperNode;
   private ArrayList<Rectangle> mNodeAreas;
   private boolean isDebug;
-  private boolean isDockingView;
 
-  public GridManager(WorkSpacePanel ws) {
-    mWorkSpacePanel = ws;
+  public GridManager(WorkSpace workSpace, SuperNode s) {
+    mWorkSpacePanel = workSpace;
+    mSuperNode = s;
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
     isDebug = config.sSHOW_SMART_PATH_DEBUG;
-    isDockingView = false;
-    WorkAreaSize workAreaSize = new WorkSpaceInitNodeSize(mWorkSpacePanel, config.sGRID_NODEWIDTH, config.sGRID_NODEHEIGHT);
-    compute(workAreaSize);
+    compute();
   }
 
-  public final void compute(WorkAreaSize workAreaSize) {
+  // TODO: MUST BE ADAPTED, THE SIZE OF THE COMMAND BADGES IS NOT TAKEN INTO
+  // ACCOUNT, WHICH LEADS TO ERRORS
+  private Dimension calculateWorkArea(int nodeWidth, int nodeHeight) {
+    int width = mWorkSpacePanel.getSize().width;
+    int height = mWorkSpacePanel.getSize().height;
+    for (BasicNode n : mSuperNode.getNodes()) {
+      if (n.getPosition().getYPos() > height) {
+        height = n.getPosition().getYPos() + nodeHeight;
+      }
+      if (n.getPosition().getXPos() > width) {
+        width = n.getPosition().getXPos() + nodeWidth;
+      }
+    }
+    return new Dimension(width, height);
+  }
+
+  // TODO: UNFORTUNATELY, THIS WORKS ONLY WITH A GRID_SCALE OF 1
+  // THIS WHOLE CLASS MUST BE RE-DONE TO ACHIEVE PROPER ZOOMING / GRID SCALE
+  // AND: SNAPPING NODES TO GRID IF THEY CAME WITH OTHER POSITIONS IS QUESTIONABLE
+  private final void compute() {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
+    config.sGRID_SCALE = 1;
+    int nodeSize = Math.max(config.sNODEWIDTH, config.sNODEHEIGHT);
+    int gridWidth = (int)(nodeSize * config.sGRID_SCALE);
+    int halfGridWidth = gridWidth / 2;
+    int offset = gridWidth / 3;
 
-    Dimension area = workAreaSize.calculate();
-    int w = area.width;
-    int h = area.height;    // <-
+    Dimension area = calculateWorkArea(gridWidth, gridWidth);
+    height = area.height;
+    width = area.width;
 
-    mNodesinRow = w / config.sGRID_XSPACE;
+    int cs = width / gridWidth + 1;  // x
+    int rs = height / gridWidth + 1; // y
+    if (cs != columns || rs != rows) {
+      columns = cs; rows = rs; isSubgridEstablished = false;
+    }
     mNodeAreas = new ArrayList<>();
 
-    if ((w / config.sGRID_XSPACE) > 0 && (h / config.sGRID_YSPACE) > 0
-            && (isSubgridEstablished == false)) {
-      mTransitionArea
-              = new GridRectangle[((w / config.sGRID_XSPACE) + 1) * 2][((h / config.sGRID_YSPACE) + 1) * 2];
+    if (!isSubgridEstablished) {
+      mTransitionArea = new GridRectangle[(columns + 1) * 2][(rows + 1) * 2];
     }
 
-    if (!((height == h / config.sGRID_YSPACE) && (width == w / config.sGRID_XSPACE))) {
-      mTempTransitions
-              = new GridRectangle[((w / config.sGRID_XSPACE) + 1) * 2][((h / config.sGRID_YSPACE) + 1) * 2];
+    /*
+    if (! firstRoundOfComputeWasFinished) {
+      mTempTransitions =
+        new GridRectangle[(columns + 1) * 2][(rows + 1) * 2];
     }
+    */
 
-    int halfNodeSize = config.sGRID_NODEWIDTH / 2;
-
-    for (int j = 0; j <= (h / config.sGRID_YSPACE); j++) {
-      for (int i = 0; i <= (w / config.sGRID_XSPACE); i++) {
-        Rectangle r = new Rectangle(config.sXOFFSET + (i * config.sGRID_XSPACE),
-                config.sYOFFSET + (j * config.sGRID_YSPACE),
-                config.sGRID_NODEWIDTH, config.sGRID_NODEWIDTH);
-
+    for (int row = 0; row <= rows; row++) { // y
+      for (int col = 0; col <= columns; col++) { // x
+        int colOff = offset + (col * gridWidth);
+        int rowOff = offset + (row * gridWidth);
+        Rectangle r = new Rectangle(colOff, rowOff, gridWidth, gridWidth);
         mNodeAreas.add(r);
 
-        // Initiates subgrids.
-        if ((w / config.sGRID_XSPACE) > 0 && (h / config.sGRID_YSPACE) > 0
-                && (isSubgridEstablished == false)) {
-          GridRectangle s = new GridRectangle(config.sXOFFSET + (i * config.sGRID_XSPACE) + 2,
-                  config.sYOFFSET + (j * config.sGRID_YSPACE) + 2,
-                  halfNodeSize - 4, halfNodeSize - 4);
+        // Initiate subgrids, have a 2x2 border around the A* rectangles
+        colOff += 2;
+        rowOff += 2;
+        if (columns > 0 && rows > 0) {
+          for (int dcol = 0; dcol < 2; ++dcol) {
+            for (int drow = 0; drow < 2; ++drow) {
+              if (! isSubgridEstablished) {
+                GridRectangle s = new GridRectangle(
+                    colOff + dcol * halfGridWidth, rowOff + drow * halfGridWidth,
+                    halfGridWidth - 4, halfGridWidth - 4);
+                s.setColumnIndex(row * 2 + drow);  // ??
+                s.setRowIndex(col * 2 + dcol); // ??
+                mTransitionArea[col * 2 + dcol][row * 2 + drow] = s;
 
-          s.setColumnIndex(j * 2);
-          s.setRowIndex(i * 2);
-          mTransitionArea[i * 2][j * 2] = s;
+                /* Why is that there?
+                if (! firstRoundOfComputeWasFinished) {
+                  GridRectangle tmp = new GridRectangle(
+                    colOff + dcol * halfGridWidth, rowOff + drow * halfGridWidth,
+                    halfGridWidth - 4, halfGridWidth - 4);
 
-          // System.out.println("(" + (i*2) + "," + (j*2) + ")");
-          GridRectangle t = new GridRectangle(config.sXOFFSET + (i * config.sGRID_XSPACE)
-                  + halfNodeSize + 2, config.sYOFFSET + (j * config.sGRID_YSPACE)
-                  + 2, halfNodeSize - 4, halfNodeSize - 4);
+                  tmp.setColumnIndex(row * 2 + drow);
+                  tmp.setRowIndex(col * 2 + dcol);
+                  mTempTransitions[col * 2 + dcol][row * 2 + drow] = tmp;
+                } else {
+                  mTempTransitions[col * 2 + dcol][row * 2 + drow] =
+                    mTransitionArea[col * 2 + dcol][row * 2 + drow];
+                  // ?? strange
+                  mTempTransitions[col * 2 + dcol][row * 2 + drow]
+                    .setaStarPath(mTransitionArea[col * 2 + dcol][row * 2 + drow].isaStarPath());
+                  mTempTransitions[col * 2 + dcol][row * 2 + drow]
+                    .setLocation(colOff + dcol * halfGridWidth, rowOff + drow * halfGridWidth);
 
-          t.setColumnIndex(j * 2);
-          t.setRowIndex(i * 2 + 1);
-          mTransitionArea[i * 2 + 1][j * 2] = t;
-
-          // System.out.println("(" + (i*2+1) + "," + (j*2) + ")");
-          GridRectangle u = new GridRectangle(config.sXOFFSET + (i * config.sGRID_XSPACE) + 2,
-                  config.sYOFFSET + (j * config.sGRID_YSPACE) + halfNodeSize + 2,
-                  halfNodeSize - 4, halfNodeSize - 4);
-
-          u.setColumnIndex(j * 2 + 1);
-          u.setRowIndex(i * 2);
-          mTransitionArea[i * 2][j * 2 + 1] = u;
-
-          // System.out.println("(" + (i*2) + "," + (j*2+1) + ")");
-          GridRectangle v = new GridRectangle(config.sXOFFSET + (i * config.sGRID_XSPACE)
-                  + halfNodeSize + 2, config.sYOFFSET + (j * config.sGRID_YSPACE)
-                  + halfNodeSize + 2, halfNodeSize - 4, halfNodeSize - 4);
-
-          mTransitionArea[i * 2 + 1][j * 2 + 1] = v;
-          v.setColumnIndex(j * 2 + 1);
-          v.setRowIndex(i * 2 + 1);
-
-          // System.out.println("(" + (i*2+1) + "," + (j*2+1) + ")");
-        }
-
-        if (!((height == (h / config.sGRID_YSPACE)) && (width == (w / config.sGRID_XSPACE)))) {
-          if ((j < height) && (i < width)) {
-            mTempTransitions[i * 2][j * 2] = mTransitionArea[i * 2][j * 2];
-            mTempTransitions[i * 2][j * 2].setaStarPath(mTransitionArea[i * 2][j * 2].isaStarPath());
-            mTempTransitions[i * 2][j * 2].setLocation(config.sXOFFSET
-                    + (i * config.sGRID_XSPACE) + 2, config.sYOFFSET
-                    + (j * config.sGRID_YSPACE) + 2);
-            mTempTransitions[i * 2][j * 2].setSize(halfNodeSize - 4, halfNodeSize - 4);
-            mTempTransitions[i * 2 + 1][j * 2] = mTransitionArea[i * 2 + 1][j * 2];
-            mTempTransitions[i * 2 + 1][j * 2].setaStarPath(
-                    mTransitionArea[i * 2 + 1][j * 2].isaStarPath());
-            mTempTransitions[i * 2 + 1][j * 2].setLocation(config.sXOFFSET
-                    + (i * config.sGRID_XSPACE) + halfNodeSize + 2, config.sYOFFSET
-                    + (j * config.sGRID_YSPACE) + 2);
-            mTempTransitions[i * 2 + 1][j * 2].setSize(halfNodeSize - 4, halfNodeSize - 4);
-            mTempTransitions[i * 2][j * 2 + 1] = mTransitionArea[i * 2][j * 2 + 1];
-            mTempTransitions[i * 2][j * 2 + 1].setaStarPath(
-                    mTransitionArea[i * 2][j * 2 + 1].isaStarPath());
-            mTempTransitions[i * 2][j * 2 + 1].setLocation(config.sXOFFSET
-                    + (i * config.sGRID_XSPACE) + 2, config.sYOFFSET
-                    + (j * config.sGRID_YSPACE) + halfNodeSize + 2);
-            mTempTransitions[i * 2][j * 2 + 1].setSize(halfNodeSize - 4, halfNodeSize - 4);
-            mTempTransitions[i * 2 + 1][j * 2 + 1] = mTransitionArea[i * 2 + 1][j * 2 + 1];
-            mTempTransitions[i * 2 + 1][j * 2 + 1].setaStarPath(
-                    mTransitionArea[i * 2 + 1][j * 2 + 1].isaStarPath());
-            mTempTransitions[i * 2 + 1][j * 2 + 1].setLocation(config.sXOFFSET
-                    + (i * config.sGRID_XSPACE) + halfNodeSize + 2, config.sYOFFSET
-                    + (j * config.sGRID_YSPACE) + halfNodeSize + 2);
-            mTempTransitions[i * 2 + 1][j * 2 + 1].setSize(halfNodeSize - 4, halfNodeSize - 4);
-          } else {
-            GridRectangle s = new GridRectangle(config.sXOFFSET + (i * config.sGRID_XSPACE)
-                    + 2, config.sYOFFSET + (j * config.sGRID_YSPACE) + 2,
-                    halfNodeSize - 4, halfNodeSize - 4);
-
-            s.setColumnIndex(j * 2);
-            s.setRowIndex(i * 2);
-            mTempTransitions[i * 2][j * 2] = s;
-
-            // System.out.println("(" + (i*2) + "," + (j*2) + ")");
-            GridRectangle t = new GridRectangle(config.sXOFFSET + (i * config.sGRID_XSPACE)
-                    + halfNodeSize + 2, config.sYOFFSET
-                    + (j * config.sGRID_YSPACE) + 2, halfNodeSize - 4, halfNodeSize
-                    - 4);
-
-            t.setColumnIndex(j * 2);
-            t.setRowIndex(i * 2 + 1);
-            mTempTransitions[i * 2 + 1][j * 2] = t;
-
-            // System.out.println("(" + (i*2+1) + "," + (j*2) + ")");
-            GridRectangle u = new GridRectangle(config.sXOFFSET + (i * config.sGRID_XSPACE)
-                    + 2, config.sYOFFSET + (j * config.sGRID_YSPACE)
-                    + halfNodeSize + 2, halfNodeSize - 4, halfNodeSize - 4);
-
-            u.setColumnIndex(j * 2 + 1);
-            u.setRowIndex(i * 2);
-            mTempTransitions[i * 2][j * 2 + 1] = u;
-
-            // System.out.println("(" + (i*2) + "," + (j*2+1) + ")");
-            GridRectangle v = new GridRectangle(config.sXOFFSET + (i * config.sGRID_XSPACE)
-                    + halfNodeSize + 2, config.sYOFFSET
-                    + (j * config.sGRID_YSPACE) + halfNodeSize + 2, halfNodeSize
-                    - 4, halfNodeSize - 4);
-
-            mTempTransitions[i * 2 + 1][j * 2 + 1] = v;
-            v.setColumnIndex(j * 2 + 1);
-            v.setRowIndex(i * 2 + 1);
+                  mTempTransitions[col * 2+ dcol][row * 2 + drow]
+                    .setSize(halfGridWidth - 4, halfGridWidth - 4);
+                }
+                */
+              }
+            }
           }
         }
       }
     }
 
-    if ((w / config.sGRID_XSPACE) > 0 && (h / config.sGRID_YSPACE) > 0
-            && (isSubgridEstablished == false)) {
+    if ((columns) > 0 && (rows) > 0 && (isSubgridEstablished == false)) {
       isSubgridEstablished = true;
-      height = h / config.sGRID_YSPACE;
-      width = w / config.sGRID_XSPACE;
+      //firstRoundOfComputeWasFinished = true;
     }
 
-    if (!((height == h / config.sGRID_YSPACE) && (width == w / config.sGRID_XSPACE))) {
+    /*
+    if (!((height == rows) && (width == columns))) {
       mTransitionArea = mTempTransitions;
-      height = h / config.sGRID_YSPACE;
-      width = w / config.sGRID_XSPACE;
-    }
+      firstRoundOfComputeWasFinished = true;
+    }*/
   }
 
   public void update() {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
     isDebug = config.sSHOW_SMART_PATH_DEBUG;
     mPlacedNodes = new HashSet<>();
-    WorkAreaSize workAreaSize = new WorkSpaceInitNodeSize(mWorkSpacePanel, config.sGRID_NODEWIDTH, config.sGRID_NODEHEIGHT);
-    compute(workAreaSize);
+    compute();
   }
 
-  public void update(SuperNode superNode) {
-    EditorConfig config = mWorkSpacePanel.getEditorConfig();
-    isDebug = config.sSHOW_SMART_PATH_DEBUG;
-    mPlacedNodes = new HashSet<>();
-    WorkAreaSize workAreaSize = new WorkSpaceSuperNode(mWorkSpacePanel, config.sGRID_NODEWIDTH, config.sGRID_NODEHEIGHT, superNode);
-    compute(workAreaSize);
-  }
-
-  //private Point isBiggerThan
   public void drawGrid(Graphics2D g2d) {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
-    WorkAreaSize workAreaSize = new WorkSpaceInitNodeSize(mWorkSpacePanel, config.sGRID_NODEWIDTH, config.sGRID_NODEHEIGHT);
-    compute(workAreaSize);
-
+    compute();
     if (config.sSHOWGRID) {
       g2d.setStroke(new BasicStroke(1.0f));
 
       for (Rectangle r : mNodeAreas) {
-        int ai = mNodeAreas.indexOf(r);
-
         // draw a litte cross
         g2d.setColor(Color.GRAY.brighter());
 
@@ -255,8 +204,6 @@ public class GridManager {
       if (isDebug) {
         for (GridRectangle[] r : mTransitionArea) {
           for (GridRectangle s : r) {
-            int ai = mNodeAreas.indexOf(r);
-
             // draw a litte cross
             g2d.setColor(new Color(230, 230, 230, 200));
             g2d.drawLine(s.x + s.width / 2 - 2, s.y + s.height / 2, s.x + s.width / 2 + 2,
@@ -280,15 +227,6 @@ public class GridManager {
         }
       }
     }
-
-    if (isDockingView) {
-      for (int i = 0; i < this.dockingPoints.size(); i++) {
-        g2d.setColor(new Color(0, 0, 255, 255));
-        g2d.setBackground(new Color(0, 0, 255, 255));
-        g2d.drawOval((int) Math.round(this.dockingPoints.get(i).getX() - 10),
-                (int) Math.round(this.dockingPoints.get(i).getY() - 10), 20, 20);
-      }
-    }
   }
 
   public void setDebugMode(boolean status) {
@@ -296,30 +234,12 @@ public class GridManager {
     update();
   }
 
-  public void setDockingView(boolean status) {
-    this.isDockingView = status;
-    update();
-  }
-
-  public void addDockingPoints(Point2D point) {
-    this.dockingPoints.add(point);
-  }
-
-  public void deleteDockingPoints(Point2D point) {
-    for (int i = 0; i < this.dockingPoints.size(); i++) {
-      if ((this.dockingPoints.get(i).getX() == point.getX())
-              && (this.dockingPoints.get(i).getY() == point.getY())) {
-        this.dockingPoints.remove(i);
-
-        break;
-      }
-    }
-  }
-
   public Point getNodeLocation(Point inputPoint) {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
-    Point p = new Point(inputPoint.x + config.sGRID_NODEWIDTH / 2,
-            inputPoint.y + config.sGRID_NODEWIDTH / 2);
+    int nodeSize = Math.max(config.sNODEWIDTH, config.sNODEHEIGHT);
+    int gridWidth = (int)(nodeSize * config.sGRID_SCALE);
+    Point p = new Point(inputPoint.x + gridWidth / 2,
+        inputPoint.y + gridWidth / 2);
 
     for (Rectangle r : mNodeAreas) {
       if (r.contains(p)) {
@@ -371,7 +291,7 @@ public class GridManager {
   public void setEdgeWeight(Edge edge) {
     for (GridRectangle[] gridParent : mTransitionArea) {
       for (GridRectangle gridRectangle : gridParent) {
-        if (gridRectangle.isIntersectByRectangle(edge.mEg)) {
+        if (gridRectangle.isIntersectByRectangle(edge)) {
           gridRectangle.setWeight(GridConstants.EDGE_WEIGHT);
 
 //                  System.out.println("Setting weight of " +
@@ -386,7 +306,7 @@ public class GridManager {
   public void resetGridWeight(Edge edge) {
     for (GridRectangle[] gridParent : mTransitionArea) {
       for (GridRectangle gridRectangle : gridParent) {
-        if (gridRectangle.isIntersectByRectangle(edge.mEg)) {
+        if (gridRectangle.isIntersectByRectangle(edge)) {
           gridRectangle.setWeight(GridConstants.INITIAL_WEIGHT);
 
 //                  System.out.println("Setting weight of " +
@@ -419,7 +339,7 @@ public class GridManager {
         boolean isGridInteresected = false;
 
         for (Edge edge : mWorkSpacePanel.getEdges()) {
-          if (gridRectangle.isIntersectByRectangle(edge.mEg)) {
+          if (gridRectangle.isIntersectByRectangle(edge)) {
             gridRectangle.setWeight(GridConstants.EDGE_WEIGHT);
             isGridInteresected = true;
           }
@@ -451,30 +371,35 @@ public class GridManager {
     }
   }
 
-  /*
-     * This method spirals around an occupied grid point in order to find a free
-     * grid position for a new or moved node. It starts looking for a free grid
-     * position left to the occupied grid place, then proceeds clockwise in a spiral
-     * around that place.
-     * Code used from: JHolta (http://stackoverflow.com/questions/398299/looping-in-a-spiral/10607084#10607084)
+  /**
+   * This method spirals around an occupied grid point in order to find a free
+   * grid position for a new or moved node. It starts looking for a free grid
+   * position left to the occupied grid place, then proceeds clockwise in a spiral
+   * around that place.
+   * Code used from: JHolta (http://stackoverflow.com/questions/398299/looping-in-a-spiral/10607084#10607084)
    */
   private Point findNextFreePosition(Point iPoint) {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
+    int nodeSize = Math.max(config.sNODEWIDTH, config.sNODEHEIGHT);
+    int gridWidth = (int)(nodeSize * config.sGRID_SCALE);
+    int mNodesInRow = width / gridWidth;
+    int mNodesInCol = height / gridWidth;
+
     int x = 0,
         y = 0,
         dx = 0,
         dy = -1;
-    int t = Math.max(mNodesinRow, mNodesinRow);
+    int t = Math.min(mNodesInRow, mNodesInCol);
     int maxI = t * t;
 
     for (int i = 0; i < maxI; i++) {
-      if ((-mNodesinRow / 2 <= x) && (x <= mNodesinRow / 2) && (-mNodesinRow / 2 <= y)
-              && (y <= mNodesinRow / 2)) {
+      if ((-mNodesInCol / 2 <= x) && (x <= mNodesInCol / 2)
+          && (-mNodesInRow / 2 <= y) && (y <= mNodesInRow / 2)) {
         if (i > 0) {
-          if ((iPoint.x - (x * config.sGRID_XSPACE) > 0)
-                  && (iPoint.y - (y * config.sGRID_YSPACE) > 0)) {    // check if position is not outside the workspace on the left / top
-            Point p = new Point(iPoint.x - (x * config.sGRID_XSPACE),
-                    iPoint.y - (y * config.sGRID_YSPACE));
+          if ((iPoint.x - (x * gridWidth) > 0)
+                  && (iPoint.y - (y * gridWidth) > 0)) {    // check if position is not outside the workspace on the left / top
+            Point p = new Point(iPoint.x - (x * gridWidth),
+                    iPoint.y - (y * gridWidth));
 
             if (!mPlacedNodes.contains(p)) {
               return p;
@@ -494,19 +419,5 @@ public class GridManager {
     }
 
     return null;
-  }
-
-  class PComparator implements Comparator<Point> {
-
-    public int compare(Point p1, Point p2) {
-      long p1xy = p1.x * p1.x + p1.y * p1.y;
-      long p2xy = p2.x * p2.x + p2.y * p2.y;
-
-      if (p1xy < p2xy) {
-        return -1;
-      } else {
-        return 1;
-      }
-    }
   }
 }

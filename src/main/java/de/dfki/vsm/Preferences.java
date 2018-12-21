@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.vsm.editor.project.EditorConfig;
+import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.JaxbUtilities;
 import de.dfki.vsm.util.ios.ResourceLoader;
 import java.io.File;
@@ -93,7 +93,6 @@ public final class Preferences {
   // NODE COLORS
   //////////////////////////////////////////////////////////////////////////////
   public static final Color sBASIC_NODE_COLOR = new Color(125, 125, 125);
-  public static final Color sHISTORY_NODE_COLOR = new Color(255, 255, 255);
   public static final Color sSUPER_NODE_COLOR = new Color(125, 125, 125);
   public static final Color sSELECTED_NODE_COLOR = new Color(211, 211, 211);
 

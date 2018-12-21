@@ -1,7 +1,5 @@
 package de.dfki.vsm.editor.project;
 
-import static de.dfki.vsm.Preferences.getPrefs;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
@@ -18,24 +16,23 @@ import org.slf4j.LoggerFactory;
 //import org.fife.ui.autocomplete.AutoCompletion;
 
 import de.dfki.vsm.Preferences;
-import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.event.ClearCodeEditorEvent;
-import de.dfki.vsm.editor.event.EdgeSelectedEvent;
-import de.dfki.vsm.editor.event.NodeSelectedEvent;
+import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowEditor;
+import de.dfki.vsm.model.flow.AbstractEdge;
+import de.dfki.vsm.model.project.EditorProject;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
 
 /**
  * @author Gregor Mehlmann
  */
+@SuppressWarnings("serial")
 public final class ProjectEditor extends JSplitPane implements EventListener {
 
   // The singelton logger instance
-  private final Logger mLogger = LoggerFactory.getLogger(ProjectEditor.class);;
+  private static final Logger mLogger = LoggerFactory.getLogger(ProjectEditor.class);
   // The singelton event multicaster
   private final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
   // The editor project of this editor
@@ -43,7 +40,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   // The sceneflow editor of this project
   private final SceneFlowEditor mSceneFlowEditor;
   // Code editing panel
-  private final CodeEditor mAuxiliaryEditor;
+  private final CodeEditor mCodeEditor;
 
   // Create an empty project editor
   public ProjectEditor() {
@@ -59,7 +56,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     // Initialize the sceneflow editor
     mSceneFlowEditor = new SceneFlowEditor(mEditorProject);
     // Initialize Code Editing Region
-    mAuxiliaryEditor = new CodeEditor(mEditorProject);
+    mCodeEditor = new CodeEditor(mEditorProject);
     // Register at the event dispatcher
     mEventDispatcher.register(this);
     // Initialize the GUI components
@@ -104,8 +101,6 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     setResizeWeight(mEditorProject.getEditorConfig().sSCENEFLOW_SCENE_EDITOR_RATIO);
 
     setUI(new BasicSplitPaneUI() {
-
-      @SuppressWarnings("serial")
       @Override
       public BasicSplitPaneDivider createDefaultDivider() {
         return new BasicSplitPaneDivider(this) {
@@ -121,13 +116,13 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
             switch (me.getID()) {
 
             case MouseEvent.MOUSE_ENTERED:
-              if (!mAuxiliaryEditor.isPinPricked())
+              if (!mCodeEditor.isPinPricked())
                 showAuxiliaryEditor();
               break;
             case MouseEvent.MOUSE_RELEASED:
               int value = ProjectEditor.this.getDividerLocation();
               mEditorProject.getEditorConfig().sCODE_DIVIDER_LOCATION = value;
-              mAuxiliaryEditor.setPinPricked();
+              mCodeEditor.setPinPricked();
               break;
             }
           }
@@ -141,9 +136,9 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     mSceneFlowEditor.setMinimumSize(new Dimension(10, 10));
     mSceneFlowEditor.setMaximumSize(new Dimension(10000, 3000));
     setTopComponent(mSceneFlowEditor);
-    mAuxiliaryEditor.setMinimumSize(new Dimension(10, 10));
-    mAuxiliaryEditor.setMaximumSize(new Dimension(10000, 3000));
-    setBottomComponent(mAuxiliaryEditor);
+    mCodeEditor.setMinimumSize(new Dimension(10, 10));
+    mCodeEditor.setMaximumSize(new Dimension(10000, 3000));
+    setBottomComponent(mCodeEditor);
 
     // setting size
 
@@ -152,11 +147,11 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     }
 
     if (mEditorProject.getEditorConfig().sSHOW_CODEEDITOR
-            && mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR) {
+        && mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR) {
       showAuxiliaryEditor();
     }
 
-    mAuxiliaryEditor.addComponentListener(new ComponentListener() {
+    mCodeEditor.addComponentListener(new ComponentListener() {
       @Override
       public void componentResized(ComponentEvent e) {
         if (mSceneFlowEditor.getSize().height == 0) {
@@ -164,14 +159,14 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
           mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = true;
         } else {
           mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR = true;
-          mAuxiliaryEditor.updateBorders();
+          mCodeEditor.updateBorders();
         }
-        if (mAuxiliaryEditor.getSize().height == 0) {
+        if (mCodeEditor.getSize().height == 0) {
           mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR = true;
           mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = false;
         } else {
           mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = true;
-          mAuxiliaryEditor.updateBorders();
+          mCodeEditor.updateBorders();
         }
         Preferences.save();
       }
@@ -200,22 +195,15 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
   // Update when an event happened
   @Override
-  public void update(final EventObject event) {
+  public void update(final Object event) {
     if (event instanceof TreeEntrySelectedEvent) {
       // Show the auxiliary editor
-      showAuxiliaryEditor();
-    } else if (event instanceof NodeSelectedEvent
-            && ((NodeSelectedEvent) event).getSource() instanceof Node) {
-      // the source of the event is the node object
-      mAuxiliaryEditor.setEditedNodeOrEdge(
-              mSceneFlowEditor.getWorkSpace().getCmdBadge(
-                      (Node)((NodeSelectedEvent) event).getSource()));
-    
+      //showAuxiliaryEditor();
+    } else if (event instanceof ElementSelectedEvent) {
+      Object edited = ((ElementSelectedEvent) event).getElement();
+      mCodeEditor.setEditedNodeOrEdge(edited);
     } else if (event instanceof ClearCodeEditorEvent) {
-      mAuxiliaryEditor.setEditedNodeOrEdge(null);
-    } else if (event instanceof EdgeSelectedEvent) {
-      // the source of the event is the node object
-      mAuxiliaryEditor.setEditedNodeOrEdge(((EdgeSelectedEvent) event).getSource());
+      mCodeEditor.setEditedNodeOrEdge(null);
     }
   }
 

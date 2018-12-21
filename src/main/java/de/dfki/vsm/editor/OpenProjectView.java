@@ -6,8 +6,8 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileView;
 
-import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.runtime.project.RunTimeProject;
+import de.dfki.vsm.model.project.EditorProject;
+import de.dfki.vsm.model.project.RunTimeProject;
 
 public final class OpenProjectView extends FileView {
   // The Icon To Show For Project Directories

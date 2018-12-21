@@ -5,16 +5,18 @@
  */
 package de.dfki.vsm.editor.event;
 
-import de.dfki.vsm.util.evt.EventObject;
+import de.dfki.vsm.editor.project.WorkSpace;
 
 /**
  *
  * @author Anna Welker
  */
-public class ClearCodeEditorEvent extends EventObject{
-  
-  public ClearCodeEditorEvent(Object source) {
-    super(source);
+public class ClearCodeEditorEvent {
+
+  public WorkSpace panel;
+
+  public ClearCodeEditorEvent(WorkSpace workSpace) {
+    panel = workSpace;
   }
-  
+
 }

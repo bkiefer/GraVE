@@ -4,80 +4,41 @@ import static de.dfki.vsm.Preferences.sSTART_SIGN_COLOR;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JComponent;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.dfki.vsm.editor.project.EditorConfig;
-import de.dfki.vsm.util.evt.EventDispatcher;
+import de.dfki.vsm.model.project.EditorConfig;
 
 /**
  * @author Patrick Gebhard
  * @author Gregor Mehlmann
  */
-public class StartSign extends JComponent implements Observer {
-
-  private final Logger mLogger = LoggerFactory.getLogger(StartSign.class);;
-  private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
-  private Point mRelPos = new Point(0, 0);
+@SuppressWarnings("serial")
+public class StartSign extends JComponent {
   private final Color mColor;
   private final Node mNode;
   private final boolean mOutline;
-  private final EditorConfig mEditorConfig;
   private Polygon mHead;
   private int mHalfHeight;
   private int mWidth;
   private int mStrokeSize;
 
-  public StartSign(Node node, Point point) {
-    mNode = node;
-    mEditorConfig = mNode.getWorkSpace().getEditorConfig();
-
-    SetEditorConfig();
-
-    mColor = sSTART_SIGN_COLOR;
-
-    mRelPos = point;
-    mOutline = false;
-    update();
+  public StartSign(Node node) {
+    this(node, false, sSTART_SIGN_COLOR);
   }
 
-  public StartSign(Node node, Point point, boolean mode) {
-    mEditorConfig = EditorInstance.getInstance().getSelectedProjectEditor().getEditorProject().getEditorConfig();
-    SetEditorConfig();
-    mColor = sSTART_SIGN_COLOR;
-    mOutline = mode;
+  public StartSign(Node node, boolean mode, Color color) {
     mNode = node;
-    mRelPos = point;
-    update();
-  }
-
-  public StartSign(Node node, Point point, boolean mode, Color color) {
-    mEditorConfig = EditorInstance.getInstance().getSelectedProjectEditor().getEditorProject().getEditorConfig();
-    SetEditorConfig();
     mColor = color;
     mOutline = mode;
-    mNode = node;
-    mRelPos = point;
     update();
-  }
-
-  public void update(Observable o, Object obj) {
-
-    // mLogger.message("StartSign.update(" + obj + ")");
-//      update();
   }
 
   public void update() {
-    mHalfHeight = mEditorConfig.sNODEWIDTH / 6;
-    mWidth = mEditorConfig.sNODEWIDTH / 8;
-    mStrokeSize = ((mEditorConfig.sNODEWIDTH / 50) < 2
-            ? 2
-            : (mEditorConfig.sNODEWIDTH / 50));
+    mHalfHeight = mNode.getWidth() / 6;
+    mWidth = mNode.getWidth() / 8;
+    mStrokeSize = mNode.getWidth() / 50;
+    if (mStrokeSize < 2) mStrokeSize = 2;
     mHead = new Polygon();
     mHead.addPoint(2 * mStrokeSize, 2 * mStrokeSize);
     mHead.addPoint(mWidth + 2 * mStrokeSize, mHalfHeight + 2 * mStrokeSize);
@@ -86,15 +47,7 @@ public class StartSign extends JComponent implements Observer {
     setSize(mWidth + 4 * mStrokeSize, mHalfHeight * 2 + 4 * mStrokeSize);
 
     //
-    mRelPos = mNode.mDockingManager.occupyDockPointForStartSign();
-  }
-
-  private void SetEditorConfig() {
-    mHalfHeight = mEditorConfig.sNODEWIDTH / 6;
-    mWidth = mEditorConfig.sNODEWIDTH / 8;
-    mStrokeSize = ((mEditorConfig.sNODEWIDTH / 50) < 2
-            ? 2
-            : (mEditorConfig.sNODEWIDTH / 50));
+    mNode.getDockingManager().occupyDockPointForStartSign();
   }
 
   @Override
@@ -107,13 +60,8 @@ public class StartSign extends JComponent implements Observer {
 
     //
     setLocation(mNode.getLocation().x - mWidth - 2 * mStrokeSize,
-            mNode.getLocation().y + mEditorConfig.sNODEWIDTH / 2 - mHalfHeight - 2 * mStrokeSize);
+        mNode.getLocation().y + mNode.getWidth() / 2 - mHalfHeight - 2 * mStrokeSize);
 
-    /*
-         * mNode.getLocation().x - mRelPos.x - mWidth - 2 * mStrokeSize,
-         * mNode.getLocation().y + mRelPos.y - mHalfHeight - 2 * mStrokeSize);
-     */
-    //
     graphics.setColor(mColor);
     graphics.setStroke(new BasicStroke(mStrokeSize));
 

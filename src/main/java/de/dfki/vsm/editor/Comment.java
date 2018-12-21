@@ -10,18 +10,20 @@ import java.util.Observer;
 
 import javax.swing.*;
 
-import de.dfki.vsm.editor.project.EditorConfig;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.action.RemoveCommentAction;
+import de.dfki.vsm.editor.project.WorkSpace;
+import de.dfki.vsm.model.flow.CommentBadge;
 import de.dfki.vsm.model.flow.geom.Boundary;
-import de.dfki.vsm.util.evt.EventListener;
-import de.dfki.vsm.util.evt.EventObject;
+import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
  * @author Patrick Gebhard
  * @author Gregor Mehlmann
  */
-public class Comment extends JComponent implements EventListener, Observer, MouseListener, MouseMotionListener {
+@SuppressWarnings("serial")
+public class Comment extends EditorComponent
+implements MouseListener, MouseMotionListener {
 
   private JEditorPane mTextEditor = null;
   private JLabel mTextLabel = null;
@@ -35,31 +37,31 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
 
   // edit
   private boolean mEditMode = false;
-  private WorkSpacePanel mWorkSpace;
+  private WorkSpace mWorkSpace;
   private EditorConfig mEditorConfig;
 
   // image
   private Image mResizeMarker;
   private AlphaComposite mAC;
   private AlphaComposite mACFull;
-  private de.dfki.vsm.model.flow.CommentBadge mDataComment;
+  private CommentBadge mDataComment;
 
   // interaction flags
-  public boolean mSelected;
+  private boolean mSelected;
   public boolean mPressed;
   public boolean mDragged;
   public boolean mResizing;
-  public int mXMovement;
-  public int mYMovement;
+  private int mXMovement;
+  private int mYMovement;
 
   public Comment() {
     mDataComment = null;
   }
 
-  public Comment(WorkSpacePanel ws, de.dfki.vsm.model.flow.CommentBadge dataComment) {
+  public Comment(WorkSpace workSpace, de.dfki.vsm.model.flow.CommentBadge dataComment) {
     mAC = AlphaComposite.getInstance(AlphaComposite.XOR, 0.15f);
     mACFull = AlphaComposite.getInstance(AlphaComposite.SRC, 1.0f);
-    mWorkSpace = ws;
+    mWorkSpace = workSpace;
     mEditorConfig = mWorkSpace.getEditorConfig();
     mDataComment = dataComment;
 
@@ -109,10 +111,6 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
   }
 
   @Override
-  public void update(EventObject event) {
-  }
-
-  @Override
   public void update(Observable o, Object obj) {
     update();
   }
@@ -136,7 +134,7 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
     return toString();
   }
 
-  public de.dfki.vsm.model.flow.CommentBadge getData() {
+  public CommentBadge getData() {
     return mDataComment;
   }
 
@@ -172,20 +170,8 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
   public void resize(Point p) {
     Rectangle r = getBounds();
 
-    if (!((r.width <= 50) && (p.x < 0))) {
-      r.width = r.width + p.x;
-      r.width = (r.width < 50)
-              ? 50
-              : r.width;
-    }
-
-    if (!((r.height <= 50) && (p.y < 0))) {
-      r.height = r.height + p.y;
-      r.height = (r.height < 50)
-              ? 50
-              : r.height;
-    }
-
+    r.width = Math.max(50, r.width + p.x);
+    r.height = Math.max(50, r.height + p.y);
     setBounds(r);
     setSize(r.width, r.height);
 
@@ -193,8 +179,6 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
     Rectangle r2 = getBounds();
 
     mDataComment.setBoundary(new Boundary(r2.x, r2.y, r2.width, r2.height));
-
-    // DEBUG System.out.println("size " + getBounds());
   }
 
   public boolean containsPoint(Point p) {
@@ -224,6 +208,19 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
     }
   }
 
+  /**
+   * Show the context menu for a comment
+   */
+  public void showContextMenu(MouseEvent evt, Comment comment) {
+    JPopupMenu pop = new JPopupMenu();
+    JMenuItem item = new JMenuItem("Delete");
+    RemoveCommentAction deleteAction =
+        new RemoveCommentAction(mWorkSpace, comment);
+    item.addActionListener(deleteAction.getActionListener());
+    pop.add(item);
+    pop.show(this, comment.getX() + comment.getWidth(), comment.getY());
+  }
+
   @Override
   public void mouseClicked(MouseEvent e) {
 
@@ -250,9 +247,9 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
       mEditMode = true;
     }
 
-    // show contect menu
+    // show context menu
     if ((e.getButton() == MouseEvent.BUTTON3) && (e.getClickCount() == 1)) {
-      mWorkSpace.showContextMenu(e, this);
+      showContextMenu(e, this);
     }
 
     revalidate();
@@ -301,9 +298,9 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
   public void mouseMoved(MouseEvent e) {
   }
 
-  /*
-     * Resets the comment to its default visual behavior
-   */
+  public void setSelected(){};
+
+  /** Resets the comment to its default visual behavior */
   public void setDeselected() {
 
     // DEBUG System.out.println("Comment Deselected!");

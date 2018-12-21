@@ -264,7 +264,7 @@ public final class EditorMenuBar extends JMenuBar {
     mCopyMenuItem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().copyNodes();
+        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().copySelectedNodes();
       }
     });
     //TODO CUT ACTION NOT IMPLEMENTED
@@ -274,7 +274,7 @@ public final class EditorMenuBar extends JMenuBar {
     mCutMenuItem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().cutNodes();
+        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().cutSelectedNodes();
       }
     });
     //TODO PASTE ACTION NOT IMPLEMENTED
@@ -284,7 +284,7 @@ public final class EditorMenuBar extends JMenuBar {
     mPasteMenuItem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().pasteNodes();
+        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().pasteNodesFromClipboard();
       }
     });
     //TODO DELETE ACTIONS

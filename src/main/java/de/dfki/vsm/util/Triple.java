@@ -5,14 +5,14 @@ package de.dfki.vsm.util;
  */
 public class Triple<F, S, T> {
 
-  // Get the first component
+  // The first component
   private F mFirst;
-  // Get the seond component
+  // The second component
   private S mSecond;
-  // Get the third component
+  // The third component
   private T mThird;
 
-  // Construct a triple
+  // Construct a tuple
   public Triple(final F first, final S second, final T third) {
     mFirst = first;
     mSecond = second;
@@ -39,7 +39,7 @@ public class Triple<F, S, T> {
     mSecond = value;
   }
 
-  // Get the thrid component
+  // Get the third component
   public T getThird() {
     return mThird;
   }

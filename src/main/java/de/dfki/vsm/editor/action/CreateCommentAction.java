@@ -3,17 +3,9 @@ package de.dfki.vsm.editor.action;
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Point;
 
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
-
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Comment;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
-import de.dfki.vsm.editor.util.SceneFlowManager;
-import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.geom.Boundary;
+import de.dfki.vsm.editor.project.WorkSpace;
 
 /**
  * @author Gregor Mehlmann
@@ -21,83 +13,24 @@ import de.dfki.vsm.model.flow.geom.Boundary;
  */
 public class CreateCommentAction extends EditorAction {
 
-  private UndoManager mUndoManager = null;
-  private WorkSpacePanel mWorkSpace = null;
-  private Point mCoordinate = null;
   private Comment mGUIComment;
-  private de.dfki.vsm.model.flow.CommentBadge mComment;
-  private de.dfki.vsm.model.flow.SuperNode mParentDataNode;
-  private SuperNode mSuperNode;
-  private SceneFlowManager mSceneFlowManager;
+  private Point mCoord;
 
-  public CreateCommentAction(WorkSpacePanel workSpace, Point coordinate) {
+  public CreateCommentAction(WorkSpace workSpace, Point coordinate) {
     mWorkSpace = workSpace;
-    mCoordinate = coordinate;
-    mUndoManager = mWorkSpace.getSceneFlowEditor().getUndoManager();
-    mComment = new de.dfki.vsm.model.flow.CommentBadge();
-    mComment.setBoundary(new Boundary(coordinate.x, coordinate.y, 100, 100));
-    mParentDataNode = mWorkSpace.getSceneFlowManager().getCurrentActiveSuperNode();
-    mSceneFlowManager = mWorkSpace.getSceneFlowManager();
-    mSuperNode = mSceneFlowManager.getCurrentActiveSuperNode();
-
-    //
-    mGUIComment = new de.dfki.vsm.editor.Comment(mWorkSpace, mComment);
+    mCoord = coordinate;
   }
 
-  public void delete() {
-    mSuperNode.removeComment(mComment);
-    mWorkSpace.remove(mGUIComment);
+  protected void undoIt() {
+    mWorkSpace.removeCommentNew(mGUIComment);
   }
 
-  public void create() {
-    mComment.setParentNode(mParentDataNode);
-    mParentDataNode.addComment(mComment);
-    mWorkSpace.add(mGUIComment);
+  protected void doIt() {
+    if (mGUIComment == null) {
+      mGUIComment = mWorkSpace.createComment(mCoord);
+    }
+    mWorkSpace.addCommentNew(mGUIComment);
   }
 
-  public void run() {
-    create();
-    mUndoManager.addEdit(new Edit());
-    UndoAction.getInstance().refreshUndoState();
-    RedoAction.getInstance().refreshRedoState();
-    mWorkSpace.revalidate();
-    mWorkSpace.repaint(100);
-  }
-
-  private class Edit extends AbstractUndoableEdit {
-
-    @Override
-    public void undo() throws CannotUndoException {
-      delete();
-      mWorkSpace.revalidate();
-      mWorkSpace.repaint(100);
-    }
-
-    @Override
-    public void redo() throws CannotRedoException {
-      create();
-      mWorkSpace.revalidate();
-      mWorkSpace.repaint(100);
-    }
-
-    @Override
-    public boolean canUndo() {
-      return true;
-    }
-
-    @Override
-    public boolean canRedo() {
-      return true;
-    }
-
-    @Override
-    public String getUndoPresentationName() {
-      return "Undo Creation Of Comment";
-    }
-
-    @Override
-    public String getRedoPresentationName() {
-      return "Redo Creation Of Comment ";
-    }
-  }
+  protected String msg() { return "Creation Of Comment"; }
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import javax.xml.bind.annotation.*;
 
-import de.dfki.vsm.util.cpy.CopyTool;
+import de.dfki.vsm.model.flow.geom.Position;
 
 /**
  * @author Gregor Mehlmann
@@ -28,6 +28,7 @@ public final class SceneFlow extends SuperNode {
   protected String mModifDate = new String();
 
   public SceneFlow() {
+    mPosition = new Position(0,0);
   }
 
   @XmlTransient
@@ -79,8 +80,16 @@ public final class SceneFlow extends SuperNode {
   }
 
   @Override
-  public SceneFlow getCopy() {
-    return (SceneFlow) CopyTool.copy(this);
+  public int hashCode() {
+    int hash = super.hashCode();
+    hash = 59 * hash + this.mXMLNameSpace.hashCode();
+    hash = 59 * hash + this.mXMLSchemeInstance.hashCode();
+    hash = 59 * hash + this.mXMLSchemeLocation.hashCode();
+    hash = 59 * hash + this.mPackageName.hashCode();
+    hash = 59 * hash + this.mContextClass.hashCode();
+    hash = 59 * hash + this.mContextCode.hashCode();
+    hash = 59 * hash + this.mClassPathList.hashCode();
+    hash = 59 * hash + this.mModifDate.hashCode();
+    return hash;
   }
-
 }

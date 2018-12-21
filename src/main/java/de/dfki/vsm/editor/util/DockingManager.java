@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.project.EditorConfig;
+import de.dfki.vsm.editor.project.WorkSpace;
 
 /**
  * EdgeNodeDockingManager manages incoming and outgoing edges of a
@@ -23,42 +23,28 @@ import de.dfki.vsm.editor.project.EditorConfig;
  */
 public class DockingManager {
 
+  private static final Logger logger = LoggerFactory.getLogger(WorkSpace.class);
+
   private Node mGUINode = null;
   private Node.Type mNodeType = null;    // The type defines the location of the dock points
   private ArrayList<DockPoint> mDockPoints = new ArrayList<DockPoint>();
   private Hashtable<Edge, DockPoint> mEdgeDockPoints = new Hashtable<Edge, DockPoint>();
   private Hashtable<Edge, DockPoint> mEdgeSecondDockPoints = new Hashtable<Edge, DockPoint>();
-  private final Logger mLogger = LoggerFactory.getLogger(DockingManager.class);;
-  private EditorConfig mEditorConfig;
 
   public DockingManager(Node node) {
     mGUINode = node;
-    mEditorConfig = mGUINode.getWorkSpace().getEditorConfig();
     mNodeType = node.getType();
-
-    switch (mNodeType) {
-      case BasicNode:
-        initNodeDockPoints();
-
-        break;
-
-      case SuperNode:
-        initSuperNodeDockPoints();
-
-        break;
-    }
+    update();
   }
 
   public void update() {
     switch (mNodeType) {
       case BasicNode:
         initNodeDockPoints();
-
         break;
 
       case SuperNode:
         initSuperNodeDockPoints();
-
         break;
     }
   }
@@ -109,7 +95,7 @@ public class DockingManager {
     }
   }
 
-  public Point getNearestDockPoint(Edge e, Point p) {
+  public DockPoint getNearestDock(Edge e, Point p) {
     DockPoint rp = null;
     int lastXDist = -1;
     int lastYDist = -1;
@@ -134,105 +120,69 @@ public class DockingManager {
           lastYDist = actualYDist;
           rp = dp;
         }
-      } else {
-
-//              System.out.println("\tdock point (" + dp.mPos.x + "," +dp.mPos.y + ") is occupied!");
       }
     }
-
-    // mark DockPoint as used and store edge
     if (rp != null) {
-      rp.use();
-      mEdgeDockPoints.put(e, rp);
+      rp.use(); // mark DockPoint as used
     } else {
-
-      // System.out.println("Warning! No more docking points available! Edge will not connected!");
+      logger.error("No more docking points available! Edge will not connected!");
     }
+    return rp;
+  }
 
-    // return a new Point intance that can be altered
-    return (rp != null)
-            ? (Point) rp.mPos.clone()
-            : null;
+  public Point getNearestDockPoint(Edge e, Point p) {
+    DockPoint rp = getNearestDock(e, p);
+    // mark DockPoint for edge
+    if (rp != null) {
+      mEdgeDockPoints.put(e, rp);
+      // return a new Point instance that can be altered
+      return (Point) rp.mPos.clone();
+    }
+    return null;
   }
 
   /*
      * This method finds a dockpoint for edges that point to the same node
    */
   public Point getNearestSecondDockPoint(Edge e, Point p) {
-    DockPoint rp = null;
-    int lastXDist = -1;
-    int lastYDist = -1;
-    int actualXDist = -1;
-    int actualYDist = -1;
-
-    for (DockPoint dp : mDockPoints) {
-      if (!dp.mOccupied) {
-        actualXDist = Math.abs(p.x - dp.mPos.x);
-        actualYDist = Math.abs(p.y - dp.mPos.y);
-
-        // Store first free Dockpoint
-        if ((lastXDist == -1) && (lastYDist == -1)) {
-          lastXDist = actualXDist;
-          lastYDist = actualYDist;
-          rp = dp;
-        }
-
-        // Store nearest free DockPoint
-        if ((actualXDist + actualYDist) < (lastXDist + lastYDist)) {
-          lastXDist = actualXDist;
-          lastYDist = actualYDist;
-          rp = dp;
-        }
-      }
-    }
-
-    // mark DockPoint as used and store edge
+    DockPoint rp = getNearestDock(e, p);
+    // mark DockPoint for edge
     if (rp != null) {
-      rp.use();
       mEdgeSecondDockPoints.put(e, rp);
-    } else {
-
-      // System.out.println("Warning! No more docking points available! Edge will not connected!");
+      // return a new Point instance that can be altered
+      return (Point) rp.mPos.clone();
     }
+    return null;
 
-    // return a new Point intance that can be altered
-    return (rp != null)
-            ? (Point) rp.mPos.clone()
-            : null;
   }
 
-  /*
-     * Returns the dock point to which the edge is connected
+  /**
+   * Returns the dock point to which the edge is connected
    */
   public Point getDockPoint(Edge e) {
     if (mEdgeDockPoints.containsKey(e)) {
-
       // return a new Point intance that can be altered
       return (Point) mEdgeDockPoints.get(e).mPos.clone();
-    } else {
-      return null;
     }
+    return null;
   }
 
-  /*
-     * Return the second dock point to which the edge is connected (pointing to
-     * the same node
+  /**
+   * Return the second dock point to which the edge is connected (pointing to
+   * the same node
    */
   public Point getSecondDockPoint(Edge e) {
     if (mEdgeSecondDockPoints.containsKey(e)) {
-
       // return a new Point intance that can be altered
       return (Point) mEdgeSecondDockPoints.get(e).mPos.clone();
-    } else {
-      return null;
     }
+    return null;
   }
 
-  /*
-     * Releases the dock point an edge has used on a node
-     *
-     * @param Edge that should be released
-     *
+  /**
+   * Releases the dock point an edge has used on a node
+   *
+   * @param Edge that should be released
    */
   public Point freeDockPoint(Edge e) {
     if (mEdgeDockPoints.containsKey(e)) {
@@ -243,19 +193,16 @@ public class DockingManager {
 
       // DEBUG
       // System.out.println("Edge " + e.getName() + " dock point disconnected");
-      return dp.getPoint();
-    } else {
-      return null;
-
-      // DEBUG //System.out.println("Edge should be disconnected but never was connected");
+      return dp.mPos;
     }
+    // DEBUG System.out.println("Edge should be disconnected but never was connected");
+    return null;
   }
 
-  /*
-     * Releases the seoncd dock point an edge has used on a node
-     *
-     * @param Edge that should be released
-     *
+  /**
+   * Releases the seoncd dock point an edge has used on a node
+   *
+   * @param Edge that should be released
    */
   public Point freeSecondDockPoint(Edge e) {
     if (mEdgeSecondDockPoints.containsKey(e)) {
@@ -266,26 +213,24 @@ public class DockingManager {
 
       // DEBUG
       // System.out.println("Edge "+ e.getName() + " second dock point disconnected");
-      return dp.getPoint();
-    } else {
-      return null;
-
-      // DEBUG //System.out.println("Edge should be disconnected but never was connected");
+      return dp.mPos;
     }
+    // DEBUG System.out.println("Edge should be disconnected but never was connected");
+    return null;
   }
 
-  /*
-     * Return a Set of all connected edges
+  /**
+   * Return a Set of all connected edges
    */
   public Set<Edge> getConnectedEdges() {
     return mEdgeDockPoints.keySet();
   }
 
-  /*
-     *  Removes a connected egde for a dock point and frees the dock point for
-     * other edges
-     *
-     * @param Point from edge which should be released
+  /**
+   *  Removes a connected egde for a dock point and frees the dock point for
+   * other edges
+   *
+   * @param Point from edge which should be released
    */
   private boolean releaseDockPoint(Point p) {
     DockPoint rp = null;
@@ -320,9 +265,7 @@ public class DockingManager {
       rp.release();
     }
 
-    return (rp != null)
-            ? true
-            : false;
+    return (rp != null);
   }
 
   private boolean hasDockpoint(String name) {
@@ -354,10 +297,10 @@ public class DockingManager {
     for (int cnt = 23; cnt >= 0; cnt--) {
       a = cnt * Math.PI / 12.0d + (Math.PI);
       dpName = "dp" + cnt;
-      dockXPos = Math.round((Math.sin(a) * 0.5d + 0.5d) * mEditorConfig.sNODEWIDTH);
-      dockYPos = Math.round((Math.cos(a) * 0.5d + 0.5d) * mEditorConfig.sNODEHEIGHT);
+      dockXPos = Math.round((Math.sin(a) * 0.5d + 0.5d) * mGUINode.getWidth());
+      dockYPos = Math.round((Math.cos(a) * 0.5d + 0.5d) * mGUINode.getHeight());
 
-      if ((dockXPos == 0) && (dockYPos == mEditorConfig.sNODEHEIGHT / 2)) {
+      if ((dockXPos == 0) && (dockYPos == mGUINode.getHeight() / 2)) {
 
         // use most left dockpoint as startsign dockpoint
         if (hasDockpoint(dpName)) {
@@ -396,8 +339,8 @@ public class DockingManager {
     double ya = 0.0d;
     double fy = 0.0d;
     double fx = 0.0d;
-    double rh = mEditorConfig.sNODEHEIGHT / 2.0d;
-    double rw = mEditorConfig.sNODEWIDTH / 2.0d;
+    double rh = mGUINode.getHeight() / 2.0d;
+    double rw = mGUINode.getWidth() / 2.0d;
     double dockXPos = 0.0d;
     double dockYPos = 0.0d;
 
@@ -418,7 +361,7 @@ public class DockingManager {
       }
 
       // Debug System.out.println("(x,y)= " + dockXPos + "," + dockYPos);
-      if ((dockXPos == 0) && (dockYPos == mEditorConfig.sNODEHEIGHT / 2)) {
+      if ((dockXPos == 0) && (dockYPos == mGUINode.getHeight() / 2)) {
 
         // use most left dockpoint as startsign dockpoint
         if (hasDockpoint(dpName)) {
@@ -450,39 +393,26 @@ public class DockingManager {
     }
   }
 
-  class DockPoint {
+  private static class DockPoint {
 
-    static final String sSTARTSIGN_TYPE = "start pos dock point";
-    String mName = null;
-    Point mPos = null;
-    boolean mOccupied = false;
-    String mType = "dock point";
+    private static final String sSTARTSIGN_TYPE = "start pos dock point";
+    private String mName = null;
+    private Point mPos = null;
+    private boolean mOccupied = false;
+    private String mType = "dock point";
 
-    DockPoint(String name, int x, int y) {
+    private DockPoint(String name, int x, int y) {
       mName = name;
       mPos = new Point(x, y);
     }
 
-    DockPoint(String name, int x, int y, String id) {
+    private DockPoint(String name, int x, int y, String id) {
       mName = name;
       mPos = new Point(x, y);
       mType = id;
     }
 
-    void use() {
-      mOccupied = true;
-    }
-
-    void release() {
-      mOccupied = false;
-    }
-
-    boolean isOccupied() {
-      return mOccupied;
-    }
-
-    Point getPoint() {
-      return (Point) mPos.clone();
-    }
+    private void use() { mOccupied = true; }
+    private void release() { mOccupied = false; }
   }
 }

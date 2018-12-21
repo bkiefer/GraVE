@@ -1,11 +1,6 @@
 package de.dfki.vsm.util.evt;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Gregor Mehlmann
@@ -15,21 +10,12 @@ public final class EventDispatcher {
   // The Singelton Instance
   private static EventDispatcher sInstance = null;
 
-  // The Logger Instance
-  private final Logger mLogger = LoggerFactory.getLogger(EventDispatcher.class);
-
   // The Listener List
   private final CopyOnWriteArrayList<EventListener> mListenerList;
 
-  // The Timer Thread
-  private Timer mTimer;
-
   // Construct The Instance
   private EventDispatcher() {
-    //
-    mTimer = new Timer("EventCasterTimer");
-    //
-    mListenerList = new CopyOnWriteArrayList();
+    mListenerList = new CopyOnWriteArrayList<EventListener>();
   }
 
   // Get The Singelton Instance
@@ -51,44 +37,15 @@ public final class EventDispatcher {
   }
 
   // Dispatch an event object
-  private void dispatch(final EventObject event) {
+  private void dispatch(final Object event) {
     for (final EventListener listener : mListenerList) {
       listener.update(event);
     }
   }
 
   // Immediately schedule an event
-  public final void convey(final EventObject event) {
+  public final void convey(final Object event) {
     //schedule(event, 1);
     dispatch(event);
-  }
-
-  // Schedule dispatching of event
-  private void schedule(final EventObject event, final long timeout) {
-
-    // Create a timer task
-    final TimerTask task = new TimerTask() {
-      @Override
-      public void run() {
-        dispatch(event);
-      }
-    };
-
-    try {
-      // Schedule this timer task
-      mTimer.schedule(task, timeout);
-    } catch (final IllegalStateException exc) {
-      mLogger.warn(exc.toString());
-    }
-  }
-
-  // Cancel the timer thread
-  public final synchronized void abort() {
-    mTimer.cancel();
-  }
-
-  // Reset the timer thread
-  public final synchronized void reset() {
-    mTimer = new Timer();
   }
 }

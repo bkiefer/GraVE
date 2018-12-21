@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 
 import de.dfki.vsm.editor.EditorInstance;
-import de.dfki.vsm.editor.project.sceneflow.SceneFlowToolBar;
+import de.dfki.vsm.editor.project.SceneFlowToolBar;
 
 /**
  *

@@ -14,13 +14,14 @@ import de.dfki.vsm.util.cpy.Copyable;
 public class Code implements Copyable {
   @XmlValue
   @XmlCDATA
-  protected String content;
+  private String content;
 
   public Code(String c) {
     content = c.trim();
   }
 
   public Code() {
+    content = "";
   }
 
   @XmlTransient
@@ -29,9 +30,18 @@ public class Code implements Copyable {
   public void setContent(String s) { content = s.trim(); }
 
   @Override
-  public Code getCopy() {
+  public Code deepCopy() {
     Code result = new Code();
     result.content = content;
     return result;
+  }
+
+  public String toString() {
+    return content;
+  }
+
+  @Override
+  public int hashCode(){
+    return content.hashCode();
   }
 }

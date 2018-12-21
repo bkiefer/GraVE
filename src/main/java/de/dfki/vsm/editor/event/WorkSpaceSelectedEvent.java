@@ -1,14 +1,18 @@
 package de.dfki.vsm.editor.event;
 
+import de.dfki.vsm.editor.project.WorkSpace;
+
 //~--- non-JDK imports --------------------------------------------------------
-import de.dfki.vsm.util.evt.EventObject;
 
 /**
  *     @author Martin Fallas
  */
-public class WorkSpaceSelectedEvent extends EventObject {
+public class WorkSpaceSelectedEvent {
+  private WorkSpace mSource;
 
-  public WorkSpaceSelectedEvent(Object source) {
-    super(source);
+  public WorkSpaceSelectedEvent(WorkSpace workSpace) {
+    mSource = workSpace;
   }
+
+  public WorkSpace getSource() { return mSource; }
 }

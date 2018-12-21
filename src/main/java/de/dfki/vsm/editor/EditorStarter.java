@@ -26,8 +26,8 @@ import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
 import de.dfki.vsm.MainGrave;
 import de.dfki.vsm.editor.dialog.NewProjectDialog;
-import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.runtime.project.RunTimeProject;
+import de.dfki.vsm.model.project.EditorProject;
+import de.dfki.vsm.model.project.RunTimeProject;
 import de.dfki.vsm.util.ios.ResourceLoader;
 
 /**
@@ -477,7 +477,7 @@ public class EditorStarter extends JPanel {
 
         project.parse(tutorialProj.getPath());
         JLabel newTutorialProj = new JLabel(project.getProjectName() + " ["
-                + project.getSceneFlow().getNodeAndSuperNodeList().size()
+                + project.getSceneFlow().getNodeSize()
                 + " global nodes]");// + ", last edited: "
         // + getPrefs().sDATE_FORMAT.format(tutorialProj.lastModified()));
 

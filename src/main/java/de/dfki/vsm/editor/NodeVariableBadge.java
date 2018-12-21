@@ -8,15 +8,17 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
-import de.dfki.vsm.editor.project.EditorConfig;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
+import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.model.project.EditorConfig;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.TextFormat;
 
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
- */
+ *
+@SuppressWarnings("serial")
+// TODO: CURRENTLY NOT USED, UNCLEAR IF REACTIVATED, COULD SHOW ACCESSIBLE VARIABLES
 public class NodeVariableBadge extends JComponent {
 
   LocationType mLocation = LocationType.RIGHT;
@@ -190,3 +192,4 @@ public class NodeVariableBadge extends JComponent {
     }
   }
 }
+*/

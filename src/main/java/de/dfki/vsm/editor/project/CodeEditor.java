@@ -1,25 +1,40 @@
 package de.dfki.vsm.editor.project;
 
-import de.dfki.vsm.editor.CmdBadge;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
+import de.dfki.vsm.editor.CmdBadge;
 import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.model.project.EditorProject;
 import de.dfki.vsm.util.ios.ResourceLoader;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JSplitPane;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 @SuppressWarnings("serial")
 public class CodeEditor extends JPanel {
 
-  private final RSyntaxTextArea mTextArea;
+  private final EditCodeArea mRightTextArea;
+  private final EditCodeArea mLeftTextArea;
   private final JButton mPinButton;
+  private JSplitPane splitPane;
   //PIN icons
   private final ImageIcon ICON_PIN_STANDARD = ResourceLoader.loadImageIcon("img/pin.png");
   private final ImageIcon ICON_PIN_ROLLOVER = ResourceLoader.loadImageIcon("img/pin_blue.png");
@@ -27,9 +42,6 @@ public class CodeEditor extends JPanel {
   private boolean pinPricked = false;
 
   private final EditorProject mEditorProject;
-
-  // Can be Node or Edge
-  private Object mEditedObject;
 
   private static void sanitizeTinyButton(JButton b) {
     Dimension bDim = new Dimension(30, 30);
@@ -47,39 +59,17 @@ public class CodeEditor extends JPanel {
     mEditorProject = project;
 
     setLayout(new BorderLayout());
+    splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
+    splitPane.setResizeWeight(1.0);
 
-    mTextArea = new RSyntaxTextArea();
-    mTextArea.getDocument().addDocumentListener(new DocumentListener() {
-        @Override
-        public void removeUpdate(DocumentEvent e) {
-          if (mEditedObject instanceof CmdBadge) {
-            ((CmdBadge)mEditedObject).setText(mTextArea.getText());
-            ((CmdBadge)mEditedObject).repaint();
-          } else if (mEditedObject instanceof Edge) {
-            ((Edge)mEditedObject).getDescription();
-            ((Edge)mEditedObject).repaint();
-          }
-        }
-        @Override
-        public void insertUpdate(DocumentEvent e) {
-          removeUpdate(e);
-        }
-        @Override
-        public void changedUpdate(DocumentEvent arg0) {
-          removeUpdate(arg0);
-        }
-    });
-    mTextArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-    mTextArea.setCodeFoldingEnabled(true);
-    mTextArea.setLineWrap(true);
-    mTextArea.setWrapStyleWord(true);
-    //mTextArea.setBounds(this.getBounds());
-    mTextArea.setBounds(0, 0, 10000,
-            mEditorProject.getEditorConfig().sCODE_DIVIDER_LOCATION);
-    mTextArea.setVisible(true);
-    //setBackground(new Color(255, 255, 255, 90));
-    //mTextArea.setBackground(new Color(175, 175, 175, 95));
-    //this.setMaximumSize(new Dimension(maxWidth, maxHeight));
+    splitPane.setUI(new BasicSplitPaneUI());
+    splitPane.setDividerSize(10);
+    splitPane.setDividerLocation(400);
+
+    mRightTextArea = new EditCodeArea(
+              mEditorProject.getEditorConfig().sCODE_DIVIDER_LOCATION);
+    mLeftTextArea = new EditCodeArea(
+              mEditorProject.getEditorConfig().sCODE_DIVIDER_LOCATION);
 
     mPinButton = new JButton();
     mPinButton.setVisible(true);
@@ -96,19 +86,108 @@ public class CodeEditor extends JPanel {
     //add(Box.createHorizontalGlue());
     add(VpinBox, BorderLayout.EAST);
 
-    // Get rid of annoying yellow line
-    //mTextArea.setHighlighter(null);
-    mTextArea.setHighlightCurrentLine(false);
-    mTextArea.setHighlightSecondaryLanguages(false);
-
-    JScrollPane jsp = new JScrollPane();
-    jsp.add(mTextArea);
+    splitPane.setRightComponent(mRightTextArea);
+    splitPane.setLeftComponent(mLeftTextArea);
     //jsp.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-    add(jsp, BorderLayout.CENTER);
+    add(splitPane, BorderLayout.CENTER);
+    /*splitPane.addComponentListener(new ComponentListener() {
+      @Override
+      public void componentResized(ComponentEvent e) {
+        //pane.setBounds(pane.getParent().getBounds());
+        int x = splitPane.getBounds().x;
+        int y = splitPane.getBounds().y;
+        int w = splitPane.getBounds().width;
+        int h = splitPane.getBounds().height;
+        jspR.setBounds(x, y, w/2, h);
+        jspL.setBounds(x, y, w/2, h);
+        mRightTextArea.setBounds(jspR.getBounds());
+        mLeftTextArea.setBounds(jspL.getBounds());
+      }
+      @Override
+      public void componentMoved(ComponentEvent ce) {}
+      @Override
+      public void componentShown(ComponentEvent ce) {}
+      @Override
+      public void componentHidden(ComponentEvent ce) {}
+    });*/
   }
-  
+
+  private class EditCodeArea extends JPanel {
+    RSyntaxTextArea textArea;
+    Object editedObject;
+    JScrollPane s;
+
+    // make this jpane, with scrollpane, and textarea
+    public EditCodeArea(int dividerLocation) {
+      super(new BorderLayout());
+      textArea = new RSyntaxTextArea();
+      textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+      textArea.setCodeFoldingEnabled(true);
+      textArea.setLineWrap(true);
+      textArea.setWrapStyleWord(true);
+      //textArea.setBounds(this.getBounds());
+      //setBounds(0, 0, 5000, dividerLocation);
+      textArea.setVisible(true);
+
+      // Get rid of annoying yellow line
+      textArea.setHighlightCurrentLine(false);
+      textArea.setHighlightSecondaryLanguages(false);
+      textArea.getDocument().addDocumentListener(new DocumentListener() {
+          @Override
+          public void removeUpdate(DocumentEvent e) {
+            if (editedObject instanceof CmdBadge) {
+              ((CmdBadge)editedObject).setText(textArea.getText());
+              ((CmdBadge)editedObject).repaint();
+            } else if (editedObject instanceof Node) {
+              ((Node)editedObject).setText(textArea.getText());
+              ((Node)editedObject).repaint();
+            } else if (editedObject instanceof Edge) {
+              ((Edge)editedObject).setDescription(textArea.getText());
+              ((Edge)editedObject).repaint();
+            }
+          }
+          @Override
+          public void insertUpdate(DocumentEvent e) {
+            removeUpdate(e);
+          }
+          @Override
+          public void changedUpdate(DocumentEvent arg0) {
+            removeUpdate(arg0);
+          }
+      });
+      s = new JScrollPane();
+      s.add(textArea);
+      add(s, BorderLayout.CENTER);
+    }
+
+    public void setEditedObject(Object n) {
+      if (n == null) {
+        textArea.setText("");
+        editedObject = null;
+        return;
+      }
+      editedObject = n;
+      if (n instanceof CmdBadge)
+        textArea.setText(((CmdBadge)n).getText());
+      else if (n instanceof Edge)
+        textArea.setText(((Edge)n).getDescription());
+      else if (n instanceof Node)
+        textArea.setText(((Node)n).getCmdBadge().getText());
+      //else
+        // TODO: Might want to throw exception here
+      //  return;
+    }
+
+    public void updateBorders(int x, int y, int w, int h) {
+      //setBounds(x, y, w, h);
+      //s.setBounds(x, y, w, h);
+      textArea.setBounds(x, y, w, h);
+    }
+  }
+
   public void updateBorders(){
-    mTextArea.setBounds(0, 0, 10000, this.getSize().height);
+    mRightTextArea.updateBorders(0, 0, splitPane.getDividerLocation(), this.getSize().height);
+    mLeftTextArea.updateBorders(0, 0, splitPane.getDividerLocation(), this.getSize().height);
   }
 
   // Set the pin pricked flag
@@ -117,6 +196,12 @@ public class CodeEditor extends JPanel {
     mPinButton.setIcon(pinPricked ? ICON_PIN_ROLLOVER : ICON_PIN_STANDARD);
     mPinButton.setRolloverIcon(pinPricked ? ICON_PIN_STANDARD : ICON_PIN_ROLLOVER);
     mEditorProject.getEditorConfig().sAUTOHIDE_BOTTOMPANEL = pinPricked;
+    if (state) {
+      // pin was pricked, thus clone right code editor to the left
+      mLeftTextArea.setEditedObject(mRightTextArea.editedObject);
+    } else {
+      // TODO: clear if pin unpricked?
+    }
   }
 
   /** Get the pin pricked flag */
@@ -128,23 +213,9 @@ public class CodeEditor extends JPanel {
   }
 
   public void setEditedNodeOrEdge(Object n) {
-    String text;
-    if (n == null) {
-      // clear editor
-      mEditedObject = null;
-      mTextArea.setText("");
-      return;
-    }
-    if (n instanceof CmdBadge)
-      text = ((CmdBadge)n).getText();
-    else if (n instanceof Edge)
-      text = ((Edge)n).getDescription();
-    else
-      return;
-    // set new edited object
-    mEditedObject = n;
-    // update text area with current code
-    mTextArea.setText(text);
+    if (mRightTextArea.editedObject == n) return; // may be due to FocusGained
+    // update text area with current code & object
+    mRightTextArea.setEditedObject(n);
   }
 
   /** If the TODO: revert button is pressed, put the original text back into

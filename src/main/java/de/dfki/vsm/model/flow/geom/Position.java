@@ -51,7 +51,7 @@ public final class Position implements Copyable {
   }
 
   @Override
-  public final Position getCopy() {
+  public final Position deepCopy() {
     return new Position(mXPos, mYPos);
   }
 }

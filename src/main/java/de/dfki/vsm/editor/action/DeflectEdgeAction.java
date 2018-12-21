@@ -2,198 +2,58 @@ package de.dfki.vsm.editor.action;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Point;
-
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.Collections;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Edge;
-import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.Node.Flavour;
-import de.dfki.vsm.editor.project.sceneflow.WorkSpacePanel;
-import de.dfki.vsm.model.flow.*;
+import de.dfki.vsm.editor.project.WorkSpacePanel;
+import de.dfki.vsm.model.flow.AbstractEdge;
 
 /**
  * @author Patrick Gebhard
  */
-public class DeflectEdgeAction extends EdgeAction {
+public class DeflectEdgeAction extends EditorAction {
 
-  private final Logger mLogger = LoggerFactory.getLogger(DeflectEdgeAction.class);;
+  private Edge mGUIEdge;
+  private Node mSourceGUINode, mTargetGUINode;
+  private Point mDropPoint;
+
+  private Edge mNewEdge;
+
 
   public DeflectEdgeAction(WorkSpacePanel workSpace, Edge edge, Node newTargetNode, Point newDropPoint) {
     mWorkSpace = workSpace;
     mGUIEdge = edge;
-    mDataEdge = edge.getDataEdge();
     mSourceGUINode = edge.getSourceNode();
-    mLastTargetGUINode = edge.getTargetNode();
     mTargetGUINode = newTargetNode;
-
-    // store the dockpoints
-    mSourceGUINodeDockPoint = mSourceGUINode.getEdgeDockPoint(edge);
-    mLastTargetGUINodeDockPoint = edge.mLastTargetNodeDockPoint;    // last target node dockpoint
-    mTargetGUINodeDockPoint = newDropPoint;
-    mLogger.info("new target dockpoint (was drop point) " + mTargetGUINodeDockPoint);
-    mGUIEdgeType = edge.getType();
-    mSceneFlowPane = mWorkSpace.getSceneFlowEditor();
-    mUndoManager = mSceneFlowPane.getUndoManager();
+    mDropPoint = newDropPoint;
   }
 
-  public void createDeflectEdge() {
-    mLogger.info("create new egde " + mSourceGUINode.getDataNode().getName() + " to "
-            + mTargetGUINode.getDataNode().getName());
-    mDataEdge.setTargetNode(mTargetGUINode.getDataNode());
-    mDataEdge.setSourceNode(mSourceGUINode.getDataNode());    // this is the new node
-    mDataEdge.setTargetUnid(mDataEdge.getTargetNode().getId());
-
-    switch (mGUIEdgeType) {
-      case EEDGE:
-        mSourceGUINode.getDataNode().setDedge(mDataEdge);
-
-        break;
-
-      case FEDGE:
-        mSourceGUINode.getDataNode().addFEdge((ForkingEdge) mDataEdge);
-
-        break;
-
-      case TEDGE:
-        mSourceGUINode.getDataNode().setDedge(mDataEdge);
-
-        break;
-
-      case CEDGE:
-        mSourceGUINode.getDataNode().addCEdge((GuardedEdge) mDataEdge);
-
-        break;
-
-      case PEDGE:
-        mSourceGUINode.getDataNode().addPEdge((RandomEdge) mDataEdge);
-
-        break;
-
-      case IEDGE:
-        mSourceGUINode.getDataNode().addIEdge((InterruptEdge) mDataEdge);
-
-        break;
-    }
-
-    // Revalidate data node and graphical node types
-    switch (mSourceGUINode.getDataNode().getFlavour()) {
-      case NONE:
-        de.dfki.vsm.model.flow.AbstractEdge dedge = mSourceGUINode.getDataNode().getDedge();
-
-        if (dedge instanceof EpsilonEdge) {
-          mSourceGUINode.setFlavour(Flavour.ENode);
-        } else if (dedge instanceof TimeoutEdge) {
-          mSourceGUINode.setFlavour(Flavour.TNode);
-        } else {
-          mSourceGUINode.setFlavour(Flavour.None);
-        }
-
-        break;
-
-      case PNODE:
-        mSourceGUINode.setFlavour(Flavour.PNode);
-
-        break;
-
-      case FNODE:
-        mSourceGUINode.setFlavour(Flavour.FNode);
-
-        break;
-
-      case CNODE:
-        mSourceGUINode.setFlavour(Flavour.CNode);
-
-        break;
-
-      case INODE:
-        mSourceGUINode.setFlavour(Flavour.INode);
-
-        break;
-    }
-
-    mLogger.info("edge creation");
+  public void doIt() {
+    mWorkSpace.removeEdges(new ArrayList<Edge>(){{add(mGUIEdge);}});
+    AbstractEdge mDataEdge = mGUIEdge.getDataEdge();
+    // connect to the new node
+    mDataEdge.connect(mSourceGUINode.getDataNode(), mTargetGUINode.getDataNode());
 
     // create a new gui edge
-    mGUIEdge = new Edge(mWorkSpace, mDataEdge, mGUIEdgeType, mSourceGUINode, mTargetGUINode,
-            mSourceGUINodeDockPoint, mTargetGUINodeDockPoint);
-    mLogger.info("edge connection from source point " + mSourceGUINodeDockPoint + " to "
-            + mTargetGUINodeDockPoint);
+    mNewEdge = new Edge(mWorkSpace, mDataEdge, mSourceGUINode, mTargetGUINode,
+        mSourceGUINode.getEdgeDockPoint(mNewEdge), mDropPoint);
+    mNewEdge.straightenEdge();
+    mWorkSpace.pasteNodesAndEdges(Collections.emptyList(),
+        new ArrayList<Edge>(){{add(mNewEdge);}});
 
-//      // connect edge
-//      if (mSourceGUINode.equals(mTargetGUINode)) {
-//        // same nodes
-//        //mSourceGUINodeDockPoint = mSourceGUINode.connectEdgeAtSourceNode(mGUIEdge, mSourceGUINodeDockPoint);
-//        mTargetGUINodeDockPoint = mTargetGUINode.connectSelfPointingEdge(mGUIEdge, mTargetGUINodeDockPoint);
-//      } else {
-//        // different nodes
-//        //mSourceGUINodeDockPoint = mSourceGUINode.connectEdgeAtSourceNode(mGUIEdge, mSourceGUINodeDockPoint);
-//        mTargetGUINodeDockPoint = mTargetGUINode.connectEdgetAtTargetNode(mGUIEdge, mTargetGUINodeDockPoint);
-//      }
-    // mSourceGUINode.update();
-    EditorInstance.getInstance().refresh();
-    mWorkSpace.add(mGUIEdge);
-
-    // straighten the edge ...
-    mGUIEdge.straightenEdge();
-
-    // repaint
-    mWorkSpace.revalidate();
-    mWorkSpace.repaint(100);
   }
 
-  public void run() {
-
-    // delete old edge
-    deleteDeflected();
-
-    // create new edge, with data from old edge
-    createDeflectEdge();
-
-    // Update Redo/Undo state
-    mUndoManager.addEdit(new Edit());
-    UndoAction.getInstance().refreshUndoState();
-    RedoAction.getInstance().refreshRedoState();
+  public void undoIt() {
+    mWorkSpace.removeEdges(new ArrayList<Edge>(){{add(mNewEdge);}});
+    mWorkSpace.addEdges(new ArrayList<Edge>(){{add(mGUIEdge);}});
+    mNewEdge = null;
   }
 
-  private class Edit extends AbstractUndoableEdit {
-
-    @Override
-    public void undo() throws CannotUndoException {
-
-//          TODO
-    }
-
-    @Override
-    public void redo() throws CannotRedoException {
-
-//          TODO
-    }
-
-    @Override
-    public boolean canUndo() {
-      return false;    // TOdO check
-    }
-
-    @Override
-    public boolean canRedo() {
-      return false;    // TOdO check
-    }
-
-    @Override
-    public String getUndoPresentationName() {
-      return "Undo Deletion Of Edge";
-    }
-
-    @Override
-    public String getRedoPresentationName() {
-      return "Redo Deletion Of Edge";
-    }
+  @Override
+  public String msg() {
+    return "Undo Change Edge Source/Target";
   }
 }
