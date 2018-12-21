@@ -267,7 +267,7 @@ public final class EditorMenuBar extends JMenuBar {
         mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().copySelectedNodes();
       }
     });
-    //TODO CUT ACTION NOT IMPLEMENTED
+    //CUT ACTION
     mCutMenuItem = new JMenuItem("Cut");
     mCutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
             Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -277,7 +277,7 @@ public final class EditorMenuBar extends JMenuBar {
         mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().cutSelectedNodes();
       }
     });
-    //TODO PASTE ACTION NOT IMPLEMENTED
+    //PASTE ACTION
     mPasteMenuItem = new JMenuItem("Paste");
     mPasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
             Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));

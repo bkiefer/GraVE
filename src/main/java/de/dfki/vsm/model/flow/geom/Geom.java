@@ -55,6 +55,12 @@ public class Geom {
     return result;
   }
 
+  public static Point add(Point a, Position b) {
+    Point result = new Point(a);
+    result.translate(b.getXPos(), b.getYPos());
+    return result;
+  }
+
   // returns an angle in the range 0 .. 2*pi, where (0, 1) returns zero, and
   // (1,0) returns pi/2
   public static double angle(Point center, Point p) {

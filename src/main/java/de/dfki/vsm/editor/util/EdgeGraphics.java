@@ -33,7 +33,6 @@ public final class EdgeGraphics {
     updateDrawingParameters(e);
   }
 
-  // TODO: SANITIZE
   public void updateDrawingParameters(Edge e) {
     deselectMCs();
     Point[] mCtrl = new Point[]{

@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import de.dfki.vsm.model.flow.geom.ControlPoint;
 import de.dfki.vsm.model.flow.geom.EdgeArrow;
 import de.dfki.vsm.model.flow.geom.Geom;
+import de.dfki.vsm.model.flow.geom.Position;
 
 /**
  * @author Gregor Mehlmann
@@ -40,6 +41,18 @@ public abstract class AbstractEdge {
     }
   }
 
+  public static class PointAdapter extends XmlAdapter<String, Expression> {
+    @Override
+    public String marshal(Expression v) throws Exception {
+      return v.getContent();
+    }
+
+    @Override
+    public Expression unmarshal(String v) throws Exception {
+      return new Expression(v);
+    }
+  }
+
   protected String mTargetUnid = new String();
   protected String mSourceUnid = new String();
   protected BasicNode mTargetNode = null;
@@ -47,10 +60,14 @@ public abstract class AbstractEdge {
 
   // Replaces EdgeArrow
   /* TODO: TURN ARROW DATA INTO NEW FIELDS */
+  @XmlAttribute(name="targetdock")
   private int mTargetDock;
+  @XmlAttribute(name="sourcedock")
   private int mSourceDock;
-  private Point mSourceCtrlPoint; // relative, not absolute
-  private Point mTargetCtrlPoint; // relative, not absolute
+  @XmlElement(name="SourceCtrl")
+  private Position mSourceCtrlPoint; // relative, not absolute
+  @XmlElement(name="TargetCtrl")
+  private Position mTargetCtrlPoint; // relative, not absolute
   /**/
 
   // DEPRECATED
@@ -89,26 +106,26 @@ public abstract class AbstractEdge {
     return mSourceDock;
   }
 
-  public final Point getSourceCtrlPoint() {
+  public final Position getSourceCtrlPoint() {
     return mSourceCtrlPoint;
   }
 
   public final void setSourceCtrlPoint(Point p) {
-    mSourceCtrlPoint = p;
-    checkControl(mSourceCtrlPoint, mSourceDock);
+    checkControl(p, mSourceDock);
+    mSourceCtrlPoint.setTo(p);
   }
 
   public final int getTargetDock() {
     return mTargetDock;
   }
 
-  public final Point getTargetCtrlPoint() {
+  public final Position getTargetCtrlPoint() {
     return mTargetCtrlPoint;
   }
 
   public final void setTargetCtrlPoint(Point p) {
-    mTargetCtrlPoint = p;
-    checkControl(mTargetCtrlPoint, mTargetDock);
+    checkControl(p, mTargetDock);
+    mTargetCtrlPoint.setTo(p);
   }
 
   /** Only for establishTargetNodes. TODO: should go */
@@ -173,10 +190,10 @@ public abstract class AbstractEdge {
     getTargetNode().occupyDock(mTargetDock);
     Point cp = pl.get(0).getCtrlPoint();
     cp.translate(-pl.get(0).getXPos(), -pl.get(0).getYPos());
-    mSourceCtrlPoint = cp;
+    mSourceCtrlPoint = new Position(cp.x, cp.y);
     cp = pl.get(1).getCtrlPoint();
     cp.translate(-pl.get(1).getXPos(), -pl.get(1).getYPos());
-    mTargetCtrlPoint = cp;
+    mTargetCtrlPoint = new Position(cp.x, cp.y);
   }
 
   @XmlTransient
@@ -255,12 +272,15 @@ public abstract class AbstractEdge {
         : Math.max(start.distance(target) / nodeWidth - 0.5, 1.25)
         * nodeWidth/2; // TODO: not my preferred solution.
 
-    mSourceCtrlPoint = new Point((int) (scale * startVec.getX()), (int) (scale * startVec.getY()));
-    mTargetCtrlPoint = new Point((int) (scale * targVec.getX()), (int) (scale * targVec.getY()));
+    Point srcCtrl = new Point((int) (scale * startVec.getX()), (int) (scale * startVec.getY()));
+    Point targCtrl = new Point((int) (scale * targVec.getX()), (int) (scale * targVec.getY()));
 
     // re-done for relative control points
-    checkControl(mSourceCtrlPoint, mSourceDock);
-    checkControl(mTargetCtrlPoint, mTargetDock);
+    checkControl(srcCtrl, mSourceDock);
+    checkControl(targCtrl, mTargetDock);
+    mSourceCtrlPoint = new Position(srcCtrl.x, srcCtrl.y);
+    mTargetCtrlPoint = new Position(targCtrl.x, targCtrl.y);
+
   }
 
   /** Compute the edge closest to the straight connection, as far as it's

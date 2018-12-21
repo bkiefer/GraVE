@@ -1,5 +1,7 @@
 package de.dfki.vsm.model.flow.geom;
 
+import java.awt.Point;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
@@ -12,46 +14,51 @@ import de.dfki.vsm.util.cpy.Copyable;
 public final class Position implements Copyable {
 
   // The Y coordinate
-  private int mXPos;
+  private int x;
   // The Y coordinate
-  private int mYPos;
+  private int y;
 
   // Create a node position
   public Position() {
-    mXPos = Integer.MIN_VALUE;
-    mYPos = Integer.MIN_VALUE;
+    x = Integer.MIN_VALUE;
+    y = Integer.MIN_VALUE;
   }
 
   // Create a node position
   public Position(final int xPos, final int yPos) {
-    mXPos = xPos;
-    mYPos = yPos;
+    x = xPos;
+    y = yPos;
   }
 
   // Set the X coordinate
   @XmlAttribute
   public final void setXPos(final int value) {
-    mXPos = value;
+    x = value;
   }
 
   // Get the X coordinate
   public final int getXPos() {
-    return mXPos;
+    return x;
   }
 
   // Set the Y coordinate
   @XmlAttribute
   public final void setYPos(final int value) {
-    mYPos = value;
+    y = value;
   }
 
   // Get the Y coordinate
   public final int getYPos() {
-    return mYPos;
+    return y;
   }
 
   @Override
   public final Position deepCopy() {
-    return new Position(mXPos, mYPos);
+    return new Position(x, y);
+  }
+
+  public void setTo(Point p) {
+    x = p.x;
+    y = p.y;
   }
 }
