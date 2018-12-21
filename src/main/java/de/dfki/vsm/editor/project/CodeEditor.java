@@ -56,7 +56,7 @@ public class CodeEditor extends JPanel {
             ((CmdBadge)mEditedObject).setText(mTextArea.getText());
             ((CmdBadge)mEditedObject).repaint();
           } else if (mEditedObject instanceof Edge) {
-            ((Edge)mEditedObject).setDescription(mTextArea.getText());
+            ((Edge)mEditedObject).getDescription();
             ((Edge)mEditedObject).repaint();
           }
         }
