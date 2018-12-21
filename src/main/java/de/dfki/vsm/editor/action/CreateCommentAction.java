@@ -22,14 +22,14 @@ public class CreateCommentAction extends EditorAction {
   }
 
   protected void undoIt() {
-    mWorkSpace.removeCommentNew(mGUIComment);
+    mWorkSpace.removeComment(mGUIComment);
   }
 
   protected void doIt() {
     if (mGUIComment == null) {
       mGUIComment = mWorkSpace.createComment(mCoord);
     }
-    mWorkSpace.addCommentNew(mGUIComment);
+    mWorkSpace.addComment(mGUIComment);
   }
 
   protected String msg() { return "Creation Of Comment"; }

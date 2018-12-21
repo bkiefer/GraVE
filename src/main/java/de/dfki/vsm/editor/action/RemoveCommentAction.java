@@ -16,11 +16,11 @@ public class RemoveCommentAction extends EditorAction {
   }
 
   public void doIt() {
-    mWorkSpace.removeCommentNew(mGUIComment);
+    mWorkSpace.removeComment(mGUIComment);
   }
 
   public void undoIt() {
-    mWorkSpace.addCommentNew(mGUIComment);
+    mWorkSpace.addComment(mGUIComment);
   }
 
   public String msg() { return "Deletion of Comment"; }

@@ -27,7 +27,7 @@ public class CopyNodesAction extends EditorAction {
   }
 
   protected void doIt() {
-    mWorkSpace.copyNodesNew(mNodes);
+    mWorkSpace.copyNodes(mNodes);
   }
 
   protected void undoIt() {

@@ -1,12 +1,13 @@
 package de.dfki.vsm.editor;
 
 //~--- JDK imports ------------------------------------------------------------
+import static de.dfki.vsm.editor.project.WorkSpacePanel.addItem;
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.*;
 
@@ -33,7 +34,6 @@ implements MouseListener, MouseMotionListener {
 
   // position
   private Point mClickPosition = new Point(0, 0);
-  private Point mLastMousePosition = new Point(0, 0);
 
   // edit
   private boolean mEditMode = false;
@@ -58,7 +58,7 @@ implements MouseListener, MouseMotionListener {
     mDataComment = null;
   }
 
-  public Comment(WorkSpace workSpace, de.dfki.vsm.model.flow.CommentBadge dataComment) {
+  public Comment(WorkSpace workSpace, CommentBadge dataComment) {
     mAC = AlphaComposite.getInstance(AlphaComposite.XOR, 0.15f);
     mACFull = AlphaComposite.getInstance(AlphaComposite.SRC, 1.0f);
     mWorkSpace = workSpace;
@@ -213,11 +213,7 @@ implements MouseListener, MouseMotionListener {
    */
   public void showContextMenu(MouseEvent evt, Comment comment) {
     JPopupMenu pop = new JPopupMenu();
-    JMenuItem item = new JMenuItem("Delete");
-    RemoveCommentAction deleteAction =
-        new RemoveCommentAction(mWorkSpace, comment);
-    item.addActionListener(deleteAction.getActionListener());
-    pop.add(item);
+    addItem(pop, "Delete", new RemoveCommentAction(mWorkSpace, comment));
     pop.show(this, comment.getX() + comment.getWidth(), comment.getY());
   }
 
@@ -230,8 +226,6 @@ implements MouseListener, MouseMotionListener {
 
     Point loc = getLocation();
     Point clickLoc = e.getPoint();
-
-    mLastMousePosition = new Point(clickLoc);
 
     // save click location relavitvely to node postion
     mClickPosition.setLocation(clickLoc.x - loc.x, clickLoc.y - loc.y);
@@ -266,8 +260,6 @@ implements MouseListener, MouseMotionListener {
     Point loc = getLocation();
     Point clickLoc = e.getPoint();
 
-    mLastMousePosition = new Point(clickLoc);
-
     // save click location relavitvely to node postion
     mClickPosition.setLocation(clickLoc.x - loc.x, clickLoc.y - loc.y);
   }
@@ -278,16 +270,7 @@ implements MouseListener, MouseMotionListener {
     // DEBUG System.out.println("mouse released");
     mPressed = false;
     mDragged = false;
-    mLastMousePosition = new Point(0, 0);
     repaint(100);
-  }
-
-  @Override
-  public void mouseEntered(MouseEvent e) {
-  }
-
-  @Override
-  public void mouseExited(MouseEvent e) {
   }
 
   @Override

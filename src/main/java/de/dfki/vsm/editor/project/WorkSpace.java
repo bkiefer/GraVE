@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -307,15 +306,18 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     showNewSuperNode();
   }
 
+  // ######################################################################
+  // Turn the current SuperNode model into view objects
+  // ######################################################################
 
   //reset components on works space
-  private void showCurrentWorkSpace() {
+  protected void showCurrentWorkSpace() {
     // Show the nodes and supernodes on the workspace.
     // Show the edges on the workspace.
     // Show the variables on workspace.
     showNodesOnWorkSpace();
     for (CommentBadge n : getSuperNode().getCommentList()){
-      add(new Comment(this, n));
+      addToWorkSpace(new Comment(this, n));
     }
     showEdgesOnWorkSpace();
     revalidate();
@@ -328,7 +330,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
       // TODO: FISHY FISHY FISHY: SNAP GRID ON LOAD?
       Point p = mGridManager.getNodeLocation(
           new Point(n.getPosition().getXPos(), n.getPosition().getYPos()));
-
       n.setPosition(new Position(p.x, p.y));
       addToWorkSpace(new Node(this, n));
     }
@@ -337,17 +338,20 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Add views for all edges between nodes in this workspace */
   private void showEdgesOnWorkSpace() {
     for (Node sourceNode : mNodeSet) {
-      BasicNode n = sourceNode.getDataNode();
-      for (AbstractEdge e : n.getEdgeList()) {
+      for (AbstractEdge e : sourceNode.getDataNode().getEdgeList()) {
         Node targetNode = getNode(e.getTargetUnid());
         if (targetNode != null) {
-          add(new Edge(this, e, sourceNode, targetNode));
+          addToWorkSpace(new Edge(this, e, sourceNode, targetNode));
         }
       }
     }
   }
 
-  protected void launchWorkSpaceSelectedEvent() {
+  // ######################################################################
+  // END OF: Turn the current SuperNode model into view objects
+  // ######################################################################
+
+ protected void launchWorkSpaceSelectedEvent() {
     WorkSpaceSelectedEvent ev = new WorkSpaceSelectedEvent(this);
     mEventCaster.convey(ev);
   }
@@ -396,7 +400,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     }
   }
 
-  // TODO: NodesDraggedAction: location change for set of nodes
+  // TODO: undo/redo NodesDraggedAction: location change for set of nodes
   protected void dragNodesFinished(Set<Node> nodes, MouseEvent event) {
     for (Node node : nodes) {
       Point p = node.getLocation();
@@ -544,17 +548,15 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mObservable.addObserver(n);
   }
 
-  /** Remove comment view from workspace, AND from model */
+  /** Remove comment view from workspace, no change in model */
   private void removeFromWorkSpace(Comment c) {
     mCmtSet.remove(c);
     super.remove(c);
-    getSuperNode().removeComment(c.getData());
     mObservable.deleteObserver(c);
   }
 
-  /** Add a new comment to the workspace and the model */
+  /** Add a new comment to the workspace, no change in the model */
   private void addToWorkSpace(Comment c) {
-    getSuperNode().addComment(c.getData());
     mCmtSet.add(c);
     super.add(c);
     mObservable.addObserver(c);
@@ -636,9 +638,13 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     }
   }
 
-  /** Complete the edge model, and create a new edge view from the given data */
+  /** Complete the edge model, and create a new edge view from the given data.
+   *  THIS METHOD IS ONLY TO BE CALLED TO CREATE A COMPLETELY NEW EDGE VIA THE
+   *  GUI
+   */
   public Edge createEdge(AbstractEdge edge, Node source, Node target) {
     edge.connect(source.getDataNode(), target.getDataNode());
+    edge.straightenEdge(source.getWidth());
     return new Edge(this, edge, source, target);
   }
 
@@ -698,7 +704,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    * @param n the new node to add
    */
   public void addNewNode(Node n) {
-    // upon creation, n has got the right position already
+    // upon creation, n has got the right position already!
     addToWorkSpace(n);
   }
 
@@ -781,10 +787,8 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** Copy nodes in the selected nodes set (mSelectedNodes) to the clipboard for
    *  the Copy operation (lazy copy).
-   *
-   *  TODO: rename once finished
    */
-  public void copyNodesNew(Collection<Node> nodes) {
+  public void copyNodes(Collection<Node> nodes) {
     mClipboard.setToCopy(this, nodes, Collections.emptyList());
   }
 
@@ -801,13 +805,15 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   }
 
   /** Add a new comment */
-  public void addCommentNew(Comment comment) {
+  public void addComment(Comment comment) {
+    getSuperNode().addComment(comment.getData());
     addToWorkSpace(comment);
   }
 
   /** Remove comment from WorkSpace and Model, for RemoveCommentAction */
-  public void removeCommentNew(Comment comment) {
+  public void removeComment(Comment comment) {
     removeFromWorkSpace(comment);
+    getSuperNode().removeComment(comment.getData());
   }
 
 }

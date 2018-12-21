@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.model.flow.geom.Geom;
 
 /**
  * @author Gregor Mehlmann
@@ -20,6 +21,7 @@ public final class MainGrave {
 
   // Start SceneMaker3 in a specific mode
   public static void main(final String[] args) {
+    Geom.initialize(32);
     // Let Java Swing do the work for us
     SwingUtilities.invokeLater(new Runnable() {
       @Override
