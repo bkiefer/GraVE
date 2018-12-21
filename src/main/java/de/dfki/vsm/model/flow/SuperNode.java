@@ -1,5 +1,6 @@
 package de.dfki.vsm.model.flow;
 
+import java.awt.geom.Point2D;
 import java.util.*;
 
 import javax.xml.bind.annotation.*;
@@ -7,6 +8,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import de.dfki.vsm.editor.util.IDManager;
+import de.dfki.vsm.model.flow.geom.Geom;
 import de.dfki.vsm.model.flow.geom.Position;
 
 /**
@@ -276,4 +278,8 @@ public class SuperNode extends BasicNode {
     return hash;
   }
 
+  /** Dock point for square */
+  protected Point2D getMyDockPoint(int which, int width) {
+    return Geom.getDockPointSquare(which, width);
+  }
 }

@@ -3,24 +3,28 @@ package de.dfki.vsm.model.flow;
 import static de.dfki.vsm.model.flow.geom.Geom.*;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.model.flow.geom.ControlPoint;
 import de.dfki.vsm.model.flow.geom.EdgeArrow;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import de.dfki.vsm.model.flow.geom.Geom;
 
 /**
  * @author Gregor Mehlmann
  */
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class AbstractEdge {
+  private final static int MIN_CTRL_LEN = 50;
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractEdge.class);
 
@@ -42,10 +46,12 @@ public abstract class AbstractEdge {
   protected BasicNode mSourceNode = null;
 
   // Replaces EdgeArrow
-  public int mTargetDock;
-  public int mSourceDock;
-  public Point mSourceCtrlPoint;
-  public Point mTargetCtrlPoint;
+  /* TODO: TURN ARROW DATA INTO NEW FIELDS */
+  private int mTargetDock;
+  private int mSourceDock;
+  private Point mSourceCtrlPoint; // relative, not absolute
+  private Point mTargetCtrlPoint; // relative, not absolute
+  /**/
 
   // DEPRECATED
   protected EdgeArrow mArrow = null;
@@ -75,16 +81,55 @@ public abstract class AbstractEdge {
     return mTargetNode;
   }
 
-  public final void setTargetNode(final BasicNode value) {
-    mTargetNode = value;
-  }
-
   public final BasicNode getSourceNode() {
     return mSourceNode;
   }
 
-  public final void setSourceNode(final BasicNode value) {
+  public final int getSourceDock() {
+    return mSourceDock;
+  }
+
+  public final Point getSourceCtrlPoint() {
+    return mSourceCtrlPoint;
+  }
+
+  public final void setSourceCtrlPoint(Point p) {
+    mSourceCtrlPoint = p;
+    checkControl(mSourceCtrlPoint, mSourceDock);
+  }
+
+  public final int getTargetDock() {
+    return mTargetDock;
+  }
+
+  public final Point getTargetCtrlPoint() {
+    return mTargetCtrlPoint;
+  }
+
+  public final void setTargetCtrlPoint(Point p) {
+    mTargetCtrlPoint = p;
+    checkControl(mTargetCtrlPoint, mTargetDock);
+  }
+
+  /** Only for establishTargetNodes. TODO: should go */
+  final void setNodes(BasicNode source, BasicNode target) {
+    mSourceNode = source;
+    mSourceUnid = source.getId();
+    mTargetNode = target;
+    //mTargetUnid = target.getId(); // already set
+    arrowToDock();
+  }
+
+  public final void setSource(final BasicNode value, int dock) {
+    mSourceUnid = value.getId();
     mSourceNode = value;
+    mSourceDock = dock;
+  }
+
+  public final void setTarget(final BasicNode value, int dock) {
+    mTargetUnid = value.getId();
+    mTargetNode = value;
+    mTargetDock = dock;
   }
 
   public Expression getExpression() {
@@ -104,13 +149,34 @@ public abstract class AbstractEdge {
     mTargetUnid = target.getId();
   }
 
+  /* TODO: DROP AFTER REVAMP */
   @XmlElement(name="Connection")
   public final EdgeArrow getArrow() {
     return mArrow;
   }
 
+  /* TODO: DROP AFTER REVAMP */
   public final void setArrow(final EdgeArrow value) {
     mArrow = value;
+  }
+
+  /* TODO: DROP AFTER REVAMP */
+  public final void arrowToDock() {
+    EdgeArrow arr = getArrow();
+    List<ControlPoint> pl = arr.getPointList();
+    // For start and target node:
+    // a) find a dock close to the dock point
+    // b) turn the absolute control point into a relative control point
+    mSourceDock = getSourceNode().getNearestFreeDock(pl.get(0).getPoint());
+    mTargetDock = getTargetNode().getNearestFreeDock(pl.get(1).getPoint());
+    getSourceNode().occupyDock(mSourceDock);
+    getTargetNode().occupyDock(mTargetDock);
+    Point cp = pl.get(0).getCtrlPoint();
+    cp.translate(-pl.get(0).getXPos(), -pl.get(0).getYPos());
+    mSourceCtrlPoint = cp;
+    cp = pl.get(1).getCtrlPoint();
+    cp.translate(-pl.get(1).getXPos(), -pl.get(1).getYPos());
+    mTargetCtrlPoint = cp;
   }
 
   @XmlTransient
@@ -141,6 +207,76 @@ public abstract class AbstractEdge {
     hash = mArrow != null? 31 * hash + this.mArrow.hashCode() : hash;
     hash = mCmdList != null? 31 * hash + this.mCmdList.hashCode() : hash;
     return hash;
+  }
+
+
+  /** Disallow control points too close to the node, or past the orthogonal
+   *  vectors to the dock vector
+   */
+  public static void checkControl(Point ctrlPoint, int dock) {
+    // Unit Vector from Center to Dock
+    Point2D dockVec = Geom.getDockPointCircle(dock, 4);
+    double ctrlLen = norm2(ctrlPoint);
+    if (ctrlLen < MIN_CTRL_LEN) { // scale vector to MIN_CTRL_LEN
+      double f = MIN_CTRL_LEN / ctrlLen;
+      ctrlPoint.x *= f;
+      ctrlPoint.y *= f;
+      ctrlLen = MIN_CTRL_LEN;
+    }
+    double dvlen = norm2(dockVec);
+    double dot = dotProd(dockVec, ctrlPoint); // for cosine: / (startlen*ctrlLen);
+    if (dot < 0) {
+      dot /= dvlen;
+      // reject: turn it into an orthogonal vector with the same length:
+      // cv = dv - ((cv . dv)/ norm(dv)) * dv
+      ctrlPoint.translate(-(int)(dot * dockVec.getX()), -(int)(dot * dockVec.getY()));
+      double l = ctrlLen / norm2(ctrlPoint);
+      ctrlPoint.x *= l;
+      ctrlPoint.y *= l;
+    }
+  }
+
+  /** compute (relative) bezier control points
+   *  (using node center point and edge connection points)
+   */
+  private void initCurve(int nodeWidth) {
+    Point start = mSourceNode.getCenter();
+    Point target = mTargetNode.getCenter();
+
+    // Unit Vector from Center to Dock
+    Point2D startVec = Geom.getDockPointCircle(mSourceDock, 2);
+    Point2D targVec = Geom.getDockPointCircle(mTargetDock, 2);
+
+    // TODO: LOOP EDGES NEED MORE THINKING, FOR THE CONTROL POINTS *AND* THE
+    // DOCKS
+
+    // scale control point in relation to distance between nodes
+    double scale = (mSourceNode == mTargetNode) ? 3
+        : Math.max(start.distance(target) / nodeWidth - 0.5, 1.25)
+        * nodeWidth/2; // TODO: not my preferred solution.
+
+    mSourceCtrlPoint = new Point((int) (scale * startVec.getX()), (int) (scale * startVec.getY()));
+    mTargetCtrlPoint = new Point((int) (scale * targVec.getX()), (int) (scale * targVec.getY()));
+
+    // re-done for relative control points
+    checkControl(mSourceCtrlPoint, mSourceDock);
+    checkControl(mTargetCtrlPoint, mTargetDock);
+  }
+
+  /** Compute the edge closest to the straight connection, as far as it's
+   *  allowed concerning the dock points already taken.
+   */
+  public void straightenEdge(int nodeWidth) {
+    mSourceNode.freeDock(mSourceDock);
+    mTargetNode.freeDock(mTargetDock);
+    int s = mSourceNode.getNearestFreeDock(mTargetNode.getCenter());
+    mSourceDock = s;
+    int t = mTargetNode.getNearestFreeDock(mSourceNode.getCenter());
+    mTargetDock = t;
+    mSourceNode.occupyDock(mSourceDock);
+    mTargetNode.occupyDock(mTargetDock);
+    // mEg.updateDrawingParameters(this); // no: compute new control points
+    initCurve(nodeWidth);
   }
 
   @Override
@@ -218,5 +354,12 @@ public abstract class AbstractEdge {
       cp.setCtrlXPos(cp.getCtrlXPos() + deltaX);
       cp.setCtrlYPos(cp.getCtrlYPos() + deltaY);
     }
+  }
+
+  public String toString() {
+    return "" + this.getClass().getName().charAt(0) + '(' + mSourceNode + ','
+    + mTargetNode + ')'
+    + '[' + mSourceDock + '|' + mSourceCtrlPoint + ','
+    + mTargetDock + '|' + mTargetCtrlPoint + ']';
   }
 }

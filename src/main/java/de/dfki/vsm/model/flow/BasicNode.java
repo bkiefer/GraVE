@@ -1,19 +1,22 @@
 package de.dfki.vsm.model.flow;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.editor.util.IDManager;
+import de.dfki.vsm.model.flow.geom.Geom;
 import de.dfki.vsm.model.flow.geom.Position;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import de.dfki.vsm.util.ChainedIterator;
 
 /**
  * @author Gregor Mehlmann
@@ -23,6 +26,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class BasicNode  {
 
   private static final Logger logger = LoggerFactory.getLogger(BasicNode.class);
+
+  private static final int WIDTH = 100; // default width for model
 
   public static class CodeAdapter extends XmlAdapter<String, Code> {
     @Override
@@ -61,12 +66,15 @@ public class BasicNode  {
   // XML handling using access functions (see below)
   protected AbstractEdge mDEdge = null;
 
+  /** Top-left corner of the node */
   @XmlElement(name="Position")
   protected Position mPosition = null;
 
   protected SuperNode mParentNode = null;
 
   protected boolean mIsEndNode = true;
+
+  protected BitSet mDocksTaken = new BitSet();
 
   public Byte hasNone = new Byte("0");
   public Byte hasOne = new Byte("1");
@@ -177,7 +185,13 @@ public class BasicNode  {
     return false;
   }
 
+  /** Add an outgoing edge from this node, with all consequences.
+   *
+   *  For use in GUI modifications: add new edge, copy, paste, etc.
+   */
   public void addEdge(AbstractEdge e) {
+    mDocksTaken.set(e.getSourceDock());
+    e.getTargetNode().mDocksTaken.set(e.getTargetDock());
     if ((e instanceof EpsilonEdge) || e instanceof TimeoutEdge)
       mDEdge = e;
     else if (e instanceof ForkingEdge)
@@ -192,7 +206,13 @@ public class BasicNode  {
     // only outgoing conditional edges
   }
 
+  /** Remove an outgoing edge from this node, with all consequences.
+   *
+   *  For use in GUI modifications: delete edge, cut, etc.
+   */
   public void removeEdge(AbstractEdge e) {
+    mDocksTaken.clear(e.getSourceDock());
+    e.getTargetNode().mDocksTaken.clear(e.getTargetDock());
     if ((e instanceof EpsilonEdge) || e instanceof TimeoutEdge) {
       mDEdge = null; return;
     } else if (e instanceof ForkingEdge) {
@@ -383,39 +403,74 @@ public class BasicNode  {
     return mIEdgeList;
   }
 
+  public boolean isDockTaken(int which) {
+    return mDocksTaken.get(which);
+  }
+
+  public void occupyDock(int which) {
+    mDocksTaken.set(which);
+  }
+
+  public void freeDock(int which) {
+    mDocksTaken.clear(which);
+  }
+
+  public Point getCenter() {
+    return new Point(mPosition.getXPos() + WIDTH/2, mPosition.getYPos() + WIDTH/2);
+  }
+
+  public int getNearestFreeDock(Point p) {
+    // start with the closest angle with a reasonable representation
+    double angle = Geom.angle(getCenter(), p);
+    return Geom.findClosestDock(mDocksTaken, angle);
+  }
+
+  /** Dock point for circle */
+  protected Point2D getMyDockPoint(int which, int width) {
+    return Geom.getDockPointCircle(which, width);
+  }
+
+  /** Returns a fresh Point for the given dock */
+  public Point getDockPoint(int which, int width) {
+    Point p = getCenter();
+    Point2D dp = getMyDockPoint(which, width);
+    p.translate((int)dp.getX(), (int)dp.getY());
+    return p;
+  }
 
   private class EdgeIterator implements Iterator<AbstractEdge> {
-    private LinkedList<Iterator<? extends AbstractEdge>> iterators;
+    private Iterator<? extends AbstractEdge> it;
+    private AbstractEdge lastEdge = null;
     private AbstractEdge dEdge = null;
 
-    @SuppressWarnings("serial")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public EdgeIterator() {
-      iterators = new LinkedList<Iterator<? extends AbstractEdge>>() {{
-        add(mCEdgeList.iterator());
-        add(mIEdgeList.iterator());
-        add(mPEdgeList.iterator());
-        add(mFEdgeList.iterator());
-      }};
+      it = new ChainedIterator(mCEdgeList.iterator(), mIEdgeList.iterator(),
+          mPEdgeList.iterator(), mFEdgeList.iterator());
       dEdge = mDEdge;
     }
 
     @Override
     public boolean hasNext() {
-      while (! iterators.isEmpty() && ! iterators.getFirst().hasNext()) {
-        iterators.removeFirst();
-      }
-      return ! iterators.isEmpty() || dEdge != null;
+      return it.hasNext() || dEdge != null;
     }
 
     @Override
     public AbstractEdge next() {
       if (! hasNext()) throw new IllegalStateException("No next Element");
-      if (iterators.isEmpty()) {
+      if (! it.hasNext()) {
+        lastEdge = dEdge;
         AbstractEdge e = dEdge;
         dEdge = null;
         return e;
       }
-      return iterators.getFirst().next();
+      return lastEdge = it.next();
+    }
+
+    @Override
+    public void remove() {
+      if (lastEdge != null)
+        removeEdge(lastEdge);
     }
   }
 
@@ -428,6 +483,7 @@ public class BasicNode  {
     };
   }
 
+
   protected void establishTargetNodes() {
     for (AbstractEdge edge : getEdgeList()) {
       BasicNode n = mParentNode.getChildNodeById(edge.getTargetUnid());
@@ -435,13 +491,12 @@ public class BasicNode  {
         logger.error("There is no node with ID {} in SuperNode {}",
             edge.getTargetUnid(), this.getId());
       } else {
-        edge.setTargetNode(n);
+        edge.setNodes(this, n);
       }
-      edge.setSourceNode(this);
-      edge.setSourceUnid(getId());
     }
   }
 
+  /*
   public ArrayList<BasicNode> getReachableNodeList() {
     ArrayList<BasicNode> reachableNodeList = new ArrayList<BasicNode>();
 
@@ -460,7 +515,7 @@ public class BasicNode  {
         targetNode.fillReachableNodeList(fromSourceReachableNodeList);
       }
     }
-  }
+  }*/
 
   public String getCmd() {
     return mCmdList.getContent();
@@ -525,5 +580,4 @@ public class BasicNode  {
   public String toString() {
     return mNodeId + "[" + mNodeName + "]";
   }
-
 }

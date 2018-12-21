@@ -1,16 +1,12 @@
 package de.dfki.vsm.editor.action;
 
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import de.dfki.vsm.editor.project.WorkSpace;
 
 /**
  *
  * @author Patrick Gebhard
  */
-public class StraightenEdgeAction {
+public class StraightenEdgeAction extends EditorAction {
 
   private de.dfki.vsm.editor.Edge mGUIEdge = null;
   private WorkSpace mWorkSpace;
@@ -20,15 +16,17 @@ public class StraightenEdgeAction {
     mGUIEdge = edge;
   }
 
-  public ActionListener getActionListener() {
-    return new ActionListener() {
-      public void actionPerformed(ActionEvent event) {
-        mGUIEdge.straightenEdge();
-
-        // renew graphical representation on work space
-        mWorkSpace.revalidate();
-        mWorkSpace.repaint(100);
-      }
-    };
+  @Override
+  protected void doIt() {
+    mGUIEdge.straightenEdge();
   }
+
+  @Override
+  protected void undoIt() {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  protected String msg() { return "Straighten Edge" ; }
 }

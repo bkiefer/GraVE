@@ -1,6 +1,7 @@
 package de.dfki.vsm.editor;
 
 import static de.dfki.vsm.Preferences.*;
+import static de.dfki.vsm.editor.project.WorkSpacePanel.addItem;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.*;
@@ -8,27 +9,27 @@ import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 import de.dfki.vsm.editor.action.*;
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.project.WorkSpace;
+import de.dfki.vsm.editor.project.WorkSpacePanel;
 import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.model.flow.BasicNode;
 import de.dfki.vsm.model.flow.SuperNode;
-import de.dfki.vsm.model.flow.geom.Geom;
 import de.dfki.vsm.model.flow.geom.Position;
 import de.dfki.vsm.model.project.EditorConfig;
+import de.dfki.vsm.util.ChainedIterator;
 import de.dfki.vsm.util.Pair;
 import de.dfki.vsm.util.evt.EventDispatcher;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 
 /**
  * @author Gregor Mehlmann
@@ -42,8 +43,6 @@ public final class Node extends EditorComponent {
   private StartSign mAltStartSign = null;
 
   // private Point mStartSignPosition;
-  //
-  //private DockingManager mDockingManager = null;
 
   // interaction flags
   private boolean mSelected = false;
@@ -55,7 +54,8 @@ public final class Node extends EditorComponent {
   private BasicNode mDataNode;
 
   /** The list of outgoing edge views, representing the edges of the model */
-  private Set<Edge> mEdges = new HashSet<>();
+  private Set<Edge> mOutEdges = new HashSet<>();
+  private Set<Edge> mInEdges = new HashSet<>();
 
   private CmdBadge mCmdBadge;
   private Document nodeCodeDocument;
@@ -138,7 +138,8 @@ public final class Node extends EditorComponent {
   }
 
   /**
-   *  Create new Node view from the node model
+   *  Create new Node view from the (complete) node model, when reading from
+   *  file, or creating a new node without edges
    */
   public Node(WorkSpace workSpace, BasicNode dataNode) {
     mWorkSpace = workSpace;
@@ -147,10 +148,6 @@ public final class Node extends EditorComponent {
     // the former overrides any MouseListener!!!
 
     isBasic = !(mDataNode instanceof SuperNode);
-
-    // Init docking manager
-    //mDockingManager = new DockingManager(this);
-    mDocksTaken = new BitSet();
 
     // Set initial position
     Point pos = new Point(mDataNode.getPosition().getXPos(),
@@ -170,6 +167,8 @@ public final class Node extends EditorComponent {
     }
     // Create the command badge of the GUI-BasicNode, after setting Position!
     mCmdBadge = new CmdBadge(this, mWorkSpace.getEditorConfig(), nodeCodeDocument);
+
+    //setToolTipText(mDataNode.getId());
 
     // update
     update();
@@ -200,8 +199,10 @@ public final class Node extends EditorComponent {
   }
 
   public void setSelected() {
+    mPressed = false;
     mSelected = true;
     repaint(100);
+    mEventMulticaster.convey(new ElementSelectedEvent(this));
   }
 
   /** Resets the node to its default visual behavior */
@@ -211,12 +212,6 @@ public final class Node extends EditorComponent {
     mDragged = false;
     repaint(100);
   }
-
-  /*
-  public DockingManager getDockingManager() {
-    return mDockingManager;
-  }
-  */
 
   public boolean changeType(IDManager mgr, Collection<Edge> incoming) {
     BasicNode newNode;
@@ -232,7 +227,7 @@ public final class Node extends EditorComponent {
     }
     for (Edge in : incoming) {
       AbstractEdge e = in.getDataEdge();
-      e.setTargetNode(newNode);
+      e.setTarget(newNode, e.getTargetDock());
       e.setTargetUnid(newNode.getId());
     }
     mDataNode = newNode;
@@ -335,13 +330,9 @@ public final class Node extends EditorComponent {
   public void resetLocation(Point newLocation) {
     Position g = new Position(newLocation.x, newLocation.y);
     mDataNode.setPosition(g);
-    Point location = getLocation();
-
-    /* TODO: NOT NECESSARY AFTER REVAMP
-    for (Edge edge : mDockingManager.getConnectedEdges()) {
-      edge.updateRelativeEdgeControlPointPos(this, newLocation.x - location.x, newLocation.y - location.y);
+    for (Edge edge : getConnectedEdges()) {
+      edge.updateEdgeGraphics();
     }
-    */
     setLocation(newLocation);
     CmdBadge badge = getCmdBadge();
     if (badge != null) {
@@ -376,82 +367,52 @@ public final class Node extends EditorComponent {
     mWorkSpace.add(mAltStartSign);
   }
 
-  /** Tells the node that an edge connects and that node is sourcenode */
-  public Point connectAsSource(Edge edge, Point point) {
-    mEdges.add(edge);
-    // get location of node
-    Point loc = getLocation();
-
-    // get relative (to the current node) coordinates;
-    point.setLocation(point.x - loc.x, point.y - loc.y);
-
-    Point dp = getNearestDockPoint(edge, point);
-
-    // make position absolute to underlying canvas
-    dp.setLocation(dp.x + loc.x, dp.y + loc.y);
-
-    // set working type and color
-    setColor();
-    return dp;
+  /** Only necessary since we have no model->view map, and the model only has
+   *  outgoing edges.
+   */
+  public void connectSource(Edge edge) {
+    mOutEdges.add(edge);
+  }
+  /** Only necessary since we have no model->view map, and the model only has
+   *  outgoing edges.
+   */
+  public void connectTarget(Edge edge) {
+    mInEdges.add(edge);
   }
 
-  /** Tells the node that an edge connects */
-  public Point connectAsTarget(Edge e, Point p) {
-    // get location of node
-    Point loc = getLocation();
-    // get relative (to the current node) coordinates;
-    p.setLocation(p.x - loc.x, p.y - loc.y);
-    Point dp = getNearestDockPoint(e, p);
-    /*
-    Point dp = (e.getSourceNode() != this)
-        ? mDockingManager.getNearestDockPoint(e, p)
-        : mDockingManager.getNearestSecondDockPoint(e, p);
-        */
-    // make position absolute to underlying canvas
-    dp.setLocation(dp.x + loc.x, dp.y + loc.y);
-    return dp;
-  }
-
-  /** Disconnect the edge, we are its source node */
+  /** Only necessary since we have no model->view map, and the model only has
+   *  outgoing edges.
+   */
   public void disconnectSource(Edge e) {
-    mEdges.remove(e);
-    freeDockPoint(e.getDataEdge().mSourceDock);
+    mOutEdges.remove(e);
   }
 
+  /** Only necessary since we have no model->view map, and the model only has
+   *  outgoing edges.
+   */
   public void disconnectTarget(Edge e) {
-    freeDockPoint(e.getDataEdge().mTargetDock);
+    mInEdges.remove(e);
   }
+
 
   /**
    * Returns the center of a node. The location is in the top left corner.
    */
   public Point getCenterPoint() {
-    Point loc = getLocation();
-    Point c = new Point();
-    c.setLocation(loc.x + getWidth() / 2, loc.y + getHeight() / 2);
-    return c;
+    return mDataNode.getCenter();
   }
 
   public Iterable<Edge> getConnectedEdges() {
-    return mEdges;
+    return new Iterable<Edge>() {
+      @Override
+      public Iterator<Edge> iterator() {
+        return new ChainedIterator<Edge>(mOutEdges.iterator(), mInEdges.iterator());
+      };
+    };
   }
 
   /*
-  public Point getEdgeDockPoint(Edge e) {
-    Point loc = getLocation();
-    Point dp = mDockingManager.getDockPoint(e);
-    // make position absolute to underlying canvas
-    if (dp != null) {
-      dp.setLocation(dp.x + loc.x, dp.y + loc.y);
-    } else {
-      if (this.mDataNode.isEndNode()) {
-        return (new Point(loc.x, loc.y + getHeight() / 2));
-      } else {
-        return (new Point(loc.x + getWidth(), loc.y + getHeight() / 2));
-      }
-    }
-    return dp;
-  }
+   *
 
   public Point getSelfPointingEdgeDockPoint(Edge e) {
     Point loc = getLocation();
@@ -468,17 +429,6 @@ public final class Node extends EditorComponent {
     }
     return dp;
   }
-
-  public ArrayList<Point> getEdgeStartPoints() {
-    ArrayList<Point> fDP = mDockingManager.getFreeDockPoints();
-    ArrayList<Point> points = new ArrayList<>();
-    Point loc = getLocation();
-    for (Point p : fDP) {
-      // make position absolute to underlying canvas
-      points.add(new Point(p.x + loc.x, p.y + loc.y));
-    }
-    return points;
-  }
    */
 
   public boolean isEdgeAllowed(AbstractEdge e) {
@@ -489,84 +439,37 @@ public final class Node extends EditorComponent {
    *
    * TODO: ADD "CREATE XEDGE" FOR ALL LEGAL EDGES STARTING AT THIS NODE
    */
-  public void showContextMenu(MouseEvent evt, Node node) {
+  public void showContextMenu(WorkSpacePanel mWorkSpace) {
     JPopupMenu pop = new JPopupMenu();
-    JMenuItem item = null;
-    SuperNode current = mDataNode.getParentNode();
-    EditorAction action;
+    SuperNode curr = mDataNode.getParentNode();
 
-    item = new JMenuItem(
-        current.isStartNode(node.getDataNode()) ? "Unset Start" : "Set Start");
-    action = new ToggleStartNodeAction(mWorkSpace, node);
-    item.addActionListener(action.getActionListener());
-    pop.add(item);
-
+    addItem(pop, curr.isStartNode(getDataNode()) ? "Unset Start" : "Set Start",
+        new ToggleStartNodeAction(mWorkSpace, this));
     pop.add(new JSeparator());
 
-    if (!(node.getDataNode() instanceof SuperNode)) {
-      item = new JMenuItem("To Supernode");
-      action = new ChangeNodeTypeAction(mWorkSpace, node);
-      item.addActionListener(action.getActionListener());
-      pop.add(item);
-
+    if (!(getDataNode() instanceof SuperNode)) {
+      addItem(pop, "To Supernode", new ChangeNodeTypeAction(mWorkSpace, this));
       pop.add(new JSeparator());
     }
 
     // TODO: MAYBE INVERT: IF NO CMD, ADD ONE
-    if (node.getDataNode().getCmd() != null) {
-      item = new JMenuItem("Edit Command");
-      action = new EditCommandAction(mWorkSpace, node.getCmdBadge());
-      item.addActionListener(action.getActionListener());
-      pop.add(item);
-
+    if (getDataNode().getCmd() != null) {
+      addItem(pop, "Edit Command", new EditCommandAction(mWorkSpace, getCmdBadge()));
       pop.add(new JSeparator());
     }
 
-    item = new JMenuItem("Copy");
-    action = new CopyNodesAction(mWorkSpace, node);
-    item.addActionListener(action.getActionListener());
-    pop.add(item);
-
-    item = new JMenuItem("Cut");
-    action = new RemoveNodesAction(mWorkSpace, node, true);
-    item.addActionListener(action.getActionListener());
-    pop.add(item);
-
+    addItem(pop, "Copy", new CopyNodesAction(mWorkSpace, this));
+    addItem(pop, "Cut", new RemoveNodesAction(mWorkSpace, this, true));
     pop.add(new JSeparator());
-
-    item = new JMenuItem("Delete");
-    action = new RemoveNodesAction(mWorkSpace, node, false);
-    item.addActionListener(action.getActionListener());
-    pop.add(item);
-
-    pop.show(this, node.getWidth(), 0);
+    addItem(pop, "Delete", new RemoveNodesAction(mWorkSpace, this, false));
+    pop.show(this, getWidth(), 0);
   }
 
   public void mouseClicked(MouseEvent event) {
-    mPressed = false;
-    mSelected = true;
-    repaint(100);
-
-    // enter supernode, if it has been double clicked
-    // TODO: move to workspace
-    if (! isBasic && event.getButton() == MouseEvent.BUTTON1
-        && event.getClickCount() == 2) {
-        mWorkSpace.increaseWorkSpaceLevel(this);
-    }
-
-    // show context menu
-    // TODO: move to workspace
-    if (event.getButton() == MouseEvent.BUTTON3 && event.getClickCount() == 1) {
-      showContextMenu(event, this);
-    }
-
-    // !!!!!!!!!!!!!!!!!!!!
-    // System.err.println("Sending node selected event");
-    mEventMulticaster.convey(new ElementSelectedEvent(this));
+    setSelected();
   }
 
   public void mousePressed(MouseEvent event) {
-    //mouseClicked(event);
     mPressed = true;
   }
 
@@ -620,7 +523,7 @@ public final class Node extends EditorComponent {
         g2d.setColor(sSTART_SIGN_COLOR);
         g2d.drawRect(borderOffset, borderOffset, nodeWidth - borderOffset * 2,
                 nodeHeight - borderOffset * 2);
-      } else if (this.mDataNode.isEndNode()) {
+      } else if (mDataNode.isEndNode()) {
         g2d.setStroke(new BasicStroke(borderSize));
         g2d.setColor(mColor.darker());
         g2d.drawRect(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 2,
@@ -645,7 +548,7 @@ public final class Node extends EditorComponent {
         g2d.setColor(sSTART_SIGN_COLOR);
         g2d.drawOval(borderOffset, borderOffset, nodeWidth - borderOffset * 2,
                 nodeHeight - borderOffset * 2);
-      } else if (this.mDataNode.isEndNode()) {
+      } else if (mDataNode.isEndNode()) {
         g2d.setStroke(new BasicStroke(borderSize));
         g2d.setColor(mColor.darker());
         g2d.drawOval(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 2,
@@ -689,64 +592,23 @@ public final class Node extends EditorComponent {
     }
   }
 
-  @Override
-  public void mouseEntered(MouseEvent e) {
-  }
-
-  @Override
-  public void mouseExited(MouseEvent e) {
-  }
-
-
   // **********************************************************************
   // New Node functionality
   // **********************************************************************
 
-  BitSet mDocksTaken = new BitSet();
-
-  private Point getCenter() {
-    Position p = mDataNode.getPosition();
-    return new Point(p.getXPos(), p.getXPos());
-  }
-
   public int getNearestFreeDock(Point p) {
-    // start with the closest angle with a reasonable representation
-    double alpha = Geom.angle(getCenter(), p);
-    return Geom.findClosestDock(mDocksTaken, alpha);
+    return mDataNode.getNearestFreeDock(p);
   }
 
   public Point getDockPoint(int which) {
-    double angle = Geom.dockToAngle(which);
-    return new Point((int)(Math.sin(angle) * this.getWidth() / 2),
-        (int)(Math.cos(angle) * this.getWidth() / 2));
+    return mDataNode.getDockPoint(which, getWidth());
   }
 
   /////////// LEGACY
 
-  public void freeDockPoint(int which) {
-    //return mDockingManager.freeDockPoint();
-    mDocksTaken.clear(which);
-  }
-
-  public void freeSecondDockPoint(int which) {
-    //return mDockingManager.freeSecondDockPoint();
-    mDocksTaken.clear(which);
-  }
-
   private void releaseDockPointForStartSign(){
     // TODO: FILL
   }
-
-  public Point getNearestDockPoint(Edge e, Point relPos) {
-    //return mDockingManager.getNearestDockPoint(e, relPos);
-    // TODO: FILL
-  }
-
-  /*
-  public Point getNearestSecondDockPoint(Edge e, Point relPos) {
-    return mDockingManager.getNearestSecondDockPoint(e, relPos);
-  }
-  */
 
   public void occupyDockPointForStartSign() {
     //return mDockingManager.occupyDockPointForStartSign();

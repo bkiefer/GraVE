@@ -26,14 +26,15 @@ import de.dfki.vsm.model.project.EditorProject;
 @SuppressWarnings("serial")
 public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMotionListener {
 
-  private static final Logger logger = LoggerFactory.getLogger("logger");
+  private static final Logger logger = LoggerFactory.getLogger(WorkSpacePanel.class);
 
   // Drag & Drop support
+  @SuppressWarnings("unused")
   private DropTarget mDropTarget;
   private DropTargetListener mDropTargetListener;
   private int mAcceptableActions;
 
-  private Point mLastMousePosition = new Point(0, 0);
+  private Point mLastMousePos = new Point(0, 0);
   // Flags for mouse interaction
   //private Node mSelectedNode = null;
   private Edge mSelectedEdge = null;
@@ -222,7 +223,9 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
    * https://github.com/SceneMaker/VisualSceneMaker/issues/126
    */
   private void deselectAll() {
-    deselectAllOtherComponents(null);
+    deselectEdge();
+    deselectComment();
+    deselectAllNodes();
   }
 
 
@@ -238,21 +241,50 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     compo.setSelected();
   }
 
-  private void selectNode(Node n, MouseEvent event) {
-    mSelectedNodes.add(n);
-    n.setSelected();
-    n.mouseClicked(event);
+  private void selectComment(Comment e) {
+    deselectAll();
+    mSelectedComment = e;
+    e.setSelected();
   }
 
-  private void deselectNode(Node n, MouseEvent event) {
+  private void deselectComment() {
+    if (mSelectedComment != null) {
+      mSelectedComment.setDeselected();
+      mSelectedComment = null;
+    }
+  }
+
+  private void selectEdge(Edge e) {
+    deselectAll();
+    mSelectedEdge = e;
+    e.setSelected();
+  }
+
+  private void deselectEdge() {
+    if (mSelectedEdge != null) {
+      mSelectedEdge.setDeselected();
+      mSelectedEdge = null;
+    }
+  }
+
+  /** Select a single node, leave all other selected nodes selected */
+  private void selectNode(Node n) {
+    deselectEdge();
+    deselectComment();
+    mSelectedNodes.add(n);
+    n.setSelected();
+  }
+
+  /** Deselect a single node, leave all other selected nodes selected */
+  private void deselectNode(Node n) {
     mSelectedNodes.remove(n);
     n.setDeselected();
   }
 
-  private void selectSingleNode(Node n, MouseEvent event) {
+  private void selectSingleNode(Node n) {
     mDoAreaSelection = false;
     deselectAllNodes();
-    selectNode(n, event);
+    selectNode(n);
   }
 
   /** Select all nodes intersecting the given area */
@@ -301,31 +333,19 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     action.run();
   }
 
-  /**
-   *
-   *
-   */
+  public static void addItem(JPopupMenu m, String name, EditorAction a) {
+    JMenuItem item = new JMenuItem(name);
+    item.addActionListener(a.getActionListener());
+    m.add(item);
+  }
+
+  /** Show the context menu if multiple nodes are selected */
   private void multipleNodesContextMenu(MouseEvent evt, Node node) {
-
     JPopupMenu pop = new JPopupMenu();
-
-    JMenuItem item = new JMenuItem("Copy Nodes");
-    EditorAction action = new CopyNodesAction(this, mSelectedNodes);
-    item.addActionListener(action.getActionListener());
-    pop.add(item);
-
-    item = new JMenuItem("Cut Nodes");
-    action = new RemoveNodesAction(this, mSelectedNodes, true);
-    item.addActionListener(action.getActionListener());
-    pop.add(item);
-
+    addItem(pop, "Copy Nodes", new CopyNodesAction(this, mSelectedNodes));
+    addItem(pop, "Cut Nodes", new RemoveNodesAction(this, mSelectedNodes, true));
     pop.add(new JSeparator());
-
-    item = new JMenuItem("Delete Nodes");
-    action = new RemoveNodesAction(this, mSelectedNodes, false);
-    item.addActionListener(action.getActionListener());
-    pop.add(item);
-
+    addItem(pop, "Delete Nodes", new RemoveNodesAction(this, mSelectedNodes, false));
     pop.show(this, node.getX() + node.getWidth(), node.getY());
   }
 
@@ -370,115 +390,112 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     mEdgeSourceNode = null;
   }
 
+
+  private void nodeClicked(MouseEvent event, Node clickedNode) {
+    // enter supernode, if it has been double clicked
+    if (clickedNode.getType() == Node.Type.SuperNode
+        && event.getButton() == MouseEvent.BUTTON1
+        && event.getClickCount() == 2) {
+      increaseWorkSpaceLevel(clickedNode);
+      return;
+    }
+    // show context menu on right click
+    if (event.getButton() == MouseEvent.BUTTON3 && event.getClickCount() == 1) {
+      if (mSelectedNodes.size() > 1
+          && mSelectedNodes.contains(clickedNode)) {
+        multipleNodesContextMenu(event, clickedNode);
+      } else {
+        selectSingleNode(clickedNode);
+        clickedNode.showContextMenu(this);
+      }
+      return;
+    }
+    // add/remove node from selected with CTRL-Click
+    if (event.getButton() == MouseEvent.BUTTON1
+        && (event.getModifiers() & MouseEvent.CTRL_MASK) != 0) {
+      if (mSelectedNodes.contains(clickedNode)) {
+        deselectNode(clickedNode);
+      } else {
+        if (! mSelectedNodes.isEmpty()) {
+          selectNode(clickedNode);
+        } else {
+          selectSingleNode(clickedNode);
+        }
+      }
+      return;
+    }
+    selectSingleNode(clickedNode);
+  }
+
+  private void edgeClicked(MouseEvent event, Edge edge) {
+    // if there is a specific selected edge use it - much faster than checking all edges
+    if (mSelectedEdge == null || mSelectedEdge != edge) {
+      selectEdge(edge);
+    }
+    mSelectedEdge.mouseClicked(event);
+  }
+
+  private void commentClicked(MouseEvent event, Comment comment) {
+    // if there is a specific selected comment use it - much faster than checking all nodes
+    if (mSelectedComment == null || mSelectedComment != comment) {
+      selectComment(comment);
+    }
+    // tell c that it has been clicked
+    mSelectedComment.mouseClicked(event);
+  }
+
+  private Edge findEdgeAt(Point p) {
+    // We'll try the selected edge first
+    if (mSelectedEdge != null && mSelectedEdge.containsPoint(p)) {
+      return mSelectedEdge;
+    }
+    // look if mouse click was on a edge
+    for (Edge edge : getEdges()) {
+      if (edge.containsPoint(p)) {
+        return edge;
+      }
+    }
+    return null;
+  }
+
   /**
    *
    */
   @Override
   public void mouseClicked(MouseEvent event) {
-    mLastMousePosition = event.getPoint();
+    mLastMousePos = event.getPoint();
     launchWorkSpaceSelectedEvent();
+    if (mIgnoreMouseInput) {
+      mIgnoreMouseInput = false;
+      return;
+    }
 
     // TODO: undisputed
     if (mEdgeSourceNode != null) {
       try {
         createNewEdgeSelectTargetNode(event.getPoint());
-      } catch (Exception e) {
-        e.printStackTrace(System.out);
-      }
+      } catch (Exception e) { e.printStackTrace(System.out); }
       return;
     }
 
-    // handle mouse click for node selections: undisputed
-    if (!mSelectedNodes.isEmpty()) {
-      Node clickedNode = findNodeAtPoint(mSelectedNodes, event.getPoint());
-      if (clickedNode != null) {
-        // show contect menu on right click
-        if (mSelectedNodes.size() > 1) {
-          if (event.getClickCount() == 1) {
-            if (event.getButton() == MouseEvent.BUTTON3) {
-              multipleNodesContextMenu(event, clickedNode);
-            } else if (event.getButton() == MouseEvent.BUTTON1) {
-              if ((event.getModifiers() & MouseEvent.CTRL_MASK) != 0) {
-                deselectNode(clickedNode, event);
-              } else {
-                selectSingleNode(clickedNode, event);
-              }
-            }
-          }
-        } else {
-          selectSingleNode(clickedNode, event);
-        }
-        return;
-      }
-    }
-
-    // if there is a specific selected edge use it - much faster than checking all edges
-    if (mSelectedEdge != null) {
-      if (mSelectedEdge.containsPoint(new Point(event.getX(), event.getY()))) {
-        mSelectedEdge.mouseClicked(event);
-        return;
-      } else {
-        mSelectedEdge.setDeselected();
-        mSelectedEdge = null;
-      }
-    }
-
-    // if there is a specific selected comment use it - much faster than checking all nodes
-    if (mSelectedComment != null) {
-      if (mSelectedComment.containsPoint(event.getPoint())) {
-        // tell c that it has been clicked
-        mSelectedComment.mouseClicked(event);
-        return;
-      } else {
-        mSelectedComment.setDeselected();
-        mSelectedComment = null;
-      }
-    }
-
-    if (!mIgnoreMouseInput) {
-      // look if mouse click was on a node
-      Node node = findNodeAtPoint(getNodes(), event.getPoint());
-      if (node != null) {
-        // Ctrl-Click with area selection?
-        if (event.getButton() == MouseEvent.BUTTON1
-            && (event.getModifiers() & MouseEvent.CTRL_MASK) != 0) {
-          // Yes: add the clicked node to the selected nodes
-          mSelectedNodes.add(node);
-          node.setSelected();
-          node.mouseClicked(event);
-        } else {
-          selectSingleNode(node, event);
-        }
-        return;
-      }
-
-      // look if mouse click was on a edge
-      for (Edge edge : getEdges()) {
-        if (edge.containsPoint(new Point(event.getX(), event.getY()))) {
-          mSelectedEdge = edge;
-          mSelectedEdge.mouseClicked(event);
-          return;
-        }
-      }
-
-      // look if mouse click was on a comment
-      for (Comment comment : getComments()) {
-        if (comment.containsPoint(event.getPoint())) {
-          mSelectedComment = comment;
-          mSelectedComment.mouseClicked(event);
-          return;
-        }
-      }
+    Object o = SwingUtilities.getDeepestComponentAt(
+        this, mLastMousePos.x, mLastMousePos.y);
+    if (o instanceof Node) {
+      nodeClicked(event, (Node)o);
+    } else if (o instanceof JComponent
+        && ((JComponent)o).getParent() instanceof Comment) {
+      commentClicked(event, (Comment)((JComponent)o).getParent());
     } else {
-
-      // System.out.println("mouse input ignored");
-      mIgnoreMouseInput = false;
-    }
-
-    deselectAllNodes();
-    mAreaSelection = null;
-    if (!hasFocus()) {
-      requestFocus();
+      Edge e = findEdgeAt(event.getPoint());
+      if (e != null) {
+        edgeClicked(event, e);
+      } else {
+        deselectAll();
+        mAreaSelection = null;
+        if (!hasFocus()) {
+          requestFocus();
+        }
+      }
     }
   }
 
@@ -502,8 +519,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     refresh.addActionListener(new ActionListener(){
       @Override
       public void actionPerformed(ActionEvent e) {
-        revalidate();
-        repaint(100);
+        WorkSpacePanel.super.clearCurrentWorkspace();
+        WorkSpacePanel.this.showCurrentWorkSpace();
       }
     });
     pop.add(refresh);
@@ -511,77 +528,52 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   }
 
   /**
-   *
-   *
    */
   @Override
   public void mousePressed(MouseEvent event) {
-    mLastMousePosition = event.getPoint();
+    mLastMousePos = event.getPoint();
+    Object o = SwingUtilities.getDeepestComponentAt(this,
+        mLastMousePos.x, mLastMousePos.y);
+
     if (mAreaSelection == null) {
       // get point as possible point for area selection!
       mAreaSelection = new Rectangle2D.Double(event.getX(), event.getY(), 0, 0);
     }
 
-    /** handle mouse pressed for area selections */
-    if (!mSelectedNodes.isEmpty()) {
-      Node clickedNode = findNodeAtPoint(mSelectedNodes, event.getPoint());
-      mDoAreaSelection = false;
-      if (clickedNode != null) return;
-    }
-
-
-    // if there is a specific selected edge use it - much faster than checking all edges
-    if (mSelectedEdge != null) {
-      if (mSelectedEdge.containsPoint(event.getPoint())) {
+    if (o instanceof Node) {
+      if (event.getButton() == MouseEvent.BUTTON1
+          && (event.getModifiers() & MouseEvent.CTRL_MASK) == 0) {
+        Node node = (Node)o;
+        mDoAreaSelection = false;
+        if (!mSelectedNodes.contains(node)) {
+          selectSingleNode(node);
+        }
+      }
+    } else if (o instanceof JComponent
+        && ((JComponent)o).getParent() instanceof Comment) {
+      Comment c = (Comment)((JComponent)o).getParent();
+      if (mSelectedComment == null && c != mSelectedComment) {
+        selectComment(c);
+      }
+      mSelectedComment.mousePressed(event);
+    } else {
+      Edge e = findEdgeAt(event.getPoint());
+      if (e != null) {
+        if (mSelectedEdge != e) {
+          selectEdge(e);
+        }
         mSelectedEdge.mousePressed(event);
-        return;
       } else {
-        mSelectedEdge.setDeselected();
-        mSelectedEdge = null;
+        //deselectAllNodes();
+        // enable global context menu for clipbaord actions
+        if ((event.getButton() == MouseEvent.BUTTON3)
+            && (event.getClickCount() == 1)) {
+          globalContextMenu(event);
+        } else {
+          mDoAreaSelection = true;
+        }
       }
     }
-
-    // if there is a specific selected comment use it - much faster than checking all nodes
-    if (mSelectedComment != null) {
-      if (mSelectedComment.containsPoint(event.getPoint())) {
-        mSelectedComment.mousePressed(event);
-        return;
-      } else {
-        mSelectedComment.setDeselected();
-        mSelectedComment = null;
-      }
-    }
-
-    // look if mouse click was on a edge
-    for (Edge edge : getEdges()) {
-      if (edge.containsPoint(event.getPoint())) {
-        mSelectedEdge = edge;
-        deselectAllOtherComponents(mSelectedEdge);
-        this.requestFocusInWindow();
-        mSelectedEdge.mousePressed(event);
-        return;
-      }
-    }
-
-    // look if mouse click was on a comment
-    for (Comment comment : getComments()) {
-      if (comment.containsPoint(event.getPoint())) {
-        mSelectedComment = comment;
-        deselectAllOtherComponents(mSelectedComment);
-        mSelectedComment.mousePressed(event);
-        return;
-      }
-    }
-
-    //deselectAllNodes();
-
-    // enable global context menu for clipbaord actions
-    if ((event.getButton() == MouseEvent.BUTTON3)
-        && (event.getClickCount() == 1)) {
-      globalContextMenu(event);
-      return;
-    }
-    mDoAreaSelection = true;
   }
 
   private void straightenAllOutOfBoundEdges() {
@@ -636,10 +628,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         // mGridManager.normalizeGridWeight();
         return;
       } else {
-
         // System.out.println(mSelectedEdge.getType() + " not released - deselected");
-        mSelectedEdge.setDeselected();
-        mSelectedEdge = null;
+        deselectEdge();
       }
     }
 
@@ -653,10 +643,9 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
         return;
       } else {
-
         // System.out.println(mSelectedNode.getDataNode().getName() + " not released - deselected");
         // mSelectedComment.setDeselected();
-        mSelectedComment = null;
+        deselectComment();
       }
 
       // finally do a repaint
@@ -669,16 +658,9 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
    *
    */
   private void dragComment(Comment comment, MouseEvent event, Point moveVec) {
-    boolean validDragging = true;
     Point commentPos = comment.getLocation();
 
-    if (((commentPos.x + moveVec.x) <= 0) || ((commentPos.y + moveVec.y) <= 0)) {
-
-      // stop dragging, if upper and left border would be passed!
-      validDragging = false;
-    }
-
-    if (validDragging) {
+    if (((commentPos.x + moveVec.x) > 0) && ((commentPos.y + moveVec.y) > 0)) {
       comment.updateLocation(moveVec);
 
       if ((event.getModifiersEx() == 1024)) {
@@ -744,10 +726,10 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
       // compute movement trajectory vectors
       Point currentMousePosition = event.getPoint();
-      Point mouseMoveVector = new Point(currentMousePosition.x - mLastMousePosition.x,
-              currentMousePosition.y - mLastMousePosition.y);
+      Point mouseMoveVector = new Point(currentMousePosition.x - mLastMousePos.x,
+              currentMousePosition.y - mLastMousePos.y);
 
-      mLastMousePosition = new Point(currentMousePosition.x, currentMousePosition.y);
+      mLastMousePos = new Point(currentMousePosition.x, currentMousePosition.y);
       dragNodes(mSelectedNodes, event, mouseMoveVector);    // BUG
       checkChangesOnWorkspace();
 
@@ -766,10 +748,10 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       if (mSelectedComment.mPressed) {
 
         // compute movement trajectory vectors
-        Point mouseMoveVector = new Point(currentMousePosition.x - mLastMousePosition.x,
-                currentMousePosition.y - mLastMousePosition.y);
+        Point mouseMoveVector = new Point(currentMousePosition.x - mLastMousePos.x,
+                currentMousePosition.y - mLastMousePos.y);
 
-        mLastMousePosition = new Point(currentMousePosition.x, currentMousePosition.y);
+        mLastMousePos = new Point(currentMousePosition.x, currentMousePosition.y);
 
         if (mSelectedComment.mResizing) {
           resizeComment(mSelectedComment, event, mouseMoveVector);
@@ -782,17 +764,19 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         return;
       } else {
         // System.out.println(mSelectedNode.getDataNode().getName() + " not dragged - deselected");
-        mSelectedComment = null;
+        deselectComment();
       }
     }
 
     // mouse interaction has to be the selection of an area ...
-    mDoAreaSelection = true;
-    mAreaSelection.width = Math.abs(event.getX() - mLastMousePosition.x);
-    mAreaSelection.height = Math.abs(event.getY() - mLastMousePosition.y);
-    mAreaSelection.x = Math.min(mLastMousePosition.x, event.getX());
-    mAreaSelection.y = Math.min(mLastMousePosition.y, event.getY());
-    selectNodesInArea(mAreaSelection);
+    if (mSelectedEdge == null) {
+      mDoAreaSelection = true;
+      mAreaSelection.width = Math.abs(event.getX() - mLastMousePos.x);
+      mAreaSelection.height = Math.abs(event.getY() - mLastMousePos.y);
+      mAreaSelection.x = Math.min(mLastMousePos.x, event.getX());
+      mAreaSelection.y = Math.min(mLastMousePos.y, event.getY());
+      selectNodesInArea(mAreaSelection);
+    }
   }
 
   /**
@@ -813,16 +797,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     }
     repaint(100);
     return;
-  }
-
-  @Override
-  public void mouseEntered(MouseEvent e) {
-    // TODO: show tool tip?
-  }
-
-  @Override
-  public void mouseExited(MouseEvent e) {
-    // TODO: hide tool tip?
   }
 
   /** Paint for things specific to mouse selection */
@@ -883,6 +857,14 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
                 mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) + 1);
       }
     }
+  }
+
+  @Override
+  public void mouseEntered(MouseEvent e) {
+  }
+
+  @Override
+  public void mouseExited(MouseEvent e) {
   }
 
 }

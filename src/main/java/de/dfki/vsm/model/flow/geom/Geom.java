@@ -1,13 +1,14 @@
 package de.dfki.vsm.model.flow.geom;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.BitSet;
 
 public class Geom {
 
   private static double[] num2angle;
-  private static double[] angles; // sorted
+  private static double[] angles; // sorted array of available angles
   private static int[] angle2num; // maps angle in angles back to numerical index
   private static int max_bits;
 
@@ -45,7 +46,7 @@ public class Geom {
       angle2num[i] = i;
     }
     sortAngles();
-    max_bits = (int)(Math.log(maxPoints) / Math.log(2)) + 1;
+    max_bits = maxPoints;
   }
 
   public static Point add(Point a, Point b) {
@@ -54,42 +55,79 @@ public class Geom {
     return result;
   }
 
-  // returns an angle in the range 0 .. 2*pi
+  // returns an angle in the range 0 .. 2*pi, where (0, 1) returns zero, and
+  // (1,0) returns pi/2
   public static double angle(Point center, Point p) {
-    double dx = p.x - center.x;
-    if (dx == 0) return 0;
-    double res = Math.atan2(p.x - center.x, p.y - center.y );
-    /*if (dx > 0) {
-      res = res < 0 ? Math.PI * 2 - res : res;
-    } else {
-      res = Math.PI + res;
-    }*/
-    if (res < 0) res = 2 * Math.PI - res;
+    double res = Math.atan2(p.x - center.x, p.y - center.y);
+    if (res < 0) res = 2 * Math.PI + res;
     return res;
   }
 
-  private static int closestAngle(double angle) {
-    int k = Arrays.binarySearch(angles, angle);
-    if (k < 0) k = -k ;
-    if (Math.abs(angle - angles[k]) > Math.abs(angle - angles[k + 1])) {
-      k += 1;
-    }
-    return k;
+  public static double dotProd(Point a, Point b) {
+    return a.x * b.x + a.y * b.y;
+  }
+
+  public static double dotProd(Point2D a, Point2D b) {
+    return a.getX() * b.getX() + a.getY() * b.getY();
+  }
+
+  public static double norm2(Point a) {
+    return Math.sqrt(dotProd(a, a));
+  }
+
+  public static double norm2(Point2D a) {
+    return Math.sqrt(dotProd(a, a));
+  }
+
+  public static Point2D.Double smul(double f, Point p) {
+    return new Point2D.Double(p.x * f, p.y * f);
   }
 
   public static int findClosestDock(BitSet taken, double angle) {
     if (taken.length() >= max_bits) return -1; // all docks taken
-    int k = closestAngle(angle);
+    // compute the closest angle
+    int k = Arrays.binarySearch(angles, angle);
+    if (k < 0) k = -k - 2;
+    int kprime = k == angles.length - 1 ? 0 : k + 1;
+    if (Math.abs(angle - angles[k]) > Math.abs(angle - angles[kprime])) {
+      k = kprime;
+    }
     int d = 1;
-    do { // alternate back and forth
-      if (k > 0 && k < angle2num.length && ! taken.get(angle2num[k])) break;
-      k = ((d & 1) != 0) ? k + d : k - d;
+    do { // alternate back and forth,
+      // TODO: START WITH THE ONE THAT IS CLOSEST: I.E. IF k < angle < k-1
+      // start with k-1, otherwise k+1
+      if (! taken.get(angle2num[k])) break;
+      k = ((d & 1) != 0) ? k + d/2 + 1 : k - d/2;
+      if (k < 0) k += angle2num.length;
       ++d;
-    } while (d < angle2num.length);
+    } while (d < 2 * angle2num.length);
     return angle2num[k];
   }
 
+  /** Returns a value between 0 .. 2*pi */
   public static double dockToAngle(int dock) {
     return num2angle[dock];
   }
+
+
+  public static Point2D.Double getDockPointCircle(int which, int width) {
+    width = width / 2;
+    double angle = Geom.dockToAngle(which);
+    return new Point2D.Double(Math.sin(angle) * width,
+        Math.cos(angle) * width);
+  }
+
+  public static Point2D.Double getDockPointSquare(int which, int width) {
+    width = width / 2;
+    double angle = Geom.dockToAngle(which);
+    if (angle >= .25*Math.PI && angle < 0.75*Math.PI) { // east
+      return new Point2D.Double(width, -Math.tan(angle - Math.PI / 2) * width);
+    } else if (angle >= 1.25*Math.PI && angle <= 1.75*Math.PI) { // west
+      return new Point2D.Double(-width, Math.tan(angle - 1.5 * Math.PI) * width);
+    } else if (angle >= .75*Math.PI && angle < 1.25*Math.PI) { // north
+      return new Point2D.Double(-Math.tan(angle - Math.PI) * width, -width);
+    }
+    return new Point2D.Double(Math.tan(angle - 2*Math.PI) * width, width);
+  }
+
 }

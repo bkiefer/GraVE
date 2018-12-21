@@ -8,10 +8,7 @@ package de.dfki.vsm.editor.action;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Set;
 
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.project.WorkSpace;
@@ -22,7 +19,7 @@ import de.dfki.vsm.editor.util.grid.pathfinding.Path;
  *
  * @author Souza Putra
  */
-public class NormalizeEdgeAction {
+public class NormalizeEdgeAction extends EditorAction {
 
   private WorkSpace mWorkSpace = null;
   private Edge mGUIEdge = null;
@@ -38,20 +35,6 @@ public class NormalizeEdgeAction {
     mGUIEdge = edge;
     mSourceGUINode = mGUIEdge.getSourceNode();
     mTargetGUINode = mGUIEdge.getTargetNode();
-  }
-
-  public ActionListener getActionListener() {
-    return new ActionListener() {
-      public void actionPerformed(ActionEvent event) {
-        recalculateWeight();
-        setEdgePath();
-
-        // mGUIEdge.straightenEdge();
-        // renew graphical representation on work space
-        mWorkSpace.revalidate();
-        mWorkSpace.repaint(100);
-      }
-    };
   }
 
   public void recalculateWeight() {
@@ -269,4 +252,19 @@ public class NormalizeEdgeAction {
 
     return sumWeight;
   }
+
+  @Override
+  protected void doIt() {
+    recalculateWeight();
+    setEdgePath();
+  }
+
+  @Override
+  protected void undoIt() {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  protected String msg() { return "Normalize Edge"; }
 }
