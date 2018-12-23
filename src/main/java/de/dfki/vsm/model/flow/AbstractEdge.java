@@ -179,6 +179,7 @@ public abstract class AbstractEdge {
 
   /* TODO: DROP AFTER REVAMP */
   public final void arrowToDock() {
+    if (mSourceCtrlPoint != null) return;
     EdgeArrow arr = getArrow();
     List<ControlPoint> pl = arr.getPointList();
     // For start and target node:

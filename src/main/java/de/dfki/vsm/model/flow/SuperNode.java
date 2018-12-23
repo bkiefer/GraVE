@@ -63,8 +63,8 @@ public class SuperNode extends BasicNode {
     copyBasicFields(node);
   }
 
-  /** Create a new SuperNode from the GUI */
-  public SuperNode(IDManager mgr, Position pos, SuperNode s) {
+  /** Initialize a new SuperNode from the GUI */
+  public void init(IDManager mgr, Position pos, SuperNode s) {
     mNodeId = mNodeName = mgr.getNextFreeID(this);
     mPosition = pos;
     mParentNode = s;

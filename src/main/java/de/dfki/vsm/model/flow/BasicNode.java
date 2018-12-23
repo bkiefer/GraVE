@@ -87,8 +87,10 @@ public class BasicNode  {
   public BasicNode() {
   }
 
-  /** plain creation of new BasicNode, with no other side effects in the graph */
-  public BasicNode(IDManager mgr, Position p, SuperNode s) {
+  /** plain initialization of new BasicNode, with no other side effects in the
+   *  graph.
+   */
+  public void init(IDManager mgr, Position p, SuperNode s) {
     mNodeId = mNodeName = mgr.getNextFreeID(this);
     mPosition = p;
     mParentNode = s;

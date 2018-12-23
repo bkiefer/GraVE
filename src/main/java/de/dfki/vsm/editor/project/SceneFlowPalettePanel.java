@@ -109,12 +109,12 @@ public class SceneFlowPalettePanel extends JPanel {
       new PaletteItem("Super Node", "Holds Sub-Scences flow",
           ICON_SUPERNODE_STANDARD,
           ICON_SUPERNODE_ROLLOVER,
-          ICON_SUPERNODE_DRAGGING, Node.Type.SuperNode),
+          ICON_SUPERNODE_DRAGGING,  new SuperNode()),
 
       new PaletteItem("Basic Node", "Holds Scenes Actions",
           ICON_BASICNODE_STANDARD,
           ICON_BASICNODE_ROLLOVER,
-          ICON_BASICNODE_DRAGGING, Node.Type.BasicNode),
+          ICON_BASICNODE_DRAGGING,  new BasicNode()),
 
       new PaletteItem("Comment", "Adds a Comment",
           ICON_COMMENT_ENTRY_STANDARD,

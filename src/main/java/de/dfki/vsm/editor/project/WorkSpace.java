@@ -688,15 +688,10 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   // ######################################################################
 
   /** Create a new node model and view, at the given location */
-  public Node createNode(Point point, Node.Type type) {
+  public Node createNode(Point point, BasicNode model) {
     point = mGridManager.getNodeLocation(point);
     Position p = new Position(point.x, point.y);
-    BasicNode model;
-    if (type == Node.Type.BasicNode) {
-      model = new BasicNode(mSceneFlowEditor.getIDManager(), p, getSuperNode());
-    } else {
-      model = new SuperNode(mSceneFlowEditor.getIDManager(), p, getSuperNode());
-    }
+    model.init(mSceneFlowEditor.getIDManager(), p, getSuperNode());
     return new Node(this, model);
   }
 

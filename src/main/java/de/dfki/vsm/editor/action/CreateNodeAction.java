@@ -8,6 +8,7 @@ import java.util.Collections;
 
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.project.WorkSpace;
+import de.dfki.vsm.model.flow.BasicNode;
 
 /**
  * @author Gregor Mehlmann
@@ -16,13 +17,14 @@ import de.dfki.vsm.editor.project.WorkSpace;
 public class CreateNodeAction extends EditorAction {
 
   private Point mCoord;
-  Node.Type mType;
+  BasicNode mDataNode;
   private Collection<Node> mNode = new ArrayList<Node>();
 
-  public CreateNodeAction(WorkSpace workSpace, Point coordinate, Node.Type type) {
+  public CreateNodeAction(WorkSpace workSpace, Point coordinate,
+      BasicNode node) {
     mWorkSpace = workSpace;
     mCoord = coordinate;
-    mType = type;
+    mDataNode = node;
   }
 
   protected void undoIt() {
@@ -31,7 +33,7 @@ public class CreateNodeAction extends EditorAction {
 
   protected void doIt() {
     if (mNode.isEmpty()) {
-      mNode.add(mWorkSpace.createNode(mCoord, mType));
+      mNode.add(mWorkSpace.createNode(mCoord, mDataNode));
       mWorkSpace.addNewNode(mNode.iterator().next());
     } else {
       mWorkSpace.pasteNodesAndEdges(mNode, Collections.emptyList());
