@@ -212,11 +212,6 @@ public class Edge extends EditorComponent implements MouseListener {
     return mEg.isIntersectByRectangle(x1, x2, y1, y2);
   }
 
-  // TODO: STILL NECESSARY?
-  public void updateRelativeEdgeControlPointPos(Node n, int xOffset, int yOffset) {
-    //mEg.updateRelativeEdgeControlPointPos(n, xOffset, yOffset);
-  }
-
   public void updateEdgeGraphics() {
     mEg.updateDrawingParameters(this);
   }
@@ -511,8 +506,7 @@ public class Edge extends EditorComponent implements MouseListener {
         (int) Math.round(mEg.mLeftCurve.y2 - mFontHeightCorrection), width, height);
   }
 
-  @Override
-  public void paintComponent(java.awt.Graphics g) {
+  public void paintEdge(java.awt.Graphics g) {
     float lineWidth = mSourceNode.getWidth() / 30.0f;
     Graphics2D graphics = (Graphics2D) g;
 
@@ -529,6 +523,10 @@ public class Edge extends EditorComponent implements MouseListener {
       mTextArea.requestFocusInWindow();
     }
     computeTextBoxBounds();
+  }
+
+  public void paintComponent(Graphics g) {
+    paintEdge(g);
   }
 
   public boolean isInEditMode() {

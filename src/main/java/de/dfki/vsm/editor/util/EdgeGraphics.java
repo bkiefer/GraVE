@@ -81,7 +81,7 @@ public final class EdgeGraphics {
     // set bounds of edge
     Rectangle bounds = mCurve.getBounds();
 
-    // add safty boundaries
+    /* add some boundaries */
     bounds.add(new Point(bounds.x - 10, bounds.y - 10));
     bounds.width = bounds.width + 10;
     bounds.height = bounds.height + 10;
@@ -99,6 +99,9 @@ public final class EdgeGraphics {
               this.mLeftCurve.y2 + visualBounds.height / 2 + 2);
     }
 
+    // TODO: This sucks big time. Overwriting a component's paintComponent
+    // means we're painting in *relative* not absolute positions, which is
+    // why this is added: this way, all edge positions are relative to (0,0)
     // add (0,0) for flickerfree edge display
     bounds.add(0, 0);
 
@@ -295,17 +298,11 @@ public final class EdgeGraphics {
 
 
   public void paintArrow(java.awt.Graphics2D g, float lineWidth, Color color) {
-    g.setColor(color);
-    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-        RenderingHints.VALUE_ANTIALIAS_ON);
-    g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
-            BasicStroke.JOIN_MITER));
     g.draw(mCurve);
-
     Polygon mHead = computeHead();
     // if selected draw interface control points
-    g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
-        BasicStroke.JOIN_MITER));
+    //g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
+    //    BasicStroke.JOIN_MITER));
     if (mSelected >= 0) {
       //g.setColor(Color.DARK_GRAY);
       //g.setStroke(new BasicStroke(0.5f));

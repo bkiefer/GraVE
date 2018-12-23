@@ -10,7 +10,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.text.AttributedString;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.swing.*;
@@ -21,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import de.dfki.vsm.editor.*;
 import de.dfki.vsm.editor.action.*;
 import de.dfki.vsm.model.flow.AbstractEdge;
+import de.dfki.vsm.model.flow.BasicNode;
+import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.project.EditorProject;
 
 @SuppressWarnings("serial")
@@ -35,11 +36,9 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   private int mAcceptableActions;
 
   private Point mLastMousePos = new Point(0, 0);
-  // Flags for mouse interaction
-  //private Node mSelectedNode = null;
   private Edge mSelectedEdge = null;
   private Comment mSelectedComment = null;
-  private CmdBadge mSelectedCmdBadge = null;
+  //private CmdBadge mSelectedCmdBadge = null;
   private Rectangle2D.Double mAreaSelection = null;
   private boolean mDoAreaSelection = false;
   protected Set<Node> mSelectedNodes = new HashSet<>();
@@ -153,8 +152,9 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
           Object data = dtde.getTransferable().getTransferData(
               new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType));
 
-          if (data instanceof Node.Type) {
-            new CreateNodeAction(WorkSpacePanel.this, dtde.getLocation(), (Node.Type) data).run();
+          if (data instanceof BasicNode) {
+            BasicNode n = (BasicNode) data;
+            new CreateNodeAction(WorkSpacePanel.this, dtde.getLocation(), n).run();
             dtde.acceptDrop(mAcceptableActions);
             dtde.getDropTargetContext().dropComplete(true);
           } else if (data instanceof AbstractEdge) {
@@ -181,7 +181,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   }
 
   /** */
-  public void deselectAllNodes() {
+  private void deselectAllNodes() {
     for (Node node : mSelectedNodes) {
       node.setDeselected();
     }
@@ -189,56 +189,10 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     repaint(100);
   }
 
-  /**
-   * Changed to public method by M. Fallas due to issue 126
-   * https://github.com/SceneMaker/VisualSceneMaker/issues/126
-   */
-  public void deselectAllOtherComponents(JComponent comp) {
-    if ((mSelectedComment != null) && (!mSelectedComment.equals(comp))) {
-      mSelectedComment.setDeselected();
-      mSelectedComment = null;
-    }
-
-    if ((mSelectedCmdBadge != null) && (!mSelectedCmdBadge.equals(comp)) ) {
-      mSelectedCmdBadge.setDeselected();
-      mSelectedCmdBadge = null;
-    }
-
-    for (Iterator<Node> it = mSelectedNodes.iterator(); it.hasNext();) {
-      Node n = it.next();
-      if (n != comp) {
-        it.remove();
-        n.setDeselected();
-      }
-    }
-
-    if ((mSelectedEdge != null) && (!mSelectedEdge.equals(comp))) {
-      mSelectedEdge.setDeselected();
-      mSelectedEdge = null;
-    }
-  }
-
-  /**
-   * Changed to public method by M. Fallas due to issue 126
-   * https://github.com/SceneMaker/VisualSceneMaker/issues/126
-   */
   private void deselectAll() {
     deselectEdge();
     deselectComment();
     deselectAllNodes();
-  }
-
-
-  private void selectComponent(EditorComponent compo, MouseEvent event) {
-    deselectAll();
-    if (compo == null) return;
-    if (compo instanceof Edge) {
-      mSelectedEdge = (Edge)compo;
-    } else if (compo instanceof Comment) {
-      mSelectedComment = (Comment)compo;
-    }
-    compo.mouseClicked(event);
-    compo.setSelected();
   }
 
   private void selectComment(Comment e) {
@@ -356,15 +310,15 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     Node sourceNode = findNodeAtPoint(p);
 
     // Check if the type of this edge is allowed to be connected to the
-    // source c. If the edge is not allowed then we exit the method.
+    // source node. If the edge is not allowed then we exit the method.
     if (sourceNode == null || !sourceNode.isEdgeAllowed(edge)) {
       return;
     }
 
     mSelectNodePoint = new Point(p);
 
-    // Set the current edge in process, the cien colegaurrent source
-    // c and enter the target c selection mode --> edge creation starts
+    // Set the current edge in process, and the current source node
+    // and enter the target node selection mode --> edge creation starts
     mEdgeInProgress = edge;
     mEdgeSourceNode = sourceNode;
 
@@ -375,25 +329,30 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
    * At the end of an edge drag, this function is called to create a new edge.
    */
   private void createNewEdgeSelectTargetNode(Point p) {
-    setMessageLabelText("");
+    try {
+      setMessageLabelText("");
 
-    // Try to find the c on which the mouse was clicked. If we do not find
-    // such a c then the mouse was clicked on the drawing area of the workspace
-    // and we exit the method without creating a new edge.
-    Node targetNode = findNodeAtPoint(p);
-    if (targetNode != null) {
-      new CreateEdgeAction(this, mEdgeSourceNode, targetNode, mEdgeInProgress).run();
+      // Try to find the c on which the mouse was clicked. If we do not find
+      // such a c then the mouse was clicked on the drawing area of the workspace
+      // and we exit the method without creating a new edge.
+      Node targetNode = findNodeAtPoint(p);
+      if (targetNode != null) {
+        new CreateEdgeAction(this, mEdgeSourceNode, targetNode, mEdgeInProgress).run();
+      }
+
+      // edge creation ends
+      mEdgeInProgress = null;
+      mEdgeSourceNode = null;
+      deselectEdge();
+    } catch (Exception e) {
+      e.printStackTrace(System.out);
     }
-
-    // edge creation ends
-    mEdgeInProgress = null;
-    mEdgeSourceNode = null;
   }
 
 
   private void nodeClicked(MouseEvent event, Node clickedNode) {
     // enter supernode, if it has been double clicked
-    if (clickedNode.getType() == Node.Type.SuperNode
+    if (!clickedNode.isBasic()
         && event.getButton() == MouseEvent.BUTTON1
         && event.getClickCount() == 2) {
       increaseWorkSpaceLevel(clickedNode);
@@ -472,9 +431,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
     // TODO: undisputed
     if (mEdgeSourceNode != null) {
-      try {
-        createNewEdgeSelectTargetNode(event.getPoint());
-      } catch (Exception e) { e.printStackTrace(System.out); }
+      createNewEdgeSelectTargetNode(event.getPoint());
       return;
     }
 
@@ -596,12 +553,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     }
 
     if (mEdgeSourceNode != null) {
-      try {
-        createNewEdgeSelectTargetNode(event.getPoint());
-      } catch (Exception e) {
-        e.printStackTrace(System.out);
-      }
-
+      createNewEdgeSelectTargetNode(event.getPoint());
       return;
     }
 
@@ -695,15 +647,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   @Override
   public void mouseDragged(MouseEvent event) {
     if (mEdgeSourceNode != null) {
-      try {
-        createNewEdgeSelectTargetNode(event.getPoint());
-        mSelectedEdge = null;
-      } catch (Exception e) {
-        e.printStackTrace(System.out);
-      }
-
+      createNewEdgeSelectTargetNode(event.getPoint());
       checkChangesOnWorkspace();
-
       return;
     }
 
@@ -817,6 +762,13 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         setBackground(Color.LIGHT_GRAY);
       }
     }
+    // This is currently my single solution for proper edge painting, instead
+    // of overriding paintComponent for edges, since that would require to do
+    // painting in a relative coordinate system for the curves, etc. which is
+    // horribly complicated, and produces a lot of problems when dragging
+    // control points because of the clip region.
+    //for (Edge e : getEdges()) e.paintEdge(g);
+
 
     if (mAreaSelection != null) {
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -857,6 +809,14 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
                 mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) + 1);
       }
     }
+    /* Debugging: check boundaries of all components on workspace
+    g2d.setColor(Color.pink);
+    g2d.setStroke(new BasicStroke(0.5f));
+    for (int i = 0 ; i <  this.getComponentCount(); ++i) {
+      Rectangle r = getComponent(i).getBounds();
+      g2d.drawRect(r.x, r.y, r.width, r.height);
+    }
+    */
   }
 
   @Override
