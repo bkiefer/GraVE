@@ -90,7 +90,7 @@ public class Geom {
   }
 
   public static int findClosestDock(BitSet taken, double angle) {
-    if (taken.length() >= max_bits) return -1; // all docks taken
+    if (taken.cardinality() >= max_bits) return -1; // all docks taken
     // compute the closest angle
     int k = Arrays.binarySearch(angles, angle);
     if (k < 0) k = -k - 2;
@@ -134,6 +134,10 @@ public class Geom {
       return new Point2D.Double(-Math.tan(angle - Math.PI) * width, -width);
     }
     return new Point2D.Double(Math.tan(angle - 2*Math.PI) * width, width);
+  }
+
+  public static Point2D sub(Point2D p1, Point2D p2) {
+    return new Point2D.Double(p1.getX() - p2.getX(), p1.getY() - p2.getY());
   }
 
 }
