@@ -38,12 +38,6 @@ import de.dfki.vsm.util.evt.EventDispatcher;
 @SuppressWarnings("serial")
 public final class Node extends EditorComponent {
 
-  // ToDO: move to workspace - just have a link here
-  private StartSign mStartSign = null;
-  private StartSign mAltStartSign = null;
-
-  // private Point mStartSignPosition;
-
   // interaction flags
   private boolean mSelected = false;
   public boolean mPressed = false;
@@ -70,8 +64,6 @@ public final class Node extends EditorComponent {
   // The color of the node
   // TODO: eventually move computation of color to paint component
   private Color mColor;
-
-  private boolean mIsActive;
 
   private EditorConfig getEditorConfig() { return mWorkSpace.getEditorConfig(); }
 
@@ -133,9 +125,6 @@ public final class Node extends EditorComponent {
     }
     return orig2copy.values();
   }
-  public enum Type {
-    BasicNode, SuperNode
-  }
 
   /**
    *  Create new Node view from the (complete) node model, when reading from
@@ -144,7 +133,7 @@ public final class Node extends EditorComponent {
   public Node(WorkSpace workSpace, BasicNode dataNode) {
     mWorkSpace = workSpace;
     mDataNode = dataNode;
-    // setToolTipText(mDataNode.getId());
+    //setToolTipText(mDataNode.getId());
     // the former overrides any MouseListener!!!
 
     isBasic = !(mDataNode instanceof SuperNode);
@@ -155,10 +144,6 @@ public final class Node extends EditorComponent {
 
     setBounds(pos.x, pos.y, getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT);
 
-    if (mDataNode.getParentNode().isStartNode(mDataNode)) {
-      addStartSign();
-    }
-
     nodeCodeDocument = new ObserverDocument();
     try {
       nodeCodeDocument.insertString(0, mDataNode.getCmd(), null);
@@ -168,14 +153,12 @@ public final class Node extends EditorComponent {
     // Create the command badge of the GUI-BasicNode, after setting Position!
     mCmdBadge = new CmdBadge(this, mWorkSpace.getEditorConfig(), nodeCodeDocument);
 
-    //setToolTipText(mDataNode.getId());
-
     // update
     update();
   }
 
-  public Type getType() {
-    return isBasic ? Type.BasicNode : Type.SuperNode;
+  public boolean isBasic() {
+    return isBasic;
   }
 
   public Document getCodeDocument() {
@@ -265,20 +248,6 @@ public final class Node extends EditorComponent {
 
   private void update() {
 
-    // reset location
-    // Recompute the node's docking positions.
-    // Free all docking points that have to be
-    // recomputed if the node's size has changed
-    // mDockingManager.update();
-
-    if (mStartSign != null) {
-      mStartSign.update();
-    }
-
-    if (mAltStartSign != null) {
-      mAltStartSign.update();
-    }
-
     // Update the font and the font metrics that have to be
     // recomputed if the node's font size has changed
     // TODO: Move attributes to preferences and make editable
@@ -347,26 +316,6 @@ public final class Node extends EditorComponent {
     resetLocation(location);
   }
 
-  // TODO: move to workspace
-  public void removeStartSign() {
-    if (mStartSign != null) {
-      releaseDockPointForStartSign();
-      mWorkSpace.remove(mStartSign);
-      mStartSign = null;
-    }
-  }
-
-  // TODO: move to workspace
-  public void addStartSign() {
-    mStartSign = new StartSign(this);
-    mWorkSpace.add(mStartSign);
-  }
-
-  public void addAltStartSign() {
-    mAltStartSign = new StartSign(this, true, Color.LIGHT_GRAY);
-    mWorkSpace.add(mAltStartSign);
-  }
-
   /** Only necessary since we have no model->view map, and the model only has
    *  outgoing edges.
    */
@@ -406,9 +355,22 @@ public final class Node extends EditorComponent {
     return new Iterable<Edge>() {
       @Override
       public Iterator<Edge> iterator() {
-        return new ChainedIterator<Edge>(mOutEdges.iterator(), mInEdges.iterator());
+        return new ChainedIterator<Edge>(
+            mOutEdges.iterator(), mInEdges.iterator());
       };
     };
+  }
+
+  // **********************************************************************
+  // Dock point functions
+  // **********************************************************************
+
+  public int getNearestFreeDock(Point p) {
+    return mDataNode.getNearestFreeDock(p);
+  }
+
+  public Point getDockPoint(int which) {
+    return mDataNode.getDockPoint(which, getWidth());
   }
 
   /*
@@ -512,53 +474,61 @@ public final class Node extends EditorComponent {
       g2d.setColor(mColor);
     }
 
+    int nw = nodeWidth - borderOffset * 2;
+    int nh = nodeHeight - borderOffset * 2;
+    int lu = borderOffset + 1; // left or upper
     // Draw the node as a supernode
     if (!isBasic) {
-      g2d.fillRect(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 1,
-              nodeHeight - borderOffset * 2 - 1);
+      if (mDataNode.isStartNode()) {
+        int rght = nw + 4; // right
+        int low = nh + 4;  // lower
+        int gap = (int)(low / 4.5) / 2; // we need /2 for the computation
+        // points: center, upper gap pt, nw, ne, se, sw, lower gap pt, center
+        int [] xp = {
+            rght / 2, lu,            lu, rght, rght, lu, lu,             rght / 2
+        };
+        int [] yp = {
+            low / 2,  low / 2 - gap, lu, lu,   low,  low, low / 2 + gap, low / 2
+        };
+        g2d.fillPolygon(xp, yp, xp.length);
+        g2d.setColor(sSTART_SIGN_COLOR);
+        // points: center, upper gap pt, lower gap pt, center
+        int [] sxp = { rght / 2, lu,                lu,                rght / 2 };
+        int [] syp = { low / 2,  low / 2 - gap - 1, low / 2 + gap + 1, low / 2 };
+        g2d.fillPolygon(sxp, syp, sxp.length);
+      } else {
+        g2d.fillRect(borderOffset + 1, borderOffset + 1, nw - 1, nh - 1);
+      }
 
       if (mSelected) {
-        g2d.setStroke(new BasicStroke(borderSize, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10,
-                dashPattern, 0));
+        g2d.setStroke(new BasicStroke(borderSize, BasicStroke.CAP_SQUARE,
+            BasicStroke.JOIN_MITER, 10, dashPattern, 0));
         g2d.setColor(sSTART_SIGN_COLOR);
-        g2d.drawRect(borderOffset, borderOffset, nodeWidth - borderOffset * 2,
-                nodeHeight - borderOffset * 2);
+        g2d.drawRect(borderOffset, borderOffset, nw, nh);
       } else if (mDataNode.isEndNode()) {
         g2d.setStroke(new BasicStroke(borderSize));
         g2d.setColor(mColor.darker());
-        g2d.drawRect(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 2,
-                nodeHeight - borderOffset * 2 - 2);
+        g2d.drawRect(lu, lu, nw - 2, nh - 2);
       }
-
-      // Draw visualization highlights
-      if (mIsActive) {
-        g2d.setColor(new Color(246, 0, 0, 100));
-        g2d.fillRect(1, 1, nodeWidth - 1, nodeHeight - 1);
-      }
-
     } else {
-      g2d.fillOval(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 1,
-              nodeHeight - borderOffset * 2 - 1);
+      if (mDataNode.isStartNode()) {
+        int angle = 28;
+        g2d.fillArc(lu, lu, nw - 1, nh - 1, - 180 + angle/2, 360 - angle);
+        g2d.setColor(sSTART_SIGN_COLOR);
+        g2d.fillArc(lu, lu, nw - 1, nh - 1, - 180 + angle/2, - angle);
+      } else {
+        g2d.fillOval(lu, lu, nw - 1, nh - 1);
+      }
 
       if (mSelected) {
-        g2d.setStroke(new BasicStroke(borderSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 2,
-                dashPattern, 0));
-
-        // TODO: warum andrs als bei supernode?
+        g2d.setStroke(new BasicStroke(borderSize, BasicStroke.CAP_ROUND,
+            BasicStroke.JOIN_MITER, 2, dashPattern, 0));
         g2d.setColor(sSTART_SIGN_COLOR);
-        g2d.drawOval(borderOffset, borderOffset, nodeWidth - borderOffset * 2,
-                nodeHeight - borderOffset * 2);
+        g2d.drawOval(borderOffset, borderOffset, nw, nh);
       } else if (mDataNode.isEndNode()) {
         g2d.setStroke(new BasicStroke(borderSize));
         g2d.setColor(mColor.darker());
-        g2d.drawOval(borderOffset + 1, borderOffset + 1, nodeWidth - borderOffset * 2 - 2,
-                nodeHeight - borderOffset * 2 - 2);
-      }
-
-      // draw activity cue
-      if (mIsActive) {
-        g2d.setColor(new Color(246, 0, 0, 100));
-        g2d.fillOval(1, 1, nodeWidth - 1, nodeHeight - 1);
+        g2d.drawOval(lu, lu, nw - 2, nh - 2);
       }
     }
 
@@ -592,26 +562,4 @@ public final class Node extends EditorComponent {
     }
   }
 
-  // **********************************************************************
-  // New Node functionality
-  // **********************************************************************
-
-  public int getNearestFreeDock(Point p) {
-    return mDataNode.getNearestFreeDock(p);
-  }
-
-  public Point getDockPoint(int which) {
-    return mDataNode.getDockPoint(which, getWidth());
-  }
-
-  /////////// LEGACY
-
-  private void releaseDockPointForStartSign(){
-    // TODO: FILL
-  }
-
-  public void occupyDockPointForStartSign() {
-    //return mDockingManager.occupyDockPointForStartSign();
-    // TODO: FILL
-  }
 }

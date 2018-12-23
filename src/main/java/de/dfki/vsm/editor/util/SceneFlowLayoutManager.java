@@ -15,7 +15,6 @@ import java.awt.LayoutManager;
 import de.dfki.vsm.editor.Comment;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
-import de.dfki.vsm.editor.StartSign;
 
 /**
  *
@@ -71,9 +70,6 @@ public class SceneFlowLayoutManager implements LayoutManager {
       } else if (c instanceof Edge) {
 
         // System.out.println("Edge");
-      } else if (c instanceof StartSign) {
-
-        // System.out.println("StartSign");
       } else if (c instanceof Comment) {
 
         // System.out.println("Comment");

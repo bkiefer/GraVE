@@ -20,11 +20,9 @@ public class ToggleStartNodeAction extends EditorAction {
   protected void doIt() {
     BasicNode mDataNode = mGUINode.getDataNode();
     if (mDataNode.isStartNode()) {
-      mGUINode.removeStartSign();
       mDataNode.getParentNode().removeStartNode(mDataNode);
     } else {
       mDataNode.getParentNode().addStartNode(mDataNode);
-      mGUINode.addStartSign();
     }
   }
 
