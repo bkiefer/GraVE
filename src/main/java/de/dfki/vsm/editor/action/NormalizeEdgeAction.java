@@ -8,6 +8,7 @@ package de.dfki.vsm.editor.action;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import de.dfki.vsm.editor.Edge;
@@ -65,14 +66,14 @@ public class NormalizeEdgeAction extends EditorAction {
 //          aStarPath.printPath(gridSource.getColumnIndex(), gridSource.getRowIndex(),
 //                  gridDestination.getColumnIndex(), gridDestination.getRowIndex());
       // Calculate the control point of the bezier curve that should be made
-      ArrayList<BezierPoint> pathPoints = new ArrayList<BezierPoint>();
+      ArrayList<Point2D.Double> pathPoints = new ArrayList<Point2D.Double>();
       int deviationSourceX = 0;
       int deviationSourceY = 0;
       int deviationTargetX = 0;
       int deviationTargetY = 0;
 
       for (int i = 0; i < alternatePath.getLength(); i++) {
-        BezierPoint point = new BezierPoint(
+        Point2D.Double point = new Point2D.Double(
             transArea[alternatePath.getY(i)][alternatePath.getX(i)].getCenterX(),
             transArea[alternatePath.getY(i)][alternatePath.getX(i)].getCenterY());
 
@@ -134,7 +135,7 @@ public class NormalizeEdgeAction extends EditorAction {
       }
 
       BezierFit bezierFit = new BezierFit();
-      BezierPoint[] controlPoint = bezierFit.bestFit(pathPoints);
+      Point2D.Double[] controlPoint = bezierFit.bestFit(pathPoints);
 
       /* TODO: MAYBE REACTIVATE
       // Manipulate the control point based on the BezierFit calculation

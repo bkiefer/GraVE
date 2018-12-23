@@ -6,6 +6,7 @@
  */
 package de.dfki.vsm.editor.util.grid;
 
+import java.awt.geom.Point2D;
 //~--- JDK imports ------------------------------------------------------------
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ import org.ujmp.core.Matrix;
  */
 public class BezierFit {
 
-  public BezierPoint[] bestFit(ArrayList<BezierPoint> points) {
+  public Point2D.Double[] bestFit(ArrayList<Point2D.Double> points) {
     Matrix M = M();
     Matrix Minv;
 
@@ -45,12 +46,12 @@ public class BezierFit {
     Matrix D = C.mtimes(UT);
     Matrix E = D.mtimes(X);
     Matrix F = D.mtimes(Y);
-    BezierPoint[] P = new BezierPoint[4];
+    Point2D.Double[] P = new Point2D.Double[4];
 
     for (int i = 0; i < 4; i++) {
       double x = E.getAsDouble(i, 0);
       double y = F.getAsDouble(i, 0);
-      BezierPoint p = new BezierPoint(x, y);
+      Point2D.Double p = new Point2D.Double(x, y);
 
       P[i] = p;
     }
@@ -58,7 +59,7 @@ public class BezierFit {
     return P;
   }
 
-  private Matrix Y(ArrayList<BezierPoint> points) {
+  private Matrix Y(ArrayList<Point2D.Double> points) {
     Matrix Y = Matrix.Factory.fill(0.0, points.size(), 1);
 
     for (int i = 0; i < points.size(); i++) {
@@ -68,7 +69,7 @@ public class BezierFit {
     return Y;
   }
 
-  private Matrix X(ArrayList<BezierPoint> points) {
+  private Matrix X(ArrayList<Point2D.Double> points) {
     Matrix X = Matrix.Factory.fill(0.0, points.size(), 1);
 
     for (int i = 0; i < points.size(); i++) {
@@ -78,7 +79,7 @@ public class BezierFit {
     return X;
   }
 
-  private Matrix U(ArrayList<BezierPoint> points) {
+  private Matrix U(ArrayList<Point2D.Double> points) {
     double[] npls = normalizedPathLengths(points);
     Matrix U = Matrix.Factory.fill(0.0, npls.length, 4);
 
@@ -116,14 +117,14 @@ public class BezierFit {
   }
 
   /** Computes the percentage of path length at each point. Can directly be used as t-indices into the bezier curve. */
-  private double[] normalizedPathLengths(ArrayList<BezierPoint> points) {
+  private double[] normalizedPathLengths(ArrayList<Point2D.Double> points) {
     double pathLength[] = new double[points.size()];
 
     pathLength[0] = 0;
 
     for (int i = 1; i < points.size(); i++) {
-      BezierPoint p1 = points.get(i);
-      BezierPoint p2 = points.get(i - 1);
+      Point2D.Double p1 = points.get(i);
+      Point2D.Double p2 = points.get(i - 1);
       double distance = Math.sqrt(Math.pow(p1.getX() - p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
 
       pathLength[i] += pathLength[i - 1] + distance;
@@ -147,8 +148,8 @@ public class BezierFit {
    * @param v4
    * @return
    */
-  private BezierPoint pointOnCurve(double t, BezierPoint v1, BezierPoint v2, BezierPoint v3, BezierPoint v4) {
-    BezierPoint p;
+  private Point2D.Double pointOnCurve(double t, Point2D.Double v1, Point2D.Double v2, Point2D.Double v3, Point2D.Double v4) {
+    Point2D.Double p;
     double x1 = v1.getX();
     double x2 = v2.getX();
     double x3 = v3.getX();
@@ -163,7 +164,7 @@ public class BezierFit {
             + x4 * Math.pow(t, 3);
     yt = y1 * Math.pow((1 - t), 3) + 3 * y2 * t * Math.pow((1 - t), 2) + 3 * y3 * Math.pow(t, 2) * (1 - t)
             + y4 * Math.pow(t, 3);
-    p = new BezierPoint(xt, yt);
+    p = new Point2D.Double(xt, yt);
 
     return p;
   }

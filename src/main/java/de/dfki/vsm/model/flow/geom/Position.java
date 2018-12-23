@@ -5,7 +5,7 @@ import java.awt.Point;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
-import de.dfki.vsm.util.cpy.Copyable;
+import de.dfki.vsm.util.Copyable;
 
 /**
  * @author Gregor Mehlmann

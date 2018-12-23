@@ -1,7 +1,8 @@
 package de.dfki.vsm.model.flow;
 
-import de.dfki.vsm.util.cpy.Copyable;
 import java.util.Observable;
+
+import de.dfki.vsm.util.Copyable;
 
 /**
  * @author Gregor Mehlmann

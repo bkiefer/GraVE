@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import de.dfki.vsm.util.cpy.Copyable;
+import de.dfki.vsm.util.Copyable;
 
 /**
  * @author Gregor Mehlmann

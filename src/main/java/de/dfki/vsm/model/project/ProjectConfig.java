@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.vsm.util.cpy.Copyable;
+import de.dfki.vsm.util.Copyable;
 
 /**
  * @author Gregor Mehlmann
