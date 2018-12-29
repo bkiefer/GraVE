@@ -414,6 +414,7 @@ public class BasicNode  {
   }
 
   public void freeDock(int which) {
+    if (which < 0) return;
     mDocksTaken.clear(which);
   }
 

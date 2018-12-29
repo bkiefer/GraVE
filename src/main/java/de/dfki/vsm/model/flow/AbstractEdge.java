@@ -61,9 +61,9 @@ public abstract class AbstractEdge {
   // Replaces EdgeArrow
   /* TODO: TURN ARROW DATA INTO NEW FIELDS */
   @XmlAttribute(name="targetdock")
-  private int mTargetDock;
+  private int mTargetDock = -1;
   @XmlAttribute(name="sourcedock")
-  private int mSourceDock;
+  private int mSourceDock = -1;
   @XmlElement(name="SourceCtrl")
   private Position mSourceCtrlPoint; // relative, not absolute
   @XmlElement(name="TargetCtrl")
@@ -241,6 +241,7 @@ public abstract class AbstractEdge {
       ctrlPoint.y *= f;
       ctrlLen = MIN_CTRL_LEN;
     }
+    // TODO: THE FOLLOWING COMPUTATION IS WRONG
     double dvlen = norm2(dockVec);
     double dot = dotProd(dockVec, ctrlPoint); // for cosine: / (startlen*ctrlLen);
     if (dot < 0) {
@@ -265,13 +266,11 @@ public abstract class AbstractEdge {
     Point2D startVec = Geom.getDockPointCircle(mSourceDock, 2);
     Point2D targVec = Geom.getDockPointCircle(mTargetDock, 2);
 
-    // TODO: LOOP EDGES NEED MORE THINKING, FOR THE CONTROL POINTS *AND* THE
-    // DOCKS
-
     // scale control point in relation to distance between nodes
-    double scale = (mSourceNode == mTargetNode) ? 3
+    double scale = (mSourceNode == mTargetNode)
+        ? nodeWidth * .7
         : Math.max(start.distance(target) / nodeWidth - 0.5, 1.25)
-        * nodeWidth/2; // TODO: not my preferred solution.
+          * nodeWidth/3; // TODO: not my preferred solution.
 
     Point srcCtrl = new Point((int) (scale * startVec.getX()), (int) (scale * startVec.getY()));
     Point targCtrl = new Point((int) (scale * targVec.getX()), (int) (scale * targVec.getY()));
@@ -281,7 +280,6 @@ public abstract class AbstractEdge {
     checkControl(targCtrl, mTargetDock);
     mSourceCtrlPoint = new Position(srcCtrl.x, srcCtrl.y);
     mTargetCtrlPoint = new Position(targCtrl.x, targCtrl.y);
-
   }
 
   /** Compute the edge closest to the straight connection, as far as it's
@@ -290,13 +288,18 @@ public abstract class AbstractEdge {
   public void straightenEdge(int nodeWidth) {
     mSourceNode.freeDock(mSourceDock);
     mTargetNode.freeDock(mTargetDock);
-    int s = mSourceNode.getNearestFreeDock(mTargetNode.getCenter());
-    mSourceDock = s;
-    int t = mTargetNode.getNearestFreeDock(mSourceNode.getCenter());
-    mTargetDock = t;
+    if (mSourceNode == mTargetNode) { // loop
+      Position p = mSourceNode.getPosition();
+      mSourceDock = mSourceNode.getNearestFreeDock(
+          new Point(p.getXPos()+(int)(nodeWidth*0.36), p.getYPos()));
+      mTargetDock = mTargetNode.getNearestFreeDock(
+          new Point(p.getXPos()+(int)(nodeWidth*0.64), p.getYPos()));
+    } else {
+      mSourceDock = mSourceNode.getNearestFreeDock(mTargetNode.getCenter());
+      mTargetDock = mTargetNode.getNearestFreeDock(mSourceNode.getCenter());
+    }
     mSourceNode.occupyDock(mSourceDock);
     mTargetNode.occupyDock(mTargetDock);
-    // mEg.updateDrawingParameters(this); // no: compute new control points
     initCurve(nodeWidth);
   }
 
