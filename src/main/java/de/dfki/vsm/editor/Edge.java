@@ -480,7 +480,7 @@ public class Edge extends EditorComponent implements MouseListener {
     if (p.y - 10 < 0)
       p.y = 10;
 
-    mEg.mouseDragged(p);
+    mEg.mouseDragged(this, p);
     repaint(100);
   }
 

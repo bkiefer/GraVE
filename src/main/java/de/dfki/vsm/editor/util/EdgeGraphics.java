@@ -70,11 +70,12 @@ public final class EdgeGraphics {
     mSelected = 4; // selected, but none of the control points
   }
 
-  public void mouseDragged(Point p) {
+  public void mouseDragged(Edge e, Point p) {
     if (mSelected < 0 || mSelected > 3) return;
     Point2D[] ctrl = getCoords();
     ctrl[mSelected].setLocation(p);
     mCurve.setCurve(ctrl, 0);
+    computeBounds(e);
   }
 
   private void computeBounds(Edge mEdge) {
@@ -107,14 +108,15 @@ public final class EdgeGraphics {
 
     // set the components bounds
     mEdge.setBounds(bounds);
-    mEdge.setSize(bounds.width, bounds.height);
   }
 
   private void computeCurve(Point[] mCtrl) {
     // make sure that edge is still in the limits of the workspace
+    /*
     if (mCtrl[1].y < 0) {
       mCtrl[1].y = mCtrl[2].y;
     }
+    */
     // setup curve
     mCurve = new CubicCurve2D.Double(
         mCtrl[S].x, mCtrl[S].y,
@@ -303,11 +305,12 @@ public final class EdgeGraphics {
     // if selected draw interface control points
     //g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
     //    BasicStroke.JOIN_MITER));
-    if (mSelected >= 0) {
+    if (mSelected >= 0// || mSelected < 0 // debugging: show them always
+        ) {
       //g.setColor(Color.DARK_GRAY);
       //g.setStroke(new BasicStroke(0.5f));
 
-      // TODO: CAN'T WE USE THE REAL POINTS INSTEAD OF THE CURVE POINTS?
+      // TODO: relative points would be nicer (see computeBounds)
       g.setColor(mSelected == C1 ? color : Color.DARK_GRAY);
       g.drawLine((int) mCurve.x1, (int) mCurve.y1, (int) mCurve.ctrlx1,
           (int) mCurve.ctrly1);

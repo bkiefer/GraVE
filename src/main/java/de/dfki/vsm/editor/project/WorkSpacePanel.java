@@ -159,7 +159,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
             dtde.getDropTargetContext().dropComplete(true);
           } else if (data instanceof AbstractEdge) {
             AbstractEdge e = AbstractEdge.getNewEdge((AbstractEdge)data);
-            createNewEdgeSelectSourceNode(e, dtde.getLocation());
+            startNewEdge(e, dtde.getLocation());
             dtde.acceptDrop(mAcceptableActions);
             dtde.getDropTargetContext().dropComplete(true);
           } else if (data instanceof Comment) {
@@ -306,7 +306,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   /**
    * this function starts the creation of a new edge.
    */
-  private void createNewEdgeSelectSourceNode(AbstractEdge edge, Point p) {
+  private void startNewEdge(AbstractEdge edge, Point p) {
     Node sourceNode = findNodeAtPoint(p);
 
     // Check if the type of this edge is allowed to be connected to the
@@ -328,7 +328,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   /**
    * At the end of an edge drag, this function is called to create a new edge.
    */
-  private void createNewEdgeSelectTargetNode(Point p) {
+  private void createNewEdge(Point p) {
     try {
       setMessageLabelText("");
 
@@ -431,7 +431,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
     // TODO: undisputed
     if (mEdgeSourceNode != null) {
-      createNewEdgeSelectTargetNode(event.getPoint());
+      createNewEdge(event.getPoint());
       return;
     }
 
@@ -553,7 +553,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     }
 
     if (mEdgeSourceNode != null) {
-      createNewEdgeSelectTargetNode(event.getPoint());
+      createNewEdge(event.getPoint());
       return;
     }
 
@@ -647,7 +647,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   @Override
   public void mouseDragged(MouseEvent event) {
     if (mEdgeSourceNode != null) {
-      createNewEdgeSelectTargetNode(event.getPoint());
+      createNewEdge(event.getPoint());
       checkChangesOnWorkspace();
       return;
     }
