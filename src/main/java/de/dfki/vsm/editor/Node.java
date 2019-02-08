@@ -36,7 +36,7 @@ import de.dfki.vsm.util.evt.EventDispatcher;
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public final class Node extends EditorComponent {
+public final class Node extends EditorComponent implements DocumentContainer {
 
   // interaction flags
   private boolean mSelected = false;
@@ -52,7 +52,7 @@ public final class Node extends EditorComponent {
   private Set<Edge> mInEdges = new HashSet<>();
 
   private CmdBadge mCmdBadge;
-  private Document nodeCodeDocument;
+  private Document mDocument;
 
   //
   // TODO: move away
@@ -102,13 +102,42 @@ public final class Node extends EditorComponent {
     return new Pair<Collection<Node>, List<Edge>>(origView2copy.values(), newEdges);
   }
 
+  /** For a given set of nodes that are subnodes of the same SuperNode, compute
+   *  all edge views that emerge from a node outside the set and end in a node
+   *  inside the set. nodes must be a subset of the current mNodeSet.
+   *
+   *  Only returns edges, no change in model or view
+   */
+  public static Collection<Edge> computeIncomingEdges(Collection<Node> nodes) {
+    List<Edge> result = new ArrayList<>();
+    // easier now
+    for (Node n : nodes)
+      for (Edge e : n.mInEdges)
+        if (! nodes.contains(e.getSourceNode())) result.add(e);
+    return result;
+  }
+
+  /** For a given set of nodes that are subnodes of the same SuperNode, compute
+   *  all edge views that emerge from a node inside the set and end in a node
+   *  inside the set
+   *
+   *  Only returns edges, no change in model or view
+   */
+  public static List<Edge> computeInnerEdges(Collection<Node> nodes) {
+    List<Edge> result = new ArrayList<>();
+    for (Node n : nodes)
+      for (Edge e : n.mOutEdges)
+        if (nodes.contains(e.getTargetNode())) result.add(e);
+    return result;
+  }
+
   /** This copies some subset of node and edge views and their underlying
    *  models. One basic assumption is that there are no "dangling" edges which
    *  either start or end at a node outside the given node set.
    *
    *  The copied views will be added to the given WorkSpace, and all copied
    *  node models will be subnodes of the given SuperNode.
-   */
+   *
   public static Collection<BasicNode> copyGraphModel(IDManager mgr,
       SuperNode newParent, List<Node> nodeViews, List<Edge> edgeViews) {
 
@@ -124,7 +153,7 @@ public final class Node extends EditorComponent {
       edgeView.getDataEdge().deepCopy(orig2copy);
     }
     return orig2copy.values();
-  }
+  }*/
 
   /**
    *  Create new Node view from the (complete) node model, when reading from
@@ -144,14 +173,14 @@ public final class Node extends EditorComponent {
 
     setBounds(pos.x, pos.y, getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT);
 
-    nodeCodeDocument = new ObserverDocument();
+    mDocument = new ObserverDocument();
     try {
-      nodeCodeDocument.insertString(0, mDataNode.getCmd(), null);
+      mDocument.insertString(0, mDataNode.getCmd(), null);
     } catch (BadLocationException ex) {
       Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
     }
     // Create the command badge of the GUI-BasicNode, after setting Position!
-    mCmdBadge = new CmdBadge(this, mWorkSpace.getEditorConfig(), nodeCodeDocument);
+    mCmdBadge = new CmdBadge(this, mWorkSpace.getEditorConfig(), mDocument);
 
     // update
     update();
@@ -161,8 +190,8 @@ public final class Node extends EditorComponent {
     return isBasic;
   }
 
-  public Document getCodeDocument() {
-    return nodeCodeDocument;
+  public Document getDocument() {
+    return mDocument;
   }
 
   public WorkSpace getWorkSpace() {

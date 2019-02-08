@@ -5,21 +5,29 @@
  */
 package de.dfki.vsm.editor;
 
-import de.dfki.vsm.model.flow.Code;
-import de.dfki.vsm.model.flow.Expression;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.swing.text.BadLocationException;
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.dfki.vsm.model.flow.Code;
+import de.dfki.vsm.model.flow.Expression;
 
 /**
  *
  * @author Anna Welker
  */
+@SuppressWarnings("serial")
 public class ObserverDocument extends RSyntaxDocument implements Observer {
+
+  private static final Logger logger =
+      LoggerFactory.getLogger(ObserverDocument.class);
+
 
   public ObserverDocument(String syntaxStyle) {
     super(syntaxStyle);
@@ -33,12 +41,12 @@ public class ObserverDocument extends RSyntaxDocument implements Observer {
   public void update(Observable o, Object o1) {
     try {
       if (o instanceof Code) {
-          insertString(0, ((Code)o).getContent(), null);
+        insertString(0, ((Code)o).getContent(), null);
       } else if (o instanceof Expression) {
         insertString(0, ((Expression)o).getContent(), null);
       }
     } catch (BadLocationException ex) {
-      Logger.getLogger(ObserverDocument.class.getName()).log(Level.SEVERE, null, ex);
+      logger.error("bad loc: {}", ex);
     }
   }
 

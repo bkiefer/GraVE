@@ -32,7 +32,7 @@ public class DeflectEdgeAction extends EditorAction {
   }
 
   public void doIt() {
-    mWorkSpace.removeEdges(new ArrayList<Edge>(){{add(mGUIEdge);}});
+    mWorkSpace.removeEdge(mGUIEdge);
     AbstractEdge mDataEdge = mGUIEdge.getDataEdge();
     // connect to the new node
     mDataEdge.connect(mSourceGUINode.getDataNode(), mTargetGUINode.getDataNode());
@@ -49,8 +49,8 @@ public class DeflectEdgeAction extends EditorAction {
   }
 
   public void undoIt() {
-    mWorkSpace.removeEdges(new ArrayList<Edge>(){{add(mNewEdge);}});
-    mWorkSpace.addEdges(new ArrayList<Edge>(){{add(mGUIEdge);}});
+    mWorkSpace.removeEdge(mNewEdge);
+    mWorkSpace.addEdge(mGUIEdge);
     mNewEdge = null;
   }
 

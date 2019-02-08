@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -475,41 +474,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   // Helper functions for undoable actions for nodes and edges
   // ######################################################################
 
-  /** For a given set of nodes that are subnodes of the same SuperNode, compute
-   *  all edge views that emerge from a node outside the set and end in a node
-   *  inside the set. nodes must be a subset of the current mNodeSet.
-   *
-   *  Only returns edges, no change in model or view
-   */
-  private Collection<Edge> computeIncomingEdges(Collection<Node> nodes) {
-    List<Edge> result = new ArrayList<>();
-    for(Edge e : getEdges()) {
-      if (!nodes.contains(e.getSourceNode()) &&
-          nodes.contains(e.getTargetNode())) {
-        result.add(e);
-      }
-    }
-    return result;
-  }
-
-  /** For a given set of nodes that are subnodes of the same SuperNode, compute
-   *  all edge views that emerge from a node inside the set and end in a node
-   *  inside the set
-   *
-   *  Only returns edges, no change in model or view
-   */
-  private List<Edge> computeInnerEdges(Collection<Node> nodes) {
-    List<Edge> result = new ArrayList<>();
-    for(Iterator<Edge> it = new EdgeIterator(nodes); it.hasNext();) {
-      Edge e = it.next();
-      if (nodes.contains(e.getSourceNode()) &&
-          nodes.contains(e.getTargetNode())) {
-        result.add(e);
-      }
-    }
-    return result;
-  }
-
   /** Removes view edge from workspace, no change in model */
   private void removeFromWorkSpace(Edge e) {
     // Free the docking points on source and target node
@@ -563,34 +527,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   }
 
 
-  /** Remove the nodes in the given collection and all outgoing edges from these
-   *  nodes from the view as well as the model. The model edges stay unchanged
-   *  in the removed nodes.
-   *
-   *  This is only legal if none of the selected nodes is a start node, and
-   *  no edges are pointing into the node set from the outside. To achieve
-   *  this in the general case, call removeIncomingEdges(nodes) first.
-   */
-  private List<Edge> removeDisconnectedNodes(Iterable<Node> nodes) {
-    // A list of edges starting at a node in nodes
-    List<Edge> emergingEdges = new ArrayList<>();
-    SuperNode current = getSuperNode();
-    for (Node vn : nodes) {
-      // remove nodes from the view
-      removeFromWorkSpace(vn);
-      // remove nodes from model
-      // destructively changes the current SuperNode, which must be UNDOne
-      current.removeNode(vn.getDataNode());
-      // remove edges from the view
-      for(Edge e : vn.getConnectedEdges()) {
-        emergingEdges.add(e);
-      }
-      for (Edge e: emergingEdges) {
-        removeFromWorkSpace(e);
-      }
-    }
-    return emergingEdges;
-  }
+
 
   /** Helper function, adjusting the positions of node views and models
    *  such that the center of the covered area is at the given position.
@@ -648,20 +585,21 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     return new Edge(this, edge, source, target);
   }
 
-  /** Remove a set of edges, view AND model */
-  public Collection<Edge> removeEdges(Collection<Edge> edges) {
-    // remove these from the view AND the model (their source node), and store
-    // the views for an UNDO
-    for (Edge ve: edges) {
-      // remove edge from view
-      removeFromWorkSpace(ve);
-      // remove edge from model
-      AbstractEdge e = ve.getDataEdge();
-      // this destructively changes the source node of e, which must be
-      // UNDOne
-      e.getSourceNode().removeEdge(e);
-    }
-    return edges;
+  /** Remove an edge, view AND model */
+  public void removeEdge(Edge edge) {
+    // remove it from the view AND the model (their source node)
+    // remove edge from view
+    removeFromWorkSpace(edge);
+    // remove edge from model
+    AbstractEdge e = edge.getDataEdge();
+    // this destructively changes the source node of e, which must be
+    // UNDOne
+    e.getSourceNode().removeEdge(e);
+  }
+
+  /** Add an edge, view AND model */
+  public void addEdge(Edge e) {
+    addEdges(new ArrayList<Edge>(){{add(e);}});
   }
 
   /** Add a set of edge views. Prerequisite: the node views and models the
@@ -709,7 +647,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    */
   public void changeType(Node node) {
     Collection<Edge> incoming =
-        computeIncomingEdges(new ArrayList<Node>(){{add(node);}});
+        Node.computeIncomingEdges(new ArrayList<Node>(){{add(node);}});
     if (! node.changeType(mSceneFlowEditor.getIDManager(), incoming)) {
       // complain: operation not legal
       setMessageLabelText("SuperNode contains Nodes: Type change not possible");
@@ -732,7 +670,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    */
   public Collection<Node> pasteNodesFromClipboard(Point mousePosition) {
     List<Node> nodes = mClipboard.getNodes();
-    List<Edge> edges = computeInnerEdges(nodes);
+    List<Edge> edges = mClipboard.getEdges();
     if (mClipboard.needsCopy(this)) {
       Pair<Collection<Node>, List<Edge>> toAdd =
           Node.copyGraph(this, getSuperNode(), nodes, edges);
@@ -749,6 +687,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     pasteNodesAndEdges(nodes, edges);
     // now the clipboard must be set to copy: the nodes are used.
     mClipboard.forceCopy();
+    refresh();
     return nodes;
   }
 
@@ -765,16 +704,58 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    */
   public Triple<Collection<Edge>, Collection<Node>, Collection<Edge>>
   removeNodes(boolean isCutOperation, Collection<Node> nodes) {
-
+    /*
     // Remove all edges that start at a node outside the given set of
     // nodes, and end inside this set
-    Collection<Edge> incomingEdges = computeIncomingEdges(nodes);
+    Collection<Edge> incomingEdges = Node.computeIncomingEdges(nodes);
     removeEdges(incomingEdges);
-    List<Edge> emergingEdges = removeDisconnectedNodes(nodes);
+    //List<Edge> emergingEdges = removeDisconnectedNodes(nodes);
+    * Remove the nodes in the given collection and all outgoing edges from these
+     *  nodes from the view as well as the model. The model edges stay unchanged
+     *  in the removed nodes.
+     *
+     *  This is only legal if none of the selected nodes is a start node, and
+     *  no edges are pointing into the node set from the outside. To achieve
+     *  this in the general case, call removeIncomingEdges(nodes) first.
+     */
+    //private List<Edge> removeDisconnectedNodes(Iterable<Node> nodes) {
+    // A list of edges starting at a node in nodes
+
+    List<Edge> emergingEdges = new ArrayList<>();
+    List<Edge> internalEdges = new ArrayList<>();
+    List<Edge> incomingEdges = new ArrayList<>();
+    SuperNode current = getSuperNode();
+    for (Node vn : nodes) {
+      // remove nodes from the view
+      removeFromWorkSpace(vn);
+      // remove nodes from model
+      // destructively changes the current SuperNode, which must be UNDOne
+      current.removeNode(vn.getDataNode());
+      // remove edges from the view
+      for(Edge e : vn.getConnectedEdges()) {
+        if (! nodes.contains(e.getSourceNode())) {
+          // incoming edge
+          incomingEdges.add(e);
+          // remove edge from model
+          AbstractEdge edge = e.getDataEdge();
+          // this destructively changes the source node of edge, which must be
+          // UNDOne
+          edge.getSourceNode().removeEdge(edge);
+        } else {
+          if (nodes.contains(e.getTargetNode())) {
+            internalEdges.add(e);
+          } else {
+            emergingEdges.add(e);
+          }
+        }
+      }
+    }
+    // to avoid ConcurrentModification
+    for (Edge e: emergingEdges) removeFromWorkSpace(e);
+    for (Edge e: internalEdges) removeFromWorkSpace(e);
+    for (Edge e: incomingEdges) removeFromWorkSpace(e);
+
     if (isCutOperation) {
-      List<Edge> internalEdges = emergingEdges.stream()
-          .filter((e) -> (nodes.contains(e.getTargetNode())))
-          .collect(Collectors.toList());
       mClipboard.set(this, nodes, internalEdges);
     }
     return new Triple<>(incomingEdges, nodes, emergingEdges);
@@ -784,7 +765,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *  the Copy operation (lazy copy).
    */
   public void copyNodes(Collection<Node> nodes) {
-    mClipboard.setToCopy(this, nodes, Collections.emptyList());
+    mClipboard.setToCopy(this, nodes, Node.computeInnerEdges(nodes));
   }
 
   // ######################################################################

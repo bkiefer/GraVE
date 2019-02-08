@@ -19,7 +19,8 @@ import javax.swing.text.Document;
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public class CmdBadge extends RSyntaxTextArea implements Selectable {
+public class CmdBadge extends RSyntaxTextArea
+  implements Selectable, DocumentContainer {
 
   //
   private final EventDispatcher mDispatcher = EventDispatcher.getInstance();

@@ -21,7 +21,6 @@ import de.dfki.vsm.editor.*;
 import de.dfki.vsm.editor.action.*;
 import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.model.flow.BasicNode;
-import de.dfki.vsm.model.flow.SuperNode;
 import de.dfki.vsm.model.project.EditorProject;
 
 @SuppressWarnings("serial")
@@ -89,7 +88,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       @Override
       public void actionPerformed(ActionEvent actionEvt) {
         if (mSelectedEdge != null) {
-          new RemoveEdgesAction(WorkSpacePanel.this, mSelectedEdge).run();
+          new RemoveEdgeAction(WorkSpacePanel.this, mSelectedEdge).run();
         }
 
         if (!mSelectedNodes.isEmpty()) {

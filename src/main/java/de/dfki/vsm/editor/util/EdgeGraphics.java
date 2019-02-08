@@ -29,17 +29,50 @@ public final class EdgeGraphics {
   // Information about the selected element (start, ctrl1, ctrl2, end)
   public short mSelected = 0;
 
-  public EdgeGraphics(Edge e) {
-    updateDrawingParameters(e);
+
+  private void computeCurve(Point start, Point ctrlStart,
+      Point ctrlEnd, Point end) {
+    // setup curve
+    mCurve = new CubicCurve2D.Double(
+        start.x, start.y, ctrlStart.x, ctrlStart.y,
+        ctrlEnd.x, ctrlEnd.y, end.x, end.y);
+    mLeftCurve = (CubicCurve2D.Double) mCurve.clone();
+    CubicCurve2D.subdivide(mCurve, mLeftCurve, null);
   }
 
-  public void updateDrawingParameters(Edge e) {
-    deselectMCs();
-    Point[] mCtrl = new Point[]{
-        e.getStart(), e.getStartCtrl(), e.getEndCtrl(), e.getEnd()
-    };
+  private void computeBounds(Edge e) {
+    // set bounds of edge
+    Rectangle bounds = mCurve.getBounds();
 
-    computeCurve(mCtrl);
+    /* add some boundaries */
+    bounds.add(new Point(bounds.x - 10, bounds.y - 10));
+    bounds.width = bounds.width + 10;
+    bounds.height = bounds.height + 10;
+
+    // check if a badge is there and add its bounds
+    String desc = e.getDescription();
+    if (e.getGraphics() != null && desc != null) {
+      FontRenderContext renderContext = ((Graphics2D) e.getGraphics()).getFontRenderContext();
+      GlyphVector glyphVector = e.getFont().createGlyphVector(renderContext, desc);
+      Rectangle visualBounds = glyphVector.getVisualBounds().getBounds();
+
+      bounds.add(this.mLeftCurve.x2 - visualBounds.width / 2 - 5,
+              this.mLeftCurve.y2 - visualBounds.height / 2 - 2);
+      bounds.add(this.mLeftCurve.x2 + visualBounds.width / 2 + 5,
+              this.mLeftCurve.y2 + visualBounds.height / 2 + 2);
+    }
+
+    // add the size of the text box
+    Rectangle textBox = e.computeTextBoxBounds();
+    if (textBox != null)
+      bounds.add(textBox);
+    // set the components bounds
+    e.setBounds(bounds);
+  }
+
+  /** Compute the curve based on the parameters of the edge */
+  public void updateDrawingParameters(Edge e) {
+    computeCurve(e.getStart(), e.getStartCtrl(), e.getEndCtrl(), e.getEnd());
     computeBounds(e);
   }
 
@@ -48,11 +81,12 @@ public final class EdgeGraphics {
     mSelected = -1;
   }
 
+
+  /** the edge curve control points as array (S, SC, EC, E) */
   private Point2D[] getCoords() {
-    Point2D[] mCoords = {    // the edge curve control points
+    return new Point2D[] {
         mCurve.getP1(), mCurve.getCtrlP1(), mCurve.getCtrlP2(), mCurve.getP2()
     };
-    return mCoords;
   }
 
 
@@ -78,54 +112,6 @@ public final class EdgeGraphics {
     computeBounds(e);
   }
 
-  private void computeBounds(Edge mEdge) {
-    // set bounds of edge
-    Rectangle bounds = mCurve.getBounds();
-
-    /* add some boundaries */
-    bounds.add(new Point(bounds.x - 10, bounds.y - 10));
-    bounds.width = bounds.width + 10;
-    bounds.height = bounds.height + 10;
-
-    // check if a badge is there and add its bounds
-    String desc = mEdge.getDescription();
-    if (mEdge.getGraphics() != null && desc != null) {
-      FontRenderContext renderContext = ((Graphics2D) mEdge.getGraphics()).getFontRenderContext();
-      GlyphVector glyphVector = mEdge.getFont().createGlyphVector(renderContext, desc);
-      Rectangle visualBounds = glyphVector.getVisualBounds().getBounds();
-
-      bounds.add(this.mLeftCurve.x2 - visualBounds.width / 2 - 5,
-              this.mLeftCurve.y2 - visualBounds.height / 2 - 2);
-      bounds.add(this.mLeftCurve.x2 + visualBounds.width / 2 + 5,
-              this.mLeftCurve.y2 + visualBounds.height / 2 + 2);
-    }
-
-    // TODO: This sucks big time. Overwriting a component's paintComponent
-    // means we're painting in *relative* not absolute positions, which is
-    // why this is added: this way, all edge positions are relative to (0,0)
-    // add (0,0) for flickerfree edge display
-    bounds.add(0, 0);
-
-    // set the components bounds
-    mEdge.setBounds(bounds);
-  }
-
-  private void computeCurve(Point[] mCtrl) {
-    // make sure that edge is still in the limits of the workspace
-    /*
-    if (mCtrl[1].y < 0) {
-      mCtrl[1].y = mCtrl[2].y;
-    }
-    */
-    // setup curve
-    mCurve = new CubicCurve2D.Double(
-        mCtrl[S].x, mCtrl[S].y,
-        mCtrl[C1].x, mCtrl[C1].y,
-        mCtrl[C2].x, mCtrl[C2].y,
-        mCtrl[E].x, mCtrl[E].y);
-    mLeftCurve = (CubicCurve2D.Double) mCurve.clone();
-    CubicCurve2D.subdivide(mCurve, mLeftCurve, null);
-  }
 
   private boolean controlPointHandlerContainsPoint(Point point, int threshold) {
     return mCurve.getCtrlP1().distance(point) < threshold
@@ -147,10 +133,12 @@ public final class EdgeGraphics {
     double x2, y2;
 
     // Debug - draw what is computed
-//      Graphics2D graphics = (Graphics2D) mEdge.getGraphics();
-//      graphics.setColor(Color.RED.darker());
-//      graphics.setStroke(new BasicStroke(1.0f));
-//      graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    /*
+    Graphics2D graphics = (Graphics2D) mEdge.getGraphics();
+    graphics.setColor(Color.RED.darker());
+    graphics.setStroke(new BasicStroke(1.0f));
+    graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    */
     // use Bernstein polynomials for curve approximation
     double t;         // step interval
     double k = .1;    // .025;   // setp increment
@@ -278,11 +266,6 @@ public final class EdgeGraphics {
     double mArrowDir =
         Math.atan2(mCurve.ctrlx2 - mCurve.x2, mCurve.ctrly2 - mCurve.y2);
 
-    // TODO corrected to the arrow heads direction
-    ////System.out.println("arrow dir angle " + Math.toDegrees(mArrowDir) + "(" + mArrowDir + ")");
-    // double angletoEndPoints = Math.atan2(mCtrlPoints[S].x - mCtrlPoints[E].x, mCtrlPoints[S].y - mCtrlPoints[E].y);
-    ////System.out.println("angle between end points " + Math.toDegrees(angletoEndPoints) + "(" + angletoEndPoints + ")");
-    // mArrowDir = (mArrowDir * 9 + angletoEndPoints) / 10;
     double mArrow1Point;
     double mArrow2Point;
     mArrow1Point = Math.sin(mArrowDir - .5);
@@ -303,14 +286,9 @@ public final class EdgeGraphics {
     g.draw(mCurve);
     Polygon mHead = computeHead();
     // if selected draw interface control points
-    //g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
-    //    BasicStroke.JOIN_MITER));
-    if (mSelected >= 0// || mSelected < 0 // debugging: show them always
+    if (mSelected >= 0
+        // || mSelected < 0 // debugging: show them always
         ) {
-      //g.setColor(Color.DARK_GRAY);
-      //g.setStroke(new BasicStroke(0.5f));
-
-      // TODO: relative points would be nicer (see computeBounds)
       g.setColor(mSelected == C1 ? color : Color.DARK_GRAY);
       g.drawLine((int) mCurve.x1, (int) mCurve.y1, (int) mCurve.ctrlx1,
           (int) mCurve.ctrly1);
@@ -331,8 +309,6 @@ public final class EdgeGraphics {
       g.drawPolygon(mHead);
       g.fillPolygon(mHead);
     } else {
-      //g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
-      //        BasicStroke.JOIN_MITER));
       // This draws the arrow head
       g.fillPolygon(mHead);
       g.setColor(color);

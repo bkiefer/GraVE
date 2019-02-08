@@ -61,13 +61,13 @@ public abstract class AbstractEdge {
   // Replaces EdgeArrow
   /* TODO: TURN ARROW DATA INTO NEW FIELDS */
   @XmlAttribute(name="targetdock")
-  private int mTargetDock = -1;
+  protected int mTargetDock = -1;
   @XmlAttribute(name="sourcedock")
-  private int mSourceDock = -1;
+  protected int mSourceDock = -1;
   @XmlElement(name="SourceCtrl")
-  private Position mSourceCtrlPoint; // relative, not absolute
+  protected Position mSourceCtrlPoint; // relative, not absolute
   @XmlElement(name="TargetCtrl")
-  private Position mTargetCtrlPoint; // relative, not absolute
+  protected Position mTargetCtrlPoint; // relative, not absolute
   /**/
 
   // DEPRECATED
@@ -350,11 +350,15 @@ public abstract class AbstractEdge {
    */
   protected <T extends AbstractEdge> T deepCopy(T edgeCopy,
       Map<BasicNode, BasicNode> orig2copy) {
+    edgeCopy.mSourceCtrlPoint = mSourceCtrlPoint;
+    edgeCopy.mSourceDock = mSourceDock;
+    edgeCopy.mTargetCtrlPoint = mTargetCtrlPoint;
+    edgeCopy.mTargetDock = mTargetDock;
     BasicNode sourceCopy = orig2copy.get(mSourceNode);
     BasicNode targetCopy = orig2copy.get(mTargetNode);
     edgeCopy.connect(sourceCopy, targetCopy);
     sourceCopy.addEdge(edgeCopy);
-    edgeCopy.mArrow = mArrow.deepCopy();
+    if (mArrow != null) edgeCopy.mArrow = mArrow.deepCopy();
     edgeCopy.mCmdList = mCmdList;
     return edgeCopy;
   }

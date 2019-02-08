@@ -16,11 +16,10 @@ import org.slf4j.LoggerFactory;
 //import org.fife.ui.autocomplete.AutoCompletion;
 
 import de.dfki.vsm.Preferences;
-import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.DocumentContainer;
 import de.dfki.vsm.editor.event.ClearCodeEditorEvent;
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.event.TreeEntrySelectedEvent;
-import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.model.project.EditorProject;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
@@ -201,7 +200,9 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       //showAuxiliaryEditor();
     } else if (event instanceof ElementSelectedEvent) {
       Object edited = ((ElementSelectedEvent) event).getElement();
-      mCodeEditor.setEditedNodeOrEdge(edited);
+      if (edited instanceof DocumentContainer) {
+        mCodeEditor.setEditedNodeOrEdge((DocumentContainer) edited);
+      }
     } else if (event instanceof ClearCodeEditorEvent) {
       mCodeEditor.setEditedNodeOrEdge(null);
     }

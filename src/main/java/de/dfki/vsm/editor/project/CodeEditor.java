@@ -4,25 +4,17 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
 import de.dfki.vsm.editor.CmdBadge;
+import de.dfki.vsm.editor.DocumentContainer;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.model.project.EditorProject;
 import de.dfki.vsm.util.ios.ResourceLoader;
-import javax.swing.JSplitPane;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 @SuppressWarnings("serial")
 public class CodeEditor extends JPanel {
@@ -90,7 +82,7 @@ public class CodeEditor extends JPanel {
 
   private class EditCodeArea extends JPanel {
     RSyntaxTextArea textArea;
-    Object editedObject;
+    DocumentContainer editedObject;
     JScrollPane s;
 
     // make this jpane, with scrollpane, and textarea
@@ -112,22 +104,14 @@ public class CodeEditor extends JPanel {
       add(s, BorderLayout.CENTER);
     }
 
-    public void setEditedObject(Object n) {
+    public void setEditedObject(DocumentContainer n) {
       if (n == null) {
         textArea.setText("");
         editedObject = null;
         return;
       }
       editedObject = n;
-      if (n instanceof CmdBadge)
-        textArea.setDocument(((CmdBadge)n).getDocument());
-      else if (n instanceof Edge)
-        textArea.setDocument(((Edge)n).getCodeDocument());
-      else if (n instanceof Node)
-        textArea.setDocument(((Node)n).getCodeDocument());
-      //else
-        // TODO: Might want to throw exception here
-      //  return;
+      textArea.setDocument(n.getDocument());
     }
 
     public void updateBorders(int x, int y, int w, int h) {
@@ -164,7 +148,7 @@ public class CodeEditor extends JPanel {
     setPin(true); // true pricks the pin
   }
 
-  public void setEditedNodeOrEdge(Object n) {
+  public void setEditedNodeOrEdge(DocumentContainer n) {
     if (mRightTextArea.editedObject == n) return; // may be due to FocusGained
     // update text area with current code & object
     mRightTextArea.setEditedObject(n);
