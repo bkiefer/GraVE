@@ -10,6 +10,8 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.text.AttributedString;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.*;
@@ -17,7 +19,10 @@ import javax.swing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.vsm.editor.*;
+import de.dfki.vsm.editor.Comment;
+import de.dfki.vsm.editor.Edge;
+import de.dfki.vsm.editor.EditorInstance;
+import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.editor.action.*;
 import de.dfki.vsm.model.flow.AbstractEdge;
 import de.dfki.vsm.model.flow.BasicNode;
@@ -557,7 +562,10 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     }
 
     if (! mSelectedNodes.isEmpty()) {
-      dragNodesFinished(mSelectedNodes, event);
+      dragNodesFinished(event);
+      refresh();
+      revalidate();
+      repaint(100);
       return;
     }
 
@@ -667,14 +675,16 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
     // moving multiple nodes those which are selected before
     if (!mDoAreaSelection && ! mSelectedNodes.isEmpty()) {
-
       // compute movement trajectory vectors
       Point currentMousePosition = event.getPoint();
       Point mouseMoveVector = new Point(currentMousePosition.x - mLastMousePos.x,
               currentMousePosition.y - mLastMousePos.y);
 
       mLastMousePos = new Point(currentMousePosition.x, currentMousePosition.y);
-      dragNodes(mSelectedNodes, event, mouseMoveVector);    // BUG
+      if (dragNodes(mSelectedNodes, mouseMoveVector)) {
+        revalidate();
+        repaint(100);
+      }
       checkChangesOnWorkspace();
 
       return;

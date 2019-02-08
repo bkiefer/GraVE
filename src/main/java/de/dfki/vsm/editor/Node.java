@@ -41,7 +41,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
   // interaction flags
   private boolean mSelected = false;
   public boolean mPressed = false;
-  public boolean mDragged = false;
 
   private final EventDispatcher mEventMulticaster = EventDispatcher.getInstance();
   private boolean isBasic;
@@ -221,7 +220,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
   public void setDeselected() {
     mSelected = false;
     mPressed = false;
-    mDragged = false;
     repaint(100);
   }
 
@@ -325,7 +323,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
     return mDisplayName;
   }
 
-  public void resetLocation(Point newLocation) {
+  public void moveTo(Point newLocation) {
     Position g = new Position(newLocation.x, newLocation.y);
     mDataNode.setPosition(g);
     for (Edge edge : getConnectedEdges()) {
@@ -342,7 +340,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
     Point location = getLocation();
     location.translate(vector.x, vector.y);
     // also translate all edge points
-    resetLocation(location);
+    moveTo(location);
   }
 
   /** Only necessary since we have no model->view map, and the model only has
@@ -466,7 +464,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
 
   public void mouseReleased(MouseEvent e) {
     mPressed = false;
-    mDragged = false;
     repaint(100);
   }
 

@@ -18,8 +18,9 @@ public abstract class EditorAction {
   protected WorkSpace mWorkSpace;
 
   protected void refresh() {
-    mWorkSpace.revalidate();
-    mWorkSpace.repaint(100);
+    //mWorkSpace.revalidate();
+    //mWorkSpace.repaint(100);
+    mWorkSpace.refresh(); // TODO: WHY DOES THIS WORK, BUT NOT THE ABOVE?
   }
 
   public void run() {

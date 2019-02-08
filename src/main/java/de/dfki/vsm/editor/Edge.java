@@ -18,14 +18,11 @@ import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.undo.UndoManager;
+import javax.swing.text.Document;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
-import de.dfki.vsm.editor.action.NormalizeEdgeAction;
-import de.dfki.vsm.editor.action.RemoveEdgesAction;
-import de.dfki.vsm.editor.action.ShortestEdgeAction;
-import de.dfki.vsm.editor.action.StraightenEdgeAction;
+import de.dfki.vsm.editor.action.*;
 import de.dfki.vsm.editor.event.EdgeEditEvent;
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.project.WorkSpace;
@@ -41,7 +38,8 @@ import de.dfki.vsm.util.evt.EventDispatcher;
  * @author Gregor Mehlmann
  */
 @SuppressWarnings("serial")
-public class Edge extends EditorComponent implements MouseListener {
+public class Edge extends EditorComponent
+  implements MouseListener, DocumentContainer {
   /** MIN POSITION OF THE CONTROLPOINTS OF THE EDGE */
 
   private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
@@ -57,12 +55,10 @@ public class Edge extends EditorComponent implements MouseListener {
 
   // edit panel
   private RSyntaxTextArea mTextArea = null;
-  //private JTextPane mValueEditor = null;
   private boolean mEditMode = false;
 
-  // For changing the edge's start or end node with a mouse drag
-  private Node mReassignNode = null;
-  private ObserverDocument edgeCodeDocument = null;
+  //
+  private Document mDocument = null;
 
   //
   // other stuff
@@ -93,8 +89,6 @@ public class Edge extends EditorComponent implements MouseListener {
       }};
 
   private EditorConfig mEditorConfig;
-  private UndoManager mUndoManager;
-  private boolean firstDrag = false;
 
   private Color color() {
     if (mDataEdge == null) return null;
@@ -122,20 +116,12 @@ public class Edge extends EditorComponent implements MouseListener {
     mTargetNode = targetNode;
 
     setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-    mEg = new EdgeGraphics(this);
+    initEditBox();
+    mEg = new EdgeGraphics();
+    setDeselected();
 
     update();
     setVisible(true);
-    initEditBox();
-    if (mTextArea != null) {
-      edgeCodeDocument = new ObserverDocument();
-      try {
-        edgeCodeDocument.insertString(0, getDescription(), null);
-      } catch (BadLocationException ex) {
-        Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      mTextArea.setDocument(edgeCodeDocument);
-    }
   }
 
   /** Does this edge point back to the source node? */
@@ -145,7 +131,6 @@ public class Edge extends EditorComponent implements MouseListener {
 
   @Override
   public void update(Observable o, Object obj) {
-    // mLogger.message("AbstractEdge.update(" + obj + ")");
     update();
   }
 
@@ -166,18 +151,19 @@ public class Edge extends EditorComponent implements MouseListener {
     return name() + "(" + mSourceNode.getDataNode().getId() + "->" + mTargetNode.getDataNode().getId() + ")";
   }
 
-  public ObserverDocument getCodeDocument() {
-    return edgeCodeDocument;
+  public Document getDocument() {
+    return mDocument;
   }
 
   public String getDescription() {
     return mDataEdge != null ? mDataEdge.getContent() : null;
   }
 
+  /*
   public void setDescription(String s) {
     mDataEdge.setContent(s);
     mTextArea.setText(s);
-  }
+  }*/
 
   /** Disconnect this edge view from the node view it is connected to */
   public void disconnect() {
@@ -189,10 +175,6 @@ public class Edge extends EditorComponent implements MouseListener {
   public void connect() {
     mSourceNode.connectSource(this);
     mTargetNode.connectTarget(this);
-  }
-
-  public void deflect(Node newTarget, Point newDockingPoint) {
-
   }
 
   public boolean containsPoint(Point p) {
@@ -221,16 +203,24 @@ public class Edge extends EditorComponent implements MouseListener {
     if (mEditorConfig.sWORKSPACEFONTSIZE != getFont().getSize())
       getFont().deriveFont(mEditorConfig.sWORKSPACEFONTSIZE);
 
-    if (mTextArea != null)
-      // do an exact font positioning
-      computeTextBoxBounds();
+    updateEdgeGraphics();
   }
 
-  /*
-    * Initialize mTextPane and mValueEditor
+  /**
+   * Initialize mTextPane and mValueEditor
    */
   private void initEditBox() {
+    //if (getDescription() == null) return;
+    // TODO: ACTIVATE AFTER FIXING CODEEDITOR.SETEDITEDOBJECT
+
     mTextArea = new RSyntaxTextArea();
+    mDocument = new ObserverDocument();
+    try {
+      mDocument.insertString(0, getDescription(), null);
+    } catch (BadLocationException ex) {
+      Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    mTextArea.setDocument(mDocument);
     this.add(mTextArea);
     mTextArea.setBackground(Color.WHITE);
     // Get rid of annoying yellow line
@@ -268,14 +258,6 @@ public class Edge extends EditorComponent implements MouseListener {
     mTextArea.setFont(this.getFont());
     mTextArea.setForeground(color());
 
-    if (mDataEdge != null) {
-      mTextArea.setText(mDataEdge.getContent());
-      mTextArea.setVisible(mTextArea.getText().trim().length() > 0);
-    }
-
-    // do an exact font positioning
-    computeTextBoxBounds();
-
     mTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
     mTextArea.getActionMap().put("enter", new AbstractAction() {
       @Override
@@ -292,13 +274,14 @@ public class Edge extends EditorComponent implements MouseListener {
         setDeselected();
       }
     });
-    update();
+    mTextArea.setVisible(mTextArea.getText().trim().length() > 0);
   }
 
   /*
-    *   Take input value of mValueEditor and set it as value of the edge
+   *   Take input value of mValueEditor and set it as value of the edge
    */
   private void updateFromTextEditor() {
+    if (mTextArea == null) return;
     String input = mTextArea.getText();
     if (mDataEdge != null) {
       try {
@@ -322,7 +305,6 @@ public class Edge extends EditorComponent implements MouseListener {
   public void setDeselected() {
     mEg.deselectMCs();
     mEditMode = false;
-    //remove(mEdgeTextArea);
     repaint(100);
   }
 
@@ -331,7 +313,7 @@ public class Edge extends EditorComponent implements MouseListener {
   public void showContextMenu(MouseEvent evt, Edge edge) {
     JPopupMenu pop = new JPopupMenu();
     //addItem(pop, "Modify", new ModifyEdgeAction(edge, this));
-    addItem(pop, "Delete", new RemoveEdgesAction(mWorkSpace, edge));
+    addItem(pop, "Delete", new RemoveEdgeAction(mWorkSpace, edge));
     addItem(pop, "Shortest Path", new ShortestEdgeAction(mWorkSpace, edge));
     addItem(pop, "Straighten", new StraightenEdgeAction(mWorkSpace, edge));
     addItem(pop, "Smart Path", new NormalizeEdgeAction(mWorkSpace, edge));
@@ -352,7 +334,8 @@ public class Edge extends EditorComponent implements MouseListener {
     // show context menu
     if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
       showContextMenu(event, this);
-    } else if ((event.getClickCount() == 2) && getDescription() != null) {
+    } else if ((event.getClickCount() == 2) && getDescription() != null
+        && mTextArea != null) {
       mTextArea.requestFocus();
       mEditMode = true;
       mDispatcher.convey(new EdgeEditEvent(this, this.getDataEdge()));
@@ -369,64 +352,44 @@ public class Edge extends EditorComponent implements MouseListener {
     repaint(100);
   }
 
+  public void deflectSource(Node newNode, int dock) {
+    // change the SOURCE view and model to reflect edge change
+    // disconnect view
+    mSourceNode.disconnectSource(this);
+    // disconnect model
+    mSourceNode.getDataNode().removeEdge(mDataEdge);
+    // modify source node and dock of edge model
+    mDataEdge.setSource(newNode.getDataNode(), dock);
+    // new source view
+    mSourceNode = newNode;
+    // add new outgoing edge to the new source node (model)
+    mSourceNode.getDataNode().addEdge(mDataEdge);
+    // new source view
+    mSourceNode.connectSource(this);
+    mEg.updateDrawingParameters(this);
+  }
+
+  public void deflectTarget(Node newNode, int dock) {
+    // change the TARGET view and model to reflect edge change
+    // disconnect view
+    mTargetNode.disconnectTarget(this);
+    // incoming edges are not registered in the model, only the dock
+    mTargetNode.getDataNode().freeDock(mDataEdge.getTargetDock());
+    // modify target node and dock of model
+    mDataEdge.setTarget(newNode.getDataNode(), dock);
+    // new target view
+    mTargetNode = newNode;
+    // take dock in the target node (for source done by addEdge)
+    mTargetNode.getDataNode().occupyDock(dock);
+    // new target view
+    mTargetNode.connectTarget(this);
+    mEg.updateDrawingParameters(this);
+  }
+
+
   private boolean canDeflect(Node curr, Node old) {
     return (curr != null &&
         (curr == old || curr.getDataNode().canAddEdge(mDataEdge)));
-  }
-
-  private void possiblyDeflectSource(Point p) {
-    // TODO: SAVE THE OLD STATE FOR UNDO
-    Node newNode = mWorkSpace.findNodeAtPoint(p);
-    if (canDeflect(newNode, mSourceNode)) {
-      int dock = newNode.getNearestFreeDock(p);
-      // change the SOURCE view and model to reflect edge change
-      // disconnect view
-      mSourceNode.disconnectSource(this);
-      // disconnect model
-      mSourceNode.getDataNode().removeEdge(mDataEdge);
-      // modify source node and dock of edge model
-      mDataEdge.setSource(newNode.getDataNode(), dock);
-      // new source view
-      mSourceNode = newNode;
-      // add new outgoing edge to the new source node (model)
-      mSourceNode.getDataNode().addEdge(mDataEdge);
-      // new source view
-      mSourceNode.connectSource(this);
-    }
-  }
-
-  private void possiblyDeflectTarget(Point p) {
-    // TODO: SAVE THE OLD STATE FOR UNDO
-    Node newNode = mWorkSpace.findNodeAtPoint(p);
-    if (canDeflect(newNode, mTargetNode)) {
-      int dock = newNode.getNearestFreeDock(p);
-      // change the TARGET view and model to reflect edge change
-      // disconnect view
-      mTargetNode.disconnectTarget(this);
-      // incoming edges are not registered in the model, only the dock
-      mTargetNode.getDataNode().freeDock(mDataEdge.getTargetDock());
-      // modify target node and dock of model
-      mDataEdge.setTarget(newNode.getDataNode(), dock);
-      // new target view
-      mTargetNode = newNode;
-      // take dock in the target node (for source done by addEdge)
-      mTargetNode.getDataNode().occupyDock(dock);
-      // new target view
-      mTargetNode.connectTarget(this);
-    }
-  }
-
-  private void changeSourceControlPoint(Point p) {
-    // compute vector from dock point to p (relative ctrls)
-    Point dock = mSourceNode.getDockPoint(mDataEdge.getSourceDock());
-    p.translate(-dock.x, -dock.y);
-    mDataEdge.setSourceCtrlPoint(p);
-  }
-
-  private void changeTargetControlPoint(Point p) {
-    Point dock = mTargetNode.getDockPoint(mDataEdge.getTargetDock());
-    p.translate(-dock.x, -dock.y);
-    mDataEdge.setTargetCtrlPoint(p);
   }
 
   /** This takes all the responsibility for edge changes using the mouse, except
@@ -440,40 +403,42 @@ public class Edge extends EditorComponent implements MouseListener {
    */
   @Override
   public void mouseReleased(java.awt.event.MouseEvent e) {
+    Point p = e.getPoint();
     switch (mEg.mSelected) {
-    case EdgeGraphics.S:
-      possiblyDeflectSource(e.getPoint());
-      break;
-    case EdgeGraphics.E:
-      possiblyDeflectTarget(e.getPoint());
-      break;
-    case EdgeGraphics.C1:
-      changeSourceControlPoint(e.getPoint());
-      break;
-    case EdgeGraphics.C2:
-      changeTargetControlPoint(e.getPoint());
+    case EdgeGraphics.S: {
+      Node newNode = mWorkSpace.findNodeAtPoint(p);
+      if (canDeflect(newNode, mSourceNode)) {
+        int dock = newNode.getNearestFreeDock(p);
+        new MoveEdgeEndPointAction(mWorkSpace, this, true, dock, newNode).run();
+      }
       break;
     }
-    mEg.updateDrawingParameters(this);
-    //mEg.deselectMCs();
-    mWorkSpace.refresh();
+    case EdgeGraphics.E: {
+      Node newNode = mWorkSpace.findNodeAtPoint(p);
+      if (canDeflect(newNode, mTargetNode)) {
+        int dock = newNode.getNearestFreeDock(p);
+        new MoveEdgeEndPointAction(mWorkSpace, this, false, dock, newNode).run();
+      }
+      break;
+    }
+    case EdgeGraphics.C1: {
+      // compute vector from dock point to p (relative ctrls)
+      Point dock = mSourceNode.getDockPoint(mDataEdge.getSourceDock());
+      p.translate(-dock.x, -dock.y);
+      new MoveEdgeCtrlAction(mWorkSpace, this, true, p).run();
+      break;
+    }
+    case EdgeGraphics.C2: {
+      Point dock = mTargetNode.getDockPoint(mDataEdge.getTargetDock());
+      p.translate(-dock.x, -dock.y);
+      new MoveEdgeCtrlAction(mWorkSpace, this, false, p).run();
+      break;
+    }
+    }
   }
 
   public void mouseDragged(java.awt.event.MouseEvent e) {
-
-    /* UNDO SHOULD BE DONE ON RELEASE
-    if (firstDrag) {
-      UndoManager mUndoManager =
-          EditorInstance.getInstance().getSelectedProjectEditor().getSceneFlowEditor().getUndoManager();
-      mUndoManager.addEdit(new
-          UndoDragEdge(mEg.mCCrtl1.getLocation(), mEg.mCCrtl2.getLocation()));
-      UndoAction.getInstance().refreshUndoState();
-      RedoAction.getInstance().refreshRedoState();
-      firstDrag = false;
-    }
-    */
     Point p = e.getPoint();
-
     // do not allow x and y values below 10
     if (p.x - 10 < 0)
       p.x = 10;
@@ -494,7 +459,8 @@ public class Edge extends EditorComponent implements MouseListener {
     straightenEdge();
   }
 
-  private void computeTextBoxBounds() {
+  public Rectangle computeTextBoxBounds() {
+    if (mTextArea == null) return null;
     // do an exact font positioning
     FontMetrics fm = getFontMetrics(getFont());
     int height = fm.getHeight();
@@ -504,9 +470,10 @@ public class Edge extends EditorComponent implements MouseListener {
 
     mTextArea.setBounds((int) Math.round(mEg.mLeftCurve.x2 - width/2),
         (int) Math.round(mEg.mLeftCurve.y2 - mFontHeightCorrection), width, height);
+    return mTextArea.getBounds();
   }
 
-  public void paintEdge(java.awt.Graphics g) {
+  public void paintComponent(Graphics g) {
     float lineWidth = mSourceNode.getWidth() / 30.0f;
     Graphics2D graphics = (Graphics2D) g;
 
@@ -515,6 +482,10 @@ public class Edge extends EditorComponent implements MouseListener {
     graphics.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
             BasicStroke.JOIN_MITER));
 
+    // NOTE: This is the magic command that makes all drawing relative
+    // to the position of this component, and removes the "absolute" position
+    // part
+    graphics.translate(-getLocation().x, -getLocation().y);
     // draw the arrow
     mEg.paintArrow(graphics, lineWidth, color());
 
@@ -522,70 +493,11 @@ public class Edge extends EditorComponent implements MouseListener {
       //graphics.setColor(color());
       mTextArea.requestFocusInWindow();
     }
-    computeTextBoxBounds();
-  }
-
-  public void paintComponent(Graphics g) {
-    paintEdge(g);
   }
 
   public boolean isInEditMode() {
     return mEditMode;
   }
-
-  /**
-   * UNDOABLE ACTION
-   *
-  private class UndoDragEdge extends AbstractUndoableEdit {
-
-    Point oldCP1;
-    Point oldCP2;
-
-    Point currentCP1;
-    Point currentCP2;
-
-    public UndoDragEdge(Point p1, Point p2) {
-      oldCP1 = p1;
-      oldCP2 = p2;
-    }
-
-    @Override
-    public void undo() throws CannotUndoException {
-      currentCP1 = mEg.mCCrtl1.getLocation();
-      currentCP2 = mEg.mCCrtl2.getLocation();
-      mEg.mCCrtl1.setLocation(oldCP1);
-      mEg.mCCrtl2.setLocation(oldCP2);
-      repaint(100);
-    }
-
-    @Override
-    public void redo() throws CannotRedoException {
-      mEg.mCCrtl1.setLocation(currentCP1);
-      mEg.mCCrtl2.setLocation(currentCP2);
-      repaint(100);
-    }
-
-    @Override
-    public boolean canUndo() {
-      return true;
-    }
-
-    @Override
-    public boolean canRedo() {
-      return true;
-    }
-
-    @Override
-    public String getUndoPresentationName() {
-      return "Undo creation of edge";
-    }
-
-    @Override
-    public String getRedoPresentationName() {
-      return "Redo creation of edge";
-    }
-  }
-  */
 
   // **********************************************************************
   // New AbstractEdge functionality

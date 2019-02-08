@@ -15,6 +15,7 @@ import de.dfki.vsm.editor.Comment;
 import de.dfki.vsm.editor.Edge;
 import de.dfki.vsm.editor.EditorInstance;
 import de.dfki.vsm.editor.Node;
+import de.dfki.vsm.editor.action.MoveNodesAction;
 import de.dfki.vsm.editor.event.ClearCodeEditorEvent;
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.event.ProjectChangedEvent;
@@ -57,8 +58,13 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   //private final Set<Edge> mEdgeSet = new HashSet<>();
   private final Set<Comment> mCmtSet = new HashSet<>();
 
+  private boolean snapToGrid = true;
+
   // Snap to grid support
   private GridManager mGridManager = null;
+
+  /** Node positions when dragging starts */
+  private Map<Node, Point> mNodeStartPositions = null;
 
   //
   private final Observable mObservable = new Observable();
@@ -361,61 +367,62 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mEventCaster.convey(ev);
   }
 
-  /** Move node by dragging */
-  protected void dragNode(Node node, MouseEvent event, Point moveVec) {
-    dragNodes(new HashSet<Node>(){{add(node);}}, event, moveVec);
+
+  public void moveTo(Node n, Point loc) {
+    if (snapToGrid) {
+      mGridManager.freeGridPosition(n.getLocation());
+    }
+    n.moveTo(loc);
   }
 
   /**
-   *  Drag a set of nodes to a new location
+   *  Drag a set of nodes to a new location, mouse not released
    */
-  protected void dragNodes(Set<Node> nodes, MouseEvent event, Point moveVec) {
-    boolean validDragging = true;
-
+  protected boolean dragNodes(Set<Node> nodes, Point moveVec) {
+    if (mNodeStartPositions == null) {
+      mNodeStartPositions = new IdentityHashMap<>();
+      for (Node n : nodes) {
+        Point nodeLoc = n.getLocation();
+        if (snapToGrid)
+          mGridManager.freeGridPosition(nodeLoc);
+        mNodeStartPositions.put(n, nodeLoc);
+      }
+    }
     for (Node node : nodes) {
       Point nodePos = node.getLocation();
-
       if (((nodePos.x + moveVec.x) <= 0) || ((nodePos.y + moveVec.y) <= 0)) {
-
         // stop dragging, if upper and left border would be passed!
-        validDragging = false;
+        return false;
       }
     }
 
-    if (validDragging) {
-      for (Node node : nodes) {
-        Point nodeLoc = node.getLocation();
-
-        mGridManager.freeGridPosition(nodeLoc);
-        node.translate(moveVec);
-        if ((event.getModifiersEx() == 1024)) {
-          node.mDragged = true;
-        }
-
-        // sWorkSpaceDrawArea = getSize();
-        revalidate();
-        repaint(100);
-      }
+    for (Node node : nodes) {
+      node.translate(moveVec);
     }
+    return true;
   }
 
-  // TODO: undo/redo NodesDraggedAction: location change for set of nodes
-  protected void dragNodesFinished(Set<Node> nodes, MouseEvent event) {
-    for (Node node : nodes) {
+  /** Move a set of nodes to a new position
+   * @param nodeSet the set of nodes with their original locations
+   * @param event   contains the mouse release position
+   */
+  protected void dragNodesFinished(MouseEvent event) {
+    if (mNodeStartPositions == null)
+      return;
+
+    Map<Node, Point> newPositions =
+        new IdentityHashMap<>(mNodeStartPositions.size());
+    for (Node node : mNodeStartPositions.keySet()) {
       Point p = node.getLocation();
-
       // check location of each node
-      if (node.mDragged) {
-        node.resetLocation(mGridManager.getNodeLocation(p));
-      }
+      if (snapToGrid)
+        p = mGridManager.getNodeLocation(p);
 
-      // update workspace area - if dragged beyond current borders
-      // sWorkSpaceDrawArea = getSize();
+      newPositions.put(node, p);
       node.mouseReleased(event);
     }
-    refresh();
-    revalidate();
-    repaint(100);
+    new MoveNodesAction(this, mNodeStartPositions, newPositions).run();
+    mNodeStartPositions = null;
     // mGridManager.normalizeGridWeight();
   }
 
@@ -439,7 +446,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    */
   @Override
   public void paintComponent(Graphics g) {
-    // mLogger.message("Drawing Workspace");
     Graphics2D g2d = (Graphics2D) g;
 
     super.paintComponent(g);
@@ -457,7 +463,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     g2d.setColor(indicator);
     g2d.setStroke(new BasicStroke(3.0f));
     g2d.drawRect(1, 1, getSize().width - 3, getSize().height - 4);
-    //scrollRectToVisible(new Rectangle(mLastMousePosition));
   }
 
 
@@ -505,7 +510,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Add node view to workspace, no change in model */
   private void addToWorkSpace(Node n) {
     mNodeSet.add(n);
-    //mGridManager.getNodeLocation(n.getLocation()); // ?
     // add to Panel
     super.add(n);
     super.add(n.getCmdBadge());
@@ -545,9 +549,18 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     // translate such that the center of the area is on p
     int translateX = Math.max(p.x - (maxX + minX) / 2, -minX);
     int translateY = Math.max(p.y - (maxY + minY) / 2, -minY);
+    // add half the node size
+    Node node = nodes.iterator().next();
+    translateX += node.getWidth() / 2;
+    translateY += node.getHeight() / 2;
     // should move the edges, too
     for (Node n : nodes) {
-      n.translate(new Point(translateX, translateY));
+      Point loc = n.getLocation();
+      loc.translate(translateX, translateY);
+      if (snapToGrid) {
+        loc = mGridManager.getNodeLocation(loc);
+      }
+      n.moveTo(loc);
       //n.translate does that
       //n.getDataNode().translate(translateX, translateY);
     }
