@@ -26,7 +26,7 @@ import de.dfki.vsm.editor.action.*;
 import de.dfki.vsm.editor.event.EdgeEditEvent;
 import de.dfki.vsm.editor.event.ElementSelectedEvent;
 import de.dfki.vsm.editor.project.WorkSpace;
-import de.dfki.vsm.editor.util.EdgeGraphics;
+import de.dfki.vsm.editor.util.EdgeArrow;
 import de.dfki.vsm.model.flow.*;
 import de.dfki.vsm.model.flow.geom.Geom;
 import de.dfki.vsm.model.project.EditorConfig;
@@ -50,7 +50,7 @@ public class Edge extends EditorComponent
   // The two graphical nodes to which this edge is connected
   private Node mSourceNode = null;
   private Node mTargetNode = null;
-  private EdgeGraphics mEg = null;
+  private EdgeArrow mArrow = null;
   private WorkSpace mWorkSpace = null;
 
   // edit panel
@@ -117,7 +117,7 @@ public class Edge extends EditorComponent
 
     setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
     initEditBox();
-    mEg = new EdgeGraphics();
+    mArrow = new EdgeArrow();
     setDeselected();
 
     update();
@@ -178,7 +178,7 @@ public class Edge extends EditorComponent
   }
 
   public boolean containsPoint(Point p) {
-    return mEg.curveContainsPoint(p);
+    return mArrow.curveContainsPoint(p);
   }
 
   public boolean outOfBounds() {
@@ -191,11 +191,13 @@ public class Edge extends EditorComponent
   }
 
   public boolean isIntersectByRectangle(double x1, double x2, double y1, double y2) {
-    return mEg.isIntersectByRectangle(x1, x2, y1, y2);
+    return mArrow.isIntersectByRectangle(x1, x2, y1, y2);
   }
 
   public void updateEdgeGraphics() {
-    mEg.updateDrawingParameters(this);
+    mArrow.computeCurve(getStart(), getStartCtrl(), getEndCtrl(), getEnd());
+    computeBounds();
+    //mEg.updateDrawingParameters(this);
   }
 
   private void update() {
@@ -303,7 +305,7 @@ public class Edge extends EditorComponent
   }
 
   public void setDeselected() {
-    mEg.deselectMCs();
+    mArrow.deselectMCs();
     mEditMode = false;
     repaint(100);
   }
@@ -322,7 +324,7 @@ public class Edge extends EditorComponent
 
   /** Return true if one of the end or control points is selected */
   public boolean controlPointSelected() {
-    return mEg.mSelected >= EdgeGraphics.S && mEg.mSelected <= EdgeGraphics.E;
+    return mArrow.mSelected >= EdgeArrow.S && mArrow.mSelected <= EdgeArrow.E;
   }
 
   @Override
@@ -347,7 +349,7 @@ public class Edge extends EditorComponent
    */
   @Override
   public void mousePressed(MouseEvent e) {
-    mEg.edgeSelected(e.getPoint());
+    mArrow.edgeSelected(e.getPoint());
     // revalidate();
     repaint(100);
   }
@@ -366,7 +368,7 @@ public class Edge extends EditorComponent
     mSourceNode.getDataNode().addEdge(mDataEdge);
     // new source view
     mSourceNode.connectSource(this);
-    mEg.updateDrawingParameters(this);
+    updateEdgeGraphics();
   }
 
   public void deflectTarget(Node newNode, int dock) {
@@ -383,7 +385,7 @@ public class Edge extends EditorComponent
     mTargetNode.getDataNode().occupyDock(dock);
     // new target view
     mTargetNode.connectTarget(this);
-    mEg.updateDrawingParameters(this);
+    updateEdgeGraphics();
   }
 
 
@@ -404,8 +406,8 @@ public class Edge extends EditorComponent
   @Override
   public void mouseReleased(java.awt.event.MouseEvent e) {
     Point p = e.getPoint();
-    switch (mEg.mSelected) {
-    case EdgeGraphics.S: {
+    switch (mArrow.mSelected) {
+    case EdgeArrow.S: {
       Node newNode = mWorkSpace.findNodeAtPoint(p);
       if (canDeflect(newNode, mSourceNode)) {
         int dock = newNode.getNearestFreeDock(p);
@@ -413,7 +415,7 @@ public class Edge extends EditorComponent
       }
       break;
     }
-    case EdgeGraphics.E: {
+    case EdgeArrow.E: {
       Node newNode = mWorkSpace.findNodeAtPoint(p);
       if (canDeflect(newNode, mTargetNode)) {
         int dock = newNode.getNearestFreeDock(p);
@@ -421,14 +423,14 @@ public class Edge extends EditorComponent
       }
       break;
     }
-    case EdgeGraphics.C1: {
+    case EdgeArrow.C1: {
       // compute vector from dock point to p (relative ctrls)
       Point dock = mSourceNode.getDockPoint(mDataEdge.getSourceDock());
       p.translate(-dock.x, -dock.y);
       new MoveEdgeCtrlAction(mWorkSpace, this, true, p).run();
       break;
     }
-    case EdgeGraphics.C2: {
+    case EdgeArrow.C2: {
       Point dock = mTargetNode.getDockPoint(mDataEdge.getTargetDock());
       p.translate(-dock.x, -dock.y);
       new MoveEdgeCtrlAction(mWorkSpace, this, false, p).run();
@@ -445,13 +447,14 @@ public class Edge extends EditorComponent
     if (p.y - 10 < 0)
       p.y = 10;
 
-    mEg.mouseDragged(this, p);
+    mArrow.mouseDragged(this, p);
+    computeBounds();
     repaint(100);
   }
 
   public void straightenEdge() {
     mDataEdge.straightenEdge(mSourceNode.getWidth());
-    mEg.updateDrawingParameters(this);
+    updateEdgeGraphics();
   }
 
   public void rebuildEdgeNicely() {
@@ -468,9 +471,26 @@ public class Edge extends EditorComponent
     // Derive the node's font metrics from the font
     int mFontHeightCorrection = (fm.getAscent() + fm.getDescent()) / 2;
 
-    mTextArea.setBounds((int) Math.round(mEg.mLeftCurve.x2 - width/2),
-        (int) Math.round(mEg.mLeftCurve.y2 - mFontHeightCorrection), width, height);
+    mTextArea.setBounds((int) Math.round(mArrow.mLeftCurve.x2 - width/2),
+        (int) Math.round(mArrow.mLeftCurve.y2 - mFontHeightCorrection), width, height);
     return mTextArea.getBounds();
+  }
+
+  private void computeBounds() {
+    // set bounds of edge
+    Rectangle bounds = mArrow.computeBounds();
+
+    /* add some boundaries */
+    bounds.add(new Point(bounds.x - 10, bounds.y - 10));
+    bounds.width = bounds.width + 10;
+    bounds.height = bounds.height + 10;
+
+    // add the size of the text box
+    Rectangle textBox = computeTextBoxBounds();
+    if (textBox != null)
+      bounds.add(textBox);
+    // set the components bounds
+    setBounds(bounds);
   }
 
   public void paintComponent(Graphics g) {
@@ -487,7 +507,7 @@ public class Edge extends EditorComponent
     // part
     graphics.translate(-getLocation().x, -getLocation().y);
     // draw the arrow
-    mEg.paintArrow(graphics, lineWidth, color());
+    mArrow.paintArrow(graphics, lineWidth, color());
 
     if (mEditMode == true) {
       //graphics.setColor(color());

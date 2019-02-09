@@ -1,8 +1,6 @@
 package de.dfki.vsm.editor.util;
 
 import java.awt.*;
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -18,7 +16,7 @@ import de.dfki.vsm.editor.Edge;
  * dragging, such that the edge view object is only affected when the mouse
  * is released.
  */
-public final class EdgeGraphics {
+public final class EdgeArrow {
 
   // position of selected element
   public final static int S = 0, C1 = 1, C2 = 2, E = 3;
@@ -30,7 +28,7 @@ public final class EdgeGraphics {
   public short mSelected = 0;
 
 
-  private void computeCurve(Point start, Point ctrlStart,
+  public void computeCurve(Point start, Point ctrlStart,
       Point ctrlEnd, Point end) {
     // setup curve
     mCurve = new CubicCurve2D.Double(
@@ -40,40 +38,9 @@ public final class EdgeGraphics {
     CubicCurve2D.subdivide(mCurve, mLeftCurve, null);
   }
 
-  private void computeBounds(Edge e) {
-    // set bounds of edge
-    Rectangle bounds = mCurve.getBounds();
-
-    /* add some boundaries */
-    bounds.add(new Point(bounds.x - 10, bounds.y - 10));
-    bounds.width = bounds.width + 10;
-    bounds.height = bounds.height + 10;
-
-    // check if a badge is there and add its bounds
-    String desc = e.getDescription();
-    if (e.getGraphics() != null && desc != null) {
-      FontRenderContext renderContext = ((Graphics2D) e.getGraphics()).getFontRenderContext();
-      GlyphVector glyphVector = e.getFont().createGlyphVector(renderContext, desc);
-      Rectangle visualBounds = glyphVector.getVisualBounds().getBounds();
-
-      bounds.add(this.mLeftCurve.x2 - visualBounds.width / 2 - 5,
-              this.mLeftCurve.y2 - visualBounds.height / 2 - 2);
-      bounds.add(this.mLeftCurve.x2 + visualBounds.width / 2 + 5,
-              this.mLeftCurve.y2 + visualBounds.height / 2 + 2);
-    }
-
-    // add the size of the text box
-    Rectangle textBox = e.computeTextBoxBounds();
-    if (textBox != null)
-      bounds.add(textBox);
-    // set the components bounds
-    e.setBounds(bounds);
-  }
-
-  /** Compute the curve based on the parameters of the edge */
-  public void updateDrawingParameters(Edge e) {
-    computeCurve(e.getStart(), e.getStartCtrl(), e.getEndCtrl(), e.getEnd());
-    computeBounds(e);
+  /** get bounds of curve */
+  public Rectangle computeBounds() {
+    return mCurve.getBounds();
   }
 
   /** Clear the selection mask */
@@ -109,7 +76,6 @@ public final class EdgeGraphics {
     Point2D[] ctrl = getCoords();
     ctrl[mSelected].setLocation(p);
     mCurve.setCurve(ctrl, 0);
-    computeBounds(e);
   }
 
 
