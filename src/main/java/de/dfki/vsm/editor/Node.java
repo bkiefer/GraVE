@@ -234,13 +234,19 @@ public final class Node extends EditorComponent implements DocumentContainer {
       newNode = new BasicNode(mgr, n);
     } else {
       newNode = new SuperNode(mgr, getDataNode());
+      // adapt node lists of parent SuperNode
     }
     for (Edge in : incoming) {
       AbstractEdge e = in.getDataEdge();
       e.setTarget(newNode, e.getTargetDock());
       e.setTargetUnid(newNode.getId());
     }
+      // adapt node lists of parent SuperNode
+    SuperNode s = mDataNode.getParentNode();
+    s.removeNode(mDataNode);
+    s.addNode(newNode);
     mDataNode = newNode;
+    isBasic = !isBasic;
     update();
     return true;
   }
@@ -439,6 +445,12 @@ public final class Node extends EditorComponent implements DocumentContainer {
     if (!(getDataNode() instanceof SuperNode)) {
       addItem(pop, "To Supernode", new ChangeNodeTypeAction(mWorkSpace, this));
       pop.add(new JSeparator());
+    } else {
+      SuperNode n = (SuperNode)getDataNode();
+      if (n.getNodeSize() == 0) {
+        addItem(pop, "To BasicNode", new ChangeNodeTypeAction(mWorkSpace, this));
+        pop.add(new JSeparator());
+      }
     }
 
     // TODO: MAYBE INVERT: IF NO CMD, ADD ONE
