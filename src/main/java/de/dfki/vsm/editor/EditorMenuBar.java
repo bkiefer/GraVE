@@ -25,11 +25,10 @@ import de.dfki.vsm.editor.dialog.QuitDialog;
 /**
  * @author Gregor Mehlmann
  */
+@SuppressWarnings("serial")
 public final class EditorMenuBar extends JMenuBar {
 
-  // The singelton logger instance
   private final Logger mLogger = LoggerFactory.getLogger(EditorMenuBar.class);;
-  // The singelton  editor instance
   private final EditorInstance mEditorInstance;
 
   // File menu

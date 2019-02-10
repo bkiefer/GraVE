@@ -15,7 +15,6 @@ import javax.swing.*;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.dfki.vsm.editor.Comment;
-import de.dfki.vsm.editor.Node;
 import de.dfki.vsm.model.flow.*;
 
 /**

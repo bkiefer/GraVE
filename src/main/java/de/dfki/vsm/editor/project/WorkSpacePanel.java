@@ -121,7 +121,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
           DataFlavor flavor = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType);
           data = dtde.getTransferable().getTransferData(flavor);
         } catch (ClassNotFoundException | UnsupportedFlavorException | IOException e) {
-          e.printStackTrace(System.out);
+          logger.error("DragNDrop Error: {}", e);
         }
 
         if (data instanceof Comment) {
@@ -258,8 +258,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     deselectAll();
   }
 
-  // stop dragging, if upp
-
   /** To provide the functionality to the global menu bar */
   public void copySelectedNodes() {
     if (mSelectedNodes.size() == 0) return;
@@ -345,7 +343,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       mEdgeSourceNode = null;
       deselectEdge();
     } catch (Exception e) {
-      e.printStackTrace(System.out);
+      logger.error("Create edge error: {}", e);
     }
   }
 
@@ -521,8 +519,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         }
         mSelectedEdge.mousePressed(event);
       } else {
-        //deselectAllNodes();
-        // enable global context menu for clipbaord actions
+        // right click: global context menu for clipboard actions
         if ((event.getButton() == MouseEvent.BUTTON3)
             && (event.getClickCount() == 1)) {
           globalContextMenu(event);
@@ -573,7 +570,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         // mGridManager.normalizeGridWeight();
         return;
       } else {
-        // System.out.println(mSelectedEdge.getType() + " not released - deselected");
         deselectEdge();
       }
     }
@@ -608,17 +604,12 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     }
 
     // if there is a specific selected edge use it - much faster than checking all edges
-    if (mSelectedEdge != null) {
-      // DEBUG //System.out.println("EDGE SELECTED!");
-      if (mSelectedEdge.controlPointSelected()) {
-
-        mSelectedEdge.mouseDragged(event);
-        revalidate();
-        repaint(100);
-        checkChangesOnWorkspace();
-
-        return;
-      }
+    if (mSelectedEdge != null && mSelectedEdge.controlPointSelected()) {
+      mSelectedEdge.mouseDragged(event);
+      revalidate();
+      repaint(100);
+      checkChangesOnWorkspace();
+      return;
     }
 
     // moving multiple nodes those which are selected before
@@ -687,7 +678,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
-    // mLogger.message("Drawing Workspace");
     Graphics2D g2d = (Graphics2D) g;
 
     if (mEdgeSourceNode != null) {
@@ -701,13 +691,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         setBackground(Color.LIGHT_GRAY);
       }
     }
-    // This is currently my single solution for proper edge painting, instead
-    // of overriding paintComponent for edges, since that would require to do
-    // painting in a relative coordinate system for the curves, etc. which is
-    // horribly complicated, and produces a lot of problems when dragging
-    // control points because of the clip region.
-    //for (Edge e : getEdges()) e.paintEdge(g);
-
 
     if (mAreaSelection != null) {
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -748,14 +731,14 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
                 mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) + 1);
       }
     }
-    /* Debugging: check boundaries of all components on workspace
+    /* Debugging: check boundaries of all components on workspace */
     g2d.setColor(Color.pink);
     g2d.setStroke(new BasicStroke(0.5f));
     for (int i = 0 ; i <  this.getComponentCount(); ++i) {
       Rectangle r = getComponent(i).getBounds();
       g2d.drawRect(r.x, r.y, r.width, r.height);
     }
-    */
+    /**/
   }
 
   @Override

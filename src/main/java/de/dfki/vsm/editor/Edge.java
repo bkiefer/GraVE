@@ -197,7 +197,6 @@ public class Edge extends EditorComponent
   public void updateEdgeGraphics() {
     mArrow.computeCurve(getStart(), getStartCtrl(), getEndCtrl(), getEnd());
     computeBounds();
-    //mEg.updateDrawingParameters(this);
   }
 
   private void update() {
