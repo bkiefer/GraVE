@@ -11,6 +11,7 @@ import java.util.Observable;
 
 import javax.swing.*;
 
+import de.dfki.vsm.editor.action.MoveCommentAction;
 import de.dfki.vsm.editor.action.RemoveCommentAction;
 import de.dfki.vsm.editor.project.WorkSpace;
 import de.dfki.vsm.model.flow.CommentBadge;
@@ -35,6 +36,10 @@ implements MouseListener, MouseMotionListener {
   // position
   private Point mClickPosition = new Point(0, 0);
 
+  // for drag: move or resize
+  private Point mLastMousePos = null;
+  private Rectangle mCommentStartBounds = null;
+
   // edit
   private boolean mEditMode = false;
   private WorkSpace mWorkSpace;
@@ -47,12 +52,9 @@ implements MouseListener, MouseMotionListener {
   private CommentBadge mDataComment;
 
   // interaction flags
-  private boolean mSelected;
   public boolean mPressed;
   public boolean mDragged;
   public boolean mResizing;
-  private int mXMovement;
-  private int mYMovement;
 
   public Comment() {
     mDataComment = null;
@@ -121,9 +123,11 @@ implements MouseListener, MouseMotionListener {
     mTextLabel.setFont(mFont);
     mTextEditor.setFont(mFont);
 
-    String bodyRule = "body { font-family: " + mFont.getFamily() + "; " + "font-size: " + mFont.getSize() + "pt; }";
-
-    //((HTMLDocument) mTextEditor.getDocument()).getStyleSheet().addRule(bodyRule);
+    /* Do we want this?
+    String bodyRule = "body { font-family: " + mFont.getFamily()
+       + "; " + "font-size: " + mFont.getSize() + "pt; }";
+    ((HTMLDocument) mTextEditor.getDocument()).getStyleSheet().addRule(bodyRule);
+    */
     mDataComment.setHTMLText(mTextEditor.getText());
     mTextEditor.setText(mDataComment.getHTMLText());
     mTextLabel.setText(formatLabelText(mTextEditor.getText()));
@@ -167,18 +171,14 @@ implements MouseListener, MouseMotionListener {
     }
   }
 
-  public void resize(Point p) {
-    Rectangle r = getBounds();
+  private void setBoundary(Rectangle r) {
+    mDataComment.setBoundary(new Boundary(r.x, r.y, r.width, r.height));
+  }
 
-    r.width = Math.max(50, r.width + p.x);
-    r.height = Math.max(50, r.height + p.y);
+  /** For undo/redo */
+  public void moveOrResize(Rectangle r) {
     setBounds(r);
-    setSize(r.width, r.height);
-
-    // update data
-    Rectangle r2 = getBounds();
-
-    mDataComment.setBoundary(new Boundary(r2.x, r2.y, r2.width, r2.height));
+    setBoundary(r);
   }
 
   public boolean containsPoint(Point p) {
@@ -187,20 +187,17 @@ implements MouseListener, MouseMotionListener {
 
   /*
      * Returns true if mouse in the lower right area, which stands for the resizng area.
-     *  --------
-     * |        |
-     * |        |
-     * |        |
-     * |       -|
-     * |      | |
-     * |--------
+     *  ------
+     * |      |
+     * |      |
+     * |     -|
+     * |    | |
+     *  ------
      *
    */
-  public boolean isResizingAreaSelected(Point p) {
+  private boolean isResizingAreaSelected(Point p) {
     Rectangle r = getBounds();
-
-    // DEBUG System.out.println("bounds " + getBounds());
-    // DEBUG System.out.println("point " + p);
+    // TODO: ADAPT FOR ZOOM
     if (((r.x + r.width) - p.x < 15) && ((r.y + r.height) - p.y < 15)) {
       return true;
     } else {
@@ -214,15 +211,13 @@ implements MouseListener, MouseMotionListener {
   public void showContextMenu(MouseEvent evt, Comment comment) {
     JPopupMenu pop = new JPopupMenu();
     addItem(pop, "Delete", new RemoveCommentAction(mWorkSpace, comment));
-    pop.show(this, comment.getX() + comment.getWidth(), comment.getY());
+    Rectangle r = comment.getBounds();
+    pop.show(this, evt.getX() - r.x, evt.getY() - r.y);
   }
 
   @Override
   public void mouseClicked(MouseEvent e) {
-
-    // DEBUG System.out.println("mouse clicked");
     mPressed = false;
-    mSelected = true;
 
     Point loc = getLocation();
     Point clickLoc = e.getPoint();
@@ -231,8 +226,6 @@ implements MouseListener, MouseMotionListener {
     mClickPosition.setLocation(clickLoc.x - loc.x, clickLoc.y - loc.y);
 
     if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() == 2)) {
-
-      // DEBUG System.out.println("double click");
       String text = mTextEditor.getText();
 
       mTextEditor.setText(text);
@@ -252,10 +245,9 @@ implements MouseListener, MouseMotionListener {
 
   @Override
   public void mousePressed(MouseEvent e) {
-
+    mLastMousePos = e.getPoint();
     // DEBUG System.out.println("mouse pressed");
     mPressed = true;
-    mSelected = true;
 
     Point loc = getLocation();
     Point clickLoc = e.getPoint();
@@ -266,6 +258,10 @@ implements MouseListener, MouseMotionListener {
 
   @Override
   public void mouseReleased(MouseEvent e) {
+    if (mCommentStartBounds != null) {
+      new MoveCommentAction(mWorkSpace, this, mCommentStartBounds).run();
+      mCommentStartBounds = null;
+    }
 
     // DEBUG System.out.println("mouse released");
     mPressed = false;
@@ -275,6 +271,38 @@ implements MouseListener, MouseMotionListener {
 
   @Override
   public void mouseDragged(MouseEvent e) {
+    Point currentMousePosition = e.getPoint();
+    if (mCommentStartBounds == null) {
+      mCommentStartBounds = getBounds();
+      // if not dragged, but once resized, leave it by resized and vice versa, leave it by dragged
+      mResizing = isResizingAreaSelected(currentMousePosition);
+    }
+
+    // compute movement trajectory vectors
+    int dx = currentMousePosition.x - mLastMousePos.x;
+    int dy = currentMousePosition.y - mLastMousePos.y;
+
+    mLastMousePos = new Point(currentMousePosition.x, currentMousePosition.y);
+
+    if (mResizing) {
+      // Change the size of a comment with the mouse
+      Dimension d = getSize();
+      d.width = Math.max(50, d.width + dx);
+      d.height = Math.max(50, d.height + dy);
+      setSize(d);
+    } else {
+      // Change the location of a comment with the mouse
+      Point currPos = getLocation();
+      dx += currPos.x; dy += currPos.y;
+      if (dx >= 0 && dy >= 0) {
+        setLocation(dx, dy);
+      }
+    }
+    // update model boundary
+    setBoundary(getBounds());
+    if ((e.getModifiersEx() == 1024)) {
+      mDragged = true;
+    }
   }
 
   @Override
@@ -300,7 +328,6 @@ implements MouseListener, MouseMotionListener {
       mDataComment.setHTMLText(htmlText);
     }
 
-    mSelected = false;
     mPressed = false;
     mDragged = false;
     mResizing = false;
@@ -308,19 +335,4 @@ implements MouseListener, MouseMotionListener {
     update();
   }
 
-  public synchronized void updateLocation(Point mouseMovementVector) {
-    Point currentNodeLocation = getLocation();
-
-    mXMovement = mouseMovementVector.x;
-    mYMovement = mouseMovementVector.y;
-
-    Point finalLocation = new Point(currentNodeLocation.x + mXMovement, currentNodeLocation.y + mYMovement);
-
-    setLocation(finalLocation);
-
-    // update data
-    Rectangle r = getBounds();
-
-    mDataComment.setBoundary(new Boundary(r.x, r.y, r.width, r.height));
-  }
 }

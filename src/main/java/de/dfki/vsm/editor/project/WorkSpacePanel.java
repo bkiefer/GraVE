@@ -10,8 +10,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.text.AttributedString;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
 import java.util.Set;
 
 import javax.swing.*;
@@ -54,8 +52,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
   //
   private boolean mIgnoreMouseInput = false;
-  private boolean mEdgeTargetNodeReassign = false;
-  private Node mReassignNode = null;
 
 
   public WorkSpacePanel(SceneFlowEditor sceneFlowEditor, EditorProject project) {
@@ -572,16 +568,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     // if there is a specific selected edge use it - much faster than checking all edges
     if (mSelectedEdge != null) {
       if (mSelectedEdge.containsPoint(event.getPoint())) {
-
-        // if the edge can be connected to an other node, do so!
-        if (mEdgeTargetNodeReassign) {
-          new DeflectEdgeAction(this, mSelectedEdge, mReassignNode, event.getPoint()).run();
-          mEdgeTargetNodeReassign = false;
-          mReassignNode = null;
-
-          return;
-        }
-
         mSelectedEdge.mouseReleased(event);
 
         // mGridManager.normalizeGridWeight();
@@ -602,50 +588,12 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
         return;
       } else {
-        // System.out.println(mSelectedNode.getDataNode().getName() + " not released - deselected");
-        // mSelectedComment.setDeselected();
         deselectComment();
       }
 
-      // finally do a repaint
       repaint(100);
     }
   }
-
-  /**
-   *
-   *
-   */
-  private void dragComment(Comment comment, MouseEvent event, Point moveVec) {
-    Point commentPos = comment.getLocation();
-
-    if (((commentPos.x + moveVec.x) > 0) && ((commentPos.y + moveVec.y) > 0)) {
-      comment.updateLocation(moveVec);
-
-      if ((event.getModifiersEx() == 1024)) {
-        comment.mDragged = true;
-      }
-
-      revalidate();
-      repaint(100);
-    }
-  }
-
-  /**
-   *
-   *
-   */
-  private void resizeComment(Comment comment, MouseEvent event, Point moveVec) {
-    comment.resize(moveVec);
-
-    if ((event.getModifiersEx() == 1024)) {
-      comment.mDragged = true;
-    }
-
-    revalidate();
-    repaint(100);
-  }
-
 
   /**
    *
@@ -692,29 +640,11 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
     // if there is a specific selected comment use it
     if (mSelectedComment != null) {
-      Point currentMousePosition = event.getPoint();
-
-      // if not dragged, but once resized, leave it by resized and vice versa, leave it by dragged
-      if (!mSelectedComment.mDragged) {
-        mSelectedComment.mResizing = mSelectedComment.isResizingAreaSelected(currentMousePosition);
-      }
-
       if (mSelectedComment.mPressed) {
-
-        // compute movement trajectory vectors
-        Point mouseMoveVector = new Point(currentMousePosition.x - mLastMousePos.x,
-                currentMousePosition.y - mLastMousePos.y);
-
-        mLastMousePos = new Point(currentMousePosition.x, currentMousePosition.y);
-
-        if (mSelectedComment.mResizing) {
-          resizeComment(mSelectedComment, event, mouseMoveVector);
-        } else {
-          dragComment(mSelectedComment, event, mouseMoveVector);
-        }
-
+        mSelectedComment.mouseDragged(event);
+        revalidate();
+        repaint(100);
         checkChangesOnWorkspace();
-
         return;
       } else {
         // System.out.println(mSelectedNode.getDataNode().getName() + " not dragged - deselected");
