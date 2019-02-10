@@ -223,32 +223,35 @@ public final class Node extends EditorComponent implements DocumentContainer {
     repaint(100);
   }
 
-  public boolean changeType(IDManager mgr, Collection<Edge> incoming) {
-    BasicNode newNode;
-    if (! isBasic) {
-      SuperNode n = (SuperNode)getDataNode();
-      if (n.getNodeSize() > 0) {
-        // complain: this operation can not be done, SuperNode has subnodes
-        return false;
+  public BasicNode changeType(IDManager mgr, Collection<Edge> incoming, BasicNode
+      newNode) {
+    if (newNode == null) {
+      if (! isBasic) {
+        SuperNode n = (SuperNode)getDataNode();
+        if (n.getNodeSize() > 0) {
+          // complain: this operation can not be done, SuperNode has subnodes
+          return null;
+        }
+        newNode = new BasicNode(mgr, n);
+      } else {
+        newNode = new SuperNode(mgr, getDataNode());
+        // adapt node lists of parent SuperNode
       }
-      newNode = new BasicNode(mgr, n);
-    } else {
-      newNode = new SuperNode(mgr, getDataNode());
-      // adapt node lists of parent SuperNode
     }
     for (Edge in : incoming) {
       AbstractEdge e = in.getDataEdge();
       e.setTarget(newNode, e.getTargetDock());
       e.setTargetUnid(newNode.getId());
     }
-      // adapt node lists of parent SuperNode
+    // adapt node lists of parent SuperNode
     SuperNode s = mDataNode.getParentNode();
     s.removeNode(mDataNode);
     s.addNode(newNode);
+    BasicNode oldNode = mDataNode;
     mDataNode = newNode;
     isBasic = !isBasic;
     update();
-    return true;
+    return oldNode;
   }
 
 

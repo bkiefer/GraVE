@@ -451,13 +451,14 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     super.paintComponent(g);
     mGridManager.drawGrid(g2d);
 
-    Color indicator = Color.WHITE;
+    Color indicator;
     switch (getSuperNode().getFlavour()) {
       case CNODE: indicator = sCEDGE_COLOR; break;
       case PNODE: indicator = sPEDGE_COLOR; break;
       case FNODE: indicator = sFEDGE_COLOR; break;
       case INODE: indicator = sIEDGE_COLOR; break;
       case TNODE: indicator = sTEDGE_COLOR; break;
+      default: indicator = Color.WHITE;
     }
 
     g2d.setColor(indicator);
@@ -658,13 +659,17 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *
    * Super to Basic is only allowed if there are no inner nodes in the SuperNode
    */
-  public void changeType(Node node) {
+  public BasicNode changeType(Node node, BasicNode changeTo) {
+    BasicNode result = null;
     Collection<Edge> incoming =
         Node.computeIncomingEdges(new ArrayList<Node>(){{add(node);}});
-    if (! node.changeType(mSceneFlowEditor.getIDManager(), incoming)) {
+    if ((result = node.changeType(mSceneFlowEditor.getIDManager(), incoming
+                                  , changeTo))
+        == null) {
       // complain: operation not legal
       setMessageLabelText("SuperNode contains Nodes: Type change not possible");
     }
+    return result;
   }
 
   /** paste nodes from the clipboard
