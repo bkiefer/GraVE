@@ -23,9 +23,8 @@ import de.dfki.vsm.util.evt.EventDispatcher;
  *
  * @author Gregor Mehlmann
  */
+@SuppressWarnings("serial")
 public class RedoAction extends AbstractAction {
-  // The singelton logger instance
-
   private final Logger mLogger = LoggerFactory.getLogger(RedoAction.class);;
 
   private static RedoAction sSingeltonInstance = null;
@@ -59,15 +58,6 @@ public class RedoAction extends AbstractAction {
     refreshRedoState();
     UndoAction.getInstance().refreshUndoState();
     EventDispatcher.getInstance().convey(new ProjectChangedEvent(this));
-    /*
-         * try {
-         * UndoRedoManager.getInstance().redo();
-         * } catch (CannotRedoException exc) {
-         * exc.printStackTrace();
-         * }
-         * refreshRedoState();
-         * UndoAction.getInstance().refreshUndoState();
-     */
   }
 
   public void refreshRedoState() {
@@ -75,20 +65,10 @@ public class RedoAction extends AbstractAction {
 
     if (manager.canRedo()) {
       setEnabled(true);
-      putValue(Action.NAME, manager.getRedoPresentationName());
+      putValue(Action.SHORT_DESCRIPTION, manager.getRedoPresentationName());
     } else {
       setEnabled(false);
-      putValue(Action.NAME, "Redo");
+      putValue(Action.SHORT_DESCRIPTION, "Redo last action");
     }
-
-    /*
-         * if (UndoRedoManager.getInstance().canRedo()) {
-         * setEnabled(true);
-         * putValue(Action.NAME, UndoRedoManager.getInstance().getRedoPresentationName());
-         * } else {
-         * setEnabled(false);
-         * putValue(Action.NAME, "Redo");
-         * }
-     */
   }
 }

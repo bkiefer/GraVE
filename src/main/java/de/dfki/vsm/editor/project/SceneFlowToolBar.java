@@ -320,32 +320,22 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     add(createSeparator());
 
     //Undo last action
-    mUndo = add(new AbstractAction("ACTION_UNDO", ICON_UNDO_STANDARD) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        undoAction.actionPerformed(e);
-        refreshButtons();
-      }
-    });
+    mUndo = add(undoAction);
+    mUndo.setIcon(ICON_UNDO_STANDARD);
     mUndo.setRolloverIcon(ICON_UNDO_ROLLOVER);
     mUndo.setDisabledIcon(ICON_UNDO_DISABLED);
     mUndo.setToolTipText("Undo last action");
     sanitizeButton(mUndo, tinyButtonDim);
-    mUndo.setEnabled(false);
+    //mUndo.setEnabled(false);
 
     //Redo last action
-    mRedo = add(new AbstractAction("ACTION_REDO", ICON_REDO_STANDARD) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        redoAction.actionPerformed(e);
-        refreshButtons();
-      }
-    });
+    mRedo = add(redoAction);
+    mRedo.setIcon(ICON_REDO_STANDARD);
     mRedo.setRolloverIcon(ICON_REDO_ROLLOVER);
     mRedo.setDisabledIcon(ICON_REDO_DISABLED);
     mRedo.setToolTipText("Redo last action");
     sanitizeButton(mRedo, tinyButtonDim);
-    mRedo.setEnabled(false);
+    //mRedo.setEnabled(false);
     //******************************************************************************************************
 
     //******************************************************************************************************

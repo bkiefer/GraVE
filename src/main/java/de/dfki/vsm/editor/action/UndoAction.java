@@ -25,8 +25,6 @@ import de.dfki.vsm.util.evt.EventDispatcher;
  */
 @SuppressWarnings("serial")
 public class UndoAction extends AbstractAction {
-  // The singelton logger instance
-
   private final Logger mLogger = LoggerFactory.getLogger(UndoAction.class);;
 
   private static UndoAction sSingeltonInstance = null;
@@ -58,15 +56,6 @@ public class UndoAction extends AbstractAction {
     refreshUndoState();
     RedoAction.getInstance().refreshRedoState();
     EventDispatcher.getInstance().convey(new ProjectChangedEvent(this));
-    /*
-         * try {
-         * UndoRedoManager.getInstance().undo();
-         * } catch (CannotUndoException exc) {
-         * exc.printStackTrace();
-         * }
-         * refreshUndoState();
-         * RedoAction.getInstance().refreshRedoState();
-     */
   }
 
   public void refreshUndoState() {
@@ -74,21 +63,11 @@ public class UndoAction extends AbstractAction {
 
     if (manager.canUndo()) {
       setEnabled(true);
-      putValue(Action.NAME, manager.getUndoPresentationName());
+      putValue(Action.SHORT_DESCRIPTION, manager.getUndoPresentationName());
     } else {
       setEnabled(false);
-      putValue(Action.NAME, "Undo");
+      putValue(Action.SHORT_DESCRIPTION, "Undo last action");
     }
-
-    /*
-         * if (UndoRedoManager.getInstance().canUndo()) {
-         * setEnabled(true);
-         * putValue(Action.NAME, UndoRedoManager.getInstance().getUndoPresentationName());
-         * } else {
-         * setEnabled(false);
-         * putValue(Action.NAME, "Undo");
-         * }
-     */
   }
 
 }
