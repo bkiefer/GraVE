@@ -31,17 +31,11 @@ public class MoveEdgeEndPointAction extends EditorAction {
   }
 
   protected void undoIt() {
-    if (mStart)
-      mEdge.deflectSource(mOldNode, mOldDock);
-    else
-      mEdge.deflectTarget(mOldNode, mOldDock);
+    mEdge.deflect(mOldNode, mOldDock, mStart);
   }
 
   protected void doIt() {
-    if (mStart)
-      mEdge.deflectSource(mNewNode, mNewDock);
-    else
-      mEdge.deflectTarget(mNewNode, mNewDock);
+    mEdge.deflect(mNewNode, mNewDock, mStart);
   }
 
   protected String msg() { return "Moving Edge Endpoint"; }

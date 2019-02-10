@@ -31,21 +31,11 @@ public class MoveEdgeCtrlAction extends EditorAction {
   }
 
   protected void undoIt() {
-    AbstractEdge edge = mEdge.getDataEdge();
-    if (mStartCtrl)
-      edge.setSourceCtrlPoint(mOldLocation);
-    else
-      edge.setTargetCtrlPoint(mOldLocation);
-    mEdge.updateEdgeGraphics();
+    mEdge.moveCtrlPoint(mOldLocation, mStartCtrl);
   }
 
   protected void doIt() {
-    AbstractEdge edge = mEdge.getDataEdge();
-    if (mStartCtrl)
-      edge.setSourceCtrlPoint(mNewLocation);
-    else
-      edge.setTargetCtrlPoint(mNewLocation);
-    mEdge.updateEdgeGraphics();
+    mEdge.moveCtrlPoint(mNewLocation, mStartCtrl);
   }
 
   protected String msg() { return "Moving Edge Control"; }

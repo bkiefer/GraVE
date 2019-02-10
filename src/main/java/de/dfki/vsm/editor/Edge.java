@@ -302,6 +302,8 @@ public class Edge extends EditorComponent
   }
 
   public void setSelected() {
+    mEditMode = true;
+    repaint(100);
   }
 
   public void setDeselected() {
@@ -354,7 +356,7 @@ public class Edge extends EditorComponent
     repaint(100);
   }
 
-  public void deflectSource(Node newNode, int dock) {
+  private void deflectSource(Node newNode, int dock) {
     // change the SOURCE view and model to reflect edge change
     // disconnect view
     mSourceNode.disconnectSource(this);
@@ -368,10 +370,9 @@ public class Edge extends EditorComponent
     mSourceNode.getDataNode().addEdge(mDataEdge);
     // new source view
     mSourceNode.connectSource(this);
-    updateEdgeGraphics();
   }
 
-  public void deflectTarget(Node newNode, int dock) {
+  private void deflectTarget(Node newNode, int dock) {
     // change the TARGET view and model to reflect edge change
     // disconnect view
     mTargetNode.disconnectTarget(this);
@@ -385,9 +386,24 @@ public class Edge extends EditorComponent
     mTargetNode.getDataNode().occupyDock(dock);
     // new target view
     mTargetNode.connectTarget(this);
+  }
+
+  public void deflect(Node newNode, int newDock, boolean start) {
+    if (start)
+      deflectSource(newNode, newDock);
+    else
+      deflectTarget(newNode, newDock);
     updateEdgeGraphics();
   }
 
+  public void moveCtrlPoint(Point toLocation, boolean start) {
+    AbstractEdge edge = getDataEdge();
+    if (start)
+      edge.setSourceCtrlPoint(toLocation);
+    else
+      edge.setTargetCtrlPoint(toLocation);
+    updateEdgeGraphics();
+  }
 
   private boolean canDeflect(Node curr, Node old) {
     return (curr != null &&
