@@ -1,11 +1,15 @@
 package de.dfki.vsm.model.flow;
 
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.dfki.vsm.editor.util.IDManager;
 import de.dfki.vsm.model.flow.geom.Geom;
@@ -18,27 +22,7 @@ import de.dfki.vsm.model.flow.geom.Position;
 @XmlAccessorType(XmlAccessType.NONE)
 public class SuperNode extends BasicNode {
 
-  public static class StartNodeAdapter extends XmlAdapter<String, Map<String, BasicNode>> {
-    @Override
-    public String marshal(Map<String, BasicNode> v) throws Exception {
-      StringBuilder sb = new StringBuilder();
-      for (String s : v.keySet()) {
-        sb.append(s).append(';');
-      }
-      return sb.toString();
-    }
-
-    @Override
-    public Map<String, BasicNode> unmarshal(String v) throws Exception {
-      Map<String, BasicNode> result = new HashMap<>();
-      for (String str : v.split(";")) {
-        if (!str.isEmpty() && !str.equals("null")) {
-          result.put(str, null);
-        }
-      }
-      return result;
-    }
-  }
+  public static final Logger logger = LoggerFactory.getLogger(SuperNode.class);
 
   @XmlElement(name="Comment")
   protected ArrayList<CommentBadge> mCommentList = new ArrayList<CommentBadge>();
@@ -47,8 +31,8 @@ public class SuperNode extends BasicNode {
   @XmlElement(name="SuperNode")
   protected ArrayList<SuperNode> mSuperNodeList = new ArrayList<SuperNode>();
   @XmlAttribute(name="start")
-  @XmlJavaTypeAdapter(StartNodeAdapter.class)
-  protected HashMap<String, BasicNode> mStartNodeMap = new HashMap<String, BasicNode>();
+  protected String mStartNodeId = null;
+  protected BasicNode mStartNode = null;
   @XmlAttribute(name="hideLocalVar")
   protected boolean mHideLocalVarBadge = false;
   @XmlAttribute(name="hideGlobalVar")
@@ -68,24 +52,20 @@ public class SuperNode extends BasicNode {
     mNodeId = mNodeName = mgr.getNextFreeID(this);
     mPosition = pos;
     mParentNode = s;
+    if (mParentNode.mSuperNodeList.isEmpty() && mParentNode.mNodeList.isEmpty()) {
+      mParentNode.setStartNode(this);
+    }
     mParentNode.mSuperNodeList.add(this);
   }
 
   @XmlTransient
-  public HashMap<String, BasicNode> getStartNodeMap() {
-    return mStartNodeMap;
+  public BasicNode getStartNode() {
+    return mStartNode;
   }
 
-  public void setStartNodeMap(HashMap<String, BasicNode> value) {
-    mStartNodeMap = value;
-  }
-
-  public void addStartNode(BasicNode node) {
-    mStartNodeMap.put(node.getId(), node);
-  }
-
-  public void removeStartNode(BasicNode node) {
-    mStartNodeMap.remove(node.getId());
+  public void setStartNode(BasicNode value) {
+    mStartNode = value;
+    mStartNodeId = value.getId();
   }
 
   public void setComment(String value) {
@@ -128,11 +108,14 @@ public class SuperNode extends BasicNode {
   */
 
   public boolean isStartNode(BasicNode value) {
-    return mStartNodeMap.containsKey(value.getId());
+    return mStartNode == value;
   }
 
   /** Add a node to the list of nodes */
   public void addNode(BasicNode value) {
+    if (mSuperNodeList.isEmpty() && mNodeList.isEmpty()) {
+      setStartNode(value);
+    }
     if (value instanceof SuperNode) {
       mSuperNodeList.add((SuperNode)value);
     } else {
@@ -224,8 +207,14 @@ public class SuperNode extends BasicNode {
   }
 
   public void establishStartNodes() {
-    for (String id : mStartNodeMap.keySet()) {
-      mStartNodeMap.put(id, getChildNodeById(id));
+    if (! mStartNodeId.isEmpty()) {
+      if (mStartNodeId.endsWith(";")) {
+        mStartNodeId = mStartNodeId.substring(0, mStartNodeId.length()-1);
+      }
+      mStartNode = getChildNodeById(mStartNodeId);
+      if (mStartNode == null) {
+        logger.error("Start node not found: {}", mStartNodeId);
+      }
     }
 
     for (SuperNode node : mSuperNodeList) {
@@ -272,7 +261,7 @@ public class SuperNode extends BasicNode {
     hash = 53 * hash + this.mCommentList.hashCode();
     hash = 53 * hash + this.mNodeList.hashCode();
     hash = 53 * hash + this.mSuperNodeList.hashCode();
-    hash = 53 * hash + this.mStartNodeMap.hashCode();
+    hash = 53 * hash + this.mStartNodeId.hashCode();
     hash = 53 * hash + Boolean.hashCode(this.mHideLocalVarBadge);
     hash = 53 * hash + Boolean.hashCode(this.mHideGlobalVarBadge);
     return hash;

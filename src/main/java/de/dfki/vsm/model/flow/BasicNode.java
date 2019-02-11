@@ -94,6 +94,9 @@ public class BasicNode  {
     mNodeId = mNodeName = mgr.getNextFreeID(this);
     mPosition = p;
     mParentNode = s;
+    if (mParentNode.mSuperNodeList.isEmpty() && mParentNode.mNodeList.isEmpty()) {
+      mParentNode.setStartNode(this);
+    }
     mParentNode.mNodeList.add(this);
   }
 
@@ -228,7 +231,7 @@ public class BasicNode  {
   }
 
   public boolean isStartNode() {
-    return mParentNode.mStartNodeMap.containsKey(mNodeId);
+    return mParentNode.isStartNode(this);
   }
 
   public boolean isEndNode() {

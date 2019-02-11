@@ -9,26 +9,25 @@ import de.dfki.vsm.model.flow.BasicNode;
  */
 public class ToggleStartNodeAction extends EditorAction {
 
+  private BasicNode oldStartNode;
   private Node mGUINode;
 
   public ToggleStartNodeAction(WorkSpace workSpace, Node node) {
     mWorkSpace = workSpace;
     mGUINode = node;
+    oldStartNode = mGUINode.getDataNode().getParentNode().getStartNode();
   }
 
   @Override
   protected void doIt() {
     BasicNode mDataNode = mGUINode.getDataNode();
-    if (mDataNode.isStartNode()) {
-      mDataNode.getParentNode().removeStartNode(mDataNode);
-    } else {
-      mDataNode.getParentNode().addStartNode(mDataNode);
-    }
+    mDataNode.getParentNode().setStartNode(mDataNode);
   }
 
   @Override
   public void undoIt() {
-    doIt();
+    BasicNode mDataNode = mGUINode.getDataNode();
+    mDataNode.getParentNode().setStartNode(oldStartNode);
   }
 
   @Override
