@@ -330,7 +330,6 @@ implements MouseListener, MouseMotionListener {
     mPressed = false;
     mDragged = false;
     mResizing = false;
-    repaint(100);
     update();
   }
 

@@ -431,7 +431,11 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       createNewEdge(event.getPoint());
       return;
     }
-
+    Edge e = findEdgeAt(event.getPoint());
+    if (e != null) {
+      edgeClicked(event, e);
+      return;
+    }
     Object o = SwingUtilities.getDeepestComponentAt(
         this, mLastMousePos.x, mLastMousePos.y);
     if (o instanceof Node) {
@@ -440,15 +444,10 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         && ((JComponent)o).getParent() instanceof Comment) {
       commentClicked(event, (Comment)((JComponent)o).getParent());
     } else {
-      Edge e = findEdgeAt(event.getPoint());
-      if (e != null) {
-        edgeClicked(event, e);
-      } else {
-        deselectAll();
-        mAreaSelection = null;
-        if (!hasFocus()) {
-          requestFocus();
-        }
+      deselectAll();
+      mAreaSelection = null;
+      if (!hasFocus()) {
+        requestFocus();
       }
     }
   }
@@ -486,6 +485,17 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   @Override
   public void mousePressed(MouseEvent event) {
     mLastMousePos = event.getPoint();
+    // we need to check the selected edge first, otherwise it's almost impossible
+    // to grab the control point in some situations
+    Edge e = findEdgeAt(event.getPoint());
+    if (e != null) {
+      if (mSelectedEdge != e) {
+        selectEdge(e);
+      }
+      mSelectedEdge.mousePressed(event);
+      return;
+    }
+
     Object o = SwingUtilities.getDeepestComponentAt(this,
         mLastMousePos.x, mLastMousePos.y);
 
@@ -511,20 +521,12 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       }
       mSelectedComment.mousePressed(event);
     } else {
-      Edge e = findEdgeAt(event.getPoint());
-      if (e != null) {
-        if (mSelectedEdge != e) {
-          selectEdge(e);
-        }
-        mSelectedEdge.mousePressed(event);
+      // right click: global context menu for clipboard actions
+      if ((event.getButton() == MouseEvent.BUTTON3)
+          && (event.getClickCount() == 1)) {
+        globalContextMenu(event);
       } else {
-        // right click: global context menu for clipboard actions
-        if ((event.getButton() == MouseEvent.BUTTON3)
-            && (event.getClickCount() == 1)) {
-          globalContextMenu(event);
-        } else {
-          mDoAreaSelection = true;
-        }
+        mDoAreaSelection = true;
       }
     }
   }
@@ -668,8 +670,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
          node.highlightNode();
       }
       */
+      repaint(100);
     }
-    repaint(100);
     return;
   }
 
@@ -683,12 +685,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       setBackground(Color.LIGHT_GRAY);
     } else {
       setBackground(Color.WHITE);
-    }
-
-    if (mSelectedEdge != null) {
-      if (mSelectedEdge.isInEditMode()) {
-        setBackground(Color.LIGHT_GRAY);
-      }
     }
 
     if (mAreaSelection != null) {

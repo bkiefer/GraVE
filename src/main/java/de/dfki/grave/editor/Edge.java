@@ -235,7 +235,7 @@ public class Edge extends EditorComponent
       // character added
       public void insertUpdate(DocumentEvent e) {
         mDataEdge.setContent(mTextArea.getText());
-        computeTextBoxBounds();
+        computeBounds();
       }
 
       @Override
