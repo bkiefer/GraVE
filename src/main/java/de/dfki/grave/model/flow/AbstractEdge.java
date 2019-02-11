@@ -268,7 +268,7 @@ public abstract class AbstractEdge {
 
     // scale control point in relation to distance between nodes
     double scale = (mSourceNode == mTargetNode)
-        ? nodeWidth * .7
+        ? nodeWidth * .9
         : Math.max(start.distance(target) / nodeWidth - 0.5, 1.25)
           * nodeWidth/3; // TODO: not my preferred solution.
 
@@ -291,9 +291,9 @@ public abstract class AbstractEdge {
     if (mSourceNode == mTargetNode) { // loop
       Position p = mSourceNode.getPosition();
       mSourceDock = mSourceNode.getNearestFreeDock(
-          new Point(p.getXPos()+(int)(nodeWidth*0.36), p.getYPos()));
+          new Point(p.getXPos()+(int)(nodeWidth*0.3), p.getYPos()));
       mTargetDock = mTargetNode.getNearestFreeDock(
-          new Point(p.getXPos()+(int)(nodeWidth*0.64), p.getYPos()));
+          new Point(p.getXPos()+(int)(nodeWidth*0.7), p.getYPos()));
     } else {
       mSourceDock = mSourceNode.getNearestFreeDock(mTargetNode.getCenter());
       mTargetDock = mTargetNode.getNearestFreeDock(mSourceNode.getCenter());
