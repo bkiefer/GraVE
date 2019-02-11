@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.WorkSpacePanel;
 
 /**
  * @author Patrick Gebhard
@@ -21,6 +22,8 @@ public class PasteNodesAction extends EditorAction {
 
   protected void doIt() {
     mAffected = mWorkSpace.pasteNodesFromClipboard(mMousePosition);
+    // dangerous, but (currently) working
+    ((WorkSpacePanel)mWorkSpace).selectNodes(mAffected);
   }
 
   protected void undoIt() {

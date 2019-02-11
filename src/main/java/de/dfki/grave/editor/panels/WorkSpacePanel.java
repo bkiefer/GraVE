@@ -9,6 +9,7 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.text.AttributedString;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -252,6 +253,18 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     }
   }
 
+  public void selectNodes(Collection<Node> nodes) {
+    for (Node node : mSelectedNodes) {
+      node.setDeselected();
+    }
+    mSelectedNodes.clear();
+    for (Node node : nodes) {
+      node.setSelected();
+      mSelectedNodes.add(node);
+    }
+    repaint(100);
+  }
+
   protected void clearCurrentWorkspace() {
     super.clearCurrentWorkspace();
     deselectAll();
@@ -264,7 +277,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     String message = (mSelectedNodes.size() > 1) ? "Nodes copied" : "Node copied";
     setMessageLabelText(mSelectedNodes.size() + message);
     action.run();
-
   }
 
   /** To provide the functionality to the global menu bar */
