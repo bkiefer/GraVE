@@ -36,7 +36,7 @@
           <appendAssemblyId>false</appendAssemblyId>
           <archive>
             <manifest>
-              <mainClass>de.dfki.vsm.MainGrave</mainClass>
+              <mainClass>de.dfki.grave.MainGrave</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
