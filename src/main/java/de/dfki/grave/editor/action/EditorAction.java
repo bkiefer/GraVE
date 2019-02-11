@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoableEdit;
 
 import de.dfki.grave.editor.panels.WorkSpace;
 
@@ -16,6 +17,7 @@ import de.dfki.grave.editor.panels.WorkSpace;
 public abstract class EditorAction {
 
   protected WorkSpace mWorkSpace;
+  protected UndoableEdit mEdit = null;
 
   protected void refresh() {
     //mWorkSpace.revalidate();
@@ -25,7 +27,8 @@ public abstract class EditorAction {
 
   public void run() {
     doIt();
-    mWorkSpace.getSceneFlowEditor().getUndoManager().addEdit(new Edit());
+    if (mEdit == null) mEdit = new Edit();
+    mWorkSpace.getSceneFlowEditor().getUndoManager().addEdit(mEdit);
     UndoAction.getInstance().refreshUndoState();
     RedoAction.getInstance().refreshRedoState();
     refresh();

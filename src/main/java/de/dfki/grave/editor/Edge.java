@@ -17,6 +17,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
@@ -222,6 +224,12 @@ public class Edge extends EditorComponent
       Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
     }
     mTextArea.setDocument(mDocument);
+    mDocument.addUndoableEditListener(
+        new UndoableEditListener() {
+          public void undoableEditHappened(UndoableEditEvent e) {
+            new TextEditAction(mWorkSpace, e.getEdit()).run();
+          }
+        });
     this.add(mTextArea);
     mTextArea.setBackground(Color.WHITE);
     // Get rid of annoying yellow line

@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
@@ -180,7 +182,12 @@ public final class Node extends EditorComponent implements DocumentContainer {
     }
     // Create the command badge of the GUI-BasicNode, after setting Position!
     mCmdBadge = new CmdBadge(this, mWorkSpace.getEditorConfig(), mDocument);
-
+    mDocument.addUndoableEditListener(
+        new UndoableEditListener() {
+          public void undoableEditHappened(UndoableEditEvent e) {
+            new TextEditAction(mWorkSpace, e.getEdit()).run();
+          }
+        });
     // update
     update();
   }

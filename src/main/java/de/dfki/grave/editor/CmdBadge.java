@@ -6,14 +6,16 @@ import java.awt.event.FocusListener;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.model.project.EditorConfig;
 import de.dfki.grave.util.evt.EventDispatcher;
-
-import javax.swing.text.Document;
 
 /**
  * @author Gregor Mehlmann
@@ -70,6 +72,14 @@ public class CmdBadge extends RSyntaxTextArea
     setFont(mFont);
     setLayout(new BorderLayout());
     this.setDocument(d);
+    d.addDocumentListener(new DocumentListener(){
+      @Override
+      public void insertUpdate(DocumentEvent e) { computeAndSetNewSize(); }
+      @Override
+      public void removeUpdate(DocumentEvent e) { insertUpdate(e); }
+      @Override
+      public void changedUpdate(DocumentEvent e) { insertUpdate(e); }
+    });
     computeAndSetNewSize();
   }
 
@@ -115,10 +125,6 @@ public class CmdBadge extends RSyntaxTextArea
   public void setLocation() {
     setLocation(mNode.getLocation().x + (mNode.getWidth() - getSize().width)/2,
         mNode.getLocation().y + mNode.getHeight());
-  }
-
-  public Node getNode() {
-    return mNode;
   }
 
   /* Should not be called!
