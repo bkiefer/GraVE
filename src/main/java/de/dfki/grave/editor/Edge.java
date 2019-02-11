@@ -427,6 +427,8 @@ public class Edge extends EditorComponent
       if (canDeflect(newNode, mSourceNode)) {
         int dock = newNode.getNearestFreeDock(p);
         new MoveEdgeEndPointAction(mWorkSpace, this, true, dock, newNode).run();
+      } else {
+        updateEdgeGraphics(); // put arrow back into old position
       }
       break;
     }
@@ -435,6 +437,8 @@ public class Edge extends EditorComponent
       if (canDeflect(newNode, mTargetNode)) {
         int dock = newNode.getNearestFreeDock(p);
         new MoveEdgeEndPointAction(mWorkSpace, this, false, dock, newNode).run();
+      } else {
+        updateEdgeGraphics(); // put arrow back into old position
       }
       break;
     }
