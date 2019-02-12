@@ -154,7 +154,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
           if (data instanceof BasicNode) {
             BasicNode n = (BasicNode) data;
-            new CreateNodeAction(WorkSpacePanel.this, dtde.getLocation(), n).run();
+            new CreateNodeAction(WorkSpacePanel.this,
+                createNode(dtde.getLocation(), n)).run();
             dtde.acceptDrop(mAcceptableActions);
             dtde.getDropTargetContext().dropComplete(true);
           } else if (data instanceof AbstractEdge) {
@@ -298,7 +299,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
   public static void addItem(JPopupMenu m, String name, EditorAction a) {
     JMenuItem item = new JMenuItem(name);
-    item.addActionListener(a.getActionListener());
+    item.addActionListener(a);
     m.add(item);
   }
 
@@ -476,7 +477,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     if (! mClipboard.isEmpty()) {
       JMenuItem itemPasteNodes = new JMenuItem("Paste");
       PasteNodesAction pasteAction = new PasteNodesAction(this, event.getPoint());
-      itemPasteNodes.addActionListener(pasteAction.getActionListener());
+      itemPasteNodes.addActionListener(pasteAction);
       pop.add(itemPasteNodes);
     }
     // refresh menu item

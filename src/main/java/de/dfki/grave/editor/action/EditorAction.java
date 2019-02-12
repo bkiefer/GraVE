@@ -9,12 +9,13 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
+import de.dfki.grave.editor.panels.UndoRedoProvider;
 import de.dfki.grave.editor.panels.WorkSpace;
 
 /**
  * @author Gregor Mehlmann
  */
-public abstract class EditorAction {
+public abstract class EditorAction implements ActionListener {
 
   protected WorkSpace mWorkSpace;
   protected UndoableEdit mEdit = null;
@@ -29,8 +30,7 @@ public abstract class EditorAction {
     doIt();
     if (mEdit == null) mEdit = new Edit();
     mWorkSpace.getSceneFlowEditor().getUndoManager().addEdit(mEdit);
-    UndoAction.getInstance().refreshUndoState();
-    RedoAction.getInstance().refreshRedoState();
+    UndoRedoProvider.refreshState();
     refresh();
   }
 
@@ -38,14 +38,9 @@ public abstract class EditorAction {
   protected abstract void undoIt();
   protected abstract String msg();
 
-  public ActionListener getActionListener() {
-    return new ActionListener() {
-      public void actionPerformed(ActionEvent event) {
-        run();
-      }
-    };
-  }
+  public void actionPerformed(ActionEvent event) { run(); }
 
+  @SuppressWarnings("serial")
   private class Edit extends AbstractUndoableEdit {
 
     @Override
@@ -61,24 +56,16 @@ public abstract class EditorAction {
     }
 
     @Override
-    public boolean canUndo() {
-      return true;
-    }
+    public boolean canUndo() { return true; }
 
     @Override
-    public boolean canRedo() {
-      return true;
-    }
+    public boolean canRedo() { return true; }
 
     @Override
-    public String getUndoPresentationName() {
-      return "Undo " + msg();
-    }
+    public String getUndoPresentationName() { return "Undo " + msg(); }
 
     @Override
-    public String getRedoPresentationName() {
-      return "Redo " + msg();
-    }
+    public String getRedoPresentationName() { return "Redo " + msg(); }
   }
 
 }

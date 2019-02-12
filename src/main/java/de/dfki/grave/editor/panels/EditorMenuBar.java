@@ -17,8 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.Preferences;
-import de.dfki.grave.editor.action.RedoAction;
-import de.dfki.grave.editor.action.UndoAction;
 import de.dfki.grave.editor.dialog.NewProjectDialog;
 import de.dfki.grave.editor.dialog.QuitDialog;
 
@@ -321,14 +319,8 @@ public final class EditorMenuBar extends JMenuBar {
       }
     });
 
-    Action undoAction = UndoAction.getInstance();
-
-//      undoAction.putValue(Action.SMALL_ICON, new ImageIcon("data/img/undo.png"));
-    Action redoAction = RedoAction.getInstance();
-
-//      redoAction.putValue(Action.SMALL_ICON, new ImageIcon("data/img/redo.png"));
-    mEditMenu.add(undoAction);
-    mEditMenu.add(redoAction);
+    mEditMenu.add(UndoRedoProvider.getUndoAction());
+    mEditMenu.add(UndoRedoProvider.getRedoAction());
     mEditMenu.add(new JSeparator());
     mEditMenu.add(mCopyMenuItem);
     mEditMenu.add(mCutMenuItem);

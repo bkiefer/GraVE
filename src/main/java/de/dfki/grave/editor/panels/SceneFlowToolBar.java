@@ -9,15 +9,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.LinkedList;
-import java.util.List;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
 
-import de.dfki.grave.editor.action.RedoAction;
-import de.dfki.grave.editor.action.UndoAction;
 import de.dfki.grave.editor.dialog.OptionsDialog;
 import de.dfki.grave.editor.dialog.SaveFileDialog;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
@@ -125,12 +122,8 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   private JButton mPlayButton;
   private JButton mStopButton;
   //private JButton mShowVarButton;
-  private JButton mStraighten;
-  private JButton mNormalize;
   private JButton mSaveProject;
   private JButton mPreferences;
-  private JButton mUndo;
-  private JButton mRedo;
   private JButton mProjectSettings;
 
   //Dimension for buttons
@@ -141,9 +134,6 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   private JPanel mPathDisplay;
   private JScrollBar mPathScrollBar;
   private JScrollPane mPathScrollPane;
-
-  private Action undoAction = UndoAction.getInstance();
-  private Action redoAction = RedoAction.getInstance();
 
   // TODO: why is this here?
   // It is here to simplify code in the zooming in/out operations
@@ -319,28 +309,26 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     add(createSeparator());
 
     //Undo last action
-    mUndo = add(undoAction);
+    JButton mUndo = add(UndoRedoProvider.getUndoAction());
     mUndo.setIcon(ICON_UNDO_STANDARD);
     mUndo.setRolloverIcon(ICON_UNDO_ROLLOVER);
     mUndo.setDisabledIcon(ICON_UNDO_DISABLED);
     mUndo.setToolTipText("Undo last action");
     sanitizeButton(mUndo, tinyButtonDim);
-    //mUndo.setEnabled(false);
 
     //Redo last action
-    mRedo = add(redoAction);
+    JButton mRedo = add(UndoRedoProvider.getRedoAction());
     mRedo.setIcon(ICON_REDO_STANDARD);
     mRedo.setRolloverIcon(ICON_REDO_ROLLOVER);
     mRedo.setDisabledIcon(ICON_REDO_DISABLED);
     mRedo.setToolTipText("Redo last action");
     sanitizeButton(mRedo, tinyButtonDim);
-    //mRedo.setEnabled(false);
     //******************************************************************************************************
 
     //******************************************************************************************************
     //PROJECT EDITION SECTION
     // Button to straighten all edeges
-    mNormalize = add(new AbstractAction("ACTION_NORMALIZE", ICON_NORMALIZE_STANDARD) {
+    JButton mNormalize = add(new AbstractAction("ACTION_NORMALIZE", ICON_NORMALIZE_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
         mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().normalizeAllEdges();
@@ -350,7 +338,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     mNormalize.setToolTipText("Normalize all edges");
     sanitizeButton(mNormalize, tinyButtonDim);
     // Button to straighten all edeges
-    mStraighten = add(new AbstractAction("ACTION_STRAIGHTEN", ICON_STRAIGHTEN_STANDARD) {
+    JButton mStraighten = add(new AbstractAction("ACTION_STRAIGHTEN", ICON_STRAIGHTEN_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
         mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().straightenAllEdges();
@@ -497,10 +485,8 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     // Print some information
     //mLogger.message("Refreshing Buttons Of '" + this + "'");
     //*************************************
-    //Refresh the buttons SAVE, UNDO and REDO when project have been changed
+    // Refresh the button SAVE when project have been changed
     mSaveProject.setEnabled(mEditorProject.hasChanged());
-    mUndo.setEnabled(undoAction.isEnabled());
-    mRedo.setEnabled(redoAction.isEnabled());
     //*************************************
 
     //*************************************
