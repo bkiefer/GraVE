@@ -7,7 +7,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
@@ -50,7 +49,7 @@ import de.dfki.grave.util.evt.EventDispatcher;
  * This class should contain all objects and information that are necessary
  * to work on the WHOLE Sceneflow, which is in mSceneFlow
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "restriction" })
 public final class SceneFlowEditor extends JPanel {
 
   // The singelton logger instance

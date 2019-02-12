@@ -12,6 +12,7 @@ import de.dfki.grave.util.Copyable;
  * @author Gregor Mehlmann
  */
 @XmlType(name="Connection")
+@Deprecated
 public class EdgeArrow implements Copyable {
 
   @Override

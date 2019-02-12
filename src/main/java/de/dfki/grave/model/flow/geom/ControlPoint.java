@@ -11,6 +11,7 @@ import de.dfki.grave.util.Copyable;
  * @author Gregor Mehlmann
  */
 @XmlType(name="ControlPoint")
+@Deprecated
 public final class ControlPoint implements Copyable {
 
   @Override
