@@ -85,9 +85,9 @@ public class GridManager {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
     config.sGRID_SCALE = 1;
     int nodeSize = Math.max(config.sNODEWIDTH, config.sNODEHEIGHT);
-    int gridWidth = (int)(nodeSize * config.sGRID_SCALE);
+    int gridWidth = (int)(nodeSize * config.sGRID_SCALE * config.sZOOM_FACTOR);
     int halfGridWidth = gridWidth / 2;
-    int offset = gridWidth / 3;
+    int offset = gridWidth / 4;
 
     Dimension area = calculateWorkArea(gridWidth, gridWidth);
     height = area.height;
@@ -235,7 +235,7 @@ public class GridManager {
   public Point getNodeLocation(Point inputPoint) {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
     int nodeSize = Math.max(config.sNODEWIDTH, config.sNODEHEIGHT);
-    int gridWidth = (int)(nodeSize * config.sGRID_SCALE);
+    int gridWidth = (int)(nodeSize * config.sGRID_SCALE * config.sZOOM_FACTOR);
     Point p = new Point(inputPoint.x + gridWidth / 2,
         inputPoint.y + gridWidth / 2);
 
@@ -379,7 +379,7 @@ public class GridManager {
   private Point findNextFreePosition(Point iPoint) {
     EditorConfig config = mWorkSpacePanel.getEditorConfig();
     int nodeSize = Math.max(config.sNODEWIDTH, config.sNODEHEIGHT);
-    int gridWidth = (int)(nodeSize * config.sGRID_SCALE);
+    int gridWidth = (int)(nodeSize * config.sGRID_SCALE * config.sZOOM_FACTOR);
     int mNodesInRow = width / gridWidth;
     int mNodesInCol = height / gridWidth;
 

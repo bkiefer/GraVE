@@ -28,7 +28,7 @@ import de.dfki.grave.util.ios.ResourceLoader;
 /**
  * @author Gregor Mehlmann
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "restriction" })
 public class SceneFlowToolBar extends JToolBar implements EventListener {
 
   /**
@@ -135,10 +135,6 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   private JScrollBar mPathScrollBar;
   private JScrollPane mPathScrollPane;
 
-  // TODO: why is this here?
-  // It is here to simplify code in the zooming in/out operations
-  private int mNodeSize;
-
   // Construct a sceneflow editor toolbar
   public SceneFlowToolBar(
           final SceneFlowEditor editor,
@@ -159,7 +155,6 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     setRollover(true);
     setFloatable(false);
     setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
-    initPreferences();
     initComponents();
     // Add the sceneflowtoolbar to the event multicaster
     EventDispatcher.getInstance().register(this);
@@ -175,17 +170,13 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     }
   }
 
-  private void initPreferences() {
-    if (mEditorInstance.getSelectedProjectEditor() != null) {
-      mNodeSize = Integer.valueOf(mEditorConfig.sNODEWIDTH);
-    } else {
-      mNodeSize = Integer.valueOf(getPrefs().editorConfig.sNODEWIDTH);
-    }
+  private WorkSpace getWorkSpace() {
+    return mSceneFlowEditor.getWorkSpace();
   }
 
   private void saveEditorConfig() {
-    mEditorConfig.sNODEWIDTH = mNodeSize;
-    mEditorConfig.sNODEHEIGHT = mNodeSize;
+    //mEditorConfig.sNODEWIDTH = mNodeSize;
+    //mEditorConfig.sNODEHEIGHT = mNodeSize;
 
     mEditorConfig.save(mEditorInstance.getSelectedProjectEditor().getEditorProject().getProjectFile());
 
@@ -331,7 +322,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     JButton mNormalize = add(new AbstractAction("ACTION_NORMALIZE", ICON_NORMALIZE_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().normalizeAllEdges();
+        getWorkSpace().normalizeAllEdges();
       }
     });
     mNormalize.setRolloverIcon(ICON_NORMALIZE_ROLLOVER);
@@ -341,7 +332,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     JButton mStraighten = add(new AbstractAction("ACTION_STRAIGHTEN", ICON_STRAIGHTEN_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().straightenAllEdges();
+        getWorkSpace().straightenAllEdges();
       }
     });
     mStraighten.setRolloverIcon(ICON_STRAIGHTEN_ROLLOVER);
@@ -415,7 +406,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     JButton b = add(new AbstractAction("ACTION_LEVEL_UP", ICON_UP_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        mSceneFlowEditor.getWorkSpace().decreaseWorkSpaceLevel();
+        getWorkSpace().decreaseWorkSpaceLevel();
       }
     });
     b.setToolTipText("Up to parent node");
@@ -429,10 +420,10 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     Action action = new AbstractAction("ACTION_SCREEN_SHOT", ICON_SCREENSHOT_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent evt) {
-        TransferHandler handler = mSceneFlowEditor.getWorkSpace().getTransferHandler();
+        TransferHandler handler = getWorkSpace().getTransferHandler();
 
         if (handler != null) {
-          handler.exportToClipboard(mSceneFlowEditor.getWorkSpace(), mSystemClipBoard, TransferHandler.COPY);
+          handler.exportToClipboard(getWorkSpace(), mSystemClipBoard, TransferHandler.COPY);
           SaveFileDialog fileChooser = new SaveFileDialog();
           fileChooser.save();
         } else {
@@ -450,10 +441,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     b = add(new AbstractAction("ACTION_ZOOM_IN", ICON_ZOOMIN_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent evt) {
-        mNodeSize = (mNodeSize < 190)
-                ? mNodeSize = mNodeSize + 10
-                : mNodeSize;
-        saveEditorConfig();
+        getWorkSpace().zoomIn();
       }
     });
     b.setToolTipText("Zoom In");
@@ -464,10 +452,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     b = add(new AbstractAction("ACTION_ZOOM_OUT", ICON_ZOOMOUT_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent evt) {
-        mNodeSize = (mNodeSize > 30)
-                ? mNodeSize = mNodeSize - 10
-                : mNodeSize;
-        saveEditorConfig();
+        getWorkSpace().zoomOut();
       }
     });
     b.setToolTipText("Zoom Out");
@@ -539,9 +524,6 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     // Refresh all components
     refreshButtons();
     refreshDisplay();
-    initPreferences();
-    // TODO: what else do we need to refresh?
-
   }
 
   private JButton createPathButton(SuperNode supernode) {

@@ -431,17 +431,11 @@ public class BasicNode  {
     return Geom.findClosestDock(mDocksTaken, angle);
   }
 
-  /** Dock point for circle */
-  protected Point2D getMyDockPoint(int which, int width) {
+  /** Returns a fresh Point2D for the given dock, which still must be
+   *  translated by the center point of the node
+   */
+  public Point2D getDockPoint(int which, int width) {
     return Geom.getDockPointCircle(which, width);
-  }
-
-  /** Returns a fresh Point for the given dock */
-  public Point getDockPoint(int which, int width) {
-    Point p = getCenter();
-    Point2D dp = getMyDockPoint(which, width);
-    p.translate((int)dp.getX(), (int)dp.getY());
-    return p;
   }
 
   private class EdgeIterator implements Iterator<AbstractEdge> {

@@ -70,6 +70,8 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private final SceneFlow mSceneFlow;
   private final IDManager mIDManager; // manages new IDs for the SceneFlow
 
+  public float mZoomFactor = 1.0f;
+
   /**
    *
    *
@@ -81,6 +83,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mSceneFlowEditor.addActiveSuperNode(mSceneFlow);
     mIDManager = new IDManager(mSceneFlow);
     mGridManager = new GridManager(this, getSuperNode());
+    mZoomFactor = getEditorConfig().sZOOM_FACTOR;
 
     // init layout
     setLayout(new SceneFlowLayoutManager());
@@ -115,6 +118,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
     revalidate();
     repaint(100);
+  }
+
+  public void refreshAll() {
+    clearCurrentWorkspace();
+    showCurrentWorkSpace();
   }
 
   /**
@@ -193,6 +201,20 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   public Set<Node> getNodes() {
     return mNodeSet;
+  }
+
+  public void zoomOut() {
+    if (mZoomFactor > 0.5) mZoomFactor -= .1;
+    getEditorConfig().sZOOM_FACTOR = mZoomFactor;
+    //saveEditorConfig(); // TODO: activate
+    refreshAll();
+  }
+
+  public void zoomIn() {
+    if (mZoomFactor < 3.0) mZoomFactor += .1;
+    getEditorConfig().sZOOM_FACTOR = mZoomFactor;
+    //saveEditorConfig(); // TODO: activate
+    refreshAll();
   }
 
   private class EdgeIterator implements Iterator<Edge> {
@@ -332,9 +354,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private void showNodesOnWorkSpace() {
     for (BasicNode n : getSuperNode().getNodes()) {
       // TODO: FISHY FISHY FISHY: SNAP GRID ON LOAD?
+      /*
       Point p = mGridManager.getNodeLocation(
           new Point(n.getPosition().getXPos(), n.getPosition().getYPos()));
       n.setPosition(new Position(p.x, p.y));
+      */
       addToWorkSpace(new Node(this, n));
     }
   }
@@ -642,7 +666,8 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *  to the workspace
    */
   public Node createNode(Point point, BasicNode model) {
-    point = mGridManager.getNodeLocation(point);
+    if (snapToGrid)
+      point = mGridManager.getNodeLocation(point);
     Position p = new Position(point.x, point.y);
     model.init(mIDManager, p, getSuperNode());
     Node node = new Node(this, model);

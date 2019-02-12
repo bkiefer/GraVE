@@ -485,8 +485,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     refresh.addActionListener(new ActionListener(){
       @Override
       public void actionPerformed(ActionEvent e) {
-        WorkSpacePanel.super.clearCurrentWorkspace();
-        WorkSpacePanel.this.showCurrentWorkSpace();
+        refreshAll();
       }
     });
     pop.add(refresh);

@@ -268,7 +268,7 @@ public class SuperNode extends BasicNode {
   }
 
   /** Dock point for square */
-  protected Point2D getMyDockPoint(int which, int width) {
+  public Point2D getDockPoint(int which, int width) {
     return Geom.getDockPointSquare(which, width);
   }
 }

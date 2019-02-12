@@ -52,7 +52,6 @@ public class Edge extends EditorComponent implements DocumentContainer {
   private Node mSourceNode = null;
   private Node mTargetNode = null;
   private EdgeArrow mArrow = null;
-  private WorkSpace mWorkSpace = null;
 
   // edit panel
   private RSyntaxTextArea mTextArea = null;
@@ -89,8 +88,6 @@ public class Edge extends EditorComponent implements DocumentContainer {
             new Props("Interruptive", "Edge with a logical condition that interrupts supernodes", sIEDGE_COLOR));
       }};
 
-  private EditorConfig mEditorConfig;
-
   private Color color() {
     if (mDataEdge == null) return null;
     return edgeProperties.get(mDataEdge.getClass()).mColor;
@@ -112,7 +109,6 @@ public class Edge extends EditorComponent implements DocumentContainer {
     setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
     mDataEdge = edge;
     mWorkSpace = ws;
-    mEditorConfig = mWorkSpace.getEditorConfig();
     mSourceNode = sourceNode;
     mTargetNode = targetNode;
 
@@ -197,8 +193,8 @@ public class Edge extends EditorComponent implements DocumentContainer {
 
   private void update() {
     // Adapt font size
-    if (mEditorConfig.sWORKSPACEFONTSIZE != getFont().getSize())
-      getFont().deriveFont(mEditorConfig.sWORKSPACEFONTSIZE);
+    if (getEditorConfig().sWORKSPACEFONTSIZE != getFont().getSize())
+      getFont().deriveFont(getEditorConfig().sWORKSPACEFONTSIZE);
 
     updateEdgeGraphics();
   }
@@ -448,13 +444,13 @@ public class Edge extends EditorComponent implements DocumentContainer {
       // compute vector from dock point to p (relative ctrls)
       Point dock = mSourceNode.getDockPoint(mDataEdge.getSourceDock());
       p.translate(-dock.x, -dock.y);
-      new MoveEdgeCtrlAction(mWorkSpace, this, true, p).run();
+      new MoveEdgeCtrlAction(mWorkSpace, this, true, unzoom(p)).run();
       break;
     }
     case EdgeArrow.C2: {
       Point dock = mTargetNode.getDockPoint(mDataEdge.getTargetDock());
       p.translate(-dock.x, -dock.y);
-      new MoveEdgeCtrlAction(mWorkSpace, this, false, p).run();
+      new MoveEdgeCtrlAction(mWorkSpace, this, false, unzoom(p)).run();
       break;
     }
     }
@@ -556,11 +552,11 @@ public class Edge extends EditorComponent implements DocumentContainer {
 
   /** Absolute position of edge start control point */
   public Point getStartCtrl() {
-    return Geom.add(getStart(), mDataEdge.getSourceCtrlPoint());
+    return Geom.add(getStart(), zoom(mDataEdge.getSourceCtrlPoint()));
   }
 
   /** Absolute position of edge end control point */
   public Point getEndCtrl() {
-    return Geom.add(getEnd(), mDataEdge.getTargetCtrlPoint());
+    return Geom.add(getEnd(), zoom(mDataEdge.getTargetCtrlPoint()));
   }
 }

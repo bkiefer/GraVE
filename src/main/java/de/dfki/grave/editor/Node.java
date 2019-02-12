@@ -7,6 +7,7 @@ import static de.dfki.grave.editor.panels.WorkSpacePanel.addItem;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
+import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
 import java.util.logging.Level;
@@ -28,9 +29,7 @@ import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
 import de.dfki.grave.model.flow.SuperNode;
 import de.dfki.grave.model.flow.geom.Position;
-import de.dfki.grave.model.project.EditorConfig;
 import de.dfki.grave.util.ChainedIterator;
-import de.dfki.grave.util.Pair;
 import de.dfki.grave.util.evt.EventDispatcher;
 
 /**
@@ -55,18 +54,12 @@ public final class Node extends EditorComponent implements DocumentContainer {
   private CmdBadge mCmdBadge;
   private Document mDocument;
 
-  //
-  // TODO: move away
-  private final WorkSpace mWorkSpace;
-
   // The name which will be displayed on the node
   private String mDisplayName;
 
   // The color of the node
   // TODO: eventually move computation of color to paint component
   private Color mColor;
-
-  private EditorConfig getEditorConfig() { return mWorkSpace.getEditorConfig(); }
 
   /** For a given set of nodes that are subnodes of the same SuperNode, compute
    *  all edge views that emerge from a node outside the set and end in a node
@@ -134,10 +127,10 @@ public final class Node extends EditorComponent implements DocumentContainer {
     isBasic = !(mDataNode instanceof SuperNode);
 
     // Set initial position
-    Point pos = new Point(mDataNode.getPosition().getXPos(),
-            mDataNode.getPosition().getYPos());
-
-    setBounds(pos.x, pos.y, getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT);
+    setBounds(zoom(mDataNode.getPosition().getXPos()),
+        zoom(mDataNode.getPosition().getYPos()),
+        zoom(getEditorConfig().sNODEWIDTH),
+        zoom(getEditorConfig().sNODEHEIGHT));
 
     mDocument = new ObserverDocument();
     try {
@@ -163,10 +156,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
 
   public Document getDocument() {
     return mDocument;
-  }
-
-  public WorkSpace getWorkSpace() {
-    return mWorkSpace;
   }
 
   public BasicNode getDataNode() {
@@ -305,7 +294,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
   }
 
   public void moveTo(Point newLocation) {
-    Position g = new Position(newLocation.x, newLocation.y);
+    Position g = new Position(unzoom(newLocation.x), unzoom(newLocation.y));
     mDataNode.setPosition(g);
     for (Edge edge : getConnectedEdges()) {
       edge.updateEdgeGraphics();
@@ -356,7 +345,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
    * Returns the center of a node. The location is in the top left corner.
    */
   public Point getCenterPoint() {
-    return mDataNode.getCenter();
+    return zoom(mDataNode.getCenter());
   }
 
   public Iterable<Edge> getConnectedEdges() {
@@ -374,11 +363,15 @@ public final class Node extends EditorComponent implements DocumentContainer {
   // **********************************************************************
 
   public int getNearestFreeDock(Point p) {
-    return mDataNode.getNearestFreeDock(p);
+    return mDataNode.getNearestFreeDock(unzoom(p));
   }
 
   public Point getDockPoint(int which) {
-    return mDataNode.getDockPoint(which, getWidth());
+    // dp contains the zoom factor, it's in getWidth()
+    Point2D dp = mDataNode.getDockPoint(which, getWidth());
+    Point center = zoom(mDataNode.getCenter());
+    center.translate((int)dp.getX(), (int)dp.getY());
+    return center;
   }
 
   /*

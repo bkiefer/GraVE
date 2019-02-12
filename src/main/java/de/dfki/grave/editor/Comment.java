@@ -41,8 +41,6 @@ implements MouseListener, MouseMotionListener {
 
   // edit
   private boolean mEditMode = false;
-  private WorkSpace mWorkSpace;
-  private EditorConfig mEditorConfig;
 
   // image
   private Image mResizeMarker;
@@ -63,7 +61,6 @@ implements MouseListener, MouseMotionListener {
     mAC = AlphaComposite.getInstance(AlphaComposite.XOR, 0.15f);
     mACFull = AlphaComposite.getInstance(AlphaComposite.SRC, 1.0f);
     mWorkSpace = workSpace;
-    mEditorConfig = mWorkSpace.getEditorConfig();
     mDataComment = dataComment;
 
     // resize marker
@@ -71,15 +68,13 @@ implements MouseListener, MouseMotionListener {
 
     // font setup
     mFont = new Font("SansSerif", Font.ITALIC, /* (mWorkSpace != null) ? */
-            mEditorConfig.sWORKSPACEFONTSIZE /* : sBUILDING_BLOCK_FONT_SIZE */);
+            getEditorConfig().sWORKSPACEFONTSIZE /* : sBUILDING_BLOCK_FONT_SIZE */);
+
+    Boundary b = mDataComment.getBoundary();
 
     // size setup
-    Rectangle rect = new Rectangle(mDataComment.getBoundary().getXPos(),
-            mDataComment.getBoundary().getYPos(),
-            mDataComment.getBoundary().getWidth(),
-            mDataComment.getBoundary().getHeight());
-
-    setBounds(rect);
+    setBounds(zoom(b.getXPos()), zoom(b.getYPos()),
+        zoom(b.getWidth()), zoom(b.getHeight()));
     mTextLabel = new JLabel();
     mTextLabel.setOpaque(false);
     mTextLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -118,7 +113,8 @@ implements MouseListener, MouseMotionListener {
 
   public void update() {
 
-    mFont = new Font("SansSerif", Font.ITALIC, mEditorConfig.sWORKSPACEFONTSIZE);
+    mFont = new Font("SansSerif", Font.ITALIC,
+        getEditorConfig().sWORKSPACEFONTSIZE);
     mTextLabel.setFont(mFont);
     mTextEditor.setFont(mFont);
 
@@ -171,7 +167,8 @@ implements MouseListener, MouseMotionListener {
   }
 
   private void setBoundary(Rectangle r) {
-    mDataComment.setBoundary(new Boundary(r.x, r.y, r.width, r.height));
+    mDataComment.setBoundary(
+        new Boundary(unzoom(r.x), unzoom(r.y), unzoom(r.width), unzoom(r.height)));
   }
 
   /** For undo/redo */
