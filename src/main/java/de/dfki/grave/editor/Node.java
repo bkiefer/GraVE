@@ -68,41 +68,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
 
   private EditorConfig getEditorConfig() { return mWorkSpace.getEditorConfig(); }
 
-  /** This copies some subset of node and edge views and their underlying
-   *  models. One basic assumption is that there are no "dangling" edges which
-   *  either start or end at a node outside the given node set.
-   *
-   *  The copied views will be added to the given WorkSpace, and all copied
-   *  node models will be subnodes of the given SuperNode.
-   */
-  public static Pair<Collection<Node>, List<Edge>> copyGraph(WorkSpace workSpace,
-      SuperNode newParent, List<Node> nodeViews, List<Edge> edgeViews) {
-    IDManager mgr = workSpace.getSceneFlowEditor().getIDManager();
-
-    Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
-    Map<Node, Node> origView2copy = new IdentityHashMap<>();
-    for (Node nodeView : nodeViews) {
-      BasicNode n = nodeView.getDataNode();
-      BasicNode cpy = n.deepCopy(mgr, newParent);
-      orig2copy.put(n, cpy);
-      // now create a new Node as view for the copy of n
-      Node newNode = new Node(workSpace, cpy);
-      origView2copy.put(nodeView, newNode);
-    }
-
-    List<Edge> newEdges = new ArrayList<>();
-    for (Edge edgeView : edgeViews) {
-      AbstractEdge e = edgeView.getDataEdge().deepCopy(orig2copy);
-      // now create a new Edge as view for the copy of e
-      // TODO: TRANSLATE TO CURRENT MOUSE POSITION
-      Edge newEdge = new Edge(workSpace, e,
-          origView2copy.get(edgeView.getSourceNode()),
-          origView2copy.get(edgeView.getTargetNode()));
-      newEdges.add(newEdge);
-    }
-    return new Pair<Collection<Node>, List<Edge>>(origView2copy.values(), newEdges);
-  }
-
   /** For a given set of nodes that are subnodes of the same SuperNode, compute
    *  all edge views that emerge from a node outside the set and end in a node
    *  inside the set. nodes must be a subset of the current mNodeSet.

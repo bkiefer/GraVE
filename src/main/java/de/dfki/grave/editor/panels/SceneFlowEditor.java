@@ -62,21 +62,16 @@ public final class SceneFlowEditor extends JPanel {
   //
   private final EditorProject mEditorProject;
 
-  private final SceneFlow mSceneFlow;
-  private final IDManager mIDManager; // manages new IDs for the SceneFlow
-
   private final LinkedList<SuperNode> mActiveSuperNodes;
 
   // The GUI components of the editor
   private final WorkSpacePanel mWorkSpacePanel;
   private final SceneFlowToolBar mSceneFlowToolBar;
-  private final SceneFlowPalettePanel mStaticElementsPanel;
   private final NameEditor mNameEditor;
   private final SceneFlowElementPanel mDynamicElementsPanel;
   private final JPanel mNewElementDisplay;
   private final JLabel mFooterLabel;
   private final JSplitPane mSplitPane;
-  private final JScrollPane mWorkSpaceScrollPane;
   private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
   // Create a sceneflow editor
@@ -86,17 +81,6 @@ public final class SceneFlowEditor extends JPanel {
     mEditorProject = project;
 
     // PREPARE THE VERTICAL SPLIT REGION (NOW USED AS CODE EDITOR)
-    /*
-    final Polygon pUp = new Polygon();
-    pUp.addPoint(1, 4);
-    pUp.addPoint(5, 0);
-    pUp.addPoint(9, 4);
-
-    final Polygon pDown = new Polygon();
-    pDown.addPoint(13, 0);
-    pDown.addPoint(17, 4);
-    pDown.addPoint(21, 0);
-    */
     mSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     mSplitPane.setBorder(BorderFactory.createEmptyBorder());
     mSplitPane.setContinuousLayout(true);
@@ -118,13 +102,7 @@ public final class SceneFlowEditor extends JPanel {
 
             graphics.setColor(UIManager.getColor("Panel.background"));
             graphics.fillRect(0, 0, r.width - 1, r.height);
-//
-//                        // graphics.setColor(new Color(100, 100, 100));
             graphics.fillRect((r.width / 2 - 25), 0, 50, r.height);
-//                        graphics.drawPolygon(pUp);
-//                        graphics.fillPolygon(pUp);
-//                        graphics.drawPolygon(pDown);
-//                        graphics.fillPolygon(pDown);
           }
 
           @Override
@@ -139,16 +117,19 @@ public final class SceneFlowEditor extends JPanel {
       }
     });
     mUndoManager = new UndoManager();
-    mSceneFlow = project.getSceneFlow();
-    mIDManager = new IDManager(mSceneFlow);
+
     mActiveSuperNodes = new LinkedList<SuperNode>();
-    mActiveSuperNodes.addLast(mSceneFlow);
+
+    // TOOLBAR: NORTH ELEMENT
+    mSceneFlowToolBar = new SceneFlowToolBar(this, mEditorProject);
+    setLayout(new BorderLayout());
+    add(mSceneFlowToolBar, BorderLayout.NORTH);
 
     // The center component is the workspace
     mWorkSpacePanel = new WorkSpacePanel(this, mEditorProject);
     mWorkSpacePanel.setTransferHandler(new SceneFlowImage());
 
-    mWorkSpaceScrollPane = new JScrollPane(mWorkSpacePanel);
+    JScrollPane mWorkSpaceScrollPane = new JScrollPane(mWorkSpacePanel);
     mWorkSpaceScrollPane.getVerticalScrollBar().setUI(new WindowsScrollBarUI());
     mWorkSpaceScrollPane.getHorizontalScrollBar().setUI(new WindowsScrollBarUI());
     mWorkSpaceScrollPane.setBorder(BorderFactory.createEtchedBorder());
@@ -156,16 +137,8 @@ public final class SceneFlowEditor extends JPanel {
     // The west component is the workbar
     mFooterLabel = new JLabel();
     mDynamicElementsPanel = new SceneFlowElementPanel(mEditorProject);
-    mStaticElementsPanel = new SceneFlowPalettePanel();
+    SceneFlowPalettePanel mStaticElementsPanel = new SceneFlowPalettePanel();
     mNameEditor = new NameEditor();
-
-    // TOOLBAR: NORTH ELEMENT
-    mSceneFlowToolBar = new SceneFlowToolBar(this, mEditorProject);
-    // TODO: adding not explicit but via refresh method
-    mSceneFlowToolBar.addPathComponent(getSceneFlow()); // ADD FIRST NODE
-    //
-    setLayout(new BorderLayout());
-    add(mSceneFlowToolBar, BorderLayout.NORTH);
 
     mNewElementDisplay = new JPanel();
     mNewElementDisplay.setLayout(new BoxLayout(mNewElementDisplay, BoxLayout.Y_AXIS));
@@ -210,10 +183,6 @@ public final class SceneFlowEditor extends JPanel {
 
   }
 
-  public void setViewPosition(Point p) {
-    mWorkSpaceScrollPane.getViewport().setViewPosition(p);
-  }
-
   /**
    */
   public void toggleElementEditor() {
@@ -227,18 +196,12 @@ public final class SceneFlowEditor extends JPanel {
       mSplitPane.setDividerLocation(mEditorProject.getEditorConfig()
               .sELEMENTS_DIVIDER_LOCATION);
     }
-      mEditorProject.getEditorConfig().save(mEditorProject.getProjectFile()
-              .getParentFile());
-
+    mEditorProject.getEditorConfig().save(mEditorProject.getProjectFile()
+        .getParentFile());
   }
 
   public void expandTree() {
     mDynamicElementsPanel.expandTree();
-  }
-
-
-  public boolean isElementEditorVisible() {
-    return mNewElementDisplay.isVisible();
   }
 
   public boolean isElementDisplayVisible() {
@@ -247,10 +210,6 @@ public final class SceneFlowEditor extends JPanel {
 
   public SceneFlow getSceneFlow() {
     return mEditorProject.getSceneFlow();
-  }
-
-  public IDManager getIDManager() {
-    return mIDManager;
   }
 
   public WorkSpacePanel getWorkSpace() {
@@ -281,7 +240,7 @@ public final class SceneFlowEditor extends JPanel {
   }
 
   public void setMessageLabelText(String value) {
-      mFooterLabel.setText(value);
+    mFooterLabel.setText(value);
   }
 
   public void close() {
@@ -294,10 +253,6 @@ public final class SceneFlowEditor extends JPanel {
     return mSplitPane;
   }
 
-  public JLabel getFooterLabel() {
-    return mFooterLabel;
-  }
-
   public final void refresh() {
     // Refresh editor toolbar
     mSceneFlowToolBar.refresh();
@@ -307,10 +262,7 @@ public final class SceneFlowEditor extends JPanel {
 
   private class SceneFlowImage extends TransferHandler implements Transferable {
 
-    private final DataFlavor flavors[]
-            = {
-              DataFlavor.imageFlavor
-            };
+    private final DataFlavor flavors[] = { DataFlavor.imageFlavor };
     private Image image;
 
     @Override

@@ -22,7 +22,6 @@ import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.dialog.AboutDialog;
 import de.dfki.grave.editor.dialog.OptionsDialog;
 import de.dfki.grave.editor.dialog.QuitDialog;
-import de.dfki.grave.model.flow.BasicNode;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.model.project.ProjectConfig;
 import de.dfki.grave.util.ios.ResourceLoader;
@@ -254,10 +253,10 @@ public final class EditorInstance extends JFrame implements ChangeListener {
       GraphicsConfiguration[] gc = gd.getConfigurations();
 
       for (int i = 0; i < gc.length; i++) {
-
         // check position
-        if (((editorPosition.x > gc[i].getBounds().x) && (gc[i].getBounds().width > editorSize.width))
-                && ((editorPosition.y > gc[i].getBounds().y)
+        if (((editorPosition.x > gc[i].getBounds().x)
+            && (gc[i].getBounds().width > editorSize.width))
+            && ((editorPosition.y > gc[i].getBounds().y)
                 && (gc[i].getBounds().height > editorSize.height))) {
 
           // component can be place there
@@ -277,11 +276,6 @@ public final class EditorInstance extends JFrame implements ChangeListener {
     return (ProjectEditor) mProjectEditors.getSelectedComponent();
   }
 
-  ////////////////////////////////////////////////////////////////////////////
-  // Get the current project editor
-  public final JTabbedPane getProjectEditors() {
-    return mProjectEditors;
-  }
 
   public final boolean newProject(String projectName) {
     // Create a new project config, and new EditorProject
@@ -295,8 +289,7 @@ public final class EditorInstance extends JFrame implements ChangeListener {
 
     // Add the new project editor
     addProjectTab(projectName, editor);
-//        mProjectEditors.addTab(projectName, editor);
-//        mProjectEditors.setSelectedComponent(editor);
+
     // Show the editor projects now
     if (mProjectEditors.getTabCount() == 1) {
       // Show the project editors
@@ -402,7 +395,6 @@ public final class EditorInstance extends JFrame implements ChangeListener {
       // Add the project editor to list of project
       // editors and select it in the tabbed pane
       addProjectTab(project.getProjectName(), projectEditor);
-//            mProjectEditors.setSelectedComponent(projectEditor);
       // Update the recent project list
       updateRecentProjects(project);
       // Print some info message
@@ -479,7 +471,6 @@ public final class EditorInstance extends JFrame implements ChangeListener {
     JEditorPane ep = new JEditorPane();
     ep.setEditable(false);
     mProjectEditors.addTab(null, new JScrollPane(ep));
-    ;
 
     JLabel tabLabel = new JLabel(tabName);
 

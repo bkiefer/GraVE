@@ -40,8 +40,7 @@ import de.dfki.grave.util.evt.EventDispatcher;
  * @author Gregor Mehlmann
  */
 @SuppressWarnings("serial")
-public class Edge extends EditorComponent
-  implements MouseListener, DocumentContainer {
+public class Edge extends EditorComponent implements DocumentContainer {
   /** MIN POSITION OF THE CONTROLPOINTS OF THE EDGE */
 
   private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
@@ -124,11 +123,6 @@ public class Edge extends EditorComponent
 
     update();
     setVisible(true);
-  }
-
-  /** Does this edge point back to the source node? */
-  private boolean isLoop() {
-    return mTargetNode == mSourceNode;
   }
 
   @Override

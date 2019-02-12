@@ -9,13 +9,13 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
-import de.dfki.grave.editor.CmdBadge;
 import de.dfki.grave.editor.DocumentContainer;
-import de.dfki.grave.editor.Edge;
-import de.dfki.grave.editor.Node;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.ios.ResourceLoader;
 
+/** This class provides the code editing regions in the bottom part of the
+ *  window
+ */
 @SuppressWarnings("serial")
 public class CodeEditor extends JPanel {
 

@@ -19,10 +19,7 @@ import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.editor.event.WorkSpaceSelectedEvent;
 import de.dfki.grave.editor.util.grid.GridRectangle;
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.CommentBadge;
-import de.dfki.grave.model.flow.SuperNode;
+import de.dfki.grave.model.flow.*;
 import de.dfki.grave.model.flow.geom.Boundary;
 import de.dfki.grave.model.flow.geom.Position;
 import de.dfki.grave.model.project.EditorConfig;
@@ -70,6 +67,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private final SceneFlowEditor mSceneFlowEditor;
   private final EditorProject mProject;
 
+  private final SceneFlow mSceneFlow;
+  private final IDManager mIDManager; // manages new IDs for the SceneFlow
+
   /**
    *
    *
@@ -77,6 +77,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   protected WorkSpace(SceneFlowEditor sceneFlowEditor, EditorProject project) {
     mSceneFlowEditor = sceneFlowEditor;
     mProject = project;
+    mSceneFlow = mProject.getSceneFlow();
+    mSceneFlowEditor.addActiveSuperNode(mSceneFlow);
+    mIDManager = new IDManager(mSceneFlow);
     mGridManager = new GridManager(this, getSuperNode());
 
     // init layout
@@ -635,20 +638,16 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   // actions for nodes
   // ######################################################################
 
-  /** Create a new node model and view, at the given location */
+  /** Create a new node model and view, at the given location, and add it
+   *  to the workspace
+   */
   public Node createNode(Point point, BasicNode model) {
     point = mGridManager.getNodeLocation(point);
     Position p = new Position(point.x, point.y);
-    model.init(mSceneFlowEditor.getIDManager(), p, getSuperNode());
-    return new Node(this, model);
-  }
-
-  /** Add node n, which was just created. Avoid copy on add.
-   * @param n the new node to add
-   */
-  public void addNewNode(Node n) {
-    // upon creation, n has got the right position already!
-    addToWorkSpace(n);
+    model.init(mIDManager, p, getSuperNode());
+    Node node = new Node(this, model);
+    addToWorkSpace(node);
+    return node;
   }
 
   /** Change type of node: BasicNode <-> SuperNode
@@ -659,13 +658,45 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     BasicNode result = null;
     Collection<Edge> incoming =
         Node.computeIncomingEdges(new ArrayList<Node>(){{add(node);}});
-    if ((result = node.changeType(mSceneFlowEditor.getIDManager(), incoming
-                                  , changeTo))
+    if ((result = node.changeType(mIDManager, incoming , changeTo))
         == null) {
       // complain: operation not legal
       setMessageLabelText("SuperNode contains Nodes: Type change not possible");
     }
     return result;
+  }
+
+  /** This copies some subset of node and edge views and their underlying
+   *  models. One basic assumption is that there are no "dangling" edges which
+   *  either start or end at a node outside the given node set.
+   *
+   *  The copied views will be added to the given WorkSpace, and all copied
+   *  node models will be subnodes of the given SuperNode.
+   */
+  public Pair<Collection<Node>, List<Edge>> copyGraph(
+      List<Node> nodeViews, List<Edge> edgeViews) {
+    SuperNode newParent = getSuperNode();
+    Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
+    Map<Node, Node> origView2copy = new IdentityHashMap<>();
+    for (Node nodeView : nodeViews) {
+      BasicNode n = nodeView.getDataNode();
+      BasicNode cpy = n.deepCopy(mIDManager, newParent);
+      orig2copy.put(n, cpy);
+      // now create a new Node as view for the copy of n
+      Node newNode = new Node(this, cpy);
+      origView2copy.put(nodeView, newNode);
+    }
+
+    List<Edge> newEdges = new ArrayList<>();
+    for (Edge edgeView : edgeViews) {
+      AbstractEdge e = edgeView.getDataEdge().deepCopy(orig2copy);
+      // now create a new Edge as view for the copy of e
+      Edge newEdge = new Edge(this, e,
+          origView2copy.get(edgeView.getSourceNode()),
+          origView2copy.get(edgeView.getTargetNode()));
+      newEdges.add(newEdge);
+    }
+    return new Pair<Collection<Node>, List<Edge>>(origView2copy.values(), newEdges);
   }
 
   /** paste nodes from the clipboard
@@ -686,8 +717,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     List<Node> nodes = mClipboard.getNodes();
     List<Edge> edges = mClipboard.getEdges();
     if (mClipboard.needsCopy(this)) {
-      Pair<Collection<Node>, List<Edge>> toAdd =
-          Node.copyGraph(this, getSuperNode(), nodes, edges);
+      Pair<Collection<Node>, List<Edge>> toAdd = copyGraph(nodes, edges);
       if (mousePosition != null) {
         // snap to grid: currently not.
         //mousePosition = mGridManager.getClosestGridPoint(mousePosition);
@@ -708,35 +738,21 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Remove the nodes in the given collection.
    *  This is only legal if none of the selected nodes is a start node!
    *
-   *  This must first collect all edges pointing into the node set from the
-   *  outside and save them for an undo, remove them from the view and the
-   *  model, and then remove the nodes and all outgoing edges from these nodes
-   *  from the view and model graph.
+   *  This collects three types of edges: internal, incoming, and outgoing
+   *  edges, which is defined relative to the set of nodes given as input.
+   *  Incoming edges have to be removed and saved for undo, the rest disappears
+   *  anyway when the nodes are removed from the graph
    *
    *  If it's a cut operation, not a delete, put the nodes in the set into the
    *  clipboard.
    */
   public Triple<Collection<Edge>, Collection<Node>, Collection<Edge>>
   removeNodes(boolean isCutOperation, Collection<Node> nodes) {
-    /*
-    // Remove all edges that start at a node outside the given set of
-    // nodes, and end inside this set
-    Collection<Edge> incomingEdges = Node.computeIncomingEdges(nodes);
-    removeEdges(incomingEdges);
-    //List<Edge> emergingEdges = removeDisconnectedNodes(nodes);
-    * Remove the nodes in the given collection and all outgoing edges from these
-     *  nodes from the view as well as the model. The model edges stay unchanged
-     *  in the removed nodes.
-     *
-     *  This is only legal if none of the selected nodes is a start node, and
-     *  no edges are pointing into the node set from the outside. To achieve
-     *  this in the general case, call removeIncomingEdges(nodes) first.
-     */
-    //private List<Edge> removeDisconnectedNodes(Iterable<Node> nodes) {
-    // A list of edges starting at a node in nodes
-
+    // Edges pointing from the set to the outside
     List<Edge> emergingEdges = new ArrayList<>();
+    // Edges between nodes in the set
     List<Edge> internalEdges = new ArrayList<>();
+    // Edges pointing from the outside into the set
     List<Edge> incomingEdges = new ArrayList<>();
     SuperNode current = getSuperNode();
     for (Node vn : nodes) {
