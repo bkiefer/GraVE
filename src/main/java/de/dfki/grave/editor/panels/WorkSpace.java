@@ -18,7 +18,6 @@ import de.dfki.grave.editor.event.ClearCodeEditorEvent;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.editor.event.WorkSpaceSelectedEvent;
-import de.dfki.grave.editor.util.grid.GridRectangle;
 import de.dfki.grave.model.flow.*;
 import de.dfki.grave.model.flow.geom.Boundary;
 import de.dfki.grave.model.flow.geom.Position;
@@ -48,7 +47,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   // Elements to draw
   private final Set<Node> mNodeSet = new HashSet<>();
-  //private final Set<Edge> mEdgeSet = new HashSet<>();
   private final Set<Comment> mCmtSet = new HashSet<>();
 
   private boolean snapToGrid = true;
@@ -101,21 +99,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   //
   public void refresh() {
     mObservable.update(null);
-
-    // rebuild node position
-    mGridManager.update();
-
-    /*
-    // TODO: THIS SEEMS FISHY. IF A NODE HAS A LOCATION, WHY SHOULD IT BE
-    // RELOCATED AT REFRESH?
-    for (Node node : mNodeSet) {
-      Point p = mGridManager.getNodeLocation(node.getLocation());
-
-      node.resetLocation(p);
-      node.getDataNode().setPosition(new Position(p.x, p.y));
-    }
-    */
-
     revalidate();
     repaint(100);
   }
@@ -126,7 +109,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   }
 
   /**
-   *
    *
    */
   @Override
@@ -167,10 +149,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Show a status message on the editor */
   public void setMessageLabelText(String s) {
     mSceneFlowEditor.setMessageLabelText(s);
-  }
-
-  public GridRectangle[][] getTransitionArea() {
-    return mGridManager.getmTransitionArea();
   }
 
   public void clearClipBoard() {
@@ -215,6 +193,29 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     getEditorConfig().sZOOM_FACTOR = mZoomFactor;
     //saveEditorConfig(); // TODO: activate
     refreshAll();
+  }
+
+  public int zoom(int val) {
+    return (int)(val * mZoomFactor);
+  }
+
+  public int unzoom(int val) {
+    return (int)(val / mZoomFactor);
+  }
+
+  public Point zoom(Point val) {
+    return new Point((int)(val.x * mZoomFactor),
+        (int)(val.y * mZoomFactor));
+  }
+
+  public Point unzoom(Point val) {
+    return new Point((int)(val.x / mZoomFactor),
+        (int)(val.y / mZoomFactor));
+  }
+
+  public Point zoom(Position val) {
+    return new Point((int)(val.getXPos() * mZoomFactor),
+        (int)(val.getYPos() * mZoomFactor));
   }
 
   private class EdgeIterator implements Iterator<Edge> {
@@ -269,7 +270,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     removeAll();
 
     // Create a new Gridmanager for the workspace
-    mGridManager.update();
+    mGridManager.clear();
     revalidate();
     mEventCaster.convey(new ClearCodeEditorEvent(this));
     repaint(100);
@@ -302,7 +303,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private void showNewSuperNode() {
     clearCurrentWorkspace();
     mEventCaster.convey(new ElementSelectedEvent(null));
-    mGridManager.update();
     showCurrentWorkSpace();
   }
 
@@ -353,12 +353,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Add views for all the (sub)node models in this workspace's SuperNode */
   private void showNodesOnWorkSpace() {
     for (BasicNode n : getSuperNode().getNodes()) {
-      // TODO: FISHY FISHY FISHY: SNAP GRID ON LOAD?
-      /*
-      Point p = mGridManager.getNodeLocation(
-          new Point(n.getPosition().getXPos(), n.getPosition().getYPos()));
-      n.setPosition(new Position(p.x, p.y));
-      */
       addToWorkSpace(new Node(this, n));
     }
   }
@@ -393,7 +387,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   public void moveTo(Node n, Point loc) {
     if (snapToGrid) {
-      mGridManager.freeGridPosition(n.getLocation());
+      mGridManager.releaseGridPosition(n.getLocation());
     }
     n.moveTo(loc);
   }
@@ -407,7 +401,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
       for (Node n : nodes) {
         Point nodeLoc = n.getLocation();
         if (snapToGrid)
-          mGridManager.freeGridPosition(nodeLoc);
+          mGridManager.releaseGridPosition(nodeLoc);
         mNodeStartPositions.put(n, nodeLoc);
       }
     }
@@ -472,7 +466,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     Graphics2D g2d = (Graphics2D) g;
 
     super.paintComponent(g);
-    mGridManager.drawGrid(g2d);
+    mGridManager.drawGrid(g2d, this.getVisibleRect());
 
     Color indicator;
     switch (getSuperNode().getFlavour()) {
@@ -524,7 +518,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Removes node view from workspace, no change in model */
   private void removeFromWorkSpace(Node n) {
     mNodeSet.remove(n);
-    mGridManager.freeGridPosition(n.getLocation());
+    mGridManager.releaseGridPosition(n.getLocation());
     // remove from Panel
     super.remove(n);
     super.remove(n.getCmdBadge());
@@ -671,7 +665,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   public Node createNode(Point point, BasicNode model) {
     if (snapToGrid)
       point = mGridManager.getNodeLocation(point);
-    Position p = new Position(point.x, point.y);
+    Position p = new Position(unzoom(point.x), unzoom(point.y));
     return new Node(this, model.createNode(mIDManager, p, getSuperNode()));
   }
 

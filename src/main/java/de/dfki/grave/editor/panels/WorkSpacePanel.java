@@ -271,7 +271,11 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     deselectAll();
   }
 
-  /** To provide the functionality to the global menu bar */
+  /* ######################################################################
+   * Provide functionality for the global menu bar
+   * ###################################################################### */
+
+  /** Copy the selected nodes to the clipboard, if any */
   public void copySelectedNodes() {
     if (mSelectedNodes.size() == 0) return;
     CopyNodesAction action = new CopyNodesAction(this, mSelectedNodes);
@@ -280,7 +284,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     action.run();
   }
 
-  /** To provide the functionality to the global menu bar */
+  /** Cut the selected nodes and add them to clipboard, if any */
   public void cutSelectedNodes() {
     if (mSelectedNodes.size() == 0) return;
     RemoveNodesAction action = new RemoveNodesAction(this, mSelectedNodes, true);
@@ -289,14 +293,17 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     action.run();
   }
 
-  /** To provide the functionality to the global menu bar:
-   *  Paste nodes in the upper left corner
-   */
+  /** Paste nodes in the upper left corner */
   public void pasteNodesFromClipboard() {
     PasteNodesAction action = new PasteNodesAction(this, new Point(0, 0));
     action.run();
   }
 
+  /* ######################################################################
+   * End provide functionality for the global menu bar
+   * ###################################################################### */
+
+  /** Add an item with name and action a to the menu m */
   public static void addItem(JPopupMenu m, String name, EditorAction a) {
     JMenuItem item = new JMenuItem(name);
     item.addActionListener(a);

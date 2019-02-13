@@ -22,7 +22,6 @@ import de.dfki.grave.editor.util.grid.pathfinding.Path;
  */
 public class NormalizeEdgeAction extends EditorAction {
 
-  private WorkSpace mWorkSpace = null;
   private Edge mGUIEdge = null;
   protected GridRectangle gridSource = null;
   protected GridRectangle gridDestination = null;
@@ -38,6 +37,7 @@ public class NormalizeEdgeAction extends EditorAction {
     mTargetGUINode = mGUIEdge.getTargetNode();
   }
 
+  /*
   public void recalculateWeight() {
     mWorkSpace.getGridManager().resetAllGridWeight();
     for (de.dfki.grave.editor.Edge edge : mWorkSpace.getEdges()) {
@@ -183,7 +183,7 @@ public class NormalizeEdgeAction extends EditorAction {
         mTargetGUINodeDockPoint = mTargetGUINode.connectEdgeAtTargetNode(mGUIEdge,
                 new Point(targetDockingPoint.getIntersectionX(), targetDockingPoint.getIntersectionY()));
       }
-       */
+       * /
       mWorkSpace.add(mGUIEdge);
       mWorkSpace.revalidate();
       mWorkSpace.repaint(100);
@@ -252,12 +252,12 @@ public class NormalizeEdgeAction extends EditorAction {
     }
 
     return sumWeight;
-  }
+  }*/
 
   @Override
   protected void doIt() {
-    recalculateWeight();
-    setEdgePath();
+    //recalculateWeight();
+    //setEdgePath();
   }
 
   @Override

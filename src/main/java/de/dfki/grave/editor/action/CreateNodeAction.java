@@ -1,7 +1,6 @@
 package de.dfki.grave.editor.action;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import de.dfki.grave.editor.Node;

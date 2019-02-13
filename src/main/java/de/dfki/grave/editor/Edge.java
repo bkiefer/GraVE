@@ -444,13 +444,13 @@ public class Edge extends EditorComponent implements DocumentContainer {
       // compute vector from dock point to p (relative ctrls)
       Point dock = mSourceNode.getDockPoint(mDataEdge.getSourceDock());
       p.translate(-dock.x, -dock.y);
-      new MoveEdgeCtrlAction(mWorkSpace, this, true, unzoom(p)).run();
+      new MoveEdgeCtrlAction(mWorkSpace, this, true, mWorkSpace.unzoom(p)).run();
       break;
     }
     case EdgeArrow.C2: {
       Point dock = mTargetNode.getDockPoint(mDataEdge.getTargetDock());
       p.translate(-dock.x, -dock.y);
-      new MoveEdgeCtrlAction(mWorkSpace, this, false, unzoom(p)).run();
+      new MoveEdgeCtrlAction(mWorkSpace, this, false, mWorkSpace.unzoom(p)).run();
       break;
     }
     }
@@ -552,11 +552,11 @@ public class Edge extends EditorComponent implements DocumentContainer {
 
   /** Absolute position of edge start control point */
   public Point getStartCtrl() {
-    return Geom.add(getStart(), zoom(mDataEdge.getSourceCtrlPoint()));
+    return Geom.add(getStart(), mWorkSpace.zoom(mDataEdge.getSourceCtrlPoint()));
   }
 
   /** Absolute position of edge end control point */
   public Point getEndCtrl() {
-    return Geom.add(getEnd(), zoom(mDataEdge.getTargetCtrlPoint()));
+    return Geom.add(getEnd(), mWorkSpace.zoom(mDataEdge.getTargetCtrlPoint()));
   }
 }

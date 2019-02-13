@@ -73,8 +73,8 @@ implements MouseListener, MouseMotionListener {
     Boundary b = mDataComment.getBoundary();
 
     // size setup
-    setBounds(zoom(b.getXPos()), zoom(b.getYPos()),
-        zoom(b.getWidth()), zoom(b.getHeight()));
+    setBounds(mWorkSpace.zoom(b.getXPos()), mWorkSpace.zoom(b.getYPos()),
+        mWorkSpace.zoom(b.getWidth()), mWorkSpace.zoom(b.getHeight()));
     mTextLabel = new JLabel();
     mTextLabel.setOpaque(false);
     mTextLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -168,7 +168,8 @@ implements MouseListener, MouseMotionListener {
 
   private void setBoundary(Rectangle r) {
     mDataComment.setBoundary(
-        new Boundary(unzoom(r.x), unzoom(r.y), unzoom(r.width), unzoom(r.height)));
+        new Boundary(mWorkSpace.unzoom(r.x), mWorkSpace.unzoom(r.y),
+            mWorkSpace.unzoom(r.width), mWorkSpace.unzoom(r.height)));
   }
 
   /** For undo/redo */

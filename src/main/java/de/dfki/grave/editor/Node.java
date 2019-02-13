@@ -126,11 +126,11 @@ public final class Node extends EditorComponent implements DocumentContainer {
 
     isBasic = !(mDataNode instanceof SuperNode);
 
-    // Set initial position
-    setBounds(zoom(mDataNode.getPosition().getXPos()),
-        zoom(mDataNode.getPosition().getYPos()),
-        zoom(getEditorConfig().sNODEWIDTH),
-        zoom(getEditorConfig().sNODEHEIGHT));
+    // Set initial position and size
+    setBounds(mWorkSpace.zoom(mDataNode.getPosition().getXPos()),
+        mWorkSpace.zoom(mDataNode.getPosition().getYPos()),
+        mWorkSpace.zoom(getEditorConfig().sNODEWIDTH),
+        mWorkSpace.zoom(getEditorConfig().sNODEHEIGHT));
 
     mDocument = new ObserverDocument();
     try {
@@ -294,7 +294,8 @@ public final class Node extends EditorComponent implements DocumentContainer {
   }
 
   public void moveTo(Point newLocation) {
-    Position g = new Position(unzoom(newLocation.x), unzoom(newLocation.y));
+    Position g = new Position(mWorkSpace.unzoom(newLocation.x),
+        mWorkSpace.unzoom(newLocation.y));
     mDataNode.setPosition(g);
     for (Edge edge : getConnectedEdges()) {
       edge.updateEdgeGraphics();
@@ -341,11 +342,12 @@ public final class Node extends EditorComponent implements DocumentContainer {
   }
 
 
-  /**
-   * Returns the center of a node. The location is in the top left corner.
+  /** Returns the center of a node, in zoomed workspace coordinates.
+   *
+   *  The location is in the top left corner.
    */
   public Point getCenterPoint() {
-    return zoom(mDataNode.getCenter());
+    return mWorkSpace.zoom(mDataNode.getCenter());
   }
 
   public Iterable<Edge> getConnectedEdges() {
@@ -362,14 +364,18 @@ public final class Node extends EditorComponent implements DocumentContainer {
   // Dock point functions
   // **********************************************************************
 
+  /** Return the ID of a free dock point closest to p, which is in zoomed
+   *  workspace coordinates.
+   */
   public int getNearestFreeDock(Point p) {
-    return mDataNode.getNearestFreeDock(unzoom(p));
+    return mDataNode.getNearestFreeDock(mWorkSpace.unzoom(p));
   }
 
+  /** Return the dock point for the given ID, in zoomed workspace coordinates */
   public Point getDockPoint(int which) {
     // dp contains the zoom factor, it's in getWidth()
     Point2D dp = mDataNode.getDockPoint(which, getWidth());
-    Point center = zoom(mDataNode.getCenter());
+    Point center = mWorkSpace.zoom(mDataNode.getCenter());
     center.translate((int)dp.getX(), (int)dp.getY());
     return center;
   }
