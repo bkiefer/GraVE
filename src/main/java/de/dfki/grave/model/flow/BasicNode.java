@@ -84,20 +84,29 @@ public class BasicNode  {
     NONE, ENODE, TNODE, CNODE, PNODE, INODE, FNODE
   };
 
-  public BasicNode() {
-  }
+  public BasicNode() {}
 
-  /** plain initialization of new BasicNode, with no other side effects in the
-   *  graph.
+  /** helper method to get new BasicNode, with no other side effects in the
+   *  graph beyond the node being added to the super node s, and it being the
+   *  start node in case it's the first node added to s.
    */
-  public void init(IDManager mgr, Position p, SuperNode s) {
-    mNodeId = mNodeName = mgr.getNextFreeID(this);
+  protected BasicNode init(String newId, Position p, SuperNode s) {
+    mNodeId = mNodeName = newId;
     mPosition = p;
     mParentNode = s;
     if (mParentNode.mSuperNodeList.isEmpty() && mParentNode.mNodeList.isEmpty()) {
       mParentNode.setStartNode(this);
     }
     mParentNode.mNodeList.add(this);
+    return this;
+  }
+
+  /** factory method to get new BasicNode, with no other side effects in the
+   *  graph beyond the node being added to the super node s, and it being the
+   *  start node in case it's the first node added to s.
+   */
+  public BasicNode createNode(IDManager mgr, Position p, SuperNode s) {
+    return new BasicNode().init(mgr.getNextFreeID(this), p, s);
   }
 
   protected void copyBasicFields(BasicNode node) {

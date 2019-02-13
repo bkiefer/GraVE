@@ -47,15 +47,9 @@ public class SuperNode extends BasicNode {
     copyBasicFields(node);
   }
 
-  /** Initialize a new SuperNode from the GUI */
-  public void init(IDManager mgr, Position pos, SuperNode s) {
-    mNodeId = mNodeName = mgr.getNextFreeID(this);
-    mPosition = pos;
-    mParentNode = s;
-    if (mParentNode.mSuperNodeList.isEmpty() && mParentNode.mNodeList.isEmpty()) {
-      mParentNode.setStartNode(this);
-    }
-    mParentNode.mSuperNodeList.add(this);
+  /** Get a new SuperNode from the GUI */
+  public BasicNode createNode(IDManager mgr, Position p, SuperNode s) {
+    return new SuperNode().init(mgr.getNextFreeID(this), p, s);
   }
 
   @XmlTransient

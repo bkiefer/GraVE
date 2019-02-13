@@ -555,8 +555,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   }
 
 
-
-
   /** Helper function, adjusting the positions of node views and models
    *  such that the center of the covered area is at the given position.
    */
@@ -662,6 +660,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   // actions for nodes
   // ######################################################################
 
+  /** Add a node, view only */
+  public void addNode(Node n) {
+    addToWorkSpace(n);
+  }
+
   /** Create a new node model and view, at the given location, and add it
    *  to the workspace
    */
@@ -669,10 +672,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     if (snapToGrid)
       point = mGridManager.getNodeLocation(point);
     Position p = new Position(point.x, point.y);
-    model.init(mIDManager, p, getSuperNode());
-    Node node = new Node(this, model);
-    addToWorkSpace(node);
-    return node;
+    return new Node(this, model.createNode(mIDManager, p, getSuperNode()));
   }
 
   /** Change type of node: BasicNode <-> SuperNode

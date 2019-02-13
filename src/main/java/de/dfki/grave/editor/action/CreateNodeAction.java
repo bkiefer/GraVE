@@ -1,8 +1,8 @@
 package de.dfki.grave.editor.action;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.panels.WorkSpace;
@@ -13,7 +13,7 @@ import de.dfki.grave.editor.panels.WorkSpace;
  */
 public class CreateNodeAction extends EditorAction {
 
-  private Collection<Node> mNode = new ArrayList<Node>();
+  private List<Node> mNode = new ArrayList<Node>();
 
   public CreateNodeAction(WorkSpace workSpace, Node node) {
     mWorkSpace = workSpace;
@@ -25,7 +25,7 @@ public class CreateNodeAction extends EditorAction {
   }
 
   protected void doIt() {
-    mWorkSpace.pasteNodesAndEdges(mNode, Collections.emptyList());
+    mWorkSpace.addNode(mNode.get(0));
   }
 
   protected String msg() { return "Creation Of Node"; }

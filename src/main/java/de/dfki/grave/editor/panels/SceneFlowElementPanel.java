@@ -19,11 +19,9 @@ import javax.swing.tree.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.MainGrave;
 import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.TreeEntry;
 import de.dfki.grave.editor.event.TreeEntrySelectedEvent;
-import de.dfki.grave.model.flow.SceneFlow;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.evt.EventDispatcher;
 
