@@ -413,6 +413,20 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     mSelectedComment.mouseClicked(event);
   }
 
+  private Comment findCommentAt(Point p) {
+    // We'll try the selected edge first
+    if (mSelectedComment != null && mSelectedComment.containsPoint(p)) {
+      return mSelectedComment;
+    }
+    // look if mouse click was on a edge
+    for (Comment c : getComments()) {
+      if (c.containsPoint(p)) {
+        return c;
+      }
+    }
+    return null;
+  }
+
   private Edge findEdgeAt(Point p) {
     // We'll try the selected edge first
     if (mSelectedEdge != null && mSelectedEdge.containsPoint(p)) {
@@ -508,26 +522,22 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       return;
     }
 
-    Object o = SwingUtilities.getDeepestComponentAt(this,
-        mLastMousePos.x, mLastMousePos.y);
-
     if (mAreaSelection == null) {
       // get point as possible point for area selection!
       mAreaSelection = new Rectangle2D.Double(event.getX(), event.getY(), 0, 0);
     }
 
-    if (o instanceof Node) {
+    Comment c;
+    Node node;
+    if ((node = findNodeAtPoint(event.getPoint())) != null) {
       if (event.getButton() == MouseEvent.BUTTON1
           && (event.getModifiers() & MouseEvent.CTRL_MASK) == 0) {
-        Node node = (Node)o;
         mDoAreaSelection = false;
         if (!mSelectedNodes.contains(node)) {
           selectSingleNode(node);
         }
       }
-    } else if (o instanceof JComponent
-        && ((JComponent)o).getParent() instanceof Comment) {
-      Comment c = (Comment)((JComponent)o).getParent();
+    } else if ((c = findCommentAt(event.getPoint())) != null) {
       if (mSelectedComment == null && c != mSelectedComment) {
         selectComment(c);
       }
