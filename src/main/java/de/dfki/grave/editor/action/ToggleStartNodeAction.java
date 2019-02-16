@@ -1,6 +1,5 @@
 package de.dfki.grave.editor.action;
 
-import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.BasicNode;
 
@@ -10,23 +9,23 @@ import de.dfki.grave.model.flow.BasicNode;
 public class ToggleStartNodeAction extends EditorAction {
 
   private BasicNode oldStartNode;
-  private Node mGUINode;
+  private BasicNode mNode;
 
-  public ToggleStartNodeAction(WorkSpace workSpace, Node node) {
+  public ToggleStartNodeAction(WorkSpace workSpace, BasicNode node) {
     mWorkSpace = workSpace;
-    mGUINode = node;
-    oldStartNode = mGUINode.getDataNode().getParentNode().getStartNode();
+    mNode = node;
+    oldStartNode = mNode.getParentNode().getStartNode();
   }
 
   @Override
   protected void doIt() {
-    BasicNode mDataNode = mGUINode.getDataNode();
+    BasicNode mDataNode = mNode;
     mDataNode.getParentNode().setStartNode(mDataNode);
   }
 
   @Override
   public void undoIt() {
-    BasicNode mDataNode = mGUINode.getDataNode();
+    BasicNode mDataNode = mNode;
     mDataNode.getParentNode().setStartNode(oldStartNode);
   }
 

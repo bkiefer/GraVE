@@ -31,7 +31,6 @@ import de.dfki.grave.editor.panels.EditorInstance;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.*;
 import de.dfki.grave.model.flow.geom.Geom;
-import de.dfki.grave.model.project.EditorConfig;
 import de.dfki.grave.util.evt.EventDispatcher;
 
 
@@ -130,14 +129,6 @@ public class Edge extends EditorComponent implements DocumentContainer {
     return mDataEdge;
   }
 
-  public Node getSourceNode() {
-    return mSourceNode;
-  }
-
-  public Node getTargetNode() {
-    return mTargetNode;
-  }
-
   @Override
   public String getName() {
     return name() + "(" + mSourceNode.getDataNode().getId() + "->" + mTargetNode.getDataNode().getId() + ")";
@@ -149,24 +140,6 @@ public class Edge extends EditorComponent implements DocumentContainer {
 
   public String getDescription() {
     return mDataEdge != null ? mDataEdge.getContent() : null;
-  }
-
-  /*
-  public void setDescription(String s) {
-    mDataEdge.setContent(s);
-    mTextArea.setText(s);
-  }*/
-
-  /** Disconnect this edge view from the node view it is connected to */
-  public void disconnect() {
-    mSourceNode.disconnectSource(this);
-    mTargetNode.disconnectTarget(this);
-  }
-
-  /** Connect this edge view to the node view it should be connected to */
-  public void connect() {
-    mSourceNode.connectSource(this);
-    mTargetNode.connectTarget(this);
   }
 
   public boolean containsPoint(Point p) {
@@ -314,10 +287,10 @@ public class Edge extends EditorComponent implements DocumentContainer {
   public void showContextMenu(MouseEvent evt, Edge edge) {
     JPopupMenu pop = new JPopupMenu();
     //addItem(pop, "Modify", new ModifyEdgeAction(edge, this));
-    addItem(pop, "Delete", new RemoveEdgeAction(mWorkSpace, edge));
-    addItem(pop, "Shortest Path", new ShortestEdgeAction(mWorkSpace, edge));
-    addItem(pop, "Straighten", new StraightenEdgeAction(mWorkSpace, edge));
-    addItem(pop, "Smart Path", new NormalizeEdgeAction(mWorkSpace, edge));
+    addItem(pop, "Delete", new RemoveEdgeAction(mWorkSpace, edge.getDataEdge()));
+    addItem(pop, "Shortest Path", new ShortestEdgeAction(mWorkSpace, edge.getDataEdge()));
+    addItem(pop, "Straighten", new StraightenEdgeAction(mWorkSpace, edge.getDataEdge()));
+    addItem(pop, "Smart Path", new NormalizeEdgeAction(mWorkSpace, edge.getDataEdge()));
     pop.show(this, evt.getX(), evt.getY());
   }
 
@@ -353,53 +326,66 @@ public class Edge extends EditorComponent implements DocumentContainer {
     repaint(100);
   }
 
-  private void deflectSource(Node newNode, int dock) {
+  private void deflectSource(Node newNode) {
     // change the SOURCE view and model to reflect edge change
     // disconnect view
     mSourceNode.disconnectSource(this);
-    // disconnect model
-    mSourceNode.getDataNode().removeEdge(mDataEdge);
-    // modify source node and dock of edge model
-    mDataEdge.setSource(newNode.getDataNode(), dock);
     // new source view
     mSourceNode = newNode;
-    // add new outgoing edge to the new source node (model)
-    mSourceNode.getDataNode().addEdge(mDataEdge);
     // new source view
     mSourceNode.connectSource(this);
   }
 
-  private void deflectTarget(Node newNode, int dock) {
+  private void deflectTarget(Node newNode) {
     // change the TARGET view and model to reflect edge change
     // disconnect view
     mTargetNode.disconnectTarget(this);
-    // incoming edges are not registered in the model, only the dock
-    mTargetNode.getDataNode().freeDock(mDataEdge.getTargetDock());
-    // modify target node and dock of model
-    mDataEdge.setTarget(newNode.getDataNode(), dock);
     // new target view
     mTargetNode = newNode;
-    // take dock in the target node (for source done by addEdge)
-    mTargetNode.getDataNode().occupyDock(dock);
     // new target view
     mTargetNode.connectTarget(this);
   }
 
-  public void deflect(Node newNode, int newDock, boolean start) {
-    if (start)
-      deflectSource(newNode, newDock);
-    else
-      deflectTarget(newNode, newDock);
+  /** Change this edge in some way
+   *  EDGE MODIFICATION
+   */
+  public void modifyEdge(Node newStart, Node newEnd,
+      BasicNode[] nodes, int[] docks, Point[] controls) {
+    getDataEdge().modifyEdge(nodes, docks, controls);
+    deflectSource(newStart);
+    deflectTarget(newEnd);
+  }
+
+  /** Disconnect this edge view from the node view it is connected to
+   * EDGE MODIFICATION
+   */
+  public void disconnect() {
+    mSourceNode.disconnectSource(this);
+    mTargetNode.disconnectTarget(this);
+  }
+
+  /** Connect this edge view to the node view it should be connected to
+   * EDGE MODIFICATION
+   */
+  public void connect() {
+    mSourceNode.connectSource(this);
+    mTargetNode.connectTarget(this);
+  }
+
+  /** Make edge as straight as possible
+   *  EDGE MODIFICATION
+   */
+  public void straightenEdge() {
+    mDataEdge.straightenEdge(mSourceNode.getWidth());
     updateEdgeGraphics();
   }
 
-  public void moveCtrlPoint(Point toLocation, boolean start) {
-    AbstractEdge edge = getDataEdge();
-    if (start)
-      edge.setSourceCtrlPoint(toLocation);
-    else
-      edge.setTargetCtrlPoint(toLocation);
-    updateEdgeGraphics();
+  /** Try to give this edge a better shape (TODO: define! implement!)
+   *  EDGE MODIFICATION
+   */
+  public void rebuildEdgeNicely() {
+    // disconnectEdge
+    straightenEdge();
   }
 
   private boolean canDeflect(Node curr, Node old) {
@@ -424,7 +410,8 @@ public class Edge extends EditorComponent implements DocumentContainer {
       Node newNode = mWorkSpace.findNodeAtPoint(p);
       if (canDeflect(newNode, mSourceNode)) {
         int dock = newNode.getNearestFreeDock(p);
-        new MoveEdgeEndPointAction(mWorkSpace, this, true, dock, newNode).run();
+        new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), true, dock,
+            newNode.getDataNode()).run();
       } else {
         updateEdgeGraphics(); // put arrow back into old position
       }
@@ -434,7 +421,8 @@ public class Edge extends EditorComponent implements DocumentContainer {
       Node newNode = mWorkSpace.findNodeAtPoint(p);
       if (canDeflect(newNode, mTargetNode)) {
         int dock = newNode.getNearestFreeDock(p);
-        new MoveEdgeEndPointAction(mWorkSpace, this, false, dock, newNode).run();
+        new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), false, dock,
+            newNode.getDataNode()).run();
       } else {
         updateEdgeGraphics(); // put arrow back into old position
       }
@@ -444,13 +432,15 @@ public class Edge extends EditorComponent implements DocumentContainer {
       // compute vector from dock point to p (relative ctrls)
       Point dock = mSourceNode.getDockPoint(mDataEdge.getSourceDock());
       p.translate(-dock.x, -dock.y);
-      new MoveEdgeCtrlAction(mWorkSpace, this, true, mWorkSpace.unzoom(p)).run();
+      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), true,
+          mWorkSpace.unzoom(p)).run();
       break;
     }
     case EdgeArrow.C2: {
       Point dock = mTargetNode.getDockPoint(mDataEdge.getTargetDock());
       p.translate(-dock.x, -dock.y);
-      new MoveEdgeCtrlAction(mWorkSpace, this, false, mWorkSpace.unzoom(p)).run();
+      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), false,
+          mWorkSpace.unzoom(p)).run();
       break;
     }
     }
@@ -467,16 +457,6 @@ public class Edge extends EditorComponent implements DocumentContainer {
     mArrow.mouseDragged(this, p);
     computeBounds();
     repaint(100);
-  }
-
-  public void straightenEdge() {
-    mDataEdge.straightenEdge(mSourceNode.getWidth());
-    updateEdgeGraphics();
-  }
-
-  public void rebuildEdgeNicely() {
-    // disconnectEdge
-    straightenEdge();
   }
 
   public Rectangle computeTextBoxBounds() {

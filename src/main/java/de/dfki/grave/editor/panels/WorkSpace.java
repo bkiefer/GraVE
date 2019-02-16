@@ -46,8 +46,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   protected final ClipBoard mClipboard = ClipBoard.getInstance();
 
   // Elements to draw
-  private final Set<Node> mNodeSet = new HashSet<>();
+  protected final Map<BasicNode, Node> mNodeSet = new IdentityHashMap<>();
   private final Set<Comment> mCmtSet = new HashSet<>();
+  private final Map<AbstractEdge, Edge> mEdges = new IdentityHashMap<>();
 
   private boolean snapToGrid = true;
 
@@ -168,7 +169,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   }
 
   private Node getNode(String id) {
-    for (Node node : mNodeSet) {
+    for (Node node : mNodeSet.values()) {
       if (node.getDataNode().getId().equals(id)) {
         return node;
       }
@@ -177,8 +178,8 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     return null;
   }
 
-  public Set<Node> getNodes() {
-    return mNodeSet;
+  public Collection<Node> getNodes() {
+    return mNodeSet.values();
   }
 
   public void zoomOut() {
@@ -220,7 +221,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   private class EdgeIterator implements Iterator<Edge> {
 
-    Iterator<Node> nodeIt = mNodeSet.iterator();
+    Iterator<Node> nodeIt = mNodeSet.values().iterator();
     Node current;
     Iterator<Edge> edgeIt;
 
@@ -249,7 +250,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     return new Iterable<Edge>(){
       @Override
       public Iterator<Edge> iterator() {
-        return new EdgeIterator(getNodes());
+        return new EdgeIterator(mNodeSet.values());
       }
     };
   }
@@ -298,6 +299,18 @@ public abstract class WorkSpace extends JPanel implements EventListener {
       edge.rebuildEdgeNicely();
     }
     repaint(100);
+  }
+
+  public void straightenEdge(AbstractEdge e) {
+    mEdges.get(e).straightenEdge();
+  }
+
+  public void rebuildEdgeNicely(AbstractEdge e) {
+    mEdges.get(e).straightenEdge();
+  }
+
+  public void normalizeEdge(AbstractEdge e) {
+    mEdges.get(e).straightenEdge();
   }
 
   private void showNewSuperNode() {
@@ -353,13 +366,13 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Add views for all the (sub)node models in this workspace's SuperNode */
   private void showNodesOnWorkSpace() {
     for (BasicNode n : getSuperNode().getNodes()) {
-      addToWorkSpace(new Node(this, n));
+      addNode(n);
     }
   }
 
   /** Add views for all edges between nodes in this workspace */
   private void showEdgesOnWorkSpace() {
-    for (Node sourceNode : mNodeSet) {
+    for (Node sourceNode : mNodeSet.values()) {
       for (AbstractEdge e : sourceNode.getDataNode().getEdgeList()) {
         Node targetNode = getNode(e.getTargetUnid());
         if (targetNode != null) {
@@ -385,11 +398,20 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   }
 
 
-  public void moveTo(Node n, Point loc) {
+  public void moveTo(BasicNode n, Point loc) {
+    Node vn = mNodeSet.get(n);
     if (snapToGrid) {
-      mGridManager.releaseGridPosition(n.getLocation());
+      mGridManager.releaseGridPosition(vn.getLocation());
     }
-    n.moveTo(loc);
+    vn.moveTo(loc);
+  }
+
+  /** Change this edge in some way, all Points in model coordinates */
+  public void modifyEdge(AbstractEdge edge,
+      BasicNode[] nodes, int[] docks, Point[] ctrls) {
+    Edge e = mEdges.get(edge);
+    e.modifyEdge(mNodeSet.get(nodes[0]), mNodeSet.get(nodes[1]),
+        nodes, docks, ctrls);
   }
 
   /**
@@ -427,7 +449,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     if (mNodeStartPositions == null)
       return;
 
-    Map<Node, Point> newPositions =
+    Map<BasicNode, Point> newPositions =
         new IdentityHashMap<>(mNodeStartPositions.size());
     for (Node node : mNodeStartPositions.keySet()) {
       Point p = node.getLocation();
@@ -435,10 +457,15 @@ public abstract class WorkSpace extends JPanel implements EventListener {
       if (snapToGrid)
         p = mGridManager.getNodeLocation(p);
 
-      newPositions.put(node, p);
+      newPositions.put(node.getDataNode(), unzoom(p));
       node.mouseReleased(event);
     }
-    new MoveNodesAction(this, mNodeStartPositions, newPositions).run();
+    Map<BasicNode, Point> oldPositions =
+        new IdentityHashMap<>(mNodeStartPositions.size());
+    for (Map.Entry<Node, Point> entry : mNodeStartPositions.entrySet()) {
+      oldPositions.put(entry.getKey().getDataNode(), unzoom(entry.getValue()));
+    }
+    new MoveNodesAction(this, oldPositions, newPositions).run();
     mNodeStartPositions = null;
     // mGridManager.normalizeGridWeight();
   }
@@ -456,7 +483,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** If there's a node on this workspace under p, return it, otherwise null */
   public Node findNodeAtPoint(Point p) {
-    return findNodeAtPoint(getNodes(), p);
+    return findNodeAtPoint(mNodeSet.values(), p);
   }
 
   /**
@@ -501,6 +528,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private void removeFromWorkSpace(Edge e) {
     // Free the docking points on source and target node
     e.disconnect();
+    mEdges.remove(e.getDataEdge());
     // remove from Panel
     super.remove(e);
     mObservable.deleteObserver(e);
@@ -510,15 +538,17 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private void addToWorkSpace(Edge e) {
     // Connect the docking points on source and target node
     e.connect();
-    // add to from Panel
+    mEdges.put(e.getDataEdge(), e);
+    // add to Panel
     super.add(e);
     mObservable.addObserver(e);
   }
 
   /** Removes node view from workspace, no change in model */
   private void removeFromWorkSpace(Node n) {
-    mNodeSet.remove(n);
-    mGridManager.releaseGridPosition(n.getLocation());
+    mNodeSet.remove(n.getDataNode());
+    if (snapToGrid)
+      mGridManager.releaseGridPosition(n.getLocation());
     // remove from Panel
     super.remove(n);
     super.remove(n.getCmdBadge());
@@ -527,7 +557,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** Add node view to workspace, no change in model */
   private void addToWorkSpace(Node n) {
-    mNodeSet.add(n);
+    mNodeSet.put(n.getDataNode(), n);
     // add to Panel
     super.add(n);
     super.add(n.getCmdBadge());
@@ -551,7 +581,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** Helper function, adjusting the positions of node views and models
    *  such that the center of the covered area is at the given position.
-   */
+   *
   private void translateNodeViews(Collection<Node> nodes, Point p) {
     int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE,
         maxX = 0, maxY = 0;
@@ -580,7 +610,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
       //n.translate does that
       //n.getDataNode().translate(translateX, translateY);
     }
-  }
+  }*/
 
   // ######################################################################
   // actions for edges
@@ -590,94 +620,136 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *  to the view and model. This is used if re-inserted after a cut operation,
    *  or as part of an undo. The nodes and edges are just added, without further
    *  modifications.
-   *
-   *  TODO: The nodes should be selected after the paste.
    */
-  public void pasteNodesAndEdges(Collection<Node> nodes, Collection<Edge> edges) {
-    for (Node vn : nodes) {
-      BasicNode n = vn.getDataNode();
+  public void pasteNodesAndEdges(Collection<BasicNode> nodes,
+      Collection<AbstractEdge> edges) {
+    for (BasicNode n : nodes) {
       getSuperNode().addNode(n);
-      addToWorkSpace(vn);
+      addNode(n);
+      // add edge views for internal edges
+      for (AbstractEdge e: n.getEdgeList()) {
+        if (nodes.contains(e.getTargetNode())) {
+          addEdgeView(e);
+        }
+      }
     }
-    for (Edge ev: edges) {
-      addToWorkSpace(ev);
-    }
+    // Add edges emerging from the set of `nodes', which also requires
+    // reclaiming reconnecting to target nodes and reclaiming the dock
+    addEdges(edges);
   }
 
   /** Complete the edge model, and create a new edge view from the given data.
    *  THIS METHOD IS ONLY TO BE CALLED TO CREATE A COMPLETELY NEW EDGE VIA THE
    *  GUI
    */
-  public Edge createEdge(AbstractEdge edge, Node source, Node target) {
-    edge.connect(source.getDataNode(), target.getDataNode());
-    edge.straightenEdge(source.getWidth());
-    return new Edge(this, edge, source, target);
+  public AbstractEdge createEdge(AbstractEdge edge, BasicNode source, BasicNode target) {
+    Node sourceView = mNodeSet.get(source);
+    Node targetView = mNodeSet.get(target);
+    edge.connect(source, target);
+    edge.straightenEdge(sourceView.getWidth());
+    Edge ve = new Edge(this, edge, sourceView, targetView);
+    addToWorkSpace(ve);
+    return edge;
   }
 
   /** Remove an edge, view AND model */
-  public void removeEdge(Edge edge) {
+  public void removeEdge(AbstractEdge e) {
+    Edge edge = mEdges.get(e);
     // remove it from the view AND the model (their source node)
     // remove edge from view
     removeFromWorkSpace(edge);
-    // remove edge from model
-    AbstractEdge e = edge.getDataEdge();
     // this destructively changes the source node of e, which must be
     // UNDOne
     e.getSourceNode().removeEdge(e);
   }
 
-  /** Add an edge, view AND model */
-  public void addEdge(Edge e) {
-    addEdges(new ArrayList<Edge>(){{add(e);}});
+  /** Add an edge view for the given edge, requires that the corresponding node
+   *  views already exist.
+   */
+  public void addEdgeView(AbstractEdge e) {
+    // add edge to view
+    Edge ve = new Edge(this, e, mNodeSet.get(e.getSourceNode())
+        , mNodeSet.get(e.getTargetNode()));
+    addToWorkSpace(ve);
+  }
+
+  /** Add an edge, view AND model, requires that the corresponding node views
+   *  already exist.
+   */
+  public void addEdge(AbstractEdge e) {
+    // add edge to view
+    addEdgeView(e);
+    // add edge to model
+    // this destructively changes the source node of e, which must be
+    // UNDOne
+    e.getSourceNode().addEdge(e);
   }
 
   /** Add a set of edge views. Prerequisite: the node views and models the
    *  edges and their respective models exist, and were not modified in a way
    *  which interferes with, e.g., the docking points, or the positions.
    */
-  public Collection<Edge> addEdges(Collection<Edge> edges) {
+  public void addEdges(Collection<AbstractEdge> edges) {
     // add these to the view AND the model (their source node), and store
     // the views for an UNDO
-    for (Edge ve: edges) {
-      // remove edge from view
-      addToWorkSpace(ve);
-      // remove edge from model
-      AbstractEdge e = ve.getDataEdge();
-      // this destructively changes the source node of e, which must be
-      // UNDOne
-      e.getSourceNode().addEdge(e);
+    for (AbstractEdge e: edges) {
+      addEdge(e);
     }
-    return edges;
   }
 
   // ######################################################################
   // actions for nodes
   // ######################################################################
 
-  /** Add a node, view only */
-  public void addNode(Node n) {
-    addToWorkSpace(n);
+  /** Add a NEW node, create the view for the newly created node prototype */
+  public void addNode(BasicNode n) {
+    addToWorkSpace(new Node(this, n));
   }
 
-  /** Create a new node model and view, at the given location, and add it
-   *  to the workspace
+  /** Create a new node model and view from a model *PROTOTYPE*, at the given
+   *  location, and add it to the workspace
    */
-  public Node createNode(Point point, BasicNode model) {
+  public BasicNode createNode(Point point, BasicNode model) {
     if (snapToGrid)
       point = mGridManager.getNodeLocation(point);
     Position p = new Position(unzoom(point.x), unzoom(point.y));
-    return new Node(this, model.createNode(mIDManager, p, getSuperNode()));
+    return model.createNode(mIDManager, p, getSuperNode());
+  }
+
+  private Node getSourceNode(Edge e) {
+    return mNodeSet.get(e.getDataEdge().getSourceNode());
+  }
+
+  private Node getTargetNode(Edge e) {
+    return mNodeSet.get(e.getDataEdge().getTargetNode());
+  }
+
+  /** For a given set of nodes that are subnodes of the same SuperNode, compute
+   *  all edge views that emerge from a node outside the set and end in a node
+   *  inside the set. nodes must be a subset of the current mNodeSet.
+   *
+   *  Only returns edges, no change in model or view
+   */
+  private Collection<Edge> computeIncomingEdges(Collection<Node> nodes) {
+    List<Edge> result = new ArrayList<>();
+    // easier now
+    for (Edge e : mEdges.values()) {
+      if (nodes.contains(getTargetNode(e)) && ! nodes.contains(getSourceNode(e)))
+        result.add(e);
+    }
+    return result;
   }
 
   /** Change type of node: BasicNode <-> SuperNode
    *
    * Super to Basic is only allowed if there are no inner nodes in the SuperNode
    */
-  public BasicNode changeType(Node node, BasicNode changeTo) {
+  public BasicNode changeType(BasicNode n, BasicNode changeTo) {
+    Node node = mNodeSet.get(n);
     BasicNode result = null;
     Collection<Edge> incoming =
-        Node.computeIncomingEdges(new ArrayList<Node>(){{add(node);}});
-    if ((result = node.changeType(mIDManager, incoming , changeTo))
+        computeIncomingEdges(new ArrayList<Node>(){{add(node);}});
+    if ((result = node.changeType(mIDManager, edgeModels(incoming) , changeTo))
         == null) {
       // complain: operation not legal
       setMessageLabelText("SuperNode contains Nodes: Type change not possible");
@@ -691,7 +763,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *
    *  The copied views will be added to the given WorkSpace, and all copied
    *  node models will be subnodes of the given SuperNode.
-   */
+   *
   public Pair<Collection<Node>, List<Edge>> copyGraph(
       List<Node> nodeViews, List<Edge> edgeViews) {
     SuperNode newParent = getSuperNode();
@@ -716,7 +788,32 @@ public abstract class WorkSpace extends JPanel implements EventListener {
       newEdges.add(newEdge);
     }
     return new Pair<Collection<Node>, List<Edge>>(origView2copy.values(), newEdges);
-  }
+  }*/
+
+  /** This copies some subset of node and edge views and their underlying
+   *  models. One basic assumption is that there are no "dangling" edges which
+   *  either start or end at a node outside the given node set.
+   *
+   *  The copied views will be added to the given WorkSpace, and all copied
+   *  node models will be subnodes of the given SuperNode.
+   *
+  public Pair<Collection<BasicNode>, List<AbstractEdge>> copyGraphModel(
+      List<BasicNode> nodeViews, List<AbstractEdge> edgeViews) {
+    SuperNode newParent = getSuperNode();
+    Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
+    for (BasicNode n : nodeViews) {
+      BasicNode cpy = n.deepCopy(mIDManager, newParent);
+      orig2copy.put(n, cpy);
+    }
+
+    List<AbstractEdge> newEdges = new ArrayList<>();
+    for (AbstractEdge edge: edgeViews) {
+      AbstractEdge e = edge.deepCopy(orig2copy);
+      newEdges.add(e);
+    }
+    return new Pair<Collection<BasicNode>, List<AbstractEdge>>(
+        orig2copy.values(), newEdges);
+  }*/
 
   /** paste nodes from the clipboard
    *  This operates in two modes: if not in copy mode, the nodes are just
@@ -732,15 +829,16 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *  undo, they retain their old positions, but what after cut? Treat it like
    *  undo, or copy? I favour undo, since the other can be achieved by dragging.
    */
-  public Collection<Node> pasteNodesFromClipboard(Point mousePosition) {
-    List<Node> nodes = mClipboard.getNodes();
-    List<Edge> edges = mClipboard.getEdges();
+  public Collection<BasicNode> pasteNodesFromClipboard(Point mousePosition) {
+    List<BasicNode> nodes = mClipboard.getNodes();
+    List<AbstractEdge> edges = mClipboard.getEdges();
     if (mClipboard.needsCopy(this)) {
-      Pair<Collection<Node>, List<Edge>> toAdd = copyGraph(nodes, edges);
+      Pair<Collection<BasicNode>, List<AbstractEdge>> toAdd =
+          getSuperNode().copyGraphModel(mIDManager, nodes, edges);
       if (mousePosition != null) {
         // snap to grid: currently not.
         //mousePosition = mGridManager.getClosestGridPoint(mousePosition);
-        translateNodeViews(toAdd.getFirst(), mousePosition);
+        translateNodes(toAdd.getFirst(), mousePosition);
       }
       pasteNodesAndEdges(toAdd.getFirst(), toAdd.getSecond());
       return toAdd.getFirst();
@@ -754,6 +852,18 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     return nodes;
   }
 
+  protected List<AbstractEdge> edgeModels(Collection<Edge> l) {
+    List<AbstractEdge> result = new ArrayList<>(l.size());
+    for (Edge e: l) result.add(e.getDataEdge());
+    return result;
+  }
+
+  protected List<BasicNode> nodeModels(Collection<Node> l) {
+    List<BasicNode> result = new ArrayList<>(l.size());
+    for (Node n: l) result.add(n.getDataNode());
+    return result;
+  }
+
   /** Remove the nodes in the given collection.
    *  This is only legal if none of the selected nodes is a start node!
    *
@@ -764,25 +874,25 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *
    *  If it's a cut operation, not a delete, put the nodes in the set into the
    *  clipboard.
+   *  @return a triple incoming edges, nodes, emerging edges
    */
-  public Triple<Collection<Edge>, Collection<Node>, Collection<Edge>>
-  removeNodes(boolean isCutOperation, Collection<Node> nodes) {
-    // Edges pointing from the set to the outside
+  public Triple<Collection<AbstractEdge>, Collection<BasicNode>, Collection<AbstractEdge>>
+  removeNodes(boolean isCutOperation, Collection<BasicNode> nodes) {
+    // Edges pointin.getDataNodeg from the set to the outside
     List<Edge> emergingEdges = new ArrayList<>();
     // Edges between nodes in the set
     List<Edge> internalEdges = new ArrayList<>();
     // Edges pointing from the outside into the set
     List<Edge> incomingEdges = new ArrayList<>();
     SuperNode current = getSuperNode();
-    for (Node vn : nodes) {
-      // remove nodes from the view
-      removeFromWorkSpace(vn);
+    for (BasicNode n : nodes) {
+      Node vn = mNodeSet.get(n);
       // remove nodes from model
       // destructively changes the current SuperNode, which must be UNDOne
-      current.removeNode(vn.getDataNode());
+      current.removeNode(n);
       // remove edges from the view
       for(Edge e : vn.getConnectedEdges()) {
-        if (! nodes.contains(e.getSourceNode())) {
+        if (! nodes.contains(getSourceNode(e).getDataNode())) {
           // incoming edge
           incomingEdges.add(e);
           // remove edge from model
@@ -791,7 +901,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
           // UNDOne
           edge.getSourceNode().removeEdge(edge);
         } else {
-          if (nodes.contains(e.getTargetNode())) {
+          if (nodes.contains(mNodeSet.get(e.getDataEdge().getTargetNode()).getDataNode())) {
             internalEdges.add(e);
           } else {
             emergingEdges.add(e);
@@ -799,21 +909,24 @@ public abstract class WorkSpace extends JPanel implements EventListener {
         }
       }
     }
+    // remove nodes from the view
+    for (BasicNode n: nodes) removeFromWorkSpace(mNodeSet.get(n));
     // to avoid ConcurrentModification
     for (Edge e: emergingEdges) removeFromWorkSpace(e);
     for (Edge e: internalEdges) removeFromWorkSpace(e);
     for (Edge e: incomingEdges) removeFromWorkSpace(e);
 
     if (isCutOperation) {
-      mClipboard.set(this, nodes, internalEdges);
+      mClipboard.set(this, nodes, edgeModels(internalEdges));
     }
-    return new Triple<>(incomingEdges, nodes, emergingEdges);
+    return new Triple<>(
+        edgeModels(incomingEdges), nodes, edgeModels(emergingEdges));
   }
 
   /** Copy nodes in the selected nodes set (mSelectedNodes) to the clipboard for
    *  the Copy operation (lazy copy).
    */
-  public void copyNodes(Collection<Node> nodes) {
+  public void copyNodes(Collection<BasicNode> nodes) {
     mClipboard.setToCopy(this, nodes, Node.computeInnerEdges(nodes));
   }
 
@@ -841,15 +954,14 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     getSuperNode().removeComment(comment.getData());
   }
 
-}
-
   /* Assumes that the node and edge views can be perfectly reconstructed from
    * the models, and only models are handled internally
+   */
 
   /** Helper function, adjusting the positions of node and edge models
    *  such that the center of the covered area is at the given position.
-   *
-  private void translateNodes(Collection<BasicNode> nodes, Point p) {
+   */
+  private static void translateNodes(Collection<BasicNode> nodes, Point p) {
     int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE,
         maxX = 0, maxY = 0;
     // compute the covered area
@@ -869,12 +981,16 @@ public abstract class WorkSpace extends JPanel implements EventListener {
       //n.translate does that
       //n.getDataNode().translate(translateX, translateY);
     }
+    /*
     for (BasicNode n : nodes) {
       for (AbstractEdge e : n.getEdgeList()) {
         e.translate(translateX, translateY);
       }
     }
+    */
   }
+
+}
 
   /** paste nodes from the clipboard
    *  This operates in two modes: if not in copy mode, the nodes are just

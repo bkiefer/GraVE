@@ -7,6 +7,8 @@ import java.util.List;
 
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
+import de.dfki.grave.model.flow.AbstractEdge;
+import de.dfki.grave.model.flow.BasicNode;
 
 /**
  * Created by alvaro on 7/18/16.
@@ -25,8 +27,8 @@ public class ClipBoard {
     return instance;
   }
 
-  private List<Node> mNodes = new ArrayList<>();
-  private List<Edge> mEdges = new ArrayList<>();
+  private List<BasicNode> mNodes = new ArrayList<>();
+  private List<AbstractEdge> mEdges = new ArrayList<>();
 
   private boolean needsCopy = true;
   private WorkSpace origin;
@@ -35,8 +37,8 @@ public class ClipBoard {
     mNodes.clear(); mEdges.clear();
   }
 
-  private void set(WorkSpace workSpace, Collection<Node> nodes,
-      Collection<Edge> edges, boolean copy) {
+  private void set(WorkSpace workSpace, Collection<BasicNode> nodes,
+      Collection<AbstractEdge> edges, boolean copy) {
     clear();
     origin = workSpace;
     needsCopy = copy;
@@ -44,21 +46,21 @@ public class ClipBoard {
     mEdges.addAll(edges);
   }
 
-  public void setToCopy(WorkSpace workSpace, Collection<Node> nodes,
-      Collection<Edge> edges) {
+  public void setToCopy(WorkSpace workSpace, Collection<BasicNode> nodes,
+      Collection<AbstractEdge> edges) {
     set(workSpace, nodes, edges, true);
   }
 
-  public void set(WorkSpace workSpace, Collection<Node> nodes,
-      Collection<Edge> edges) {
+  public void set(WorkSpace workSpace, Collection<BasicNode> nodes,
+      Collection<AbstractEdge> edges) {
     set(workSpace, nodes, edges, false);
   }
 
-  public List<Node> getNodes() {
+  public List<BasicNode> getNodes() {
     return Collections.unmodifiableList(mNodes);
   }
 
-  public List<Edge> getEdges() {
+  public List<AbstractEdge> getEdges() {
     return Collections.unmodifiableList(mEdges);
   }
 

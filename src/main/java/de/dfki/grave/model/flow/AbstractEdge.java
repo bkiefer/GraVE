@@ -53,13 +53,14 @@ public abstract class AbstractEdge {
     }
   }
 
+  @XmlAttribute(name="target")
   protected String mTargetUnid = new String();
+  @XmlAttribute(name="source")
   protected String mSourceUnid = new String();
   protected BasicNode mTargetNode = null;
   protected BasicNode mSourceNode = null;
 
   // Replaces EdgeArrow
-  /* TODO: TURN ARROW DATA INTO NEW FIELDS */
   @XmlAttribute(name="targetdock")
   protected int mTargetDock = -1;
   @XmlAttribute(name="sourcedock")
@@ -71,26 +72,17 @@ public abstract class AbstractEdge {
   /**/
 
   // DEPRECATED
+  @Deprecated
   protected EdgeArrow mArrow = null;
   @XmlElement(name="Commands")
   protected String mCmdList = null;
 
-  @XmlAttribute(name="target")
   public final String getTargetUnid() {
     return mTargetUnid;
   }
 
-  public final void setTargetUnid(final String value) {
-    mTargetUnid = value;
-  }
-
-  @XmlAttribute(name="source")
   public final String getSourceUnid() {
     return mSourceUnid;
-  }
-
-  public final void setSourceUnid(final String value) {
-    mSourceUnid = value;
   }
 
   @XmlTransient
@@ -110,11 +102,6 @@ public abstract class AbstractEdge {
     return mSourceCtrlPoint;
   }
 
-  public final void setSourceCtrlPoint(Point p) {
-    checkControl(p, mSourceDock);
-    mSourceCtrlPoint.setTo(p);
-  }
-
   public final int getTargetDock() {
     return mTargetDock;
   }
@@ -123,9 +110,39 @@ public abstract class AbstractEdge {
     return mTargetCtrlPoint;
   }
 
-  public final void setTargetCtrlPoint(Point p) {
-    checkControl(p, mTargetDock);
-    mTargetCtrlPoint.setTo(p);
+
+  private void deflectSource(BasicNode newNode, int dock, Point ctrl) {
+    // disconnect edge in source node: also releases dock
+    mSourceNode.removeEdge(this);
+    // modify source node and dock of edge
+    setSource(newNode, dock);
+    // add new outgoing edge to the new source node
+    mSourceNode.addEdge(this);
+    // set control point
+    checkControl(ctrl, mSourceDock);
+    mSourceCtrlPoint.setTo(ctrl);
+  }
+
+  private void deflectTarget(BasicNode newNode, int dock, Point ctrl) {
+    // incoming edges are not registered in the model, only the dock
+    mTargetNode.freeDock(getTargetDock());
+    // modify target node and dock of model
+    setTarget(newNode, dock);
+    // new target view
+    mTargetNode = newNode;
+    // take dock in the target node (for source done by addEdge)
+    mTargetNode.occupyDock(dock);
+    // set control point
+    checkControl(ctrl, mTargetDock);
+    mTargetCtrlPoint.setTo(ctrl);
+  }
+
+  /** Change this edge in some way
+   *  EDGE MODIFICATION
+   */
+  public void modifyEdge(BasicNode[] nodes, int[] docks, Point[] controls) {
+    deflectSource(nodes[0], docks[0], controls[0]);
+    deflectTarget(nodes[1], docks[1], controls[1]);
   }
 
   /** Only for establishTargetNodes. TODO: should go */
@@ -137,13 +154,13 @@ public abstract class AbstractEdge {
     arrowToDock();
   }
 
-  public final void setSource(final BasicNode value, int dock) {
+  private final void setSource(final BasicNode value, int dock) {
     mSourceUnid = value.getId();
     mSourceNode = value;
     mSourceDock = dock;
   }
 
-  public final void setTarget(final BasicNode value, int dock) {
+  private final void setTarget(final BasicNode value, int dock) {
     mTargetUnid = value.getId();
     mTargetNode = value;
     mTargetDock = dock;
@@ -159,6 +176,8 @@ public abstract class AbstractEdge {
     return null;
   }
 
+
+  /** EDGE MODIFICATION */
   public final void connect(final BasicNode source, final BasicNode target) {
     mSourceNode = source;
     mSourceUnid = source.getId();
@@ -197,11 +216,20 @@ public abstract class AbstractEdge {
     mTargetCtrlPoint = new Position(cp.x, cp.y);
   }
 
+  // TODO: DROP AFTER REVAMP
+  public void translate(int deltaX, int deltaY) {
+    for (ControlPoint cp : mArrow.getPointList()) {
+      cp.setCtrlXPos(cp.getCtrlXPos() + deltaX);
+      cp.setCtrlYPos(cp.getCtrlYPos() + deltaY);
+    }
+  }
+
   @XmlTransient
   public final String getCmdList() {
     return mCmdList;
   }
 
+  /** EDGE MODIFICATION */
   public final void setCmdList(final String value) {
     mCmdList = value;
   }
@@ -211,7 +239,9 @@ public abstract class AbstractEdge {
     return copy;
   }
 
-  /** Set the content of an edge, if applicable */
+  /** Set the content of an edge, if applicable
+   * EDGE MODIFICATION
+   */
   public void setContent(String s) { }
 
   /** Get the content of an edge, as string (if applicable) */
@@ -284,6 +314,7 @@ public abstract class AbstractEdge {
 
   /** Compute the edge closest to the straight connection, as far as it's
    *  allowed concerning the dock points already taken.
+   *  EDGE MODIFICATION
    */
   public void straightenEdge(int nodeWidth) {
     mSourceNode.freeDock(mSourceDock);
@@ -374,14 +405,6 @@ public abstract class AbstractEdge {
       logger.error("Error constructing edge: {}", ex);
     }
     return null;
-  }
-
-  // TODO: DROP AFTER REVAMP
-  public void translate(int deltaX, int deltaY) {
-    for (ControlPoint cp : mArrow.getPointList()) {
-      cp.setCtrlXPos(cp.getCtrlXPos() + deltaX);
-      cp.setCtrlYPos(cp.getCtrlYPos() + deltaY);
-    }
   }
 
   public String toString() {

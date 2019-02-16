@@ -7,31 +7,23 @@
 package de.dfki.grave.editor.action;
 
 import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.model.flow.AbstractEdge;
 
 /**
+ * @author Bernd Kiefer
  *
- * @author Souza Putra
+ * For all actions that modify the shape of an edge only with some function,
+ * not source or target node
  */
-public class ShortestEdgeAction extends EditorAction {
+public class ShortestEdgeAction extends ReshapeEdgeAction {
 
-  private de.dfki.grave.editor.Edge mGUIEdge = null;
-  private WorkSpace mWorkSpace;
-
-  public ShortestEdgeAction(WorkSpace workSpace, de.dfki.grave.editor.Edge edge) {
-    mWorkSpace = workSpace;
-    mGUIEdge = edge;
+  public ShortestEdgeAction(WorkSpace workSpace, AbstractEdge edge) {
+    super(workSpace, edge);
   }
 
   @Override
-  protected void doIt() {
-    mGUIEdge.rebuildEdgeNicely();
-  }
+  protected void reshape() { mWorkSpace.rebuildEdgeNicely(mEdge); }
 
-  @Override
-  protected void undoIt() {
-    // TODO Auto-generated method stub
-
-  }
 
   @Override
   protected String msg() { return "Get Shortest Path"; }

@@ -89,11 +89,11 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       @Override
       public void actionPerformed(ActionEvent actionEvt) {
         if (mSelectedEdge != null) {
-          new RemoveEdgeAction(WorkSpacePanel.this, mSelectedEdge).run();
+          new RemoveEdgeAction(WorkSpacePanel.this, mSelectedEdge.getDataEdge()).run();
         }
 
         if (!mSelectedNodes.isEmpty()) {
-          new RemoveNodesAction(WorkSpacePanel.this, mSelectedNodes, false).run();
+          new RemoveNodesAction(WorkSpacePanel.this, nodeModels(mSelectedNodes), false).run();
         }
 
         if (mSelectedComment != null) {
@@ -245,7 +245,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   /** Select all nodes intersecting the given area */
   private void selectNodesInArea(Rectangle2D area) {
     deselectAllNodes();
-    for (Node node : getNodes()) {
+    for (Node node : mNodeSet.values()) {
       // add node only if it is not a history node
       if (node.getBounds().intersects(area)) {
         node.setSelected();
@@ -254,14 +254,15 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     }
   }
 
-  public void selectNodes(Collection<Node> nodes) {
+  public void selectNodes(Collection<BasicNode> nodes) {
     for (Node node : mSelectedNodes) {
       node.setDeselected();
     }
     mSelectedNodes.clear();
-    for (Node node : nodes) {
-      node.setSelected();
-      mSelectedNodes.add(node);
+    for (BasicNode node : nodes) {
+      Node vn = mNodeSet.get(node);
+      vn.setSelected();
+      mSelectedNodes.add(vn);
     }
     repaint(100);
   }
@@ -278,7 +279,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   /** Copy the selected nodes to the clipboard, if any */
   public void copySelectedNodes() {
     if (mSelectedNodes.size() == 0) return;
-    CopyNodesAction action = new CopyNodesAction(this, mSelectedNodes);
+    CopyNodesAction action = new CopyNodesAction(this, nodeModels(mSelectedNodes));
     String message = (mSelectedNodes.size() > 1) ? "Nodes copied" : "Node copied";
     setMessageLabelText(mSelectedNodes.size() + message);
     action.run();
@@ -287,7 +288,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   /** Cut the selected nodes and add them to clipboard, if any */
   public void cutSelectedNodes() {
     if (mSelectedNodes.size() == 0) return;
-    RemoveNodesAction action = new RemoveNodesAction(this, mSelectedNodes, true);
+    RemoveNodesAction action = new RemoveNodesAction(this, nodeModels(mSelectedNodes), true);
     String message = (mSelectedNodes.size() > 1) ? "Nodes cut" : "Node cut";
     setMessageLabelText(mSelectedNodes.size() + message);
     action.run();
@@ -313,10 +314,10 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   /** Show the context menu if multiple nodes are selected */
   private void multipleNodesContextMenu(MouseEvent evt, Node node) {
     JPopupMenu pop = new JPopupMenu();
-    addItem(pop, "Copy Nodes", new CopyNodesAction(this, mSelectedNodes));
-    addItem(pop, "Cut Nodes", new RemoveNodesAction(this, mSelectedNodes, true));
+    addItem(pop, "Copy Nodes", new CopyNodesAction(this, nodeModels(mSelectedNodes)));
+    addItem(pop, "Cut Nodes", new RemoveNodesAction(this, nodeModels(mSelectedNodes), true));
     pop.add(new JSeparator());
-    addItem(pop, "Delete Nodes", new RemoveNodesAction(this, mSelectedNodes, false));
+    addItem(pop, "Delete Nodes", new RemoveNodesAction(this, nodeModels(mSelectedNodes), false));
     pop.show(this, node.getX() + node.getWidth(), node.getY());
   }
 
@@ -354,7 +355,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       // and we exit the method without creating a new edge.
       Node targetNode = findNodeAtPoint(p);
       if (targetNode != null) {
-        new CreateEdgeAction(this, mEdgeSourceNode, targetNode, mEdgeInProgress).run();
+        new CreateEdgeAction(this, mEdgeSourceNode.getDataNode(),
+            targetNode.getDataNode(), mEdgeInProgress).run();
       }
 
       // edge creation ends

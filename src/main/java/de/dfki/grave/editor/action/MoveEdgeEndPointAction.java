@@ -1,41 +1,20 @@
 package de.dfki.grave.editor.action;
 
-import de.dfki.grave.editor.Edge;
-import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.AbstractEdge;
+import de.dfki.grave.model.flow.BasicNode;
 
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
-public class MoveEdgeEndPointAction extends EditorAction {
+public class MoveEdgeEndPointAction extends ModifyEdgeAction {
 
-  private Edge mEdge;
-  private boolean mStart;
-  private int mNewDock;
-  private Node mNewNode;
-  private int mOldDock;
-  private Node mOldNode;
-
-  public MoveEdgeEndPointAction(WorkSpace workSpace, Edge e, boolean start,
-      int dock, Node newNode) {
-    mWorkSpace = workSpace;
-    mEdge = e;
-    AbstractEdge edge = e.getDataEdge();
-    mStart = start;
-    mNewDock = dock;
-    mNewNode = newNode;
-    mOldDock = start ? edge.getSourceDock() : edge.getTargetDock();
-    mOldNode = start ? e.getSourceNode() : e.getTargetNode();
-  }
-
-  protected void undoIt() {
-    mEdge.deflect(mOldNode, mOldDock, mStart);
-  }
-
-  protected void doIt() {
-    mEdge.deflect(mNewNode, mNewDock, mStart);
+  public MoveEdgeEndPointAction(WorkSpace workSpace, AbstractEdge e,
+      boolean start, int dock, BasicNode newNode) {
+    super(workSpace, e);
+    mNewDocks[start ? 0 : 1] = dock;
+    mNewNodes[start ? 0 : 1] = newNode;
   }
 
   protected String msg() { return "Moving Edge Endpoint"; }

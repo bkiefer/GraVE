@@ -10,19 +10,19 @@ import de.dfki.grave.model.flow.BasicNode;
 public class ChangeNodeTypeAction extends EditorAction {
 
   private BasicNode mPrevNode = null;
-  private Node mGUINode = null;
+  private BasicNode mNode = null;
 
-  public ChangeNodeTypeAction(WorkSpace workSpace, Node node) {
+  public ChangeNodeTypeAction(WorkSpace workSpace, BasicNode node) {
     mWorkSpace = workSpace;
-    mGUINode = node;
+    mNode = node;
   }
 
   public void doIt() {
-    mPrevNode = mWorkSpace.changeType(mGUINode, mPrevNode);
+    mPrevNode = mWorkSpace.changeType(mNode, mPrevNode);
   }
 
   public void undoIt() {
-    mPrevNode = mWorkSpace.changeType(mGUINode, mPrevNode);
+    mPrevNode = mWorkSpace.changeType(mNode, mPrevNode);
   }
 
   protected String msg() { return "Change Node Type"; }

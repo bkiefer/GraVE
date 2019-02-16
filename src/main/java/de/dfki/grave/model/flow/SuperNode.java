@@ -1,10 +1,7 @@
 package de.dfki.grave.model.flow;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import javax.xml.bind.annotation.*;
 
@@ -14,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import de.dfki.grave.editor.panels.IDManager;
 import de.dfki.grave.model.flow.geom.Geom;
 import de.dfki.grave.model.flow.geom.Position;
+import de.dfki.grave.util.Pair;
 
 /**
  * @author Gregor Mehlmann
@@ -249,13 +247,36 @@ public class SuperNode extends BasicNode {
     return copy;
   }
 
+  /** This copies some subset of node and edge models. One basic assumption is
+   *  that there are no "dangling" edges which either start or end at a node
+   *  outside the given node set.
+   *
+   *  The copied node models will be subnodes of this SuperNode.
+   */
+  public Pair<Collection<BasicNode>, List<AbstractEdge>> copyGraphModel(
+      IDManager mgr, List<BasicNode> nodeViews, List<AbstractEdge> edgeViews) {
+    Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
+    for (BasicNode n : nodeViews) {
+      BasicNode cpy = n.deepCopy(mgr, this);
+      orig2copy.put(n, cpy);
+    }
+
+    List<AbstractEdge> newEdges = new ArrayList<>();
+    for (AbstractEdge edge: edgeViews) {
+      AbstractEdge e = edge.deepCopy(orig2copy);
+      newEdges.add(e);
+    }
+    return new Pair<Collection<BasicNode>, List<AbstractEdge>>(
+        orig2copy.values(), newEdges);
+  }
+
   @Override
   public int hashCode() {
     int hash = 5;
-    hash = 53 * hash + this.mCommentList.hashCode();
-    hash = 53 * hash + this.mNodeList.hashCode();
-    hash = 53 * hash + this.mSuperNodeList.hashCode();
-    hash = 53 * hash + this.mStartNodeId.hashCode();
+    hash = 53 * hash + mCommentList.hashCode();
+    hash = 53 * hash + mNodeList.hashCode();
+    hash = 53 * hash + mSuperNodeList.hashCode();
+    hash = 53 * hash + (mStartNodeId == null ? 0 : mStartNodeId.hashCode());
     hash = 53 * hash + Boolean.hashCode(this.mHideLocalVarBadge);
     hash = 53 * hash + Boolean.hashCode(this.mHideGlobalVarBadge);
     return hash;

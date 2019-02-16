@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.xml.bind.annotation.*;
@@ -13,6 +14,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.panels.IDManager;
 import de.dfki.grave.model.flow.geom.Geom;
 import de.dfki.grave.model.flow.geom.Position;
@@ -75,10 +77,6 @@ public class BasicNode  {
   protected boolean mIsEndNode = true;
 
   protected BitSet mDocksTaken = new BitSet();
-
-  public Byte hasNone = new Byte("0");
-  public Byte hasOne = new Byte("1");
-  public Byte hasMany = new Byte("2");
 
   public enum FLAVOUR {
     NONE, ENODE, TNODE, CNODE, PNODE, INODE, FNODE
@@ -164,6 +162,32 @@ public class BasicNode  {
     return ! (mComment == null || mComment.isEmpty());
   }
 
+  public BasicNode changeType(IDManager mgr, Collection<AbstractEdge> incoming,
+      BasicNode newNode) {
+    if (newNode == null) {
+      if (this instanceof SuperNode) {
+        SuperNode n = (SuperNode)this;
+        if (n.getNodeSize() > 0) {
+          // complain: this operation can not be done, SuperNode has subnodes
+          return null;
+        }
+        newNode = new BasicNode(mgr, n);
+      } else {
+        newNode = new SuperNode(mgr, this);
+        // adapt node lists of parent SuperNode
+      }
+    }
+    for (AbstractEdge e : incoming) {
+      e.connect(e.getSourceNode(), newNode);
+    }
+    // adapt node lists of parent SuperNode
+    SuperNode s = getParentNode();
+    s.removeNode(this);
+    s.addNode(newNode);
+    BasicNode oldNode = this;
+    return oldNode;
+  }
+
   public boolean hasEdge() {
     return getFlavour() == FLAVOUR.NONE;
   }
@@ -202,6 +226,8 @@ public class BasicNode  {
   /** Add an outgoing edge from this node, with all consequences.
    *
    *  For use in GUI modifications: add new edge, copy, paste, etc.
+   *
+   *  NODE MODIFICATION
    */
   public void addEdge(AbstractEdge e) {
     mDocksTaken.set(e.getSourceDock());
@@ -209,13 +235,13 @@ public class BasicNode  {
     if ((e instanceof EpsilonEdge) || e instanceof TimeoutEdge)
       mDEdge = e;
     else if (e instanceof ForkingEdge)
-      addFEdge((ForkingEdge) e);
+      mFEdgeList.add((ForkingEdge) e);
     else if (e instanceof GuardedEdge)
-      addCEdge((GuardedEdge) e);
+      mCEdgeList.add((GuardedEdge) e);
     else if (e instanceof RandomEdge)
-      addPEdge((RandomEdge) e);
+      mPEdgeList.add((RandomEdge) e);
     else if (e instanceof InterruptEdge)
-      addIEdge((InterruptEdge) e);
+      mIEdgeList.add((InterruptEdge) e);
     // this is an end node if either it has no outgoing edges at all, or
     // only outgoing conditional edges
   }
@@ -223,6 +249,8 @@ public class BasicNode  {
   /** Remove an outgoing edge from this node, with all consequences.
    *
    *  For use in GUI modifications: delete edge, cut, etc.
+   *
+   *  NODE MODIFICATION
    */
   public void removeEdge(AbstractEdge e) {
     mDocksTaken.clear(e.getSourceDock());
@@ -230,13 +258,13 @@ public class BasicNode  {
     if ((e instanceof EpsilonEdge) || e instanceof TimeoutEdge) {
       mDEdge = null; return;
     } else if (e instanceof ForkingEdge) {
-      removeFEdge((ForkingEdge) e); return;
+      mFEdgeList.remove((ForkingEdge) e); return;
     } else if (e instanceof GuardedEdge) {
-      removeCEdge((GuardedEdge) e); return;
+      mCEdgeList.remove((GuardedEdge) e); return;
     } else if (e instanceof RandomEdge) {
-      removePEdge((RandomEdge) e); return;
+      mPEdgeList.add((RandomEdge) e); return;
     } else if (e instanceof InterruptEdge)
-      removeIEdge((InterruptEdge) e);
+      mIEdgeList.remove((InterruptEdge) e);
   }
 
   public boolean isStartNode() {
@@ -246,27 +274,6 @@ public class BasicNode  {
   public boolean isEndNode() {
     FLAVOUR f = getFlavour();
     return f == FLAVOUR.NONE || (f == FLAVOUR.CNODE && mDEdge == null);
-  }
-
-  /**
-   * tells if the node has more than 0 Probabilistic edge in case true, it is
-   * necessary to reorganise the values of probabilities Used when deleting an
-   * edge
-   *
-   * @return
-   */
-  public byte hasPEdges() {
-    if (mPEdgeList.size() == 1) {
-      return hasOne;
-    }
-    if (mPEdgeList.size() > 1) {
-      return hasMany;
-    }
-    return hasNone;
-  }
-
-  public RandomEdge getFirstPEdge() {
-    return mPEdgeList.get(0);
   }
 
   public boolean hasDEdge() {
@@ -295,18 +302,6 @@ public class BasicNode  {
         ? FLAVOUR.TNODE : FLAVOUR.ENODE;
   }
 
-  public void setDedge(AbstractEdge value) {
-    mDEdge = value;
-  }
-
-  public AbstractEdge getDedge() {
-    return mDEdge;
-  }
-
-  public void removeDEdge() {
-    mDEdge = null;
-  }
-
   @XmlElement(name="TEdge")
   public void setTEdge(TimeoutEdge value) { mDEdge = value; }
   public TimeoutEdge getTEdge() {
@@ -327,7 +322,10 @@ public class BasicNode  {
     return mPosition;
   }
 
-  /** Translate this node's position by the given values */
+  /** Translate this node's position by the given values
+   *
+   * NODE MODIFICATION
+   */
   public void translate(int x, int y) {
     mPosition.setXPos(mPosition.getXPos() + x);
     mPosition.setYPos(mPosition.getYPos() + y);
@@ -341,90 +339,16 @@ public class BasicNode  {
     return mParentNode;
   }
 
-  public void addCEdge(GuardedEdge value) {
-    mCEdgeList.add(value);
-  }
-
-  public void removeCEdge(GuardedEdge value) {
-    mCEdgeList.remove(value);
-  }
-
-  public void removeAllCEdges() {
-    mCEdgeList = new ArrayList<GuardedEdge>();
-  }
-
-  public int getSizeOfCEdgeList() {
-    return mCEdgeList.size();
-  }
-
-  public ArrayList<GuardedEdge> getCEdgeList() {
-    return mCEdgeList;
-  }
-
-  private void addFEdge(ForkingEdge value) {
-    mFEdgeList.add(value);
-  }
-
-  private void removeFEdge(ForkingEdge value) {
-    mFEdgeList.remove(value);
-  }
-
-  public void removeAllFEdges() {
-    mFEdgeList = new ArrayList<ForkingEdge>();
-  }
-
-  public ArrayList<ForkingEdge> getFEdgeList() {
-    return mFEdgeList;
-  }
-
-  private void addPEdge(RandomEdge value) {
-    mPEdgeList.add(value);
-  }
-
-  private void removePEdge(RandomEdge value) {
-    mPEdgeList.remove(value);
-  }
-
-  public void removeAllPEdges() {
-    mPEdgeList = new ArrayList<RandomEdge>();
-  }
-
-  public int getSizeOfPEdgeList() {
-    return mPEdgeList.size();
-  }
-
-  public ArrayList<RandomEdge> getPEdgeList() {
-    return mPEdgeList;
-  }
-
-  private void addIEdge(InterruptEdge value) {
-    mIEdgeList.add(value);
-  }
-
-  private void removeIEdge(InterruptEdge value) {
-    mIEdgeList.remove(value);
-  }
-
-  public void removeAllIEdges() {
-    mIEdgeList = new ArrayList<InterruptEdge>();
-  }
-
-  public int getSizeOfIEdgeList() {
-    return mIEdgeList.size();
-  }
-
-  public ArrayList<InterruptEdge> getIEdgeList() {
-    return mIEdgeList;
-  }
-
   public boolean isDockTaken(int which) {
     return mDocksTaken.get(which);
   }
 
+  /** NODE MODIFICATION */
   public void occupyDock(int which) {
     mDocksTaken.set(which);
   }
 
+  /** NODE MODIFICATION */
   public void freeDock(int which) {
     if (which < 0) return;
     mDocksTaken.clear(which);
@@ -538,9 +462,6 @@ public class BasicNode  {
   public int hashCode() {
     int result = 0;
     result = 17 * result + Boolean.hashCode(mIsEndNode);
-    result = 17 * result + Byte.hashCode(hasNone);
-    result = 17 * result + Byte.hashCode(hasOne);
-    result = 17 * result + Byte.hashCode(hasMany);
 
     result = 31 * result + mNodeId.hashCode();
     result = 31 * result + mNodeName.hashCode();

@@ -6,35 +6,30 @@
  */
 package de.dfki.grave.editor.action;
 
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-
-import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.panels.WorkSpace;
-import de.dfki.grave.editor.util.grid.*;
-import de.dfki.grave.editor.util.grid.pathfinding.Path;
+import de.dfki.grave.model.flow.AbstractEdge;
 
 /**
  *
  * @author Souza Putra
  */
-public class NormalizeEdgeAction extends EditorAction {
+public class NormalizeEdgeAction extends ReshapeEdgeAction {
 
-  private Edge mGUIEdge = null;
+  /*
   protected GridRectangle gridSource = null;
   protected GridRectangle gridDestination = null;
   protected de.dfki.grave.editor.Node mSourceGUINode = null;
   protected de.dfki.grave.editor.Node mTargetGUINode = null;
   protected Point mSourceGUINodeDockPoint = null;
   protected Point mTargetGUINodeDockPoint = null;
+  */
 
-  public NormalizeEdgeAction(WorkSpace workSpace, de.dfki.grave.editor.Edge edge) {
-    mWorkSpace = workSpace;
-    mGUIEdge = edge;
-    mSourceGUINode = mGUIEdge.getSourceNode();
-    mTargetGUINode = mGUIEdge.getTargetNode();
+  public NormalizeEdgeAction(WorkSpace workSpace, AbstractEdge edge) {
+    super(workSpace, edge);
+  }
+
+  protected void reshape() {
+    mWorkSpace.normalizeEdge(mEdge);
   }
 
   /*
@@ -254,17 +249,6 @@ public class NormalizeEdgeAction extends EditorAction {
     return sumWeight;
   }*/
 
-  @Override
-  protected void doIt() {
-    //recalculateWeight();
-    //setEdgePath();
-  }
-
-  @Override
-  protected void undoIt() {
-    // TODO Auto-generated method stub
-
-  }
 
   @Override
   protected String msg() { return "Normalize Edge"; }

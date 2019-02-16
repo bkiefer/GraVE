@@ -1,25 +1,25 @@
 package de.dfki.grave.editor.action;
 
-import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.model.flow.AbstractEdge;
 
 /**
  * @author Gregor Mehlmann
  */
 public class RemoveEdgeAction extends EditorAction {
-  private Edge mGUIEdge = null;
+  private AbstractEdge mEdge = null;
 
-  public RemoveEdgeAction(WorkSpace workSpace, Edge edge) {
+  public RemoveEdgeAction(WorkSpace workSpace, AbstractEdge edge) {
     mWorkSpace = workSpace;
-    mGUIEdge = edge;
+    mEdge = edge;
   }
 
   public void doIt() {
-    mWorkSpace.removeEdge(mGUIEdge);
+    mWorkSpace.removeEdge(mEdge);
   }
 
   public void undoIt() {
-    mWorkSpace.addEdge(mGUIEdge);
+    mWorkSpace.addEdge(mEdge);
   }
 
   @Override

@@ -3,8 +3,8 @@ package de.dfki.grave.editor.action;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.model.flow.BasicNode;
 
 /**
  * @author Gregor Mehlmann
@@ -12,9 +12,9 @@ import de.dfki.grave.editor.panels.WorkSpace;
  */
 public class CreateNodeAction extends EditorAction {
 
-  private List<Node> mNode = new ArrayList<Node>();
+  private List<BasicNode> mNode = new ArrayList<BasicNode>();
 
-  public CreateNodeAction(WorkSpace workSpace, Node node) {
+  public CreateNodeAction(WorkSpace workSpace, BasicNode node) {
     mWorkSpace = workSpace;
     mNode.add(node);
   }

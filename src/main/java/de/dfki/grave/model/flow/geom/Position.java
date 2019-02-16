@@ -30,6 +30,10 @@ public final class Position implements Copyable {
     y = yPos;
   }
 
+  public Position(Point p) {
+    this(p.x, p.y);
+  }
+
   // Set the X coordinate
   @XmlAttribute
   public final void setXPos(final int value) {
@@ -60,5 +64,9 @@ public final class Position implements Copyable {
   public void setTo(Point p) {
     x = p.x;
     y = p.y;
+  }
+
+  public Point toPoint() {
+    return new Point(x, y);
   }
 }

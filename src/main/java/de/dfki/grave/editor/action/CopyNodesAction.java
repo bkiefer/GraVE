@@ -1,28 +1,31 @@
 package de.dfki.grave.editor.action;
 
+import java.util.Collection;
 //~--- JDK imports ------------------------------------------------------------
 import java.util.HashSet;
 import java.util.Set;
 
-import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.model.flow.BasicNode;
 
 /**
  * @author Patrick Gebhard
+ *
+ * TODO: BK: DOESN'T MAKE A LOT OF SENSE TO ME TO UNDO COPY
  */
 public class CopyNodesAction extends EditorAction {
 
-  private Set<Node> mNodes = null;
+  private Set<BasicNode> mNodes = null;
 
   @SuppressWarnings("serial")
-  public CopyNodesAction(WorkSpace workSpace, Node node) {
+  public CopyNodesAction(WorkSpace workSpace, BasicNode node) {
     mWorkSpace = workSpace;
-    mNodes = new HashSet<Node>(){{ add(node); }};
+    mNodes = new HashSet<BasicNode>(){{ add(node); }};
   }
 
-  public CopyNodesAction(WorkSpace workSpace, Set<Node> mSelectedNodes) {
+  public CopyNodesAction(WorkSpace workSpace, Collection<BasicNode> mSelectedNodes) {
     mWorkSpace = workSpace;
-    mNodes = new HashSet<Node>(mSelectedNodes);
+    mNodes = new HashSet<>(mSelectedNodes);
   }
 
   protected void doIt() {

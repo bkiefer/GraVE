@@ -1,31 +1,19 @@
 package de.dfki.grave.editor.action;
 
 import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.model.flow.AbstractEdge;
 
 /**
  *
  * @author Patrick Gebhard
  */
-public class StraightenEdgeAction extends EditorAction {
+public class StraightenEdgeAction extends ReshapeEdgeAction{
 
-  private de.dfki.grave.editor.Edge mGUIEdge = null;
-  private WorkSpace mWorkSpace;
-
-  public StraightenEdgeAction(WorkSpace workSpace, de.dfki.grave.editor.Edge edge) {
-    mWorkSpace = workSpace;
-    mGUIEdge = edge;
+  public StraightenEdgeAction(WorkSpace workSpace, AbstractEdge edge) {
+    super(workSpace, edge);
   }
 
-  @Override
-  protected void doIt() {
-    mGUIEdge.straightenEdge();
-  }
-
-  @Override
-  protected void undoIt() {
-    // TODO Auto-generated method stub
-
-  }
+  protected void reshape() { mWorkSpace.straightenEdge(mEdge); }
 
   @Override
   protected String msg() { return "Straighten Edge" ; }

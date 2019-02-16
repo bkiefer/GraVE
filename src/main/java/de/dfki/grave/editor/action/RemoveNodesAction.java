@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.dfki.grave.editor.Edge;
-import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.model.flow.AbstractEdge;
+import de.dfki.grave.model.flow.BasicNode;
 import de.dfki.grave.util.Triple;
 
 /**
@@ -15,21 +15,21 @@ import de.dfki.grave.util.Triple;
  */
 public class RemoveNodesAction extends EditorAction {
 
-  private Set<Node> mNodes = null;
+  private Set<BasicNode> mNodes = null;
   private boolean isCutOperation;
-  private Triple<Collection<Edge>, Collection<Node>, Collection<Edge>> mAffected;
+  private Triple<Collection<AbstractEdge>, Collection<BasicNode>, Collection<AbstractEdge>> mAffected;
 
 
-  public RemoveNodesAction(WorkSpace workSpace, Set<Node> mSelectedNodes,
+  public RemoveNodesAction(WorkSpace workSpace, Collection<BasicNode> mSelectedNodes,
       boolean toClipboard) {
     mWorkSpace = workSpace;
-    mNodes = new HashSet<Node>(mSelectedNodes);
+    mNodes = new HashSet<BasicNode>(mSelectedNodes);
     isCutOperation = toClipboard;
   }
 
   @SuppressWarnings("serial")
-  public RemoveNodesAction(WorkSpace workSpace, Node node, boolean toClipboard) {
-    this(workSpace, new HashSet<Node>(){{ add(node); }}, toClipboard);
+  public RemoveNodesAction(WorkSpace workSpace, BasicNode node, boolean toClipboard) {
+    this(workSpace, new HashSet<BasicNode>(){{ add(node); }}, toClipboard);
   }
 
   protected void doIt() {

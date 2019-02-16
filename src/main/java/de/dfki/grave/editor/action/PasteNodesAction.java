@@ -3,9 +3,9 @@ package de.dfki.grave.editor.action;
 import java.awt.Point;
 import java.util.Collection;
 
-import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.editor.panels.WorkSpacePanel;
+import de.dfki.grave.model.flow.BasicNode;
 
 /**
  * @author Patrick Gebhard
@@ -13,7 +13,7 @@ import de.dfki.grave.editor.panels.WorkSpacePanel;
 public class PasteNodesAction extends EditorAction {
 
   Point mMousePosition;
-  Collection<Node> mAffected;
+  Collection<BasicNode> mAffected;
 
   public PasteNodesAction(WorkSpace workSpace, Point p) {
     mWorkSpace = workSpace;

@@ -61,20 +61,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
   // TODO: eventually move computation of color to paint component
   private Color mColor;
 
-  /** For a given set of nodes that are subnodes of the same SuperNode, compute
-   *  all edge views that emerge from a node outside the set and end in a node
-   *  inside the set. nodes must be a subset of the current mNodeSet.
-   *
-   *  Only returns edges, no change in model or view
-   */
-  public static Collection<Edge> computeIncomingEdges(Collection<Node> nodes) {
-    List<Edge> result = new ArrayList<>();
-    // easier now
-    for (Node n : nodes)
-      for (Edge e : n.mInEdges)
-        if (! nodes.contains(e.getSourceNode())) result.add(e);
-    return result;
-  }
 
   /** For a given set of nodes that are subnodes of the same SuperNode, compute
    *  all edge views that emerge from a node inside the set and end in a node
@@ -82,10 +68,10 @@ public final class Node extends EditorComponent implements DocumentContainer {
    *
    *  Only returns edges, no change in model or view
    */
-  public static List<Edge> computeInnerEdges(Collection<Node> nodes) {
-    List<Edge> result = new ArrayList<>();
-    for (Node n : nodes)
-      for (Edge e : n.mOutEdges)
+  public static List<AbstractEdge> computeInnerEdges(Collection<BasicNode> nodes) {
+    List<AbstractEdge> result = new ArrayList<>();
+    for (BasicNode n : nodes)
+      for (AbstractEdge e : n.getEdgeList())
         if (nodes.contains(e.getTargetNode())) result.add(e);
     return result;
   }
@@ -99,8 +85,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
    *
   public static Collection<BasicNode> copyGraphModel(IDManager mgr,
       SuperNode newParent, List<Node> nodeViews, List<Edge> edgeViews) {
-
-
     Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
     for (Node nodeView : nodeViews) {
       BasicNode n = nodeView.getDataNode();
@@ -184,37 +168,17 @@ public final class Node extends EditorComponent implements DocumentContainer {
     repaint(100);
   }
 
-  public BasicNode changeType(IDManager mgr, Collection<Edge> incoming, BasicNode
-      newNode) {
-    if (newNode == null) {
-      if (! isBasic) {
-        SuperNode n = (SuperNode)getDataNode();
-        if (n.getNodeSize() > 0) {
-          // complain: this operation can not be done, SuperNode has subnodes
-          return null;
-        }
-        newNode = new BasicNode(mgr, n);
-      } else {
-        newNode = new SuperNode(mgr, getDataNode());
-        // adapt node lists of parent SuperNode
-      }
-    }
-    for (Edge in : incoming) {
-      AbstractEdge e = in.getDataEdge();
-      e.setTarget(newNode, e.getTargetDock());
-      e.setTargetUnid(newNode.getId());
-    }
-    // adapt node lists of parent SuperNode
-    SuperNode s = mDataNode.getParentNode();
-    s.removeNode(mDataNode);
-    s.addNode(newNode);
+  public BasicNode changeType(IDManager mgr, Collection<AbstractEdge> incoming,
+      BasicNode newNode) {
     BasicNode oldNode = mDataNode;
+    newNode = oldNode.changeType(mgr, incoming, newNode);
+    if (newNode == null)
+      return null;
     mDataNode = newNode;
     isBasic = !isBasic;
     update();
     return oldNode;
   }
-
 
   @Override
   public void update(Observable o, Object obj) {
@@ -293,10 +257,9 @@ public final class Node extends EditorComponent implements DocumentContainer {
     return mDisplayName;
   }
 
+  /** newLocation is in *MODEL* coordinates. */
   public void moveTo(Point newLocation) {
-    Position g = new Position(mWorkSpace.unzoom(newLocation.x),
-        mWorkSpace.unzoom(newLocation.y));
-    mDataNode.setPosition(g);
+    mDataNode.setPosition(new Position(newLocation));
     for (Edge edge : getConnectedEdges()) {
       edge.updateEdgeGraphics();
     }
@@ -413,16 +376,16 @@ public final class Node extends EditorComponent implements DocumentContainer {
     SuperNode curr = mDataNode.getParentNode();
 
     addItem(pop, curr.isStartNode(getDataNode()) ? "Unset Start" : "Set Start",
-        new ToggleStartNodeAction(mWorkSpace, this));
+        new ToggleStartNodeAction(mWorkSpace, this.getDataNode()));
     pop.add(new JSeparator());
 
     if (!(getDataNode() instanceof SuperNode)) {
-      addItem(pop, "To Supernode", new ChangeNodeTypeAction(mWorkSpace, this));
+      addItem(pop, "To Supernode", new ChangeNodeTypeAction(mWorkSpace, mDataNode));
       pop.add(new JSeparator());
     } else {
       SuperNode n = (SuperNode)getDataNode();
       if (n.getNodeSize() == 0) {
-        addItem(pop, "To BasicNode", new ChangeNodeTypeAction(mWorkSpace, this));
+        addItem(pop, "To BasicNode", new ChangeNodeTypeAction(mWorkSpace, mDataNode));
         pop.add(new JSeparator());
       }
     }
@@ -433,10 +396,10 @@ public final class Node extends EditorComponent implements DocumentContainer {
       pop.add(new JSeparator());
     }
 
-    addItem(pop, "Copy", new CopyNodesAction(mWorkSpace, this));
-    addItem(pop, "Cut", new RemoveNodesAction(mWorkSpace, this, true));
+    addItem(pop, "Copy", new CopyNodesAction(mWorkSpace, this.mDataNode));
+    addItem(pop, "Cut", new RemoveNodesAction(mWorkSpace, this.getDataNode(), true));
     pop.add(new JSeparator());
-    addItem(pop, "Delete", new RemoveNodesAction(mWorkSpace, this, false));
+    addItem(pop, "Delete", new RemoveNodesAction(mWorkSpace, this.getDataNode(), false));
     pop.show(this, getWidth(), 0);
   }
 
