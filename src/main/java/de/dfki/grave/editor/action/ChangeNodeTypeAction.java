@@ -1,6 +1,5 @@
 package de.dfki.grave.editor.action;
 
-import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.BasicNode;
 

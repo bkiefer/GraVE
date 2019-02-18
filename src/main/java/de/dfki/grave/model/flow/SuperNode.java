@@ -249,20 +249,21 @@ public class SuperNode extends BasicNode {
 
   /** This copies some subset of node and edge models. One basic assumption is
    *  that there are no "dangling" edges which either start or end at a node
-   *  outside the given node set.
+   *  outside the given node set, i.e., the `edges' list contains of inner
+   *  edges (between nodes in the nodes list) only.
    *
    *  The copied node models will be subnodes of this SuperNode.
    */
-  public Pair<Collection<BasicNode>, List<AbstractEdge>> copyGraphModel(
-      IDManager mgr, List<BasicNode> nodeViews, List<AbstractEdge> edgeViews) {
+  public Pair<Collection<BasicNode>, List<AbstractEdge>> copySubgraph(
+      IDManager mgr, List<BasicNode> nodes, List<AbstractEdge> edges) {
     Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
-    for (BasicNode n : nodeViews) {
+    for (BasicNode n : nodes) {
       BasicNode cpy = n.deepCopy(mgr, this);
       orig2copy.put(n, cpy);
     }
 
     List<AbstractEdge> newEdges = new ArrayList<>();
-    for (AbstractEdge edge: edgeViews) {
+    for (AbstractEdge edge: edges) {
       AbstractEdge e = edge.deepCopy(orig2copy);
       newEdges.add(e);
     }

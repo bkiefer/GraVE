@@ -142,6 +142,30 @@ public class Edge extends EditorComponent implements DocumentContainer {
     return mDataEdge != null ? mDataEdge.getContent() : null;
   }
 
+  // **********************************************************************
+  // Compute view coordinates from model coordinates
+  // **********************************************************************
+
+  /** Absolute position of edge start */
+  public Point getStart() {
+    return mSourceNode.getDockPoint(mDataEdge.getSourceDock());
+  }
+
+  /** Absolute position of edge end */
+  public Point getEnd() {
+    return mTargetNode.getDockPoint(mDataEdge.getTargetDock());
+  }
+
+  /** Absolute position of edge start control point */
+  public Point getStartCtrl() {
+    return Geom.add(getStart(), mWorkSpace.zoom(mDataEdge.getSourceCtrlPoint()));
+  }
+
+  /** Absolute position of edge end control point */
+  public Point getEndCtrl() {
+    return Geom.add(getEnd(), mWorkSpace.zoom(mDataEdge.getTargetCtrlPoint()));
+  }
+
   public boolean containsPoint(Point p) {
     return mArrow.curveContainsPoint(p);
   }
@@ -516,27 +540,4 @@ public class Edge extends EditorComponent implements DocumentContainer {
     return mEditMode;
   }
 
-  // **********************************************************************
-  // New AbstractEdge functionality
-  // **********************************************************************
-
-  /** Absolute position of edge start */
-  public Point getStart() {
-    return mSourceNode.getDockPoint(mDataEdge.getSourceDock());
-  }
-
-  /** Absolute position of edge end */
-  public Point getEnd() {
-    return mTargetNode.getDockPoint(mDataEdge.getTargetDock());
-  }
-
-  /** Absolute position of edge start control point */
-  public Point getStartCtrl() {
-    return Geom.add(getStart(), mWorkSpace.zoom(mDataEdge.getSourceCtrlPoint()));
-  }
-
-  /** Absolute position of edge end control point */
-  public Point getEndCtrl() {
-    return Geom.add(getEnd(), mWorkSpace.zoom(mDataEdge.getTargetCtrlPoint()));
-  }
 }

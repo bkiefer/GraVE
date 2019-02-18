@@ -9,7 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Point2D;
 import java.util.*;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,43 +59,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
   // The color of the node
   // TODO: eventually move computation of color to paint component
   private Color mColor;
-
-
-  /** For a given set of nodes that are subnodes of the same SuperNode, compute
-   *  all edge views that emerge from a node inside the set and end in a node
-   *  inside the set
-   *
-   *  Only returns edges, no change in model or view
-   */
-  public static List<AbstractEdge> computeInnerEdges(Collection<BasicNode> nodes) {
-    List<AbstractEdge> result = new ArrayList<>();
-    for (BasicNode n : nodes)
-      for (AbstractEdge e : n.getEdgeList())
-        if (nodes.contains(e.getTargetNode())) result.add(e);
-    return result;
-  }
-
-  /** This copies some subset of node and edge views and their underlying
-   *  models. One basic assumption is that there are no "dangling" edges which
-   *  either start or end at a node outside the given node set.
-   *
-   *  The copied views will be added to the given WorkSpace, and all copied
-   *  node models will be subnodes of the given SuperNode.
-   *
-  public static Collection<BasicNode> copyGraphModel(IDManager mgr,
-      SuperNode newParent, List<Node> nodeViews, List<Edge> edgeViews) {
-    Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
-    for (Node nodeView : nodeViews) {
-      BasicNode n = nodeView.getDataNode();
-      orig2copy.put(n, n.deepCopy(mgr, newParent));
-    }
-
-    for (Edge edgeView : edgeViews) {
-      // connects the new edges in the copied model nodes
-      edgeView.getDataEdge().deepCopy(orig2copy);
-    }
-    return orig2copy.values();
-  }*/
 
   /**
    *  Create new Node view from the (complete) node model, when reading from
@@ -246,10 +208,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
 
     // Set the flavour dependend color
     setColor();
-
-    // Update the bounds if the node's size has changed
-    // BK: WHAT? IF THE SIZE HAS CHANGED, RESET TO EDITORCONFIG?
-    //setBounds(getX(), getY(), getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT);
   }
 
   @Override
@@ -273,7 +231,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
   public void translate(Point vector) {
     Point location = getLocation();
     location.translate(vector.x, vector.y);
-    // also translate all edge points
+    // also translates all edges
     moveTo(location);
   }
 
@@ -342,26 +300,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
     center.translate((int)dp.getX(), (int)dp.getY());
     return center;
   }
-
-  /*
-   *
-
-  public Point getSelfPointingEdgeDockPoint(Edge e) {
-    Point loc = getLocation();
-    Point dp = mDockingManager.getSecondDockPoint(e);
-    // make position absolute to underlying canvas
-    if (dp != null) {
-      dp.setLocation(dp.x + loc.x, dp.y + loc.y);
-    } else {
-      if (this.mDataNode.isEndNode()) {
-        return (new Point(loc.x, loc.y + getHeight() / 2));
-      } else {
-        return (new Point(loc.x + getWidth(), loc.y + getHeight() / 2));
-      }
-    }
-    return dp;
-  }
-   */
 
   public boolean isEdgeAllowed(AbstractEdge e) {
     return mDataNode.canAddEdge(e);

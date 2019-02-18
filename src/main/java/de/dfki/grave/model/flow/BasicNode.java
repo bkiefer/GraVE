@@ -2,10 +2,7 @@ package de.dfki.grave.model.flow;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -14,7 +11,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.panels.IDManager;
 import de.dfki.grave.model.flow.geom.Geom;
 import de.dfki.grave.model.flow.geom.Position;
@@ -81,6 +77,46 @@ public class BasicNode  {
   public enum FLAVOUR {
     NONE, ENODE, TNODE, CNODE, PNODE, INODE, FNODE
   };
+
+
+  /** For a given set of nodes that are subnodes of the same SuperNode, compute
+   *  all edge views that emerge from a node inside the set and end in a node
+   *  inside the set
+   *
+   *  Only returns edges, no change in model or view
+   */
+  public static List<AbstractEdge> computeInnerEdges(Collection<BasicNode> nodes) {
+    List<AbstractEdge> result = new ArrayList<>();
+    for (BasicNode n : nodes)
+      for (AbstractEdge e : n.getEdgeList())
+        if (nodes.contains(e.getTargetNode())) result.add(e);
+    return result;
+  }
+
+  /** Adjust the positions of node and edge models such that the center of the
+   *  covered area is at the given position.
+   *
+   *  Exploits the fact that the node and edge views can be perfectly
+   *  reconstructed from the models, and only models are handled internally
+   */
+  public static void translateNodes(Collection<BasicNode> nodes, Point p) {
+    int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE,
+        maxX = 0, maxY = 0;
+    // compute the covered area
+    for (BasicNode n : nodes) {
+      int x = n.getPosition().getXPos();
+      int y = n.getPosition().getYPos();
+      minX = Math.min(minX, x); minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+    }
+    // translate such that the center of the area is on p
+    int translateX = Math.max(p.x - (maxX + minX) / 2, -minX);
+    int translateY = Math.max(p.y - (maxY + minY) / 2, -minY);
+    // will move the edges, too
+    for (BasicNode n : nodes) {
+      n.translate(translateX, translateY);
+    }
+  }
 
   public BasicNode() {}
 

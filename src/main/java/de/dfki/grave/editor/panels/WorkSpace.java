@@ -90,7 +90,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
     // Add the element editor to the event multicaster
     mEventCaster.register(this);
-    //show all elements
+    // show all elements
     showCurrentWorkSpace();
   }
 
@@ -354,20 +354,15 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     // Show the nodes and supernodes on the workspace.
     // Show the edges on the workspace.
     // Show the variables on workspace.
-    showNodesOnWorkSpace();
+    for (BasicNode n : getSuperNode().getNodes()) {
+      addNode(n);
+    }
     for (CommentBadge n : getSuperNode().getCommentList()){
       addToWorkSpace(new Comment(this, n));
     }
     showEdgesOnWorkSpace();
     revalidate();
     repaint(100);
-  }
-
-  /** Add views for all the (sub)node models in this workspace's SuperNode */
-  private void showNodesOnWorkSpace() {
-    for (BasicNode n : getSuperNode().getNodes()) {
-      addNode(n);
-    }
   }
 
   /** Add views for all edges between nodes in this workspace */
@@ -578,40 +573,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mObservable.addObserver(c);
   }
 
-
-  /** Helper function, adjusting the positions of node views and models
-   *  such that the center of the covered area is at the given position.
-   *
-  private void translateNodeViews(Collection<Node> nodes, Point p) {
-    int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE,
-        maxX = 0, maxY = 0;
-    // compute the covered area
-    for (Node n : nodes) {
-      int x = n.getLocation().x;
-      int y = n.getLocation().y;
-      minX = Math.min(minX, x); minY = Math.min(minY, y);
-      maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
-    }
-    // translate such that the center of the area is on p
-    int translateX = Math.max(p.x - (maxX + minX) / 2, -minX);
-    int translateY = Math.max(p.y - (maxY + minY) / 2, -minY);
-    // add half the node size
-    Node node = nodes.iterator().next();
-    translateX += node.getWidth() / 2;
-    translateY += node.getHeight() / 2;
-    // should move the edges, too
-    for (Node n : nodes) {
-      Point loc = n.getLocation();
-      loc.translate(translateX, translateY);
-      if (snapToGrid) {
-        loc = mGridManager.getNodeLocation(loc);
-      }
-      n.moveTo(loc);
-      //n.translate does that
-      //n.getDataNode().translate(translateX, translateY);
-    }
-  }*/
-
   // ######################################################################
   // actions for edges
   // ######################################################################
@@ -623,18 +584,22 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    */
   public void pasteNodesAndEdges(Collection<BasicNode> nodes,
       Collection<AbstractEdge> edges) {
+    // first add all nodes, so the views exist when adding edges
     for (BasicNode n : nodes) {
       getSuperNode().addNode(n);
       addNode(n);
-      // add edge views for internal edges
+    }
+    // add edge views for internal edges, only relevant for undo delete/cut
+    for (BasicNode n : nodes) {
       for (AbstractEdge e: n.getEdgeList()) {
         if (nodes.contains(e.getTargetNode())) {
           addEdgeView(e);
         }
       }
     }
-    // Add edges emerging from the set of `nodes', which also requires
-    // reclaiming reconnecting to target nodes and reclaiming the dock
+    // Add edges, either emerging from the set of `nodes' for undoing a
+    // cut/delete, which also requires
+    // reconnecting to target nodes and reclaiming the dock
     addEdges(edges);
   }
 
@@ -680,8 +645,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     // add edge to view
     addEdgeView(e);
     // add edge to model
-    // this destructively changes the source node of e, which must be
-    // UNDOne
+    // this destructively changes the source node of e, which must be UNDOne
     e.getSourceNode().addEdge(e);
   }
 
@@ -757,64 +721,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     return result;
   }
 
-  /** This copies some subset of node and edge views and their underlying
-   *  models. One basic assumption is that there are no "dangling" edges which
-   *  either start or end at a node outside the given node set.
-   *
-   *  The copied views will be added to the given WorkSpace, and all copied
-   *  node models will be subnodes of the given SuperNode.
-   *
-  public Pair<Collection<Node>, List<Edge>> copyGraph(
-      List<Node> nodeViews, List<Edge> edgeViews) {
-    SuperNode newParent = getSuperNode();
-    Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
-    Map<Node, Node> origView2copy = new IdentityHashMap<>();
-    for (Node nodeView : nodeViews) {
-      BasicNode n = nodeView.getDataNode();
-      BasicNode cpy = n.deepCopy(mIDManager, newParent);
-      orig2copy.put(n, cpy);
-      // now create a new Node as view for the copy of n
-      Node newNode = new Node(this, cpy);
-      origView2copy.put(nodeView, newNode);
-    }
-
-    List<Edge> newEdges = new ArrayList<>();
-    for (Edge edgeView : edgeViews) {
-      AbstractEdge e = edgeView.getDataEdge().deepCopy(orig2copy);
-      // now create a new Edge as view for the copy of e
-      Edge newEdge = new Edge(this, e,
-          origView2copy.get(edgeView.getSourceNode()),
-          origView2copy.get(edgeView.getTargetNode()));
-      newEdges.add(newEdge);
-    }
-    return new Pair<Collection<Node>, List<Edge>>(origView2copy.values(), newEdges);
-  }*/
-
-  /** This copies some subset of node and edge views and their underlying
-   *  models. One basic assumption is that there are no "dangling" edges which
-   *  either start or end at a node outside the given node set.
-   *
-   *  The copied views will be added to the given WorkSpace, and all copied
-   *  node models will be subnodes of the given SuperNode.
-   *
-  public Pair<Collection<BasicNode>, List<AbstractEdge>> copyGraphModel(
-      List<BasicNode> nodeViews, List<AbstractEdge> edgeViews) {
-    SuperNode newParent = getSuperNode();
-    Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
-    for (BasicNode n : nodeViews) {
-      BasicNode cpy = n.deepCopy(mIDManager, newParent);
-      orig2copy.put(n, cpy);
-    }
-
-    List<AbstractEdge> newEdges = new ArrayList<>();
-    for (AbstractEdge edge: edgeViews) {
-      AbstractEdge e = edge.deepCopy(orig2copy);
-      newEdges.add(e);
-    }
-    return new Pair<Collection<BasicNode>, List<AbstractEdge>>(
-        orig2copy.values(), newEdges);
-  }*/
-
   /** paste nodes from the clipboard
    *  This operates in two modes: if not in copy mode, the nodes are just
    *  added. Otherwise:
@@ -834,11 +740,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     List<AbstractEdge> edges = mClipboard.getEdges();
     if (mClipboard.needsCopy(this)) {
       Pair<Collection<BasicNode>, List<AbstractEdge>> toAdd =
-          getSuperNode().copyGraphModel(mIDManager, nodes, edges);
+          getSuperNode().copySubgraph(mIDManager, nodes, edges);
       if (mousePosition != null) {
         // snap to grid: currently not.
         //mousePosition = mGridManager.getClosestGridPoint(mousePosition);
-        translateNodes(toAdd.getFirst(), mousePosition);
+        BasicNode.translateNodes(toAdd.getFirst(), mousePosition);
       }
       pasteNodesAndEdges(toAdd.getFirst(), toAdd.getSecond());
       return toAdd.getFirst();
@@ -927,7 +833,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *  the Copy operation (lazy copy).
    */
   public void copyNodes(Collection<BasicNode> nodes) {
-    mClipboard.setToCopy(this, nodes, Node.computeInnerEdges(nodes));
+    mClipboard.setToCopy(this, nodes, BasicNode.computeInnerEdges(nodes));
   }
 
   // ######################################################################
@@ -953,77 +859,4 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     removeFromWorkSpace(comment);
     getSuperNode().removeComment(comment.getData());
   }
-
-  /* Assumes that the node and edge views can be perfectly reconstructed from
-   * the models, and only models are handled internally
-   */
-
-  /** Helper function, adjusting the positions of node and edge models
-   *  such that the center of the covered area is at the given position.
-   */
-  private static void translateNodes(Collection<BasicNode> nodes, Point p) {
-    int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE,
-        maxX = 0, maxY = 0;
-    // compute the covered area
-    for (BasicNode n : nodes) {
-      int x = n.getPosition().getXPos();
-      int y = n.getPosition().getYPos();
-      minX = Math.min(minX, x); minY = Math.min(minY, y);
-      maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
-    }
-    // translate such that the center of the area is on p
-    int translateX = Math.max(p.x - (maxX + minX) / 2, -minX);
-    int translateY = Math.max(p.y - (maxY + minY) / 2, -minY);
-    // should move the edges, too
-    for (BasicNode n : nodes) {
-      n.translate(translateX, translateY);
-      // now translate all outgoing edges
-      //n.translate does that
-      //n.getDataNode().translate(translateX, translateY);
-    }
-    /*
-    for (BasicNode n : nodes) {
-      for (AbstractEdge e : n.getEdgeList()) {
-        e.translate(translateX, translateY);
-      }
-    }
-    */
-  }
-
 }
-
-  /** paste nodes from the clipboard
-   *  This operates in two modes: if not in copy mode, the nodes are just
-   *  added. Otherwise:
-   *
-   *  Do a deep copy of the model nodes and edges in the set, assuming
-   *  there are no "dangling" edges, and add them to this workspace. Then,
-   *  adjust the positions of the new node views such that the center of the
-   *  paste area is at the given position
-   *
-   *  About the placement of the new nodes: They should keep their relative
-   *  positions for paste after copy, but at the location of the mouse. For
-   *  undo, they retain their old positions, but what after cut? Treat it like
-   *  undo, or copy? I favour undo, since the other can be achieved by dragging.
-   *
-  public void pasteNodesFromClipboard0(Point mousePosition) {
-    List<Node> nodes = mClipboard.getNodes();
-    List<Edge> edges = computeInnerEdges(nodes);
-    if (mClipboard.needsCopy(this)) {
-      Collection<BasicNode> toAdd = Node.copyGraphModel(
-          getSceneFlowEditor().getIDManager(), getSuperNode(), nodes, edges);
-      if (mousePosition != null) {
-        // snap to grid: currently not.
-        //mousePosition = mGridManager.getClosestGridPoint(mousePosition);
-        translateNodes(toAdd, mousePosition);
-      }
-
-      //pasteNodes(toAdd.getFirst(), toAdd.getSecond());
-    } else {
-      // just add nodes and edges to the view and model as is: same positions,
-      // etc.
-      pasteNodes(nodes, edges);
-      // now the clipboard must be set to copy: the nodes are used.
-      mClipboard.forceCopy();
-    }
-  }*/

@@ -15,7 +15,6 @@ import de.dfki.grave.editor.action.RemoveCommentAction;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.CommentBadge;
 import de.dfki.grave.model.flow.geom.Boundary;
-import de.dfki.grave.model.project.EditorConfig;
 import de.dfki.grave.util.ios.ResourceLoader;
 
 /**
