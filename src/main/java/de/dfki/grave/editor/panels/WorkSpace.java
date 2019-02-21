@@ -189,6 +189,13 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     refreshAll();
   }
 
+  public void nozoom() {
+    mZoomFactor = 1.0f;
+    getEditorConfig().sZOOM_FACTOR = mZoomFactor;
+    //saveEditorConfig(); // TODO: activate
+    refreshAll();
+  }
+
   public void zoomIn() {
     if (mZoomFactor < 3.0) mZoomFactor += .1;
     getEditorConfig().sZOOM_FACTOR = mZoomFactor;

@@ -85,6 +85,9 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   private final ImageIcon ICON_SCREENSHOT_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/screenshot.png");
   private final ImageIcon ICON_SCREENSHOT_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/screenshot_blue.png");
 
+  private final ImageIcon ICON_NOZOOM_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/nozoom.png");
+  private final ImageIcon ICON_NOZOOM_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/nozoom_blue.png");
+
   private final ImageIcon ICON_ZOOMIN_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/zoomin.png");
   private final ImageIcon ICON_ZOOMIN_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/zoomin_blue.png");
 
@@ -447,6 +450,17 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     b.setToolTipText("Zoom In");
     b.setRolloverIcon(ICON_ZOOMIN_ROLLOVER);
 
+    //ZOOM ORIGINAL SIZE BUTTON
+    sanitizeButton(b, smallButtonDim);
+    b = add(new AbstractAction("ACTION_ZOOM_ORIG", ICON_NOZOOM_STANDARD) {
+      @Override
+      public void actionPerformed(ActionEvent evt) {
+        getWorkSpace().nozoom();
+      }
+    });
+    b.setToolTipText("Zoom 100%");
+    b.setRolloverIcon(ICON_NOZOOM_ROLLOVER);
+
     //ZOOM OUT BUTTON
     sanitizeButton(b, smallButtonDim);
     b = add(new AbstractAction("ACTION_ZOOM_OUT", ICON_ZOOMOUT_STANDARD) {
@@ -463,9 +477,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
 
   ////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+
   private void refreshButtons() {
     // Print some information
     //mLogger.message("Refreshing Buttons Of '" + this + "'");
