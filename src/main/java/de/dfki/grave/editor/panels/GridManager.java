@@ -38,6 +38,9 @@ import de.dfki.grave.model.project.EditorConfig;
  *
  * Positions of GUI elements should be mapped to abstract positions, so that
  * all positions and dimensions are divided by zoomFactor
+ *
+ * Inside this class, all positions are in view coordinates, and all methods
+ * take points in view coordinates as in and output.
  */
 public class GridManager {
 
@@ -127,6 +130,9 @@ public class GridManager {
    *
    *  Since the inputPoint comes from mouse coordinates, which the user will point
    *  at the grid points, it must be corrected appropriately
+   *
+   *  @param inputPoint a point in view coordinates
+   *  @return a free grid position closest to inputPoint in view coordinates
    */
   public Point getNodeLocation(Point inputPoint) {
     int gridWidth = gridWidth();
@@ -168,6 +174,7 @@ public class GridManager {
     return p;
   }
 
+  /** Release the grid point at view position p */
   public void releaseGridPosition(Point p) {
     if (mPlacedNodes.contains(p)) {
       // System.out.println("point is in use - delete in occupied positions");

@@ -646,7 +646,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
     // moving multiple nodes those which are selected before
     if (!mDoAreaSelection && ! mSelectedNodes.isEmpty()) {
-      // compute movement trajectory vectors
+      // compute movement trajectory vectors, in view coordinates
       Point currentMousePosition = event.getPoint();
       Point mouseMoveVector = new Point(currentMousePosition.x - mLastMousePos.x,
               currentMousePosition.y - mLastMousePos.y);

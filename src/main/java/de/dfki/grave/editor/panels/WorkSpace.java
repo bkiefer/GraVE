@@ -203,24 +203,29 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     refreshAll();
   }
 
+  /** Convert from model to view coordinates */
   public int zoom(int val) {
     return (int)(val * mZoomFactor);
   }
 
+  /** Convert from view to model coordinates */
   public int unzoom(int val) {
     return (int)(val / mZoomFactor);
   }
 
+  /** Convert from model to view coordinates */
   public Point zoom(Point val) {
     return new Point((int)(val.x * mZoomFactor),
         (int)(val.y * mZoomFactor));
   }
 
+  /** Convert from view to model coordinates */
   public Point unzoom(Point val) {
     return new Point((int)(val.x / mZoomFactor),
         (int)(val.y / mZoomFactor));
   }
 
+  /** Convert from model to view coordinates */
   public Point zoom(Position val) {
     return new Point((int)(val.getXPos() * mZoomFactor),
         (int)(val.getYPos() * mZoomFactor));
@@ -417,7 +422,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   }
 
   /**
-   *  Drag a set of nodes to a new location, mouse not released
+   *  Drag a set of nodes to a new location, mouse not released.
+   *
+   *  moveVec is in view coordinates
    */
   protected boolean dragNodes(Set<Node> nodes, Point moveVec) {
     if (mNodeStartPositions == null) {

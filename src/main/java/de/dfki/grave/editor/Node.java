@@ -221,18 +221,19 @@ public final class Node extends EditorComponent implements DocumentContainer {
     for (Edge edge : getConnectedEdges()) {
       edge.updateEdgeGraphics();
     }
-    setLocation(newLocation);
+    setLocation(mWorkSpace.zoom(newLocation));
     CmdBadge badge = getCmdBadge();
     if (badge != null) {
       badge.setLocation();
     }
   }
 
+  /** vector is in view coordinates */
   public void translate(Point vector) {
     Point location = getLocation();
     location.translate(vector.x, vector.y);
     // also translates all edges
-    moveTo(location);
+    moveTo(mWorkSpace.unzoom(location));
   }
 
   /** Only necessary since we have no model->view map, and the model only has
