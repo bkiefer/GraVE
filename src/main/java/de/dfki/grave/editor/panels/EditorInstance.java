@@ -285,7 +285,8 @@ public final class EditorInstance extends JFrame implements ChangeListener {
     final ProjectEditor editor = new ProjectEditor(epj);
 
     // Set default name  main superNode
-    editor.getSceneFlowEditor().getSceneFlow().setName(editor.getEditorProject().getEditorConfig().sMAINSUPERNODENAME);
+    //editor.getSceneFlowEditor().getSceneFlow().setName(editor.getEditorProject().getEditorConfig().sMAINSUPERNODENAME);
+    // happening in RuntimeProject now, where scene flow is created
 
     // Add the new project editor
     addProjectTab(projectName, editor);

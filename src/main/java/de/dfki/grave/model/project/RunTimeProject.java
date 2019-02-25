@@ -35,6 +35,7 @@ public class RunTimeProject {
   public RunTimeProject(ProjectConfig config) {
     mProjectConfig = config;
     mSceneFlow = new SceneFlow();
+    mSceneFlow.setName(config.getProjectName());
   }
 
   public boolean isNewProject() {
