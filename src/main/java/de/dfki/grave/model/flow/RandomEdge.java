@@ -29,6 +29,7 @@ public class RandomEdge extends AbstractEdge {
     return "" + mProbability;
   }
 
+  /** EDGE MODIFICATION (?) */
   public void setContent(String s) {
     mProbability = Integer.parseInt(s);
   }

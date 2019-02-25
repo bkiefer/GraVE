@@ -55,6 +55,7 @@ public class SuperNode extends BasicNode {
     return mStartNode;
   }
 
+  /** NODE MODIFICATION (?) */
   public void setStartNode(BasicNode value) {
     mStartNode = value;
     mStartNodeId = value.getId();
@@ -103,7 +104,10 @@ public class SuperNode extends BasicNode {
     return mStartNode == value;
   }
 
-  /** Add a node to the list of nodes */
+  /** Add a node to the list of nodes 
+   *
+   *  NODE MODIFICATION
+   */
   public void addNode(BasicNode value) {
     if (mSuperNodeList.isEmpty() && mNodeList.isEmpty()) {
       setStartNode(value);
@@ -117,6 +121,8 @@ public class SuperNode extends BasicNode {
 
   /** Add a node, with side effects, such as adding it as a start node if it's
    *  the first node added
+   * 
+   * NODE MODIFICATION
    */
   public void removeNode(BasicNode value) {
     if (value instanceof SuperNode) {

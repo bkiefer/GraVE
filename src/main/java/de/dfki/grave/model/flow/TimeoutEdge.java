@@ -41,6 +41,7 @@ public class TimeoutEdge extends AbstractEdge {
     return "" + mTimeout;
   }
 
+  /** EDGE MODIFICATION (?) */
   public void setContent(String s) {
     s = s.trim();
     if (s.isEmpty()) return;

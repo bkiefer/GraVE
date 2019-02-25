@@ -24,6 +24,7 @@ public class GuardedEdge extends AbstractEdge {
     return mCondition.getContent();
   }
 
+  /** EDGE MODIFICATION (?) */
   public void setCondition(String mOldCondition) {
     mCondition.setContent(mOldCondition);
   }

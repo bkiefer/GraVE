@@ -173,6 +173,7 @@ public class BasicNode  {
     return mNodeId;
   }
 
+  /** NODE MODIFICATION */
   public void setName(String value) {
     mNodeName = value;
   }
@@ -181,11 +182,13 @@ public class BasicNode  {
     return mNodeName;
   }
 
+  /** NODE MODIFICATION */
   public void setNameAndId(String value) {
     mNodeId = value;
     mNodeName = value;
   }
 
+  /** NODE MODIFICATION */
   public void setComment(String value) {
     mComment = value;
   }
@@ -198,6 +201,7 @@ public class BasicNode  {
     return ! (mComment == null || mComment.isEmpty());
   }
 
+  /** NODE MODIFICATION (?) */
   public BasicNode changeType(IDManager mgr, Collection<AbstractEdge> incoming,
       BasicNode newNode) {
     if (newNode == null) {
@@ -338,6 +342,8 @@ public class BasicNode  {
         ? FLAVOUR.TNODE : FLAVOUR.ENODE;
   }
 
+  /** NODE MODIFICATION 
+   *  (theoretically, though this is never used -> remove? */
   @XmlElement(name="TEdge")
   public void setTEdge(TimeoutEdge value) { mDEdge = value; }
   public TimeoutEdge getTEdge() {
@@ -350,6 +356,7 @@ public class BasicNode  {
     return mDEdge instanceof EpsilonEdge ? (EpsilonEdge)mDEdge : null;
   }
 
+  /** NODE MODIFICATION */
   public void setPosition(Position value) {
     mPosition = value;
   }
@@ -490,6 +497,7 @@ public class BasicNode  {
     return mCmdList.getContent();
   }
 
+  /** NODE MODIFICATION */
   public void setCmd(String s) {
     mCmdList.setContent(s);
   }
