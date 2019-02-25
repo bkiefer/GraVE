@@ -10,6 +10,9 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
@@ -20,6 +23,7 @@ import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.editor.event.WorkSpaceSelectedEvent;
 import de.dfki.grave.model.flow.*;
 import de.dfki.grave.model.flow.geom.Boundary;
+import de.dfki.grave.model.flow.geom.Geom;
 import de.dfki.grave.model.flow.geom.Position;
 import de.dfki.grave.model.project.EditorConfig;
 import de.dfki.grave.model.project.EditorProject;
@@ -41,6 +45,7 @@ import de.dfki.grave.util.evt.EventListener;
  */
 @SuppressWarnings("serial")
 public abstract class WorkSpace extends JPanel implements EventListener {
+  private static final Logger logger = LoggerFactory.getLogger(WorkSpace.class);
 
   // The clipboard
   protected final ClipBoard mClipboard = ClipBoard.getInstance();
@@ -407,10 +412,13 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   public void moveTo(BasicNode n, Point loc) {
     Node vn = mNodeSet.get(n);
-    if (snapToGrid) {
-      mGridManager.releaseGridPosition(vn.getLocation());
+    if (snapToGrid && mGridManager.positionOccupiedBy(vn.getLocation()) == vn) {
+      mGridManager.releaseGridPosition(vn.getLocation(), vn);
     }
     vn.moveTo(loc);
+    if (snapToGrid) {
+      mGridManager.occupyGridPosition(vn.getLocation(), vn);
+    }
   }
 
   /** Change this edge in some way, all Points in model coordinates */
@@ -419,6 +427,22 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     Edge e = mEdges.get(edge);
     e.modifyEdge(mNodeSet.get(nodes[0]), mNodeSet.get(nodes[1]),
         nodes, docks, ctrls);
+  }
+
+  /** Helper function for dragNodes */
+  private Map<Node, Point> computeNewPositions(Point moveVec) {
+    Map<Node, Point> newPositions =
+        new IdentityHashMap<>(mNodeStartPositions.size());
+    for (Map.Entry<Node, Point> e : mNodeStartPositions.entrySet()) {
+      Node node = e.getKey();
+      Point newPos = Geom.add(mNodeStartPositions.get(node), moveVec);
+      if (newPos.x < 0 || newPos.y < 0) {
+        // stop dragging, if upper and left border would be passed!
+        return null;
+      }
+      newPositions.put(node, newPos);
+    };
+    return newPositions;
   }
 
   /**
@@ -432,20 +456,15 @@ public abstract class WorkSpace extends JPanel implements EventListener {
       for (Node n : nodes) {
         Point nodeLoc = n.getLocation();
         if (snapToGrid)
-          mGridManager.releaseGridPosition(nodeLoc);
+          mGridManager.releaseGridPosition(nodeLoc, n);
         mNodeStartPositions.put(n, nodeLoc);
       }
     }
-    for (Node node : nodes) {
-      Point nodePos = node.getLocation();
-      if (((nodePos.x + moveVec.x) <= 0) || ((nodePos.y + moveVec.y) <= 0)) {
-        // stop dragging, if upper and left border would be passed!
-        return false;
-      }
-    }
+    Map<Node, Point> newPositions = computeNewPositions(moveVec);
+    if (newPositions == null) return false;
 
-    for (Node node : nodes) {
-      node.translate(moveVec);
+    for (Map.Entry<Node, Point> e : newPositions.entrySet()) {
+      e.getKey().moveTo(unzoom(e.getValue()));
     }
     return true;
   }
@@ -557,7 +576,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private void removeFromWorkSpace(Node n) {
     mNodeSet.remove(n.getDataNode());
     if (snapToGrid)
-      mGridManager.releaseGridPosition(n.getLocation());
+      mGridManager.releaseGridPosition(n.getLocation(), n);
     // remove from Panel
     super.remove(n);
     super.remove(n.getCmdBadge());
@@ -566,6 +585,8 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** Add node view to workspace, no change in model */
   private void addToWorkSpace(Node n) {
+    if (snapToGrid)
+      mGridManager.occupyGridPosition(n.getLocation(), n);
     mNodeSet.put(n.getDataNode(), n);
     // add to Panel
     super.add(n);
@@ -688,8 +709,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *  location, and add it to the workspace
    */
   public BasicNode createNode(Point point, BasicNode model) {
-    if (snapToGrid)
+    if (snapToGrid) {
       point = mGridManager.getNodeLocation(point);
+    }
     Position p = new Position(unzoom(point.x), unzoom(point.y));
     return model.createNode(mIDManager, p, getSuperNode());
   }

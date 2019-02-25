@@ -11,14 +11,8 @@ import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JPopupMenu;
-import javax.swing.KeyStroke;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
@@ -28,6 +22,7 @@ import de.dfki.grave.editor.action.*;
 import de.dfki.grave.editor.event.EdgeEditEvent;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.panels.EditorInstance;
+import de.dfki.grave.editor.panels.UndoRedoProvider;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.*;
 import de.dfki.grave.model.flow.geom.Geom;
@@ -214,7 +209,7 @@ public class Edge extends EditorComponent implements DocumentContainer {
     mDocument.addUndoableEditListener(
         new UndoableEditListener() {
           public void undoableEditHappened(UndoableEditEvent e) {
-            new TextEditAction(mWorkSpace, e.getEdit()).run();
+            UndoRedoProvider.addEdit(e.getEdit());
           }
         });
     this.add(mTextArea);

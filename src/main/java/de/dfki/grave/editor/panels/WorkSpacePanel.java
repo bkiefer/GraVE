@@ -37,7 +37,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   private DropTargetListener mDropTargetListener;
   private int mAcceptableActions;
 
-  private Point mLastMousePos = new Point(0, 0);
+  private Point mLastMousePos = null;
   private Edge mSelectedEdge = null;
   private Comment mSelectedComment = null;
   //private CmdBadge mSelectedCmdBadge = null;
@@ -462,7 +462,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       return;
     }
 
-    // TODO: undisputed
     if (mEdgeSourceNode != null) {
       createNewEdge(event.getPoint());
       return;
@@ -519,7 +518,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
    */
   @Override
   public void mousePressed(MouseEvent event) {
-    mLastMousePos = event.getPoint();
+    if (mLastMousePos == null)
+      mLastMousePos = event.getPoint();
     // we need to check the selected edge first, otherwise it's almost impossible
     // to grab the control point in some situations
     Edge e = findEdgeAt(event.getPoint());
@@ -591,9 +591,11 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       refresh();
       revalidate();
       repaint(100);
+      mLastMousePos = null;
       return;
     }
 
+    mLastMousePos = null;
     // if there is a specific selected edge use it - much faster than checking all edges
     if (mSelectedEdge != null) {
       if (mSelectedEdge.containsPoint(event.getPoint())) {
@@ -648,11 +650,9 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     if (!mDoAreaSelection && ! mSelectedNodes.isEmpty()) {
       // compute movement trajectory vectors, in view coordinates
       Point currentMousePosition = event.getPoint();
-      Point mouseMoveVector = new Point(currentMousePosition.x - mLastMousePos.x,
+      Point delta = new Point(currentMousePosition.x - mLastMousePos.x,
               currentMousePosition.y - mLastMousePos.y);
-
-      mLastMousePos = new Point(currentMousePosition.x, currentMousePosition.y);
-      if (dragNodes(mSelectedNodes, mouseMoveVector)) {
+      if (dragNodes(mSelectedNodes, delta)) {
         revalidate();
         repaint(100);
       }

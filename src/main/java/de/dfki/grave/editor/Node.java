@@ -21,9 +21,7 @@ import javax.swing.text.Document;
 
 import de.dfki.grave.editor.action.*;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
-import de.dfki.grave.editor.panels.IDManager;
-import de.dfki.grave.editor.panels.WorkSpace;
-import de.dfki.grave.editor.panels.WorkSpacePanel;
+import de.dfki.grave.editor.panels.*;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
 import de.dfki.grave.model.flow.SuperNode;
@@ -89,7 +87,8 @@ public final class Node extends EditorComponent implements DocumentContainer {
     mDocument.addUndoableEditListener(
         new UndoableEditListener() {
           public void undoableEditHappened(UndoableEditEvent e) {
-            new TextEditAction(mWorkSpace, e.getEdit()).run();
+            // TODO: When changing CmdBadges, undo is not possible anymore
+            UndoRedoProvider.addEdit(e.getEdit());
           }
         });
     // update
@@ -110,10 +109,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
 
   public CmdBadge getCmdBadge() {
     return mCmdBadge;
-  }
-
-  public boolean containsPoint(int x, int y) {
-    return getBounds().contains(x, y);
   }
 
   public void setSelected() {
@@ -215,27 +210,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
     return mDisplayName;
   }
 
-  /** newLocation is in *MODEL* coordinates. */
-  public void moveTo(Point newLocation) {
-    mDataNode.setPosition(new Position(newLocation));
-    for (Edge edge : getConnectedEdges()) {
-      edge.updateEdgeGraphics();
-    }
-    setLocation(mWorkSpace.zoom(newLocation));
-    CmdBadge badge = getCmdBadge();
-    if (badge != null) {
-      badge.setLocation();
-    }
-  }
-
-  /** vector is in view coordinates */
-  public void translate(Point vector) {
-    Point location = getLocation();
-    location.translate(vector.x, vector.y);
-    // also translates all edges
-    moveTo(mWorkSpace.unzoom(location));
-  }
-
   /** Only necessary since we have no model->view map, and the model only has
    *  outgoing edges.
    */
@@ -263,15 +237,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
     mInEdges.remove(e);
   }
 
-
-  /** Returns the center of a node, in zoomed workspace coordinates.
-   *
-   *  The location is in the top left corner.
-   */
-  public Point getCenterPoint() {
-    return mWorkSpace.zoom(mDataNode.getCenter());
-  }
-
+  /** Return an Iterable over all the edges */
   public Iterable<Edge> getConnectedEdges() {
     return new Iterable<Edge>() {
       @Override
@@ -282,18 +248,24 @@ public final class Node extends EditorComponent implements DocumentContainer {
     };
   }
 
+  public boolean isEdgeAllowed(AbstractEdge e) {
+    return mDataNode.canAddEdge(e);
+  }
+
   // **********************************************************************
   // Dock point functions
   // **********************************************************************
 
-  /** Return the ID of a free dock point closest to p, which is in zoomed
+  /** Return the ID of a free dock point closest to p, which is in (zoomed)
    *  workspace coordinates.
    */
   public int getNearestFreeDock(Point p) {
     return mDataNode.getNearestFreeDock(mWorkSpace.unzoom(p));
   }
 
-  /** Return the dock point for the given ID, in zoomed workspace coordinates */
+  /** Return the dock point for the given ID, in (zoomed)
+   *  workspace coordinates
+   */
   public Point getDockPoint(int which) {
     // dp contains the zoom factor, it's in getWidth()
     Point2D dp = mDataNode.getDockPoint(which, getWidth());
@@ -302,12 +274,45 @@ public final class Node extends EditorComponent implements DocumentContainer {
     return center;
   }
 
-  public boolean isEdgeAllowed(AbstractEdge e) {
-    return mDataNode.canAddEdge(e);
+  // **********************************************************************
+  // Other location functions
+  // **********************************************************************
+
+  /** Given x, y in workspace coordinates, is the point contained in this
+   *  node?
+   */
+  public boolean containsPoint(int x, int y) {
+    return getBounds().contains(x, y);
   }
 
-  /**
+  /** Move view _and_ model to new location, including CommandBadge
+   *  @param newLocation a Point in *MODEL* coordinates.
+   */
+  public void moveTo(Point newLocation) {
+    mDataNode.setPosition(new Position(newLocation));
+    for (Edge edge : getConnectedEdges()) {
+      edge.updateEdgeGraphics();
+    }
+    setLocation(mWorkSpace.zoom(newLocation.x), mWorkSpace.zoom(newLocation.y));
+    CmdBadge badge = getCmdBadge();
+    if (badge != null) {
+      badge.setLocation();
+    }
+  }
+
+  /** Returns the center of a node, in (zoomed) workspace coordinates.
    *
+   *  The location is in the top left corner.
+   */
+  public Point getCenterPoint() {
+    return mWorkSpace.zoom(mDataNode.getCenter());
+  }
+
+  // **********************************************************************
+  // Mouse, Menu, Paint functions
+  // **********************************************************************
+
+  /**
    * TODO: ADD "CREATE XEDGE" FOR ALL LEGAL EDGES STARTING AT THIS NODE
    */
   public void showContextMenu(WorkSpacePanel mWorkSpace) {
