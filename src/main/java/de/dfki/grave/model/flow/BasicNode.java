@@ -173,7 +173,7 @@ public class BasicNode  {
     return mNodeId;
   }
 
-  /** NODE MODIFICATION */
+  /** NODE MODIFICATION, ONLY THROUGH ACTION! */
   public void setName(String value) {
     mNodeName = value;
   }
@@ -182,13 +182,7 @@ public class BasicNode  {
     return mNodeName;
   }
 
-  /** NODE MODIFICATION */
-  public void setNameAndId(String value) {
-    mNodeId = value;
-    mNodeName = value;
-  }
-
-  /** NODE MODIFICATION */
+  /** NODE MODIFICATION, NOT USED */
   public void setComment(String value) {
     mComment = value;
   }
@@ -201,7 +195,7 @@ public class BasicNode  {
     return ! (mComment == null || mComment.isEmpty());
   }
 
-  /** NODE MODIFICATION (?) */
+  /** NODE MODIFICATION, ONLY THROUGH ACTION! */
   public BasicNode changeType(IDManager mgr, Collection<AbstractEdge> incoming,
       BasicNode newNode) {
     if (newNode == null) {
@@ -267,7 +261,7 @@ public class BasicNode  {
    *
    *  For use in GUI modifications: add new edge, copy, paste, etc.
    *
-   *  NODE MODIFICATION
+   *  NODE MODIFICATION, ONLY THROUGH ACTION (not finally checked)
    */
   public void addEdge(AbstractEdge e) {
     mDocksTaken.set(e.getSourceDock());
@@ -290,7 +284,7 @@ public class BasicNode  {
    *
    *  For use in GUI modifications: delete edge, cut, etc.
    *
-   *  NODE MODIFICATION
+   *  NODE MODIFICATION, ONLY THROUGH ACTION (not finally checked)
    */
   public void removeEdge(AbstractEdge e) {
     mDocksTaken.clear(e.getSourceDock());
@@ -342,7 +336,7 @@ public class BasicNode  {
         ? FLAVOUR.TNODE : FLAVOUR.ENODE;
   }
 
-  /** NODE MODIFICATION 
+  /** NODE MODIFICATION
    *  (theoretically, though this is never used -> remove? */
   @XmlElement(name="TEdge")
   public void setTEdge(TimeoutEdge value) { mDEdge = value; }
@@ -445,8 +439,8 @@ public class BasicNode  {
 
     @Override
     public void remove() {
-      if (lastEdge != null)
-        removeEdge(lastEdge);
+      throw new UnsupportedOperationException();
+      //if (lastEdge != null) removeEdge(lastEdge);
     }
   }
 

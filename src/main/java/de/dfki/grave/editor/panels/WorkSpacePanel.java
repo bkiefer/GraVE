@@ -22,6 +22,7 @@ import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.action.*;
+import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
 import de.dfki.grave.model.project.EditorProject;
@@ -38,9 +39,9 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   private int mAcceptableActions;
 
   private Point mLastMousePos = null;
+
   private Edge mSelectedEdge = null;
   private Comment mSelectedComment = null;
-  //private CmdBadge mSelectedCmdBadge = null;
   private Rectangle2D.Double mAreaSelection = null;
   private boolean mDoAreaSelection = false;
   protected Set<Node> mSelectedNodes = new HashSet<>();
@@ -450,6 +451,11 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     return null;
   }
 
+  boolean somethingSelected() {
+    return mSelectedEdge != null || mSelectedComment != null
+        || ! mSelectedNodes.isEmpty() || mAreaSelection != null;
+  }
+
   /**
    *
    */
@@ -485,6 +491,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         requestFocus();
       }
     }
+    if (! somethingSelected()) launchElementSelectedEvent(null);
   }
 
 
@@ -560,6 +567,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         mDoAreaSelection = true;
       }
     }
+    if (! somethingSelected()) launchElementSelectedEvent(null);
   }
 
   private void straightenAllOutOfBoundEdges() {
@@ -623,6 +631,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
       repaint(100);
     }
+    if (! somethingSelected()) launchElementSelectedEvent(null);
   }
 
   /**

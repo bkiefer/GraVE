@@ -142,6 +142,17 @@ public final class Node extends EditorComponent implements DocumentContainer {
     update();
   }
 
+  public void issueChangeName(String newName) {
+    if (! mDataNode.getName().equals(newName)) {
+      new ChangeNodeNameAction(mWorkSpace, mDataNode, newName).run();
+    }
+  }
+
+  public void changeName(String newName) {
+    mDataNode.setName(newName);
+    update();
+  }
+
   public void setText(String text) {
     // this automatically sets the text in DataNode, too...
     mCmdBadge.setText(text);

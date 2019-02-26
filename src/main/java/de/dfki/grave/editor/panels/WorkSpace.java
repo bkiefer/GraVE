@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
-import de.dfki.grave.editor.action.MoveNodesAction;
+import de.dfki.grave.editor.action.*;
 import de.dfki.grave.editor.event.ClearCodeEditorEvent;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
@@ -304,18 +304,20 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** Try to get all edges as straight as possible */
   public void straightenAllEdges() {
+    List<EditorAction> actions = new ArrayList<>();
     for (Edge edge : getEdges()) {
-      edge.straightenEdge();
+      actions.add(new StraightenEdgeAction(this, edge.getDataEdge()));
     }
-    repaint(100);
+    new CompoundAction(this, actions, "Straighten all Edges").run();
   }
 
   /** Try to find nice paths for all edges */
   public void normalizeAllEdges() {
+    List<EditorAction> actions = new ArrayList<>();
     for (Edge edge : getEdges()) {
-      edge.rebuildEdgeNicely();
+      actions.add(new NormalizeEdgeAction(this, edge.getDataEdge()));
     }
-    repaint(100);
+    new CompoundAction(this, actions, "Normalize all Edges").run();
   }
 
   public void straightenEdge(AbstractEdge e) {
@@ -332,7 +334,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   private void showNewSuperNode() {
     clearCurrentWorkspace();
-    mEventCaster.convey(new ElementSelectedEvent(null));
     showCurrentWorkSpace();
   }
 
@@ -755,6 +756,13 @@ public abstract class WorkSpace extends JPanel implements EventListener {
       setMessageLabelText("SuperNode contains Nodes: Type change not possible");
     }
     return result;
+  }
+
+  /** Change the name of a node through the GUI */
+  public void changeName(BasicNode n, String name) {
+    Node node = mNodeSet.get(n);
+    node.changeName(name);
+    launchElementSelectedEvent(node);
   }
 
   /** paste nodes from the clipboard

@@ -25,7 +25,7 @@ import de.dfki.grave.util.evt.EventListener;
 public class NameEditor extends JPanel implements EventListener {
 
   private JTextField mNameField;
-  private Node mNode;
+  private Node mNode = null;
 
   public NameEditor() {
     initComponents();
@@ -49,7 +49,9 @@ public class NameEditor extends JPanel implements EventListener {
     mNameField.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent event) {
-        save();
+        if (event.getKeyCode() == KeyEvent.VK_ENTER) {
+          mNode.issueChangeName(sanitizeString(mNameField.getText()));
+        }
         EditorInstance.getInstance().refresh();
       }
     });
@@ -64,23 +66,23 @@ public class NameEditor extends JPanel implements EventListener {
       if (elt instanceof Node) {
         // Update the selected node
         mNode = (Node)elt;
-
-        // Reload the node name
-        mNameField.setText(mNode.getDataNode().getName());
+        if (mNode == null) {
+          mNameField.setText("");
+          mNameField.setEditable(false);
+        } else {
+          // Reload the node name
+          mNameField.setText(mNode.getDataNode().getName());
+          mNameField.setEditable(true);
+        }
       }
+    } else {
+      mNameField.setText("");
+      mNameField.setEditable(false);
     }
   }
 
-  private void save() {
-    mNode.getDataNode().setName(sanitizeString(mNameField.getText().trim()));
-    mNode.update(null, null);
-  }
-
-  //ESCAPES STRINGS
+  // remove all illegal characters
   private String sanitizeString(String st) {
-    String output = st;
-    output = output.replaceAll("'", "");
-    output = output.replaceAll("\"", "");
-    return output;
+    return st.replaceAll("[^-a-zA-Z0-9_]", "");
   }
 }
