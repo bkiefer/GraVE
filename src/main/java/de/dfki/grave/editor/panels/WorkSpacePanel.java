@@ -420,7 +420,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       selectComment(comment);
     }
     // tell c that it has been clicked
-    mSelectedComment.mouseClicked(event);
+    // it knows that on its own!
+    //mSelectedComment.mouseClicked(event);
   }
 
   private Comment findCommentAt(Point p) {
@@ -557,7 +558,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       if (mSelectedComment == null && c != mSelectedComment) {
         selectComment(c);
       }
-      mSelectedComment.mousePressed(event);
+      //mSelectedComment.mousePressed(event);
     } else {
       // right click: global context menu for clipboard actions
       if ((event.getButton() == MouseEvent.BUTTON3)
@@ -620,7 +621,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     // if there is a specific selected comment use it - much faster than checking all nodes
     if (mSelectedComment != null) {
       if (mSelectedComment.containsPoint(event.getPoint())) {
-        mSelectedComment.mouseReleased(event);
+        //mSelectedComment.mouseReleased(event);
         revalidate();
         repaint(100);
 
@@ -673,7 +674,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     // if there is a specific selected comment use it
     if (mSelectedComment != null) {
       if (mSelectedComment.mPressed) {
-        mSelectedComment.mouseDragged(event);
+        //mSelectedComment.mouseDragged(event);
         revalidate();
         repaint(100);
         checkChangesOnWorkspace();
