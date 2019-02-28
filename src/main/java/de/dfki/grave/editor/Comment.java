@@ -166,7 +166,7 @@ public class Comment extends JTextArea
 
       // show context menu
       if ((e.getButton() == MouseEvent.BUTTON3) && (e.getClickCount() == 1)) {
-        showContextMenu(e, this);
+        showContextMenu(e, Comment.this);
       }
 
       revalidate();
