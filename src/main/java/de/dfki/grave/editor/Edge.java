@@ -323,8 +323,8 @@ public class Edge extends EditorComponent implements DocumentContainer {
       showContextMenu(event, this);
     } else if ((event.getClickCount() == 2) && getDescription() != null
         && mTextArea != null) {
-      mTextArea.requestFocus();
-      mEditMode = true;
+      //mTextArea.requestFocus();
+      //mEditMode = true;
       mDispatcher.convey(new EdgeEditEvent(this, this.getDataEdge()));
     }
   }
@@ -519,10 +519,11 @@ public class Edge extends EditorComponent implements DocumentContainer {
     // draw the arrow
     mArrow.paintArrow(graphics, lineWidth, color());
 
+    /*
     if (mEditMode == true) {
       //graphics.setColor(color());
       mTextArea.requestFocusInWindow();
-    }
+    }*/
   }
 
   public boolean isInEditMode() {

@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 /**
  * @author Gregor Mehlmann
  */
-@XmlType(name="TEdge")
+@XmlRootElement(name="TEdge")
 @XmlAccessorType(XmlAccessType.NONE)
 public class TimeoutEdge extends AbstractEdge {
 

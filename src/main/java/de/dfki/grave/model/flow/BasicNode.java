@@ -19,7 +19,7 @@ import de.dfki.grave.util.ChainedIterator;
 /**
  * @author Gregor Mehlmann
  */
-@XmlType(name="Node")
+@XmlRootElement(name="Node")
 @XmlAccessorType(XmlAccessType.NONE)
 public class BasicNode implements ContentHolder {
 
@@ -128,7 +128,7 @@ public class BasicNode implements ContentHolder {
     mNodeId = mNodeName = newId;
     mPosition = p;
     mParentNode = s;
-    if (mParentNode.mSuperNodeList.isEmpty() && mParentNode.mNodeList.isEmpty()) {
+    if (mParentNode.mNodeList.isEmpty()) {
       mParentNode.setStartNode(this);
     }
     mParentNode.mNodeList.add(this);
@@ -160,7 +160,7 @@ public class BasicNode implements ContentHolder {
    *  valid if the subnode list of the supernode is empty
    */
   public BasicNode(IDManager mgr, final SuperNode node) {
-    assert(node.mNodeList.isEmpty() && node.mSuperNodeList.isEmpty());
+    assert(node.mNodeList.isEmpty());
     mNodeId = mgr.getNextFreeID(this);
     copyBasicFields(node);
   }

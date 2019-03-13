@@ -115,7 +115,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   }
 
   /**
-   *
    */
   @Override
   public void update(Object event) {
@@ -645,11 +644,10 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    */
   public AbstractEdge createEdge(AbstractEdge edge, BasicNode source, BasicNode target) {
     Node sourceView = mNodeSet.get(source);
-    Node targetView = mNodeSet.get(target);
     edge.connect(source, target);
     edge.straightenEdge(sourceView.getWidth());
-    Edge ve = new Edge(this, edge, sourceView, targetView);
-    addToWorkSpace(ve);
+    // NO! this is done in the action!
+    //addToWorkSpace(new Edge(this, edge, sourceView, targetView));
     return edge;
   }
 

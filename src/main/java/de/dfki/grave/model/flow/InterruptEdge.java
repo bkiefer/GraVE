@@ -5,13 +5,13 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * @author Gregor Mehlmann
  */
-@XmlType(name="IEdge")
+@XmlRootElement(name="IEdge")
 @XmlAccessorType(XmlAccessType.NONE)
 public class InterruptEdge extends AbstractEdge {
 
@@ -19,7 +19,6 @@ public class InterruptEdge extends AbstractEdge {
   @XmlJavaTypeAdapter(ExpressionAdapter.class)
   protected Expression mCondition = new Expression("false");
 
-  @XmlElement(name="Condition")
   public String getCondition() {
     return mCondition.getContent();
   }

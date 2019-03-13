@@ -2,12 +2,12 @@ package de.dfki.grave.model.flow;
 
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Gregor Mehlmann
  */
-@XmlType(name="FEdge")
+@XmlRootElement(name="FEdge")
 public class ForkingEdge extends AbstractEdge {
 
   public ForkingEdge deepCopy(Map<BasicNode, BasicNode> orig2copy) {

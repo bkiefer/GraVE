@@ -5,13 +5,13 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * @author Gregor Mehlmann
  */
-@XmlType(name="CEdge")
+@XmlRootElement(name="CEdge")
 @XmlAccessorType(XmlAccessType.NONE)
 public class GuardedEdge extends AbstractEdge {
 

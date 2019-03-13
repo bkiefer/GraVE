@@ -28,12 +28,13 @@ public class IDManager {
 
   private void getIDs(SuperNode sn) {
     for (BasicNode n : sn.getNodeList()) {
-      mNextNodeID = Math.max(mNextNodeID, getInt(n));
-    }
-
-    for (SuperNode sub : sn.getSuperNodeList()) {
-      mNextSuperNodeID = Math.max(mNextSuperNodeID, getInt(sub));
-      getIDs(sub);
+      if (n instanceof SuperNode) {
+        SuperNode sub = (SuperNode)n;
+        mNextSuperNodeID = Math.max(mNextSuperNodeID, getInt(sub));
+        getIDs(sub);
+      } else {
+        mNextNodeID = Math.max(mNextNodeID, getInt(n));
+      }
     }
   }
 

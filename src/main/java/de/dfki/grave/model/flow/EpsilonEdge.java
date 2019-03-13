@@ -2,12 +2,12 @@ package de.dfki.grave.model.flow;
 
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Gregor Mehlmann
  */
-@XmlType(name="EEdge")
+@XmlRootElement(name="EEdge")
 public class EpsilonEdge extends AbstractEdge {
 
   public EpsilonEdge deepCopy(Map<BasicNode, BasicNode> orig2copy) {

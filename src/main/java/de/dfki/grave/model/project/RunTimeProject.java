@@ -5,10 +5,7 @@ import java.io.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.EpsilonEdge;
-import de.dfki.grave.model.flow.SceneFlow;
-import de.dfki.grave.model.flow.TimeoutEdge;
+import de.dfki.grave.model.flow.*;
 import de.dfki.grave.util.JaxbUtilities;
 
 /**
@@ -218,7 +215,10 @@ public class RunTimeProject {
 
     }
     mSceneFlow = (SceneFlow) JaxbUtilities.unmarshal(inputStream, path,
-        SceneFlow.class, AbstractEdge.class, TimeoutEdge.class, EpsilonEdge.class );
+        SceneFlow.class, SuperNode.class, BasicNode.class,
+        AbstractEdge.class, TimeoutEdge.class, EpsilonEdge.class,
+        GuardedEdge.class, InterruptEdge.class, ForkingEdge.class,
+        RandomEdge.class, CommentBadge.class);
 
     // Perform all the postprocessing steps
     mSceneFlow.establishParentNodes();
@@ -253,7 +253,11 @@ public class RunTimeProject {
       }
     }
     // Write the sceneflow configuration file
-    JaxbUtilities.marshal(file, mSceneFlow, SceneFlow.class);
+    JaxbUtilities.marshal(file, mSceneFlow,
+        SceneFlow.class, SuperNode.class, BasicNode.class,
+        AbstractEdge.class, TimeoutEdge.class, EpsilonEdge.class,
+        GuardedEdge.class, InterruptEdge.class, ForkingEdge.class,
+        RandomEdge.class, CommentBadge.class);
     // Print an information message in this case
     //mLogger.message("Saved sceneflow configuration file '" + file + "':\n" + mSceneFlow);
     // Return success if the project was saved

@@ -5,12 +5,12 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Gregor Mehlmann
  */
-@XmlType(name="PEdge")
+@XmlRootElement(name="PEdge")
 @XmlAccessorType(XmlAccessType.NONE)
 public class RandomEdge extends AbstractEdge {
 

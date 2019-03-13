@@ -16,7 +16,7 @@ import de.dfki.grave.util.Pair;
 /**
  * @author Gregor Mehlmann
  */
-@XmlType(name="SuperNode")
+@XmlRootElement(name="SuperNode")
 @XmlAccessorType(XmlAccessType.NONE)
 public class SuperNode extends BasicNode {
 
@@ -24,10 +24,12 @@ public class SuperNode extends BasicNode {
 
   @XmlElement(name="Comment")
   protected ArrayList<CommentBadge> mCommentList = new ArrayList<CommentBadge>();
-  @XmlElement(name="Node")
+  @XmlElements({
+    @XmlElement(name="Node", type=BasicNode.class, required=false),
+    @XmlElement(name="SuperNode", type=SuperNode.class, required=false)
+  })
   protected ArrayList<BasicNode> mNodeList = new ArrayList<BasicNode>();
-  @XmlElement(name="SuperNode")
-  protected ArrayList<SuperNode> mSuperNodeList = new ArrayList<SuperNode>();
+
   @XmlAttribute(name="start")
   protected String mStartNodeId = "";
   protected BasicNode mStartNode = null;
@@ -109,14 +111,10 @@ public class SuperNode extends BasicNode {
    *  NODE MODIFICATION
    */
   public void addNode(BasicNode value) {
-    if (mSuperNodeList.isEmpty() && mNodeList.isEmpty()) {
+    if (mNodeList.isEmpty()) {
       setStartNode(value);
     }
-    if (value instanceof SuperNode) {
-      mSuperNodeList.add((SuperNode)value);
-    } else {
-      mNodeList.add(value);
-    }
+    mNodeList.add(value);
   }
 
   /** Add a node, with side effects, such as adding it as a start node if it's
@@ -125,16 +123,7 @@ public class SuperNode extends BasicNode {
    * NODE MODIFICATION
    */
   public void removeNode(BasicNode value) {
-    if (value instanceof SuperNode) {
-      mSuperNodeList.remove((SuperNode)value);
-    } else {
-      mNodeList.remove(value);
-    }
-  }
-
-
-  public Iterable<SuperNode> getSuperNodeList() {
-    return mSuperNodeList;
+    mNodeList.remove(value);
   }
 
   public Iterable<BasicNode> getNodeList() {
@@ -142,34 +131,12 @@ public class SuperNode extends BasicNode {
   }
 
 
-  private class NodeIterator implements Iterator<BasicNode> {
-    Iterator<? extends BasicNode> impl = mNodeList.iterator();
-    boolean basic = true;
-
-    @Override
-    public boolean hasNext() {
-      boolean result = impl.hasNext();
-      if (!result && basic) {
-        basic = false;
-        impl = mSuperNodeList.iterator();
-        result = impl.hasNext();
-      }
-      return result;
-    }
-
-    @Override
-    public BasicNode next() { return impl.next(); }
-  }
-
   public Iterable<BasicNode> getNodes() {
-    return new Iterable<BasicNode>() {
-      @Override
-      public Iterator<BasicNode> iterator() { return new NodeIterator(); }
-    };
+    return mNodeList;
   }
 
   public int getNodeSize() {
-    return mNodeList.size() + mSuperNodeList.size();
+    return mNodeList.size();
   }
 
   public BasicNode getChildNodeById(String id) {
@@ -185,10 +152,9 @@ public class SuperNode extends BasicNode {
   public void establishParentNodes() {
     for (BasicNode node : mNodeList) {
       node.setParentNode(this);
-    }
-    for (SuperNode node : mSuperNodeList) {
-      node.setParentNode(this);
-      node.establishParentNodes();
+      if (node instanceof SuperNode) {
+        ((SuperNode)node).establishParentNodes();
+      }
     }
     for (CommentBadge c : mCommentList) {
       c.setParentNode(this);
@@ -215,8 +181,9 @@ public class SuperNode extends BasicNode {
       }
     }
 
-    for (SuperNode node : mSuperNodeList) {
-      node.establishStartNodes();
+    for (BasicNode node : mNodeList) {
+      if (node instanceof SuperNode)
+        ((SuperNode)node).establishStartNodes();
     }
   }
 
@@ -282,7 +249,6 @@ public class SuperNode extends BasicNode {
     int hash = 5;
     hash = 53 * hash + mCommentList.hashCode();
     hash = 53 * hash + mNodeList.hashCode();
-    hash = 53 * hash + mSuperNodeList.hashCode();
     hash = 53 * hash + (mStartNodeId == null ? 0 : mStartNodeId.hashCode());
     hash = 53 * hash + Boolean.hashCode(this.mHideLocalVarBadge);
     hash = 53 * hash + Boolean.hashCode(this.mHideGlobalVarBadge);

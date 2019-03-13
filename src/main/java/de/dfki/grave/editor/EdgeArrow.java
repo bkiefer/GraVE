@@ -25,6 +25,11 @@ public final class EdgeArrow {
   // Information about the selected element (start, ctrl1, ctrl2, end)
   public short mSelected = 0;
 
+  /** this is necessary to determine the location of the expression text field */
+  private void getMidPoint() {
+    mLeftCurve = (CubicCurve2D.Double) mCurve.clone();
+    CubicCurve2D.subdivide(mCurve, mLeftCurve, null);
+  }
 
   public void computeCurve(Point start, Point ctrlStart,
       Point ctrlEnd, Point end) {
@@ -32,8 +37,7 @@ public final class EdgeArrow {
     mCurve = new CubicCurve2D.Double(
         start.x, start.y, ctrlStart.x, ctrlStart.y,
         ctrlEnd.x, ctrlEnd.y, end.x, end.y);
-    mLeftCurve = (CubicCurve2D.Double) mCurve.clone();
-    CubicCurve2D.subdivide(mCurve, mLeftCurve, null);
+    getMidPoint();
   }
 
   /** get bounds of curve */
@@ -74,6 +78,7 @@ public final class EdgeArrow {
     Point2D[] ctrl = getCoords();
     ctrl[mSelected].setLocation(p);
     mCurve.setCurve(ctrl, 0);
+    getMidPoint();
   }
 
 
