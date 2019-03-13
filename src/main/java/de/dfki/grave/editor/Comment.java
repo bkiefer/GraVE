@@ -25,6 +25,8 @@ import java.util.Observer;
 public class Comment extends JTextArea
         implements DocumentContainer, Observer {
 
+
+  private ObserverDocument mDocument;
   private CommentBadge mDataComment;
   protected WorkSpace mWorkSpace;
 
@@ -45,13 +47,14 @@ public class Comment extends JTextArea
   public boolean mResizing;
 
   public Comment() {
+    setDocument(mDocument = new ObserverDocument(""));
   }
 
   public Comment(WorkSpace workSpace, CommentBadge dataComment) {
     super();
     mWorkSpace = workSpace;
     mDataComment = dataComment;
-    setDocument(dataComment);
+    setDocument(mDocument = new ObserverDocument(dataComment));
 
     // font setup
     mFont = new Font("SansSerif", Font.ITALIC, /* (mWorkSpace != null) ? */
@@ -89,6 +92,10 @@ public class Comment extends JTextArea
 
   public void update() {
     repaint(100);
+  }
+
+  public ObserverDocument getDoc() {
+    return mDocument;
   }
 
   public String getDescription() {

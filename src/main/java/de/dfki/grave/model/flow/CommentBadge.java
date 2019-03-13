@@ -1,11 +1,11 @@
 package de.dfki.grave.model.flow;
 
-//~--- JDK imports ------------------------------------------------------------
-import de.dfki.grave.editor.ObserverDocument;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+//~--- JDK imports ------------------------------------------------------------
 import de.dfki.grave.model.flow.geom.Boundary;
 import de.dfki.grave.util.Copyable;
 
@@ -14,18 +14,28 @@ import de.dfki.grave.util.Copyable;
  * @author Patrick Gebhard
  */
 @XmlType(name="Comment")
-public class CommentBadge extends ObserverDocument implements Copyable {
+@XmlAccessorType(XmlAccessType.NONE)
+public class CommentBadge implements ContentHolder, Copyable {
 
   private SuperNode mParentNode = null;
+  @XmlElement(name="Text")
   private String text = "";
+  @XmlElement(name="Boundary")
   private Boundary mBoundary;
   private int mFontSize;
+
+  public String getContent() {
+    return text;
+  }
+
+  public void setContent(String s) {
+    text = s;
+  }
 
   public void setParentNode(SuperNode value) {
     mParentNode = value;
   }
 
-  @XmlElement(name="Boundary")
   public Boundary getBoundary() {
     return mBoundary;
   }

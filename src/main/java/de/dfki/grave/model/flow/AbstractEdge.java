@@ -24,7 +24,7 @@ import de.dfki.grave.model.flow.geom.Position;
  * @author Gregor Mehlmann
  */
 @XmlAccessorType(XmlAccessType.NONE)
-public abstract class AbstractEdge {
+public abstract class AbstractEdge implements ContentHolder {
   private final static int MIN_CTRL_LEN = 50;
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractEdge.class);

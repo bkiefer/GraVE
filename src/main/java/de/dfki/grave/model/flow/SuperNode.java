@@ -29,7 +29,7 @@ public class SuperNode extends BasicNode {
   @XmlElement(name="SuperNode")
   protected ArrayList<SuperNode> mSuperNodeList = new ArrayList<SuperNode>();
   @XmlAttribute(name="start")
-  protected String mStartNodeId = null;
+  protected String mStartNodeId = "";
   protected BasicNode mStartNode = null;
   @XmlAttribute(name="hideLocalVar")
   protected boolean mHideLocalVarBadge = false;
@@ -104,7 +104,7 @@ public class SuperNode extends BasicNode {
     return mStartNode == value;
   }
 
-  /** Add a node to the list of nodes 
+  /** Add a node to the list of nodes
    *
    *  NODE MODIFICATION
    */
@@ -121,7 +121,7 @@ public class SuperNode extends BasicNode {
 
   /** Add a node, with side effects, such as adding it as a start node if it's
    *  the first node added
-   * 
+   *
    * NODE MODIFICATION
    */
   public void removeNode(BasicNode value) {

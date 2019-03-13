@@ -314,7 +314,7 @@ public class OptionsDialog extends JDialog {
     mGridScaleLabel = new JLabel("Grid Scale:");
     mGridScaleSpinner = new JSpinner(new SpinnerNumberModel(mEditorConfig.sGRID_SCALE, 1, 4, .25));
     mZoomFactorLabel = new JLabel("Zoom Factor:");
-    mZoomFactorSpinner = new JSpinner(new SpinnerNumberModel(mEditorConfig.sZOOM_FACTOR, 1, 5, .25));
+    mZoomFactorSpinner = new JSpinner(new SpinnerNumberModel(mEditorConfig.sZOOM_FACTOR, .5, 5, .25));
     mWorkspaceFontSizeSpinner = new JSpinner(new SpinnerNumberModel(mEditorConfig.sWORKSPACEFONTSIZE, 8, 16, 1));
     ((JSpinner.NumberEditor) mNodeSizeSpinner.getEditor()).getTextField().setEditable(false);
     ((JSpinner.NumberEditor) mGridScaleSpinner.getEditor()).getTextField().setEditable(false);

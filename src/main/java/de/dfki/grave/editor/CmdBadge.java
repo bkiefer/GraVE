@@ -8,7 +8,6 @@ import java.util.Comparator;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.Document;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
@@ -31,6 +30,7 @@ public class CmdBadge extends RSyntaxTextArea
   // The node to which the badge is connected
   private final Node mNode;
   private final EditorConfig mEditorConfig;
+  private ObserverDocument mDocument;
 
   // TODO: put preferences into external yml
   private final Font mFont;
@@ -41,7 +41,7 @@ public class CmdBadge extends RSyntaxTextArea
 
   /**
    */
-  public CmdBadge(Node node, EditorConfig cfg, Document d) {
+  public CmdBadge(Node node, EditorConfig cfg, ObserverDocument d) {
     super(30, 40);
     setCodeFoldingEnabled(true);
     this.setLineWrap(true);
@@ -71,7 +71,7 @@ public class CmdBadge extends RSyntaxTextArea
             mEditorConfig.sWORKSPACEFONTSIZE);
     setFont(mFont);
     setLayout(new BorderLayout());
-    this.setDocument(d);
+    this.setDocument(mDocument = d);
     d.addDocumentListener(new DocumentListener(){
       @Override
       public void insertUpdate(DocumentEvent e) { computeAndSetNewSize(); }
@@ -92,7 +92,7 @@ public class CmdBadge extends RSyntaxTextArea
   @Override
   public synchronized void setDeselected() {
     setBackground(new Color(175, 175, 175, 100));
-    mNode.getDataNode().setCmd(getText());
+    mDocument.updateModel();
     mDispatcher.convey(new ProjectChangedEvent(this));
     mDispatcher.convey(new ElementSelectedEvent(mNode));
     computeAndSetNewSize();
@@ -125,6 +125,10 @@ public class CmdBadge extends RSyntaxTextArea
   public void setLocation() {
     setLocation(mNode.getLocation().x + (mNode.getWidth() - getSize().width)/2,
         mNode.getLocation().y + mNode.getHeight());
+  }
+
+  public ObserverDocument getDoc() {
+    return mDocument;
   }
 
   /* Should not be called!

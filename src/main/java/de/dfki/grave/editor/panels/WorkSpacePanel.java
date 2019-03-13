@@ -462,7 +462,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
    */
   @Override
   public void mouseClicked(MouseEvent event) {
-    mLastMousePos = event.getPoint();
+    Point current = event.getPoint();
     launchWorkSpaceSelectedEvent();
     if (mIgnoreMouseInput) {
       mIgnoreMouseInput = false;
@@ -479,7 +479,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       return;
     }
     Object o = SwingUtilities.getDeepestComponentAt(
-        this, mLastMousePos.x, mLastMousePos.y);
+        this, current.x, current.y);
     if (o instanceof Node) {
       nodeClicked(event, (Node)o);
     } else if (o instanceof JComponent

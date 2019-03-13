@@ -19,7 +19,6 @@ public class GuardedEdge extends AbstractEdge {
   @XmlJavaTypeAdapter(ExpressionAdapter.class)
   protected Expression mCondition = new Expression("true");
 
-  @XmlElement(name="Condition")
   public String getCondition() {
     return mCondition.getContent();
   }

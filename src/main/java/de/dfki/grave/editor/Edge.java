@@ -52,7 +52,7 @@ public class Edge extends EditorComponent implements DocumentContainer {
   private boolean mEditMode = false;
 
   //
-  private Document mDocument = null;
+  private ObserverDocument mDocument = null;
 
   //
   // other stuff
@@ -129,7 +129,7 @@ public class Edge extends EditorComponent implements DocumentContainer {
     return name() + "(" + mSourceNode.getDataNode().getId() + "->" + mTargetNode.getDataNode().getId() + ")";
   }
 
-  public Document getDocument() {
+  public ObserverDocument getDoc() {
     return mDocument;
   }
 
@@ -199,12 +199,7 @@ public class Edge extends EditorComponent implements DocumentContainer {
     // TODO: ACTIVATE AFTER FIXING CODEEDITOR.SETEDITEDOBJECT
 
     mTextArea = new RSyntaxTextArea();
-    mDocument = new ObserverDocument();
-    try {
-      mDocument.insertString(0, getDescription(), null);
-    } catch (BadLocationException ex) {
-      Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
-    }
+    mDocument = new ObserverDocument(mDataEdge);
     mTextArea.setDocument(mDocument);
     mDocument.addUndoableEditListener(
         new UndoableEditListener() {
@@ -223,10 +218,7 @@ public class Edge extends EditorComponent implements DocumentContainer {
     mTextArea.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       // character added
-      public void insertUpdate(DocumentEvent e) {
-        mDataEdge.setContent(mTextArea.getText());
-        computeBounds();
-      }
+      public void insertUpdate(DocumentEvent e) { computeBounds(); }
 
       @Override
       // character removed
@@ -242,7 +234,9 @@ public class Edge extends EditorComponent implements DocumentContainer {
         mDispatcher.convey(new ElementSelectedEvent(Edge.this));
       }
       @Override
-      public void focusLost(FocusEvent e) {}
+      public void focusLost(FocusEvent e) {
+        mDocument.updateModel();
+      }
     });
 
     // Attributes

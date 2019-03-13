@@ -49,7 +49,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
   private Set<Edge> mInEdges = new HashSet<>();
 
   private CmdBadge mCmdBadge;
-  private Document mDocument;
+  private ObserverDocument mDocument;
 
   // The name which will be displayed on the node
   private String mDisplayName;
@@ -76,12 +76,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
         mWorkSpace.zoom(getEditorConfig().sNODEWIDTH),
         mWorkSpace.zoom(getEditorConfig().sNODEHEIGHT));
 
-    mDocument = new ObserverDocument();
-    try {
-      mDocument.insertString(0, mDataNode.getCmd(), null);
-    } catch (BadLocationException ex) {
-      Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
-    }
+    mDocument = new ObserverDocument(mDataNode);
     // Create the command badge of the GUI-BasicNode, after setting Position!
     mCmdBadge = new CmdBadge(this, mWorkSpace.getEditorConfig(), mDocument);
     mDocument.addUndoableEditListener(
@@ -99,7 +94,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
     return isBasic;
   }
 
-  public Document getDocument() {
+  public ObserverDocument getDoc() {
     return mDocument;
   }
 
@@ -346,7 +341,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
     }
 
     // TODO: MAYBE INVERT: IF NO CMD, ADD ONE
-    if (getDataNode().getCmd() != null) {
+    if (getDataNode().getContent() != null) {
       addItem(pop, "Edit Command", new EditCommandAction(mWorkSpace, getCmdBadge()));
       pop.add(new JSeparator());
     }

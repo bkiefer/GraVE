@@ -3,6 +3,8 @@ package de.dfki.grave.editor.panels;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -101,6 +103,16 @@ public class CodeEditor extends JPanel {
       textArea.setHighlightSecondaryLanguages(false);
       s = new JScrollPane();
       s.add(textArea);
+      textArea.addFocusListener(new FocusListener() {
+        @Override
+        public void focusGained(FocusEvent e) { }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+          if (editedObject != null)
+            editedObject.getDoc().updateModel();
+        }});
+
       add(s, BorderLayout.CENTER);
     }
 
@@ -111,7 +123,7 @@ public class CodeEditor extends JPanel {
         return;
       }
       editedObject = n;
-      textArea.setDocument(n.getDocument());
+      textArea.setDocument(n.getDoc());
     }
 
     public void updateBorders(int x, int y, int w, int h) {
@@ -119,6 +131,7 @@ public class CodeEditor extends JPanel {
       //s.setBounds(x, y, w, h);
       textArea.setBounds(x, y, w, h);
     }
+
   }
 
   public void updateBorders(){

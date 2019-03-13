@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.model.flow.Code;
+import de.dfki.grave.model.flow.ContentHolder;
 import de.dfki.grave.model.flow.Expression;
 
 /**
@@ -25,6 +26,8 @@ import de.dfki.grave.model.flow.Expression;
 @SuppressWarnings("serial")
 public class ObserverDocument extends RSyntaxDocument implements Observer {
 
+  private ContentHolder mModel;
+
   private static final Logger logger =
       LoggerFactory.getLogger(ObserverDocument.class);
 
@@ -33,8 +36,24 @@ public class ObserverDocument extends RSyntaxDocument implements Observer {
     super(syntaxStyle);
   }
 
-  public ObserverDocument() {
+  public ObserverDocument(ContentHolder h) {
     super(SyntaxConstants.SYNTAX_STYLE_JAVA);
+    mModel = h;
+    try {
+      insertString(0, mModel.getContent(), null);
+    } catch (BadLocationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  public void updateModel() {
+    try {
+      mModel.setContent(getText(0, getLength()));
+    } catch (BadLocationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   @Override

@@ -21,7 +21,7 @@ import de.dfki.grave.util.ChainedIterator;
  */
 @XmlType(name="Node")
 @XmlAccessorType(XmlAccessType.NONE)
-public class BasicNode  {
+public class BasicNode implements ContentHolder {
 
   private static final Logger logger = LoggerFactory.getLogger(BasicNode.class);
 
@@ -487,12 +487,12 @@ public class BasicNode  {
     }
   }*/
 
-  public String getCmd() {
+  public String getContent() {
     return mCmdList.getContent();
   }
 
   /** NODE MODIFICATION */
-  public void setCmd(String s) {
+  public void setContent(String s) {
     mCmdList.setContent(s);
   }
 
