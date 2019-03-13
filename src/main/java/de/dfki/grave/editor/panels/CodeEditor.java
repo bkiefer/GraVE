@@ -117,6 +117,10 @@ public class CodeEditor extends JPanel {
     }
 
     public void setEditedObject(DocumentContainer n) {
+      if (editedObject != null) {
+        editedObject.getDoc().updateModel();
+        editedObject = null;
+      }
       if (n == null) {
         textArea.setText("");
         editedObject = null;
