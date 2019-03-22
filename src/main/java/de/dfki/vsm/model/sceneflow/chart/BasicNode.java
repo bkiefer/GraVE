@@ -29,13 +29,13 @@ public class BasicNode implements ModelObject {
     protected String mNodeName = new String();
     protected String mComment = new String();
     //
-    protected ArrayList<DataTypeDefinition> mTypeDefList = new ArrayList();
-    protected ArrayList<VariableDefinition> mVarDefList = new ArrayList();
-    protected ArrayList<Command> mCmdList = new ArrayList();
-    protected ArrayList<GuardedEdge> mCEdgeList = new ArrayList();
-    protected ArrayList<RandomEdge> mPEdgeList = new ArrayList();
-    protected ArrayList<InterruptEdge> mIEdgeList = new ArrayList();
-    protected ArrayList<ForkingEdge> mFEdgeList = new ArrayList();
+    protected ArrayList<DataTypeDefinition> mTypeDefList = new ArrayList<>();
+    protected ArrayList<VariableDefinition> mVarDefList = new ArrayList<>();
+    protected ArrayList<Command> mCmdList = new ArrayList<>();
+    protected ArrayList<GuardedEdge> mCEdgeList = new ArrayList<>();
+    protected ArrayList<RandomEdge> mPEdgeList = new ArrayList<>();
+    protected ArrayList<InterruptEdge> mIEdgeList = new ArrayList<>();
+    protected ArrayList<ForkingEdge> mFEdgeList = new ArrayList<>();
     //
     protected AbstractEdge mDEdge = null;
     protected NodeGraphics mGraphics = null;
@@ -47,7 +47,6 @@ public class BasicNode implements ModelObject {
     public Byte hasMany = new Byte("2");
 
     public enum FLAVOUR {
-
         NONE, ENODE, TNODE, CNODE, PNODE, INODE, FNODE
     };
 
@@ -562,7 +561,7 @@ public class BasicNode implements ModelObject {
         Command.writeListXML(out, mVarDefList);
         out.pop().println("</Declare>");
 
-        out.println("<Commands>").push();
+        out.print("<Commands>").push();
         Command.writeListXML(out, mCmdList);
         out.pop().println("</Commands>");
       }

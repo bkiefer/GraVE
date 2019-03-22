@@ -1,6 +1,7 @@
 package de.dfki.vsm.model.sceneflow.chart.graphics.comment;
 
 import de.dfki.vsm.model.ModelObject;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
@@ -36,9 +37,9 @@ public final class CommentGraphics implements ModelObject {
 
     @Override
     public final void writeXML(final IOSIndentWriter out) {
-        out.println("<Graphics>").push();
+        if (! Command.convertToVOnDA) out.println("<Graphics>").push();
         mRectangle.writeXML(out);
-        out.pop().println("</Graphics>");
+        if (! Command.convertToVOnDA) out.pop().println("</Graphics>");
     }
 
     @Override

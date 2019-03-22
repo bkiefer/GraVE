@@ -82,7 +82,7 @@ public class GuardedEdge extends AbstractEdge {
           if (Command.convertToVOnDA) {
             out.print("<Condition><![CDATA[");
             out.print(mCondition.getConcreteSyntax());
-            out.println(";]]></Condition>");
+            out.println("]]></Condition>");
           } else {
             mCondition.writeXML(out);
           }

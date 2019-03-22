@@ -156,18 +156,20 @@ public final class SceneFlow extends SuperNode {
         out.pop().println("</UserCommands>");
       }
 
-      out.println("<ClassPath>").push();
+      if (! Command.convertToVOnDA) {
+        out.println("<ClassPath>").push();
 
-      for (int i = 0; i < mClassPathList.size(); i++) {
+        for (int i = 0; i < mClassPathList.size(); i++) {
           out.println("<ClassPathElement>").push();
           out.println(mClassPathList.get(i));
           out.pop().println("</ClassPathElement>");
-      }
+        }
 
-      out.pop().println("</ClassPath>");
-      out.print("<InitContext>");
-      out.print(mContextCode);
-      out.println("</InitContext>");
+        out.pop().println("</ClassPath>");
+        out.print("<InitContext>");
+        out.print(mContextCode);
+        out.println("</InitContext>");
+      }
     }
 
     @Override

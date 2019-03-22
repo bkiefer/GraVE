@@ -46,7 +46,8 @@ public abstract class Command extends SyntaxObject {
           sb.append(c.getConcreteSyntax()).append(";\n");
         }
         if (sb.length() > 0) {
-          out.print("<Command><![CDATA[").printPlain(sb.toString()).println("]]></Command>");
+          sb.deleteCharAt(sb.length() - 1); // remove trailing newline
+          out.print("<![CDATA[").printPlain(sb.toString()).println("]]>");
         }
       } else {
         for (Command c : l) {

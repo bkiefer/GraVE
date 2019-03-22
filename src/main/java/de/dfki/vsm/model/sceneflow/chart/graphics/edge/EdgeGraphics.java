@@ -1,6 +1,7 @@
 package de.dfki.vsm.model.sceneflow.chart.graphics.edge;
 
 import de.dfki.vsm.model.ModelObject;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
@@ -39,9 +40,9 @@ public final class EdgeGraphics implements ModelObject {
 
     @Override
     public final void writeXML(IOSIndentWriter out) {
-        out.println("<Graphics>").push();
+        if (!Command.convertToVOnDA) out.println("<Graphics>").push();
         mConnection.writeXML(out);
-        out.pop().println("</Graphics>");
+        if (!Command.convertToVOnDA) out.pop().println("</Graphics>");
     }
 
     @Override

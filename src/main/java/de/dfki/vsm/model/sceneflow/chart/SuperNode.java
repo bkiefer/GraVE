@@ -287,13 +287,14 @@ public class SuperNode extends BasicNode {
 
     protected void writeFieldsXML(IOSIndentWriter out) throws XMLWriteError {
         super.writeFieldsXML(out);
-
-        if (mLocalVariableBadge != null) {
+        if (! Command.convertToVOnDA) {
+          if (mLocalVariableBadge != null) {
             mLocalVariableBadge.writeXML(out);
-        }
+          }
 
-        if (mGlobalVariableBadge != null) {
+          if (mGlobalVariableBadge != null) {
             mGlobalVariableBadge.writeXML(out);
+          }
         }
 
         int i = 0;

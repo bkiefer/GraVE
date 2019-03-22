@@ -65,11 +65,11 @@ public class EpsilonEdge extends AbstractEdge {
             start += startNodeData.getFirst() + "/" + altStartNodeData.getFirst() + ";";
         }
 
-        out.println("<EEdge target=\"" + mTargetUnid + "\" start =\"" + start + "\">");
+        out.println("<EEdge target=\"" + mTargetUnid + "\" start =\"" + start + "\">").push();
 
         super.writeXML(out);
 
-        out.println("</EEdge>");
+        out.pop().println("</EEdge>");
     }
 
     public void parseXML(Element element) throws XMLParseError {

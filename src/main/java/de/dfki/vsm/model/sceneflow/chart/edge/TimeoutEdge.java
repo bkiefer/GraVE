@@ -99,11 +99,11 @@ public class TimeoutEdge extends AbstractEdge {
             start += startNodeData.getFirst() + "/" + altStartNodeData.getFirst() + ";";
         }
 
-        out.println("<TEdge target=\"" + mTargetUnid + "\" start=\"" + start + "\" timeout=\"" + mTimeout + "\">");
+        out.println("<TEdge target=\"" + mTargetUnid + "\" start=\"" + start + "\" timeout=\"" + mTimeout + "\">").push();
 
         super.writeXML(out);
 
-        out.println("</TEdge>");
+        out.pop().println("</TEdge>");
     }
 
     public void parseXML(Element element) throws XMLParseError {
