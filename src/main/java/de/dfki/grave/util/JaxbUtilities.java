@@ -31,16 +31,21 @@ public class JaxbUtilities {
   }
 
   public static boolean marshal(File file, Object o, Class ... classes) {
+    File temp = new File(file.getPath() + "~");
     try {
       JAXBContext jc = JAXBContext.newInstance( classes );
       Marshaller m = jc.createMarshaller();
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      file.renameTo(temp);
       m.marshal(o, new FileOutputStream(file));
     } catch (JAXBException|FileNotFoundException e) {
       mLogger.error("Error: Cannot write file " + file + " : " + e);
+      temp.renameTo(file);
+      temp.delete();
       return false;
     }
+    temp.delete();
     return true;
   }
 
