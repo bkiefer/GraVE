@@ -33,9 +33,6 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.undo.UndoManager;
 
-//~--- non-JDK imports --------------------------------------------------------
-import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
-
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.model.flow.SceneFlow;
 import de.dfki.grave.model.flow.SuperNode;
@@ -49,7 +46,7 @@ import de.dfki.grave.util.evt.EventDispatcher;
  * This class should contain all objects and information that are necessary
  * to work on the WHOLE Sceneflow, which is in mSceneFlow
  */
-@SuppressWarnings({ "serial", "restriction" })
+@SuppressWarnings({ "serial" })
 public final class SceneFlowEditor extends JPanel {
 
   // The singelton logger instance
@@ -129,8 +126,6 @@ public final class SceneFlowEditor extends JPanel {
     mWorkSpacePanel.setTransferHandler(new SceneFlowImage());
 
     JScrollPane mWorkSpaceScrollPane = new JScrollPane(mWorkSpacePanel);
-    mWorkSpaceScrollPane.getVerticalScrollBar().setUI(new WindowsScrollBarUI());
-    mWorkSpaceScrollPane.getHorizontalScrollBar().setUI(new WindowsScrollBarUI());
     mWorkSpaceScrollPane.setBorder(BorderFactory.createEtchedBorder());
 
     // The west component is the workbar

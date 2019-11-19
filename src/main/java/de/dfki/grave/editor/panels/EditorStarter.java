@@ -22,8 +22,6 @@ import javax.swing.border.EmptyBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
-
 import de.dfki.grave.MainGrave;
 import de.dfki.grave.editor.dialog.NewProjectDialog;
 import de.dfki.grave.model.project.EditorProject;
@@ -459,7 +457,6 @@ public class EditorStarter extends JPanel {
     mScrollPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
     mScrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     mScrollPanel.setViewportView(tutorialProjPanel);
-    mScrollPanel.getVerticalScrollBar().setUI(new WindowsScrollBarUI());
     mScrollPanel.setViewportBorder(new EmptyBorder(0, 0, 0, 0));
     mScrollPanel.setOpaque(false);
     mScrollPanel.getViewport().setOpaque(false);
@@ -604,7 +601,6 @@ public class EditorStarter extends JPanel {
     mScrollPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
     mScrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     mScrollPanel.setViewportView(sampleProjPanel);
-    mScrollPanel.getVerticalScrollBar().setUI(new WindowsScrollBarUI());
     mScrollPanel.setViewportBorder(new EmptyBorder(0, 0, 0, 0));
     mScrollPanel.setOpaque(false);
     mScrollPanel.getViewport().setOpaque(false);

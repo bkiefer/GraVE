@@ -15,8 +15,6 @@ import javax.swing.filechooser.FileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
-
 import de.dfki.grave.MainGrave;
 import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.dialog.AboutDialog;
@@ -228,7 +226,6 @@ public final class EditorInstance extends JFrame implements ChangeListener {
     UIManager.put("EditorPane.background", Color.WHITE);
     UIManager.put("ScrollPane.background", Color.WHITE);
     UIManager.put("Viewport.background", Color.WHITE);
-    UIManager.put("ScrollBarUI", WindowsScrollBarUI.class.getName());
     UIManager.put("ScrollBar.background", Color.GRAY);
     UIManager.put("ScrollBar.thumb", Color.LIGHT_GRAY);
   }

@@ -13,8 +13,6 @@ import java.util.LinkedList;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 
-import com.sun.java.swing.plaf.windows.WindowsScrollBarUI;
-
 import de.dfki.grave.editor.dialog.OptionsDialog;
 import de.dfki.grave.editor.dialog.SaveFileDialog;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
@@ -524,7 +522,6 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     mPathScrollPane.setBorder(BorderFactory.createEmptyBorder());
     mPathScrollBar = new JScrollBar(JScrollBar.HORIZONTAL);
     mPathScrollBar.setPreferredSize(new Dimension(300, 10));
-    mPathScrollBar.setUI(new WindowsScrollBarUI());
     mPathScrollBar.setOpaque(false);
     mPathScrollBar.setBorder(BorderFactory.createEmptyBorder());
     mPathScrollPane.setHorizontalScrollBar(mPathScrollBar);
