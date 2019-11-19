@@ -50,7 +50,9 @@ public class RunTimeProject {
 
   // Get the name of the project's configuration
   public final String getProjectName() {
-    return mProjectConfig.getProjectName();
+    if (mProjectConfig != null)
+      return mProjectConfig.getProjectName();
+    return null;
   }
 
   // Set the name in the project's configuration
