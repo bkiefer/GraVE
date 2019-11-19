@@ -22,7 +22,6 @@ import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.action.*;
-import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
 import de.dfki.grave.model.project.EditorProject;
@@ -767,14 +766,14 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
                 mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) + 1);
       }
     }
-    /* Debugging: check boundaries of all components on workspace */
+    /* Debugging: check boundaries of all components on workspace
     g2d.setColor(Color.pink);
     g2d.setStroke(new BasicStroke(0.5f));
     for (int i = 0 ; i <  this.getComponentCount(); ++i) {
       Rectangle r = getComponent(i).getBounds();
       g2d.drawRect(r.x, r.y, r.width, r.height);
     }
-    /**/
+    */
   }
 
   @Override
