@@ -1,8 +1,8 @@
 package de.dfki.vsm;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.runtime.project.RunTimeProject;
@@ -16,6 +16,12 @@ public final class SCMConverter {
     public static void main(final String[] args) throws IOException {
       if (args.length > 0 && args[0].equals("-v")) {
         Command.convertToVOnDA = true;
+      }
+      if (! (new File("project.xml").exists())) {
+    	  try (FileWriter out = new FileWriter("project.xml")) {
+    		  out.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
+    		  		+ "<Project name=\"switch\"/>");
+    	  }
       }
       Preferences.parseConfigFile();
       RunTimeProject rp = new RunTimeProject();
