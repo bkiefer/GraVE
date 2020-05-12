@@ -191,7 +191,8 @@ public final class SceneFlow extends SuperNode {
                 + "context=\"" + mContextClass + "\" " + "package=\"" + mPackageName + "\" "
                 // + "scenefile=\"" + mSceneFileName + "\" "
                 // + "sceneinfo=\"" + mSceneInfoFileName + "\" "
-                + "xmlns=\"" + Preferences.getProperty("xmlns") + "\" " + "xmlns:xsi=\"" + Preferences.getProperty("xmlns_xsi")
+                + (Command.convertToVOnDA ? "" : "xmlns=\"" + Preferences.getProperty("xmlns") + "\" ") // JAXB chokes on namespace
+                + "xmlns:xsi=\"" + Preferences.getProperty("xmlns_xsi")
                 + "\" " + "xsi:schemaLocation=\"" + Preferences.getProperty("xmlns") + " "
                 + Preferences.getProperty("xsi_schemeLocation") + "\">").push();
 
