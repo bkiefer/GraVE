@@ -126,11 +126,6 @@ public class SuperNode extends BasicNode {
     mNodeList.remove(value);
   }
 
-  public Iterable<BasicNode> getNodeList() {
-    return mNodeList;
-  }
-
-
   public Iterable<BasicNode> getNodes() {
     return mNodeList;
   }
@@ -138,8 +133,13 @@ public class SuperNode extends BasicNode {
   public int getNodeSize() {
     return mNodeList.size();
   }
-
-  public BasicNode getChildNodeById(String id) {
+  
+  /***********************************************************************/
+  /******************** READING THE GRAPH FROM FILE **********************/
+  /***********************************************************************/
+  
+  /** Only for reading the graph from file */
+  BasicNode getChildNodeById(String id) {
     for (BasicNode node : getNodes()) {
       if (node.getId().equals(id)) {
         return node;
@@ -149,6 +149,7 @@ public class SuperNode extends BasicNode {
     return null;
   }
 
+  /** Only for reading the graph from file */
   public void establishParentNodes() {
     for (BasicNode node : mNodeList) {
       node.setParentNode(this);
@@ -161,6 +162,7 @@ public class SuperNode extends BasicNode {
     }
   }
 
+  /** Only for reading the graph from file */
   @Override
   public void establishTargetNodes() {
     super.establishTargetNodes();
@@ -170,6 +172,7 @@ public class SuperNode extends BasicNode {
     }
   }
 
+  /** Only for reading the graph from file */
   public void establishStartNodes() {
     if (! mStartNodeId.isEmpty()) {
       if (mStartNodeId.endsWith(";")) {
@@ -187,8 +190,12 @@ public class SuperNode extends BasicNode {
     }
   }
 
-  /** Copy constructor */
-  protected void copyFieldsFrom(final SuperNode node) {
+  /***********************************************************************/
+  /********************** COPY NODES AND SUBGRAPH  ***********************/
+  /***********************************************************************/
+  
+  /** Copy constructor, only used by deepCopy */
+  private void copyFieldsFrom(final SuperNode node) {
     super.copyFieldsFrom(node);
     // unfilled: mCommentList, mNodeList, mSuperNodeList, mStartNodeMap
     mHideLocalVarBadge = node.mHideLocalVarBadge;
@@ -198,7 +205,7 @@ public class SuperNode extends BasicNode {
   /** This copies all nodes and edges *inside* this SuperNode, but not the
    *  edges starting at this node.
    */
-  public BasicNode deepCopy(IDManager mgr, SuperNode newParent) {
+  protected BasicNode deepCopy(IDManager mgr, SuperNode newParent) {
     SuperNode copy = new SuperNode();
     copy.copyFieldsFrom(this);
     copy.mNodeId = mgr.getNextFreeID(this);
@@ -243,7 +250,11 @@ public class SuperNode extends BasicNode {
     return new Pair<Collection<BasicNode>, List<AbstractEdge>>(
         orig2copy.values(), newEdges);
   }
-
+  
+  /*************************************************************************/
+  /********************* MISC. PUBLIC ACCESS METHODS ***********************/
+  /*************************************************************************/
+  
   @Override
   public int hashCode() {
     int hash = 5;
@@ -255,7 +266,8 @@ public class SuperNode extends BasicNode {
     return hash;
   }
 
-  /** Dock point for square */
+  /** Dock point for square, returns a fresh Point2D for the given dock, which 
+   *  still must be translated by the center point of the node */
   public Point2D getDockPoint(int which, int width) {
     return Geom.getDockPointSquare(which, width);
   }

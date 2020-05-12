@@ -27,7 +27,7 @@ public class IDManager {
   }
 
   private void getIDs(SuperNode sn) {
-    for (BasicNode n : sn.getNodeList()) {
+    for (BasicNode n : sn.getNodes()) {
       if (n instanceof SuperNode) {
         SuperNode sub = (SuperNode)n;
         mNextSuperNodeID = Math.max(mNextSuperNodeID, getInt(sub));

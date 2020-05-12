@@ -222,41 +222,6 @@ public class BasicNode implements ContentHolder {
     return oldNode;
   }
 
-  public boolean hasEdge() {
-    return getFlavour() == FLAVOUR.NONE;
-  }
-
-  public boolean canAddEdge(AbstractEdge e) {
-    FLAVOUR flavour = getFlavour();
-    switch (flavour) {
-    case NONE:    // if node working type is unclear, allow all (except iedge for nodes)
-      return true;
-
-    case ENODE:    // only one eegde is allowed
-    case TNODE:    // only one tegde is allowed
-      return (e instanceof GuardedEdge) || (e instanceof InterruptEdge);
-
-    case CNODE:    // only cedges are allowed - TODO allow dedge/tedge
-      return (e instanceof GuardedEdge)
-          || ((mDEdge == null)
-              && ((e instanceof TimeoutEdge)
-                  || (e instanceof EpsilonEdge)));
-
-    case PNODE:    // only pedges are allowed - TODO allow dedge/tedge
-      return e instanceof RandomEdge;
-
-    case FNODE:    // only fedges are allowed
-      return e instanceof ForkingEdge;
-
-    case INODE:    // allow TEdges and IEdges
-      return (e instanceof InterruptEdge)
-          || ((mDEdge == null)
-              && ((e instanceof TimeoutEdge)
-                  || (e instanceof EpsilonEdge)));
-    }
-    return false;
-  }
-
   /** Add an outgoing edge from this node, with all consequences.
    *
    *  For use in GUI modifications: add new edge, copy, paste, etc.
@@ -301,55 +266,6 @@ public class BasicNode implements ContentHolder {
       mIEdgeList.remove((InterruptEdge) e);
   }
 
-  public boolean isStartNode() {
-    return mParentNode.isStartNode(this);
-  }
-
-  public boolean isEndNode() {
-    FLAVOUR f = getFlavour();
-    return f == FLAVOUR.NONE || (f == FLAVOUR.CNODE && mDEdge == null);
-  }
-
-  public boolean hasDEdge() {
-    return (mDEdge != null);
-  }
-
-  public FLAVOUR getFlavour() {
-    if (mCEdgeList != null && mCEdgeList.size() > 0) {
-      return FLAVOUR.CNODE;
-    }
-
-    if (mPEdgeList != null && mPEdgeList.size() > 0) {
-      return FLAVOUR.PNODE;
-    }
-
-    if (mFEdgeList != null && mFEdgeList.size() > 0) {
-      return FLAVOUR.FNODE;
-    }
-
-    if (mIEdgeList != null && mIEdgeList.size() > 0) {
-      return FLAVOUR.INODE;
-    }
-
-    if (mDEdge == null) return FLAVOUR.NONE;
-    return (mDEdge instanceof TimeoutEdge)
-        ? FLAVOUR.TNODE : FLAVOUR.ENODE;
-  }
-
-  /** NODE MODIFICATION
-   *  (theoretically, though this is never used -> remove? */
-  @XmlElement(name="TEdge")
-  public void setTEdge(TimeoutEdge value) { mDEdge = value; }
-  public TimeoutEdge getTEdge() {
-    return mDEdge instanceof TimeoutEdge ? (TimeoutEdge)mDEdge : null;
-  }
-
-  @XmlElement(name="EEdge")
-  protected void setEEdge(EpsilonEdge value) { mDEdge = value; }
-  protected EpsilonEdge getEEdge() {
-    return mDEdge instanceof EpsilonEdge ? (EpsilonEdge)mDEdge : null;
-  }
-
   /** NODE MODIFICATION */
   public void setPosition(Position value) {
     mPosition = value;
@@ -376,9 +292,11 @@ public class BasicNode implements ContentHolder {
     return mParentNode;
   }
 
+  /* not used
   public boolean isDockTaken(int which) {
     return mDocksTaken.get(which);
   }
+  */
 
   /** NODE MODIFICATION */
   public void occupyDock(int which) {
@@ -391,6 +309,170 @@ public class BasicNode implements ContentHolder {
     mDocksTaken.clear(which);
   }
 
+  /*
+  public ArrayList<BasicNode> getReachableNodeList() {
+    ArrayList<BasicNode> reachableNodeList = new ArrayList<BasicNode>();
+
+    reachableNodeList.add(this);
+    fillReachableNodeList(reachableNodeList);
+
+    return reachableNodeList;
+  }
+
+  private void fillReachableNodeList(ArrayList<BasicNode> fromSourceReachableNodeList) {
+    for (AbstractEdge edge : getEdgeList()) {
+      BasicNode targetNode = edge.getTargetNode();
+
+      if (!fromSourceReachableNodeList.contains(targetNode)) {
+        fromSourceReachableNodeList.add(targetNode);
+        targetNode.fillReachableNodeList(fromSourceReachableNodeList);
+      }
+    }
+  }*/
+
+  public String getContent() {
+    return mCmdList.getContent();
+  }
+
+  /** NODE MODIFICATION */
+  public void setContent(String s) {
+    mCmdList.setContent(s);
+  }
+
+  
+  /***********************************************************************/
+  /******************** READING THE GRAPH FROM FILE **********************/
+  /***********************************************************************/
+  
+  /** NODE MODIFICATION
+   *  (theoretically, though this is never used -> remove? */
+  @XmlElement(name="TEdge")
+  protected void setTEdge(TimeoutEdge value) { mDEdge = value; }
+  protected TimeoutEdge getTEdge() {
+    return mDEdge instanceof TimeoutEdge ? (TimeoutEdge)mDEdge : null;
+  }
+
+  /** NODE MODIFICATION
+   *  (theoretically, though this is never used */
+  @XmlElement(name="EEdge")
+  protected void setEEdge(EpsilonEdge value) { mDEdge = value; }
+  protected EpsilonEdge getEEdge() {
+    return mDEdge instanceof EpsilonEdge ? (EpsilonEdge)mDEdge : null;
+  }
+
+  /** Only for reading the graph from file */
+  protected void establishTargetNodes() {
+    for (AbstractEdge edge : getEdgeList()) {
+      BasicNode n = mParentNode.getChildNodeById(edge.getTargetUnid());
+      if (n == null) {
+        logger.error("There is no node with ID {} in SuperNode {}",
+            edge.getTargetUnid(), this.getId());
+      } else {
+        edge.setNodes(this, n);
+      }
+    }
+  }
+  
+  /***********************************************************************/
+  /********************** COPY NODES AND SUBGRAPH  ***********************/
+  /***********************************************************************/
+  
+  /** Copy fields for deep copy */
+  protected void copyFieldsFrom(BasicNode b) {
+    mNodeName = b.mNodeName;
+    mComment = b.mComment;
+    mCmdList = b.mCmdList.deepCopy();
+    // unfilled: mCEdgeList, mPEdgeList, mIEdgeList, mFEdgeList, mDEdge;
+    mPosition = b.mPosition.deepCopy();
+    // unfilled: mParentNode
+    mIsEndNode = b.mIsEndNode;
+  }
+
+  /** Deep copy, without edges, only used by SuperNode.copySubgraph */
+  protected BasicNode deepCopy(IDManager mgr, SuperNode parentCopy) {
+    BasicNode copy = new BasicNode();
+    copy.copyFieldsFrom(this);
+    copy.mNodeId = mgr.getNextFreeID(this);
+    copy.mParentNode = parentCopy;
+    return copy;
+  }
+
+  /*************************************************************************/
+  /********************** MISC. PUBLIC ACCESS METHODS **********************/
+  /*************************************************************************/
+  
+  public boolean isStartNode() {
+    return mParentNode.isStartNode(this);
+  }
+
+  public boolean isEndNode() {
+    FLAVOUR f = getFlavour();
+    return f == FLAVOUR.NONE || (f == FLAVOUR.CNODE && mDEdge == null);
+  }
+
+  /* not used
+  public boolean hasEdge() {
+    return getFlavour() == FLAVOUR.NONE;
+  }
+
+  public boolean hasDEdge() {
+    return (mDEdge != null);
+  }
+  */
+
+  public FLAVOUR getFlavour() {
+    if (mCEdgeList != null && mCEdgeList.size() > 0) {
+      return FLAVOUR.CNODE;
+    }
+
+    if (mPEdgeList != null && mPEdgeList.size() > 0) {
+      return FLAVOUR.PNODE;
+    }
+
+    if (mFEdgeList != null && mFEdgeList.size() > 0) {
+      return FLAVOUR.FNODE;
+    }
+
+    if (mIEdgeList != null && mIEdgeList.size() > 0) {
+      return FLAVOUR.INODE;
+    }
+
+    if (mDEdge == null) return FLAVOUR.NONE;
+    return (mDEdge instanceof TimeoutEdge)
+        ? FLAVOUR.TNODE : FLAVOUR.ENODE;
+  }
+  
+  public boolean canAddEdge(AbstractEdge e) {
+    FLAVOUR flavour = getFlavour();
+    switch (flavour) {
+    case NONE:    // if node working type is unclear, allow all (except iedge for nodes)
+      return true;
+
+    case ENODE:    // only one eegde is allowed
+    case TNODE:    // only one tegde is allowed
+      return (e instanceof GuardedEdge) || (e instanceof InterruptEdge);
+
+    case CNODE:    // only cedges are allowed - TODO allow dedge/tedge
+      return (e instanceof GuardedEdge)
+          || ((mDEdge == null)
+              && ((e instanceof TimeoutEdge)
+                  || (e instanceof EpsilonEdge)));
+
+    case PNODE:    // only pedges are allowed - TODO allow dedge/tedge
+      return e instanceof RandomEdge;
+
+    case FNODE:    // only fedges are allowed
+      return e instanceof ForkingEdge;
+
+    case INODE:    // allow TEdges and IEdges
+      return (e instanceof InterruptEdge)
+          || ((mDEdge == null)
+              && ((e instanceof TimeoutEdge)
+                  || (e instanceof EpsilonEdge)));
+    }
+    return false;
+  }
+
   public Point getCenter() {
     return new Point(mPosition.getXPos() + WIDTH/2, mPosition.getYPos() + WIDTH/2);
   }
@@ -399,13 +481,6 @@ public class BasicNode implements ContentHolder {
     // start with the closest angle with a reasonable representation
     double angle = Geom.angle(getCenter(), p);
     return Geom.findClosestDock(mDocksTaken, angle);
-  }
-
-  /** Returns a fresh Point2D for the given dock, which still must be
-   *  translated by the center point of the node
-   */
-  public Point2D getDockPoint(int which, int width) {
-    return Geom.getDockPointCircle(which, width);
   }
 
   private class EdgeIterator implements Iterator<AbstractEdge> {
@@ -444,6 +519,7 @@ public class BasicNode implements ContentHolder {
     }
   }
 
+  /** Return an Iterable over all edges */
   public Iterable<AbstractEdge> getEdgeList() {
     return new Iterable<AbstractEdge>() {
       @Override
@@ -451,49 +527,6 @@ public class BasicNode implements ContentHolder {
         return new EdgeIterator();
       }
     };
-  }
-
-
-  protected void establishTargetNodes() {
-    for (AbstractEdge edge : getEdgeList()) {
-      BasicNode n = mParentNode.getChildNodeById(edge.getTargetUnid());
-      if (n == null) {
-        logger.error("There is no node with ID {} in SuperNode {}",
-            edge.getTargetUnid(), this.getId());
-      } else {
-        edge.setNodes(this, n);
-      }
-    }
-  }
-
-  /*
-  public ArrayList<BasicNode> getReachableNodeList() {
-    ArrayList<BasicNode> reachableNodeList = new ArrayList<BasicNode>();
-
-    reachableNodeList.add(this);
-    fillReachableNodeList(reachableNodeList);
-
-    return reachableNodeList;
-  }
-
-  private void fillReachableNodeList(ArrayList<BasicNode> fromSourceReachableNodeList) {
-    for (AbstractEdge edge : getEdgeList()) {
-      BasicNode targetNode = edge.getTargetNode();
-
-      if (!fromSourceReachableNodeList.contains(targetNode)) {
-        fromSourceReachableNodeList.add(targetNode);
-        targetNode.fillReachableNodeList(fromSourceReachableNodeList);
-      }
-    }
-  }*/
-
-  public String getContent() {
-    return mCmdList.getContent();
-  }
-
-  /** NODE MODIFICATION */
-  public void setContent(String s) {
-    mCmdList.setContent(s);
   }
 
   @Override
@@ -525,27 +558,15 @@ public class BasicNode implements ContentHolder {
     return result;
   }
 
-  /** Copy fields for deep copy */
-  protected void copyFieldsFrom(BasicNode b) {
-    mNodeName = b.mNodeName;
-    mComment = b.mComment;
-    mCmdList = b.mCmdList.deepCopy();
-    // unfilled: mCEdgeList, mPEdgeList, mIEdgeList, mFEdgeList, mDEdge;
-    mPosition = b.mPosition.deepCopy();
-    // unfilled: mParentNode
-    mIsEndNode = b.mIsEndNode;
-  }
-
-  /** Deep copy, without edges */
-  public BasicNode deepCopy(IDManager mgr, SuperNode parentCopy) {
-    BasicNode copy = new BasicNode();
-    copy.copyFieldsFrom(this);
-    copy.mNodeId = mgr.getNextFreeID(this);
-    copy.mParentNode = parentCopy;
-    return copy;
-  }
-
   public String toString() {
     return mNodeId + "[" + mNodeName + "]";
   }
+  
+  /** Returns a fresh Point2D for the given dock, which still must be
+   *  translated by the center point of the node
+   */
+  public Point2D getDockPoint(int which, int width) {
+    return Geom.getDockPointCircle(which, width);
+  }
+
 }

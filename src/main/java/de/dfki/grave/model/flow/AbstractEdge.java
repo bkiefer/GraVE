@@ -74,6 +74,7 @@ public abstract class AbstractEdge implements ContentHolder {
   // DEPRECATED
   @Deprecated
   protected EdgeArrow mArrow = null;
+  
   @XmlElement(name="Commands")
   protected String mCmdList = null;
 
@@ -111,6 +112,19 @@ public abstract class AbstractEdge implements ContentHolder {
   }
 
 
+
+  private final void setSource(final BasicNode value, int dock) {
+    mSourceUnid = value.getId();
+    mSourceNode = value;
+    mSourceDock = dock;
+  }
+
+  private final void setTarget(final BasicNode value, int dock) {
+    mTargetUnid = value.getId();
+    mTargetNode = value;
+    mTargetDock = dock;
+  }
+
   private void deflectSource(BasicNode newNode, int dock, Point ctrl) {
     // disconnect edge in source node: also releases dock
     mSourceNode.removeEdge(this);
@@ -144,38 +158,6 @@ public abstract class AbstractEdge implements ContentHolder {
     deflectSource(nodes[0], docks[0], controls[0]);
     deflectTarget(nodes[1], docks[1], controls[1]);
   }
-
-  /** Only for establishTargetNodes. TODO: should go */
-  final void setNodes(BasicNode source, BasicNode target) {
-    mSourceNode = source;
-    mSourceUnid = source.getId();
-    mTargetNode = target;
-    //mTargetUnid = target.getId(); // already set
-    arrowToDock();
-  }
-
-  private final void setSource(final BasicNode value, int dock) {
-    mSourceUnid = value.getId();
-    mSourceNode = value;
-    mSourceDock = dock;
-  }
-
-  private final void setTarget(final BasicNode value, int dock) {
-    mTargetUnid = value.getId();
-    mTargetNode = value;
-    mTargetDock = dock;
-  }
-
-  public Expression getExpression() {
-    if (this instanceof TimeoutEdge)
-      return ((TimeoutEdge)this).mExpression;
-    else if (this instanceof GuardedEdge)
-      return ((GuardedEdge)this).mCondition;
-    else if (this instanceof InterruptEdge)
-      return ((InterruptEdge)this).mCondition;
-    return null;
-  }
-
 
   /** EDGE MODIFICATION */
   public final void connect(final BasicNode source, final BasicNode target) {
@@ -246,17 +228,6 @@ public abstract class AbstractEdge implements ContentHolder {
 
   /** Get the content of an edge, as string (if applicable) */
   public String getContent() { return null; }
-
-  @Override
-  public int hashCode() {
-    int hash = 3;
-    hash = mTargetUnid != null? 31 * hash + this.mTargetUnid.hashCode() : hash;
-    hash = mSourceUnid != null? 31 * hash + this.mSourceUnid.hashCode() : hash;
-    hash = mArrow != null? 31 * hash + this.mArrow.hashCode() : hash;
-    hash = mCmdList != null? 31 * hash + this.mCmdList.hashCode() : hash;
-    return hash;
-  }
-
 
   /** Disallow control points too close to the node, or past the orthogonal
    *  vectors to the dock vector
@@ -334,43 +305,23 @@ public abstract class AbstractEdge implements ContentHolder {
     initCurve(nodeWidth);
   }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    AbstractEdge other = (AbstractEdge) obj;
-    if (mArrow == null) {
-      if (other.mArrow != null)
-        return false;
-    } else if (!mArrow.equals(other.mArrow))
-      return false;
-    if (mCmdList == null) {
-      if (other.mCmdList != null)
-        return false;
-    } else if (!mCmdList.equals(other.mCmdList))
-      return false;
-    if (mSourceUnid == null) {
-      if (other.mSourceUnid != null)
-        return false;
-    } else if (!mSourceUnid.equals(other.mSourceUnid))
-      return false;
-    if (mTargetUnid == null) {
-      if (other.mTargetUnid != null)
-        return false;
-    } else if (!mTargetUnid.equals(other.mTargetUnid))
-      return false;
-    return true;
+  /***********************************************************************/
+  /******************** READING THE GRAPH FROM FILE **********************/
+  /***********************************************************************/
+  
+  /** Only for establishTargetNodes. TODO: should go */
+  final void setNodes(BasicNode source, BasicNode target) {
+    mSourceNode = source;
+    mSourceUnid = source.getId();
+    mTargetNode = target;
+    //mTargetUnid = target.getId(); // already set
+    arrowToDock();
   }
 
-  public boolean isGuardedEdge() { return this instanceof GuardedEdge; }
-  public boolean isInterruptEdge() { return this instanceof InterruptEdge; }
-  public boolean isRandomEdge() { return this instanceof RandomEdge; }
-  public boolean isTimeoutEdge() { return this instanceof TimeoutEdge; }
-
+  /*********************************************************************/
+  /**************************** COPY EDGE ******************************/
+  /*********************************************************************/
+  
   /** Do a deep copy of AbstractEdge, remapping nodes, and adding new edge to
    *  the copied source node.
    */
@@ -405,6 +356,68 @@ public abstract class AbstractEdge implements ContentHolder {
       logger.error("Error constructing edge: {}", ex);
     }
     return null;
+  }
+  
+  /*************************************************************************/
+  /********************** MISC. PUBLIC ACCESS METHODS **********************/
+  /*************************************************************************/
+  
+  /** Get the Expression of this edge, if any */
+  public Expression getExpression() {
+    if (this instanceof TimeoutEdge)
+      return ((TimeoutEdge)this).mExpression;
+    else if (this instanceof GuardedEdge)
+      return ((GuardedEdge)this).mCondition;
+    else if (this instanceof InterruptEdge)
+      return ((InterruptEdge)this).mCondition;
+    return null;
+  }
+
+  public boolean isGuardedEdge() { return this instanceof GuardedEdge; }
+  public boolean isInterruptEdge() { return this instanceof InterruptEdge; }
+  public boolean isRandomEdge() { return this instanceof RandomEdge; }
+  public boolean isTimeoutEdge() { return this instanceof TimeoutEdge; }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    AbstractEdge other = (AbstractEdge) obj;
+    if (mArrow == null) {
+      if (other.mArrow != null)
+        return false;
+    } else if (!mArrow.equals(other.mArrow))
+      return false;
+    if (mCmdList == null) {
+      if (other.mCmdList != null)
+        return false;
+    } else if (!mCmdList.equals(other.mCmdList))
+      return false;
+    if (mSourceUnid == null) {
+      if (other.mSourceUnid != null)
+        return false;
+    } else if (!mSourceUnid.equals(other.mSourceUnid))
+      return false;
+    if (mTargetUnid == null) {
+      if (other.mTargetUnid != null)
+        return false;
+    } else if (!mTargetUnid.equals(other.mTargetUnid))
+      return false;
+    return true;
+  }
+  
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = mTargetUnid != null? 31 * hash + this.mTargetUnid.hashCode() : hash;
+    hash = mSourceUnid != null? 31 * hash + this.mSourceUnid.hashCode() : hash;
+    hash = mArrow != null? 31 * hash + this.mArrow.hashCode() : hash;
+    hash = mCmdList != null? 31 * hash + this.mCmdList.hashCode() : hash;
+    return hash;
   }
 
   public String toString() {
