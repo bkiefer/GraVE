@@ -473,11 +473,11 @@ public class BasicNode implements ContentHolder {
     return false;
   }
 
-  public Point getCenter() {
-    return new Point(mPosition.getXPos() + WIDTH/2, mPosition.getYPos() + WIDTH/2);
+  public Position getCenter() {
+    return new Position(mPosition.getXPos() + WIDTH/2, mPosition.getYPos() + WIDTH/2);
   }
 
-  public int getNearestFreeDock(Point p) {
+  public int getNearestFreeDock(Position p) {
     // start with the closest angle with a reasonable representation
     double angle = Geom.angle(getCenter(), p);
     return Geom.findClosestDock(mDocksTaken, angle);
@@ -559,7 +559,7 @@ public class BasicNode implements ContentHolder {
   }
 
   public String toString() {
-    return mNodeId + "[" + mNodeName + "]";
+    return mNodeId + "[" + mNodeName + "]" + mPosition;
   }
   
   /** Returns a fresh Point2D for the given dock, which still must be

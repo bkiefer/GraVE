@@ -125,7 +125,7 @@ public abstract class AbstractEdge implements ContentHolder {
     mTargetDock = dock;
   }
 
-  private void deflectSource(BasicNode newNode, int dock, Point ctrl) {
+  private void deflectSource(BasicNode newNode, int dock, Position ctrl) {
     // disconnect edge in source node: also releases dock
     mSourceNode.removeEdge(this);
     // modify source node and dock of edge
@@ -134,10 +134,10 @@ public abstract class AbstractEdge implements ContentHolder {
     mSourceNode.addEdge(this);
     // set control point
     checkControl(ctrl, mSourceDock);
-    mSourceCtrlPoint.setTo(ctrl);
+    mSourceCtrlPoint = ctrl;
   }
 
-  private void deflectTarget(BasicNode newNode, int dock, Point ctrl) {
+  private void deflectTarget(BasicNode newNode, int dock, Position ctrl) {
     // incoming edges are not registered in the model, only the dock
     mTargetNode.freeDock(getTargetDock());
     // modify target node and dock of model
@@ -148,13 +148,13 @@ public abstract class AbstractEdge implements ContentHolder {
     mTargetNode.occupyDock(dock);
     // set control point
     checkControl(ctrl, mTargetDock);
-    mTargetCtrlPoint.setTo(ctrl);
+    mTargetCtrlPoint = ctrl;
   }
 
   /** Change this edge in some way
    *  EDGE MODIFICATION
    */
-  public void modifyEdge(BasicNode[] nodes, int[] docks, Point[] controls) {
+  public void modifyEdge(BasicNode[] nodes, int[] docks, Position[] controls) {
     deflectSource(nodes[0], docks[0], controls[0]);
     deflectTarget(nodes[1], docks[1], controls[1]);
   }
@@ -190,12 +190,12 @@ public abstract class AbstractEdge implements ContentHolder {
     mTargetDock = getTargetNode().getNearestFreeDock(pl.get(1).getPoint());
     getSourceNode().occupyDock(mSourceDock);
     getTargetNode().occupyDock(mTargetDock);
-    Point cp = pl.get(0).getCtrlPoint();
+    Position cp = pl.get(0).getCtrlPoint();
     cp.translate(-pl.get(0).getXPos(), -pl.get(0).getYPos());
-    mSourceCtrlPoint = new Position(cp.x, cp.y);
+    mSourceCtrlPoint = new Position(cp.getXPos(), cp.getYPos());
     cp = pl.get(1).getCtrlPoint();
     cp.translate(-pl.get(1).getXPos(), -pl.get(1).getYPos());
-    mTargetCtrlPoint = new Position(cp.x, cp.y);
+    mTargetCtrlPoint = new Position(cp.getXPos(), cp.getYPos());
   }
 
   // TODO: DROP AFTER REVAMP
@@ -232,27 +232,25 @@ public abstract class AbstractEdge implements ContentHolder {
   /** Disallow control points too close to the node, or past the orthogonal
    *  vectors to the dock vector
    */
-  public static void checkControl(Point ctrlPoint, int dock) {
+  public static void checkControl(Position ctrlPoint, int dock) {
     // Unit Vector from Center to Dock
     Point2D dockVec = Geom.getDockPointCircle(dock, 4);
-    double ctrlLen = norm2(ctrlPoint);
+    double ctrlLen = ctrlPoint.norm2();
     if (ctrlLen < MIN_CTRL_LEN) { // scale vector to MIN_CTRL_LEN
       double f = MIN_CTRL_LEN / ctrlLen;
-      ctrlPoint.x *= f;
-      ctrlPoint.y *= f;
+      ctrlPoint.stretch(f);
       ctrlLen = MIN_CTRL_LEN;
     }
     // TODO: THE FOLLOWING COMPUTATION IS WRONG
     double dvlen = norm2(dockVec);
-    double dot = dotProd(dockVec, ctrlPoint); // for cosine: / (startlen*ctrlLen);
+    double dot = ctrlPoint.dotProd(dockVec); // for cosine: / (startlen*ctrlLen);
     if (dot < 0) {
       dot /= dvlen;
       // reject: turn it into an orthogonal vector with the same length:
       // cv = dv - ((cv . dv)/ norm(dv)) * dv
       ctrlPoint.translate(-(int)(dot * dockVec.getX()), -(int)(dot * dockVec.getY()));
-      double l = ctrlLen / norm2(ctrlPoint);
-      ctrlPoint.x *= l;
-      ctrlPoint.y *= l;
+      double l = ctrlLen / ctrlPoint.norm2();
+      ctrlPoint.stretch(l);
     }
   }
 
@@ -260,8 +258,8 @@ public abstract class AbstractEdge implements ContentHolder {
    *  (using node center point and edge connection points)
    */
   private void initCurve(int nodeWidth) {
-    Point start = mSourceNode.getCenter();
-    Point target = mTargetNode.getCenter();
+    Point start = mSourceNode.getCenter().toPoint();
+    Point target = mTargetNode.getCenter().toPoint();
 
     // Unit Vector from Center to Dock
     Point2D startVec = Geom.getDockPointCircle(mSourceDock, 2);
@@ -273,14 +271,12 @@ public abstract class AbstractEdge implements ContentHolder {
         : Math.max(start.distance(target) / nodeWidth - 0.5, 1.25)
           * nodeWidth/3; // TODO: not my preferred solution.
 
-    Point srcCtrl = new Point((int) (scale * startVec.getX()), (int) (scale * startVec.getY()));
-    Point targCtrl = new Point((int) (scale * targVec.getX()), (int) (scale * targVec.getY()));
+    mSourceCtrlPoint = new Position((int) (scale * startVec.getX()), (int) (scale * startVec.getY()));
+    mTargetCtrlPoint = new Position((int) (scale * targVec.getX()), (int) (scale * targVec.getY()));
 
-    // re-done for relative control points
-    checkControl(srcCtrl, mSourceDock);
-    checkControl(targCtrl, mTargetDock);
-    mSourceCtrlPoint = new Position(srcCtrl.x, srcCtrl.y);
-    mTargetCtrlPoint = new Position(targCtrl.x, targCtrl.y);
+    // re-done for relative control pointss
+    checkControl(mSourceCtrlPoint, mSourceDock);
+    checkControl(mTargetCtrlPoint, mTargetDock);
   }
 
   /** Compute the edge closest to the straight connection, as far as it's
@@ -293,9 +289,9 @@ public abstract class AbstractEdge implements ContentHolder {
     if (mSourceNode == mTargetNode) { // loop
       Position p = mSourceNode.getPosition();
       mSourceDock = mSourceNode.getNearestFreeDock(
-          new Point(p.getXPos()+(int)(nodeWidth*0.3), p.getYPos()));
+          new Position(p.getXPos()+(int)(nodeWidth*0.3), p.getYPos()));
       mTargetDock = mTargetNode.getNearestFreeDock(
-          new Point(p.getXPos()+(int)(nodeWidth*0.7), p.getYPos()));
+          new Position(p.getXPos()+(int)(nodeWidth*0.7), p.getYPos()));
     } else {
       mSourceDock = mSourceNode.getNearestFreeDock(mTargetNode.getCenter());
       mTargetDock = mTargetNode.getNearestFreeDock(mSourceNode.getCenter());

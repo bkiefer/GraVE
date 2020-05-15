@@ -5,6 +5,7 @@ import java.awt.Point;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.flow.geom.Position;
 
 /**
  * @author Bernd Kiefer
@@ -18,11 +19,11 @@ public abstract class ModifyEdgeAction extends EditorAction {
   protected AbstractEdge mEdge;
 
   // All points here in model coordinates
-  protected Point[] mNewCtrls;
+  protected Position[] mNewCtrls;
   protected int[] mNewDocks;
   protected BasicNode[] mNewNodes;
 
-  protected Point[] mOldCtrls;
+  protected Position[] mOldCtrls;
   protected int[] mOldDocks;
   protected BasicNode[] mOldNodes;
 
@@ -30,13 +31,13 @@ public abstract class ModifyEdgeAction extends EditorAction {
     mWorkSpace = workSpace;
     mEdge = e;
     mOldDocks = new int[]{ e.getSourceDock(), e.getTargetDock() };
-    mOldCtrls = new Point[] { e.getSourceCtrlPoint().toPoint(),
-        e.getTargetCtrlPoint().toPoint() };
+    mOldCtrls = new Position[] { e.getSourceCtrlPoint(),
+        e.getTargetCtrlPoint() };
     mOldNodes = new BasicNode[] { e.getSourceNode(), e.getTargetNode() };
 
     mNewDocks = new int[]{ e.getSourceDock(), e.getTargetDock() };
-    mNewCtrls = new Point[] { e.getSourceCtrlPoint().toPoint(),
-        e.getTargetCtrlPoint().toPoint() };
+    mNewCtrls = new Position[] { e.getSourceCtrlPoint(),
+        e.getTargetCtrlPoint() };
     mNewNodes = new BasicNode[] { e.getSourceNode(), e.getTargetNode() };
 
   }

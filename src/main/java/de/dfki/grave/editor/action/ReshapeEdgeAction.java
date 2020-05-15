@@ -6,10 +6,9 @@
  */
 package de.dfki.grave.editor.action;
 
-import java.awt.Point;
-
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.AbstractEdge;
+import de.dfki.grave.model.flow.geom.Position;
 
 /**
  * @author Bernd Kiefer
@@ -32,8 +31,8 @@ public abstract class ReshapeEdgeAction extends ModifyEdgeAction {
     if (! done) {
       reshape();
       mNewDocks = new int[] { mEdge.getSourceDock(), mEdge.getTargetDock() };
-      mNewCtrls = new Point[] { mEdge.getSourceCtrlPoint().toPoint(),
-          mEdge.getTargetCtrlPoint().toPoint() };
+      mNewCtrls = new Position[] { mEdge.getSourceCtrlPoint(),
+          mEdge.getTargetCtrlPoint() };
     }
     super.doIt();
   }

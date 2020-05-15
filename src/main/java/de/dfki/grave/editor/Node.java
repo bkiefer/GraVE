@@ -64,10 +64,10 @@ public final class Node extends EditorComponent implements DocumentContainer {
     isBasic = !(mDataNode instanceof SuperNode);
 
     // Set initial position and size
-    setBounds(mWorkSpace.zoom(mDataNode.getPosition().getXPos()),
-        mWorkSpace.zoom(mDataNode.getPosition().getYPos()),
-        mWorkSpace.zoom(getEditorConfig().sNODEWIDTH),
-        mWorkSpace.zoom(getEditorConfig().sNODEHEIGHT));
+    setViewBounds(mDataNode.getPosition().getXPos(),
+        mDataNode.getPosition().getYPos(),
+        getEditorConfig().sNODEWIDTH,
+        getEditorConfig().sNODEHEIGHT);
 
     mDocument = new ObserverDocument(mDataNode);
     // Create the command badge of the GUI-BasicNode, after setting Position!
@@ -134,7 +134,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
 
   public void setText(String text) {
     // this automatically sets the text in DataNode, too...
-    mCmdBadge.setText(text);
+    mCodeArea.setText(text);
   }
 
   private void setColor() {
@@ -250,7 +250,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
    *  workspace coordinates.
    */
   public int getNearestFreeDock(Point p) {
-    return mDataNode.getNearestFreeDock(mWorkSpace.unzoom(p));
+    return mDataNode.getNearestFreeDock(toModelPos(p));
   }
 
   /** Return the dock point for the given ID, in (zoomed)
@@ -259,7 +259,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
   public Point getDockPoint(int which) {
     // dp contains the zoom factor, it's in getWidth()
     Point2D dp = mDataNode.getDockPoint(which, getWidth());
-    Point center = mWorkSpace.zoom(mDataNode.getCenter());
+    Point center = toViewPoint(mDataNode.getCenter());
     center.translate((int)dp.getX(), (int)dp.getY());
     return center;
   }
@@ -278,13 +278,13 @@ public final class Node extends EditorComponent implements DocumentContainer {
   /** Move view _and_ model to new location, including CommandBadge
    *  @param newLocation a Point in *MODEL* coordinates.
    */
-  public void moveTo(Point newLocation) {
-    mDataNode.setPosition(new Position(newLocation));
+  public void moveTo(Position newLocation) {
+    mDataNode.setPosition(newLocation);
     for (Edge edge : getConnectedEdges()) {
       edge.updateEdgeGraphics();
     }
-    setLocation(mWorkSpace.zoom(newLocation.x), mWorkSpace.zoom(newLocation.y));
-    CmdBadge badge = getCmdBadge();
+    setViewLocation(newLocation.getXPos(), newLocation.getYPos());
+    CodeArea badge = getCodeArea();
     if (badge != null) {
       badge.setLocation();
     }
@@ -295,7 +295,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
    *  The location is in the top left corner.
    */
   public Point getCenterPoint() {
-    return mWorkSpace.zoom(mDataNode.getCenter());
+    return toViewPoint(mDataNode.getCenter());
   }
 
   // **********************************************************************

@@ -31,6 +31,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
   private static final Logger logger = LoggerFactory.getLogger(WorkSpacePanel.class);
 
+  public static boolean DEBUG_COMPONENT_BOUNDARIES = true;
+  
   // Drag & Drop support
   @SuppressWarnings("unused")
   private DropTarget mDropTarget;
@@ -640,6 +642,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
    */
   @Override
   public void mouseDragged(MouseEvent event) {
+    setMessageLabelText(String.format("%d, %d", event.getPoint().x, event.getPoint().y));
     if (mEdgeSourceNode != null) {
       createNewEdge(event.getPoint());
       checkChangesOnWorkspace();
@@ -712,6 +715,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       */
       repaint(100);
     }
+    setMessageLabelText(String.format("%d, %d", event.getPoint().x, event.getPoint().y));
     return;
   }
 
@@ -766,14 +770,15 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
                 mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) + 1);
       }
     }
-    /* Debugging: check boundaries of all components on workspace
-    g2d.setColor(Color.pink);
-    g2d.setStroke(new BasicStroke(0.5f));
-    for (int i = 0 ; i <  this.getComponentCount(); ++i) {
-      Rectangle r = getComponent(i).getBounds();
-      g2d.drawRect(r.x, r.y, r.width, r.height);
+    /* Debugging: check boundaries of all components on workspace */
+    if (DEBUG_COMPONENT_BOUNDARIES) {
+      g2d.setColor(Color.pink);
+      g2d.setStroke(new BasicStroke(0.5f));
+      for (int i = 0 ; i <  this.getComponentCount(); ++i) {
+        Rectangle r = getComponent(i).getBounds();
+        g2d.drawRect(r.x, r.y, r.width, r.height);
+      }
     }
-    */
   }
 
   @Override

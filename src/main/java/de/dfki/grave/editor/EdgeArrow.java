@@ -42,7 +42,16 @@ public final class EdgeArrow {
 
   /** get bounds of curve */
   public Rectangle computeBounds() {
-    return mCurve.getBounds();
+    Rectangle bounds = mCurve.getBounds();
+    final int r = 7;
+    // Add small rectangles for end and ctrl points
+    for (Point2D p: getCoords()) {
+      Rectangle2D rect = new Rectangle2D.Double(
+          p.getX() - r, p.getY() - r, r + r, r + r);
+      bounds.add(rect);
+    }
+      
+    return bounds;
   }
 
   /** Clear the selection mask */
@@ -237,14 +246,15 @@ public final class EdgeArrow {
 
     double mArrow1Point;
     double mArrow2Point;
+    final int sz = 12;
     mArrow1Point = Math.sin(mArrowDir - .5);
     mArrow2Point = Math.cos(mArrowDir - .5);
-    mHead.addPoint((int)(mCurve.x2 + (mArrow1Point * 12)),
-        (int)(mCurve.y2 + (mArrow2Point * 12)));
+    mHead.addPoint((int)(mCurve.x2 + (mArrow1Point * sz)),
+        (int)(mCurve.y2 + (mArrow2Point * sz)));
     mArrow1Point = Math.sin(mArrowDir + .5);
     mArrow2Point = Math.cos(mArrowDir + .5);
-    mHead.addPoint((int)(mCurve.x2 + (mArrow1Point * 12)),
-        (int)(mCurve.y2 + (mArrow2Point * 12)));
+    mHead.addPoint((int)(mCurve.x2 + (mArrow1Point * sz)),
+        (int)(mCurve.y2 + (mArrow2Point * sz)));
     mHead.addPoint((int)mCurve.x2, (int)mCurve.y2);
     return mHead;
   }
@@ -258,22 +268,23 @@ public final class EdgeArrow {
     if (mSelected >= 0
         // || mSelected < 0 // debugging: show them always
         ) {
+      final int r = 6, d = 2*r;
       g.setColor(mSelected == C1 ? color : Color.DARK_GRAY);
       g.drawLine((int) mCurve.x1, (int) mCurve.y1, (int) mCurve.ctrlx1,
           (int) mCurve.ctrly1);
-      g.drawOval((int) mCurve.ctrlx1 - 7, (int) mCurve.ctrly1 - 7, 14, 14);
-      g.fillOval((int) mCurve.ctrlx1 - 7, (int) mCurve.ctrly1 - 7, 14, 14);
+      g.drawOval((int) mCurve.ctrlx1 - r, (int) mCurve.ctrly1 - r, d, d);
+      g.fillOval((int) mCurve.ctrlx1 - r, (int) mCurve.ctrly1 - r, d, d);
       g.setColor(Color.DARK_GRAY);
 
       g.setColor(mSelected == C2 ? color : Color.DARK_GRAY);
       g.drawLine((int) mCurve.x2, (int) mCurve.y2, (int) mCurve.ctrlx2,
               (int) mCurve.ctrly2);
-      g.drawOval((int) mCurve.ctrlx2 - 7, (int) mCurve.ctrly2 - 7, 14, 14);
-      g.fillOval((int) mCurve.ctrlx2 - 7, (int) mCurve.ctrly2 - 7, 14, 14);
+      g.drawOval((int) mCurve.ctrlx2 - r, (int) mCurve.ctrly2 - r, d, d);
+      g.fillOval((int) mCurve.ctrlx2 - r, (int) mCurve.ctrly2 - r, d, d);
       g.setColor(Color.DARK_GRAY);
 
-      g.fillRect((int) mCurve.x1 - 7, (int) mCurve.y1 - 7, 14, 14);
-      g.drawRect((int) mCurve.x1 - 7, (int) mCurve.y1 - 7, 14, 14);
+      g.fillRect((int) mCurve.x1 - r, (int) mCurve.y1 - r, d, d);
+      g.drawRect((int) mCurve.x1 - r, (int) mCurve.y1 - r, d, d);
       // This draws the arrow head
       g.drawPolygon(mHead);
       g.fillPolygon(mHead);

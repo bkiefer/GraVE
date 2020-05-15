@@ -75,6 +75,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private final IDManager mIDManager; // manages new IDs for the SceneFlow
 
   public float mZoomFactor = 1.0f;
+  private boolean mShowGrid = false;
 
   /**
    *
@@ -86,8 +87,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mSceneFlow = mProject.getSceneFlow();
     mSceneFlowEditor.addActiveSuperNode(mSceneFlow);
     mIDManager = new IDManager(mSceneFlow);
-    mGridManager = new GridManager(this, getSuperNode());
+    mGridManager = new de.dfki.grave.model.flow.GridManager(
+        Math.max(getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT),
+        getEditorConfig().sGRID_SCALE);
     mZoomFactor = getEditorConfig().sZOOM_FACTOR;
+    mShowGrid = getEditorConfig().sSHOWGRID;
 
     // init layout
     setLayout(new SceneFlowLayoutManager());
@@ -168,10 +172,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     return mSceneFlowEditor;
   }
 
-  public GridManager getGridManager() {
-    return mGridManager;
-  }
-
   private Node getNode(String id) {
     for (Node node : mNodeSet.values()) {
       if (node.getDataNode().getId().equals(id)) {
@@ -207,32 +207,39 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     refreshAll();
   }
 
-  /** Convert from model to view coordinates */
-  public int zoom(int val) {
-    return (int)(val * mZoomFactor);
+  /* ######################################################################
+   * The split in x and y is currently not necessary, for possible future 
+   * extensions, where x and y might behave differently
+   * ###################################################################### */
+  
+  /** Convert from model x position to x view position */
+  public int toViewXPos(int modx) {
+    return (int)(modx * mZoomFactor);
+  }
+  
+  /** Convert from model y position to y view position */
+  public int toViewYPos(int mody) {
+    return (int)(mody * mZoomFactor);
+  }
+
+  /** Convert from view x position to x model position */
+  public int toModelXPos(int viewx) {
+    return (int)(viewx / mZoomFactor);
+  }
+
+  /** Convert from view y position to y model position */
+  public int toModelYPos(int viewy) {
+    return (int)(viewy / mZoomFactor);
   }
 
   /** Convert from view to model coordinates */
-  public int unzoom(int val) {
-    return (int)(val / mZoomFactor);
+  public Position toModelPos(Point val) {
+    return new Position(toModelXPos(val.x), toModelYPos(val.y));
   }
 
   /** Convert from model to view coordinates */
-  public Point zoom(Point val) {
-    return new Point((int)(val.x * mZoomFactor),
-        (int)(val.y * mZoomFactor));
-  }
-
-  /** Convert from view to model coordinates */
-  public Point unzoom(Point val) {
-    return new Point((int)(val.x / mZoomFactor),
-        (int)(val.y / mZoomFactor));
-  }
-
-  /** Convert from model to view coordinates */
-  public Point zoom(Position val) {
-    return new Point((int)(val.getXPos() * mZoomFactor),
-        (int)(val.getYPos() * mZoomFactor));
+  public Point toViewPoint(Position val) {
+    return new Point(toViewXPos(val.getXPos()), toViewYPos(val.getYPos()));
   }
 
   private class EdgeIterator implements Iterator<Edge> {
@@ -398,7 +405,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   // END OF: Turn the current SuperNode model into view objects
   // ######################################################################
 
- protected void launchWorkSpaceSelectedEvent() {
+  protected void launchWorkSpaceSelectedEvent() {
     WorkSpaceSelectedEvent ev = new WorkSpaceSelectedEvent(this);
     mEventCaster.convey(ev);
   }
@@ -409,21 +416,21 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mEventCaster.convey(ev);
   }
 
-
-  public void moveTo(BasicNode n, Point loc) {
+  /** Move the node n to position loc (in model coordinates) */
+  public void moveTo(BasicNode n, Position loc) {
     Node vn = mNodeSet.get(n);
-    if (snapToGrid && mGridManager.positionOccupiedBy(vn.getLocation()) == vn) {
-      mGridManager.releaseGridPosition(vn.getLocation(), vn);
+    if (snapToGrid && mGridManager.positionOccupiedBy(loc) == n) {
+      mGridManager.releaseGridPosition(n);
     }
     vn.moveTo(loc);
     if (snapToGrid) {
-      mGridManager.occupyGridPosition(vn.getLocation(), vn);
+      mGridManager.occupyGridPosition(n);
     }
   }
 
-  /** Change this edge in some way, all Points in model coordinates */
+  /** Change this edge in some way, all Positions in model coordinates */
   public void modifyEdge(AbstractEdge edge,
-      BasicNode[] nodes, int[] docks, Point[] ctrls) {
+      BasicNode[] nodes, int[] docks, Position[] ctrls) {
     Edge e = mEdges.get(edge);
     e.modifyEdge(mNodeSet.get(nodes[0]), mNodeSet.get(nodes[1]),
         nodes, docks, ctrls);
@@ -454,17 +461,17 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     if (mNodeStartPositions == null) {
       mNodeStartPositions = new IdentityHashMap<>();
       for (Node n : nodes) {
-        Point nodeLoc = n.getLocation();
         if (snapToGrid)
-          mGridManager.releaseGridPosition(nodeLoc, n);
-        mNodeStartPositions.put(n, nodeLoc);
+          mGridManager.releaseGridPosition(n.getDataNode());
+        mNodeStartPositions.put(n, n.getLocation());
       }
     }
+    // new positions in view coordinates
     Map<Node, Point> newPositions = computeNewPositions(moveVec);
     if (newPositions == null) return false;
 
     for (Map.Entry<Node, Point> e : newPositions.entrySet()) {
-      e.getKey().moveTo(unzoom(e.getValue()));
+      e.getKey().moveTo(toModelPos(e.getValue()));
     }
     return true;
   }
@@ -477,21 +484,21 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     if (mNodeStartPositions == null)
       return;
 
-    Map<BasicNode, Point> newPositions =
+    Map<BasicNode, Position> newPositions =
         new IdentityHashMap<>(mNodeStartPositions.size());
     for (Node node : mNodeStartPositions.keySet()) {
-      Point p = node.getLocation();
-      // check location of each node
+      Position pos = toModelPos(node.getLocation());
       if (snapToGrid)
-        p = mGridManager.getNodeLocation(p);
+        pos = mGridManager.getNodeLocation(pos);
 
-      newPositions.put(node.getDataNode(), unzoom(p));
+      newPositions.put(node.getDataNode(), pos);
       node.mouseReleased(event);
     }
-    Map<BasicNode, Point> oldPositions =
+    Map<BasicNode, Position> oldPositions =
         new IdentityHashMap<>(mNodeStartPositions.size());
     for (Map.Entry<Node, Point> entry : mNodeStartPositions.entrySet()) {
-      oldPositions.put(entry.getKey().getDataNode(), unzoom(entry.getValue()));
+      oldPositions.put(entry.getKey().getDataNode(), 
+          toModelPos(entry.getValue()));
     }
     new MoveNodesAction(this, oldPositions, newPositions).run();
     mNodeStartPositions = null;
@@ -513,7 +520,44 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   public Node findNodeAtPoint(Point p) {
     return findNodeAtPoint(mNodeSet.values(), p);
   }
+  
+  /** Where are the grid points (crosses):
+   * (3 * offset + col * gridWidth, 3 * offsets + row * gridHeight)
+   * where gridWidth = nodeWidth * config.sGRID_SCALE * config.sZOOM_FACTOR
+   * and offset = gridWidth / 4
+   * Currently, we assume a square grid, and take
+   * nodeWidth = nodeHeight = max(nodeWidth, nodeHeight)
+   */
+  void drawGrid(Graphics2D g2d, Rectangle visibleRect) {
+    g2d.setStroke(new BasicStroke(1.0f));
+    g2d.setColor(Color.GRAY.brighter());
+    int gridWidth = (int)(mGridManager.gridWidth() * mZoomFactor);
 
+    // compute row and col of the first and last grid point
+    int offset = gridWidth / 4;
+    int col = visibleRect.x / gridWidth;
+    int lastCol = (visibleRect.x + visibleRect.width) / gridWidth + 1;
+    int lastRow = (visibleRect.y + visibleRect.height) / gridWidth + 1;
+    for (int x = col * gridWidth ; col <= lastCol; ++col, x += gridWidth) {
+      int row = visibleRect.y / gridWidth;
+      for (int y = row * gridWidth; row <= lastRow; ++row, y += gridWidth) {
+        // TODO: this is for debugging only, wasteful, and should go
+        if (mGridManager.positionOccupiedBy(
+            toModelPos(new Point(x, y))) != null) {
+          g2d.setColor(Color.RED); // for debugging! Should never be visible.
+        } else {
+          g2d.setColor(Color.GRAY.brighter());
+        }
+        int xx = x + offset; 
+        int yy = y + offset;
+        // draw small cross
+        int width = gridWidth / 20;
+        g2d.drawLine(xx - width, yy, xx + width, yy);
+        g2d.drawLine(xx, yy - width, xx, yy + width);
+      }
+    }
+  }
+  
   /**
    */
   @Override
@@ -521,7 +565,8 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     Graphics2D g2d = (Graphics2D) g;
 
     super.paintComponent(g);
-    mGridManager.drawGrid(g2d, this.getVisibleRect());
+    if (mShowGrid)
+      drawGrid(g2d, this.getVisibleRect());
 
     Color indicator;
     switch (getSuperNode().getFlavour()) {
@@ -578,7 +623,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private void removeFromWorkSpace(Node n) {
     mNodeSet.remove(n.getDataNode());
     if (snapToGrid)
-      mGridManager.releaseGridPosition(n.getLocation(), n);
+      mGridManager.releaseGridPosition(n.getDataNode());
     // remove from Panel
     super.remove(n);
     super.remove(n.getCodeArea());
@@ -588,7 +633,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Add node view to workspace, no change in model */
   private void addToWorkSpace(Node n) {
     if (snapToGrid)
-      mGridManager.occupyGridPosition(n.getLocation(), n);
+      mGridManager.occupyGridPosition(n.getDataNode());
     mNodeSet.put(n.getDataNode(), n);
     // add to Panel
     super.add(n);
@@ -710,10 +755,10 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *  location, and add it to the workspace
    */
   public BasicNode createNode(Point point, BasicNode model) {
+    Position p = toModelPos(point);
     if (snapToGrid) {
-      point = mGridManager.getNodeLocation(point);
+      p = mGridManager.getNodeLocation(p);
     }
-    Position p = new Position(unzoom(point.x), unzoom(point.y));
     return model.createNode(mIDManager, p, getSuperNode());
   }
 

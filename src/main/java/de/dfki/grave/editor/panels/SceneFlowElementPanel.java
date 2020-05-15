@@ -38,7 +38,7 @@ public final class SceneFlowElementPanel extends JScrollPane {
   /**
   * @author Gregor Mehlmann
   */
-  class ElementTree extends JTree
+  private class ElementTree extends JTree
       implements ActionListener, TreeSelectionListener {
     //List of scene elements
 
@@ -247,7 +247,7 @@ public final class SceneFlowElementPanel extends JScrollPane {
     }
 
     //
-    public MouseAdapter getMouseAdapter(final JTree tree) {
+    private MouseAdapter getMouseAdapter(final JTree tree) {
       return new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent e) {

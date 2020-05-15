@@ -8,24 +8,17 @@ import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import de.dfki.grave.editor.action.*;
 import de.dfki.grave.editor.event.EdgeEditEvent;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.panels.EditorInstance;
-import de.dfki.grave.editor.panels.UndoRedoProvider;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.*;
 import de.dfki.grave.model.flow.geom.Geom;
+import de.dfki.grave.model.flow.geom.Position;
 import de.dfki.grave.util.evt.EventDispatcher;
 
 
@@ -134,27 +127,27 @@ public class Edge extends EditorComponent implements DocumentContainer {
   }
 
   // **********************************************************************
-  // Compute view coordinates from model coordinates
+  // All methods use view coordinates
   // **********************************************************************
 
-  /** Absolute position of edge start */
-  public Point getStart() {
+  /** Absolute position of edge start (view coordinates) */
+  private Point getStart() {
     return mSourceNode.getDockPoint(mDataEdge.getSourceDock());
   }
 
-  /** Absolute position of edge end */
-  public Point getEnd() {
+  /** Absolute position of edge end (view coordinates)*/
+  private Point getEnd() {
     return mTargetNode.getDockPoint(mDataEdge.getTargetDock());
   }
 
-  /** Absolute position of edge start control point */
-  public Point getStartCtrl() {
-    return Geom.add(getStart(), mWorkSpace.zoom(mDataEdge.getSourceCtrlPoint()));
+  /** Absolute position of edge start control point (view coordinates) */
+  private Point getStartCtrl() {
+    return Geom.add(getStart(), mWorkSpace.toViewPoint(mDataEdge.getSourceCtrlPoint()));
   }
 
-  /** Absolute position of edge end control point */
-  public Point getEndCtrl() {
-    return Geom.add(getEnd(), mWorkSpace.zoom(mDataEdge.getTargetCtrlPoint()));
+  /** Absolute position of edge end control point (view coordinates) */
+  private Point getEndCtrl() {
+    return Geom.add(getEnd(), mWorkSpace.toViewPoint(mDataEdge.getTargetCtrlPoint()));
   }
 
   /** is p (in view coordinates) on the curve of this edge? */
@@ -359,7 +352,7 @@ public class Edge extends EditorComponent implements DocumentContainer {
    *  EDGE MODIFICATION
    */
   public void modifyEdge(Node newStart, Node newEnd,
-      BasicNode[] nodes, int[] docks, Point[] controls) {
+      BasicNode[] nodes, int[] docks, Position[] controls) {
     getDataEdge().modifyEdge(nodes, docks, controls);
     deflectSource(newStart);
     deflectTarget(newEnd);
@@ -441,15 +434,15 @@ public class Edge extends EditorComponent implements DocumentContainer {
       // compute vector from dock point to p (relative ctrls)
       Point dock = mSourceNode.getDockPoint(mDataEdge.getSourceDock());
       p.translate(-dock.x, -dock.y);
-      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), true,
-          mWorkSpace.unzoom(p)).run();
+      // All actions use Positions (model coordinates)
+      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), true, toModelPos(p)).run();
       break;
     }
     case EdgeArrow.C2: {
       Point dock = mTargetNode.getDockPoint(mDataEdge.getTargetDock());
       p.translate(-dock.x, -dock.y);
-      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), false,
-          mWorkSpace.unzoom(p)).run();
+      // All actions use Positions (model coordinates)
+      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), false, toModelPos(p)).run();
       break;
     }
     }
@@ -487,17 +480,11 @@ public class Edge extends EditorComponent implements DocumentContainer {
   private void computeBounds() {
     // set bounds of edge
     Rectangle bounds = mArrow.computeBounds();
-
-    /* add some boundaries */
-    bounds.add(new Point(bounds.x - 10, bounds.y - 10));
-    bounds.width = bounds.width + 10;
-    bounds.height = bounds.height + 10;
-
     // add the size of the text box
     Rectangle textBox = computeTextBoxBounds();
     if (textBox != null)
       bounds.add(textBox);
-    // set the components bounds
+    // set the components bounds (everything in view coordinates already)
     setBounds(bounds);
   }
 

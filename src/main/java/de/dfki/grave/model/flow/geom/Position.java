@@ -1,6 +1,7 @@
 package de.dfki.grave.model.flow.geom;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
@@ -68,5 +69,39 @@ public final class Position implements Copyable {
 
   public Point toPoint() {
     return new Point(x, y);
+  }
+  
+  public int hashCode() {
+    return x + 17 * y;
+  }
+  
+  public boolean equals(Object o) {
+    if (! (o instanceof Position)) return false;
+    Position p = (Position)o;
+    return p.x == x && p.y == y;
+  }
+  
+  public String toString() {
+    return "(" + x + "," + y + ")";
+  }
+
+  public void translate(int xx, int yy) {
+    x += xx; y += yy;
+  }
+
+  public void stretch(double d) {
+    x *= d; y *= d;
+  }
+  
+  public double norm2() {
+    return Math.sqrt(dotProd(this));
+  }
+
+  public double dotProd(Position b) {
+    return x * b.x + y * b.y;
+  }
+  
+  public double dotProd(Point2D b) {
+    return x * b.getX() + y * b.getY();
   }
 }

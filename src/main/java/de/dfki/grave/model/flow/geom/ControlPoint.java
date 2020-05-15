@@ -100,8 +100,8 @@ public final class ControlPoint implements Copyable {
     mCtrlYPos = value;
   }
 
-  public Point getPoint() { return new Point(mXPpos, mYPos); }
-  public Point getCtrlPoint() { return new Point(mCtrlXPos, mCtrlYPos); }
+  public Position getPoint() { return new Position(mXPpos, mYPos); }
+  public Position getCtrlPoint() { return new Position(mCtrlXPos, mCtrlYPos); }
 
   @Override
   public final ControlPoint deepCopy() {

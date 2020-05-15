@@ -6,6 +6,7 @@ import java.util.Map;
 
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.flow.geom.Position;
 
 /**
  * @author Gregor Mehlmann
@@ -13,17 +14,17 @@ import de.dfki.grave.model.flow.BasicNode;
  */
 public class MoveNodesAction extends EditorAction {
 
-  private Map<BasicNode, Point> mOldLocations, mNewLocations;
+  private Map<BasicNode, Position> mOldLocations, mNewLocations;
 
-  public MoveNodesAction(WorkSpace workSpace, Map<BasicNode, Point> orig,
-      Map<BasicNode, Point> newlocs) {
+  public MoveNodesAction(WorkSpace workSpace, Map<BasicNode, Position> orig,
+      Map<BasicNode, Position> newlocs) {
     mWorkSpace = workSpace;
     mNewLocations = newlocs;
     mOldLocations = orig;
   }
 
-  private void setNodeLocations(Map<BasicNode, Point> map) {
-    for (Map.Entry<BasicNode, Point> e : map.entrySet()) {
+  private void setNodeLocations(Map<BasicNode, Position> map) {
+    for (Map.Entry<BasicNode, Position> e : map.entrySet()) {
       mWorkSpace.moveTo(e.getKey(), e.getValue());
     }
   }

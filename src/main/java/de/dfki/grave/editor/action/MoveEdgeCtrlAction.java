@@ -1,10 +1,8 @@
 package de.dfki.grave.editor.action;
 
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.Point;
-
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.AbstractEdge;
+import de.dfki.grave.model.flow.geom.Position;
 
 /**
  * @author Gregor Mehlmann
@@ -13,7 +11,8 @@ import de.dfki.grave.model.flow.AbstractEdge;
 public class MoveEdgeCtrlAction extends ModifyEdgeAction {
 
   /** to must be in *MODEL* coordinates */
-  public MoveEdgeCtrlAction(WorkSpace workSpace, AbstractEdge e, boolean startCtrl, Point to) {
+  public MoveEdgeCtrlAction(WorkSpace workSpace, AbstractEdge e, 
+      boolean startCtrl, Position to) {
     super(workSpace, e);
     mWorkSpace = workSpace;
     mEdge = e;

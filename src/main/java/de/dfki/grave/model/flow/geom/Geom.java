@@ -28,6 +28,7 @@ public class Geom {
     }
   }
 
+  /** Initialize the geometry utilities with max no. of docking points */
   public static void initialize(int maxPoints) {
     num2angle = new double[maxPoints];
     angles = new double[maxPoints];
@@ -61,12 +62,21 @@ public class Geom {
     result.translate(b.getXPos(), b.getYPos());
     return result;
   }
-  */
 
   // returns an angle in the range 0 .. 2*pi, where (0, 1) returns zero, and
   // (1,0) returns pi/2
   public static double angle(Point center, Point p) {
     double res = Math.atan2(p.x - center.x, p.y - center.y);
+    if (res < 0) res = 2 * Math.PI + res;
+    return res;
+  }
+  */
+  
+  // returns an angle in the range 0 .. 2*pi, where (0, 1) returns zero, and
+  // (1,0) returns pi/2
+  public static double angle(Position center, Position p) { 
+    double res = Math.atan2(p.getXPos() - center.getXPos(), 
+        p.getYPos() - center.getYPos());
     if (res < 0) res = 2 * Math.PI + res;
     return res;
   }

@@ -63,8 +63,7 @@ public class Comment extends JTextArea
     Boundary b = mDataComment.getBoundary();
 
     // size setup
-    setBounds(mWorkSpace.zoom(b.getXPos()), mWorkSpace.zoom(b.getYPos()),
-        mWorkSpace.zoom(b.getWidth()), mWorkSpace.zoom(b.getHeight()));
+    setBounds(b.getXPos(), b.getYPos(), b.getWidth(), b.getHeight());
 
     setFont(mFont);
     setVisible(true);
@@ -108,8 +107,8 @@ public class Comment extends JTextArea
 
   private void setBoundary(Rectangle r) {
     mDataComment.setBoundary(
-        new Boundary(mWorkSpace.unzoom(r.x), mWorkSpace.unzoom(r.y),
-            mWorkSpace.unzoom(r.width), mWorkSpace.unzoom(r.height)));
+        new Boundary(mWorkSpace.toModelXPos(r.x), mWorkSpace.toModelXPos(r.y),
+            mWorkSpace.toModelXPos(r.width), mWorkSpace.toModelXPos(r.height)));
   }
 
   /** For undo/redo */
@@ -149,7 +148,7 @@ public class Comment extends JTextArea
     JPopupMenu pop = new JPopupMenu();
     addItem(pop, "Delete", new RemoveCommentAction(mWorkSpace, comment));
     Rectangle r = comment.getBounds();
-    pop.show(this, evt.getX() - r.x, evt.getY() - r.y);
+    pop.show(this, r.width, evt.getY());
   }
 
 
