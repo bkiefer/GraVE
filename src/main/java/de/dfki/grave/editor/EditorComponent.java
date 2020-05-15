@@ -13,11 +13,16 @@ import de.dfki.grave.model.project.EditorConfig;
 public abstract class EditorComponent extends JComponent
   implements MouseListener, Observer, Selectable {
   protected WorkSpace mWorkSpace;
+  
+  protected CodeArea mCodeArea = null;
+  protected ObserverDocument mDocument = null;
 
   protected EditorConfig getEditorConfig() {
     return mWorkSpace.getEditorConfig();
   }
 
+  public CodeArea getCodeArea() { return mCodeArea; }
+  
   @Override
   public void mouseEntered(MouseEvent e) {
   }

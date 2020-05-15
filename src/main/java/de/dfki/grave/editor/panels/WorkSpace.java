@@ -559,6 +559,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mEdges.remove(e.getDataEdge());
     // remove from Panel
     super.remove(e);
+    super.remove(e.getCodeArea());
     mObservable.deleteObserver(e);
   }
 
@@ -569,6 +570,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mEdges.put(e.getDataEdge(), e);
     // add to Panel
     super.add(e);
+    super.add(e.getCodeArea());
     mObservable.addObserver(e);
   }
 
@@ -579,7 +581,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
       mGridManager.releaseGridPosition(n.getLocation(), n);
     // remove from Panel
     super.remove(n);
-    super.remove(n.getCmdBadge());
+    super.remove(n.getCodeArea());
     mObservable.deleteObserver(n);
   }
 
@@ -590,7 +592,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mNodeSet.put(n.getDataNode(), n);
     // add to Panel
     super.add(n);
-    super.add(n.getCmdBadge());
+    super.add(n.getCodeArea());
     mObservable.addObserver(n);
   }
 

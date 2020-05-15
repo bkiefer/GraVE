@@ -1,19 +1,27 @@
 package de.dfki.grave.editor;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Point;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import javax.swing.BorderFactory;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
-import de.dfki.grave.model.project.EditorConfig;
+import de.dfki.grave.editor.panels.UndoRedoProvider;
 import de.dfki.grave.util.evt.EventDispatcher;
 
 /**
@@ -21,15 +29,14 @@ import de.dfki.grave.util.evt.EventDispatcher;
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public class CmdBadge extends RSyntaxTextArea
+public class CodeArea extends RSyntaxTextArea
   implements Selectable, DocumentContainer {
 
   //
   private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
 
   // The node to which the badge is connected
-  private final Node mNode;
-  private final EditorConfig mEditorConfig;
+  private final EditorComponent mComponent;
   private ObserverDocument mDocument;
 
   // TODO: put preferences into external yml
@@ -39,9 +46,11 @@ public class CmdBadge extends RSyntaxTextArea
 
   private Color boxActiveColour = new Color(255, 255, 255, 100);
 
-  /**
+  /** A syntax-aware area for entering code or numerical values
+   * @param compo the component this code area belongs to 
    */
-  public CmdBadge(Node node, EditorConfig cfg, ObserverDocument d) {
+  public CodeArea(EditorComponent compo, ObserverDocument d, Font font,
+      Color borderColor) {
     super(30, 40);
     setCodeFoldingEnabled(true);
     this.setLineWrap(true);
@@ -64,13 +73,12 @@ public class CmdBadge extends RSyntaxTextArea
         setDeselected();
       }
     });
-    mNode = node;
-    mEditorConfig = cfg;
-    mFont = new Font("Monospaced",
-            Font.ITALIC,
-            mEditorConfig.sWORKSPACEFONTSIZE);
+    mComponent = compo;
+    mFont = font;
     setFont(mFont);
     setLayout(new BorderLayout());
+    if (borderColor != null) 
+      setBorder(BorderFactory.createLineBorder(borderColor));
     this.setDocument(mDocument = d);
     d.addDocumentListener(new DocumentListener(){
       @Override
@@ -80,13 +88,19 @@ public class CmdBadge extends RSyntaxTextArea
       @Override
       public void changedUpdate(DocumentEvent e) { insertUpdate(e); }
     });
+    mDocument.addUndoableEditListener(
+        new UndoableEditListener() {
+          public void undoableEditHappened(UndoableEditEvent e) {
+            UndoRedoProvider.addEdit(e.getEdit());
+          }
+        });
     computeAndSetNewSize();
   }
 
   @Override
   public void setSelected() {
     setBackground(boxActiveColour);
-    mDispatcher.convey(new ElementSelectedEvent(mNode));
+    mDispatcher.convey(new ElementSelectedEvent(mComponent));
   }
 
   @Override
@@ -94,7 +108,7 @@ public class CmdBadge extends RSyntaxTextArea
     setBackground(new Color(175, 175, 175, 100));
     mDocument.updateModel();
     mDispatcher.convey(new ProjectChangedEvent(this));
-    mDispatcher.convey(new ElementSelectedEvent(mNode));
+    mDispatcher.convey(new ElementSelectedEvent(mComponent));
     computeAndSetNewSize();
   }
 
@@ -123,8 +137,8 @@ public class CmdBadge extends RSyntaxTextArea
   }
 
   public void setLocation() {
-    setLocation(mNode.getLocation().x + (mNode.getWidth() - getSize().width)/2,
-        mNode.getLocation().y + mNode.getHeight());
+    setLocation(mComponent.getLocation().x + (mComponent.getWidth() - getSize().width)/2,
+        mComponent.getLocation().y + mComponent.getHeight());
   }
 
   public ObserverDocument getDoc() {

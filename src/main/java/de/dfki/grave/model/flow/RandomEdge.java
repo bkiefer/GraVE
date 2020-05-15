@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public class RandomEdge extends AbstractEdge {
 
-  protected int mProbability = Integer.MIN_VALUE;
+  protected int mProbability = 50; // TODO: in percent, or should we use float? 
 
   @XmlAttribute(name="probability")
   public int getProbability() {
@@ -29,7 +29,6 @@ public class RandomEdge extends AbstractEdge {
     return "" + mProbability;
   }
 
-  /** EDGE MODIFICATION (?) */
   public void setContent(String s) {
     mProbability = Integer.parseInt(s);
   }

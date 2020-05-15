@@ -9,15 +9,11 @@ import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Point2D;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 
 import de.dfki.grave.editor.action.*;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
@@ -48,9 +44,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
   private Set<Edge> mOutEdges = new HashSet<>();
   private Set<Edge> mInEdges = new HashSet<>();
 
-  private CmdBadge mCmdBadge;
-  private ObserverDocument mDocument;
-
   // The name which will be displayed on the node
   private String mDisplayName;
 
@@ -78,14 +71,9 @@ public final class Node extends EditorComponent implements DocumentContainer {
 
     mDocument = new ObserverDocument(mDataNode);
     // Create the command badge of the GUI-BasicNode, after setting Position!
-    mCmdBadge = new CmdBadge(this, mWorkSpace.getEditorConfig(), mDocument);
-    mDocument.addUndoableEditListener(
-        new UndoableEditListener() {
-          public void undoableEditHappened(UndoableEditEvent e) {
-            // TODO: When changing CmdBadges, undo is not possible anymore
-            UndoRedoProvider.addEdit(e.getEdit());
-          }
-        });
+    mCodeArea = new CodeArea(this, mDocument,
+        new Font("Monospaced", Font.ITALIC, 
+            getEditorConfig().sWORKSPACEFONTSIZE), null);
     // update
     update();
   }
@@ -100,10 +88,6 @@ public final class Node extends EditorComponent implements DocumentContainer {
 
   public BasicNode getDataNode() {
     return mDataNode;
-  }
-
-  public CmdBadge getCmdBadge() {
-    return mCmdBadge;
   }
 
   public void setSelected() {
@@ -342,7 +326,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
 
     // TODO: MAYBE INVERT: IF NO CMD, ADD ONE
     if (getDataNode().getContent() != null) {
-      addItem(pop, "Edit Command", new EditCommandAction(mWorkSpace, getCmdBadge()));
+      addItem(pop, "Edit Command", new EditCommandAction(mWorkSpace, getCodeArea()));
       pop.add(new JSeparator());
     }
 

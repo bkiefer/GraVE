@@ -48,11 +48,7 @@ public class Edge extends EditorComponent implements DocumentContainer {
   private EdgeArrow mArrow = null;
 
   // edit panel
-  private RSyntaxTextArea mTextArea = null;
   private boolean mEditMode = false;
-
-  //
-  private ObserverDocument mDocument = null;
 
   //
   // other stuff
@@ -161,8 +157,14 @@ public class Edge extends EditorComponent implements DocumentContainer {
     return Geom.add(getEnd(), mWorkSpace.zoom(mDataEdge.getTargetCtrlPoint()));
   }
 
+  /** is p (in view coordinates) on the curve of this edge? */
   public boolean containsPoint(Point p) {
-    return mArrow.curveContainsPoint(p);
+    if (mArrow.curveContainsPoint(p)) return true;
+    // also look at the text box, if any. 
+    if (mCodeArea != null) {
+      return mCodeArea.getBounds().contains(p);
+    }
+    return false;
   }
 
   public boolean outOfBounds() {
@@ -198,21 +200,11 @@ public class Edge extends EditorComponent implements DocumentContainer {
     //if (getDescription() == null) return;
     // TODO: ACTIVATE AFTER FIXING CODEEDITOR.SETEDITEDOBJECT
 
-    mTextArea = new RSyntaxTextArea();
     mDocument = new ObserverDocument(mDataEdge);
-    mTextArea.setDocument(mDocument);
-    mDocument.addUndoableEditListener(
-        new UndoableEditListener() {
-          public void undoableEditHappened(UndoableEditEvent e) {
-            UndoRedoProvider.addEdit(e.getEdit());
-          }
-        });
-    this.add(mTextArea);
-    mTextArea.setBackground(Color.WHITE);
-    // Get rid of annoying yellow line
-    mTextArea.setHighlighter(null);
-    mTextArea.setHighlightCurrentLine(false);
-    mTextArea.setHighlightSecondaryLanguages(false);
+    mCodeArea = new CodeArea(this,  mDocument, 
+        new Font("Monospaced", Font.ITALIC,
+            getEditorConfig().sWORKSPACEFONTSIZE), color());
+    /*
 
     mTextArea.setBorder(BorderFactory.createLineBorder(color()));
     mTextArea.getDocument().addDocumentListener(new DocumentListener() {
@@ -259,15 +251,17 @@ public class Edge extends EditorComponent implements DocumentContainer {
         setDeselected();
       }
     });
-    mTextArea.setVisible(mTextArea.getText().trim().length() > 0);
+    */
+    mCodeArea.setVisible(mCodeArea.getText().trim().length() > 0);
   }
 
   /*
-   *   Take input value of mValueEditor and set it as value of the edge
+   * Take input value of mValueEditor and set it as value of the edge
+   * EDGE MODIFICATION  
    */
   private void updateFromTextEditor() {
-    if (mTextArea == null) return;
-    String input = mTextArea.getText();
+    if (mCodeArea == null) return;
+    String input = mCodeArea.getText();
     if (mDataEdge != null) {
       try {
         mDataEdge.setContent(input);
@@ -286,6 +280,7 @@ public class Edge extends EditorComponent implements DocumentContainer {
 
   public void setSelected() {
     mEditMode = true;
+    mCodeArea.setSelected();
     repaint(100);
   }
 
@@ -297,14 +292,15 @@ public class Edge extends EditorComponent implements DocumentContainer {
 
   /**
    */
-  public void showContextMenu(MouseEvent evt, Edge edge) {
+  private void showContextMenu(MouseEvent evt, Edge edge) {
     JPopupMenu pop = new JPopupMenu();
+    AbstractEdge model = edge.getDataEdge();
     //addItem(pop, "Modify", new ModifyEdgeAction(edge, this));
-    addItem(pop, "Delete", new RemoveEdgeAction(mWorkSpace, edge.getDataEdge()));
-    addItem(pop, "Shortest Path", new ShortestEdgeAction(mWorkSpace, edge.getDataEdge()));
-    addItem(pop, "Straighten", new StraightenEdgeAction(mWorkSpace, edge.getDataEdge()));
-    addItem(pop, "Smart Path", new NormalizeEdgeAction(mWorkSpace, edge.getDataEdge()));
-    pop.show(this, evt.getX(), evt.getY());
+    addItem(pop, "Delete", new RemoveEdgeAction(mWorkSpace, model));
+    addItem(pop, "Shortest Path", new ShortestEdgeAction(mWorkSpace, model));
+    addItem(pop, "Straighten", new StraightenEdgeAction(mWorkSpace, model));
+    addItem(pop, "Smart Path", new NormalizeEdgeAction(mWorkSpace, model));
+    pop.show(mWorkSpace, evt.getX(), evt.getY());
   }
 
   /** Return true if one of the end or control points is selected */
@@ -322,7 +318,7 @@ public class Edge extends EditorComponent implements DocumentContainer {
     if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
       showContextMenu(event, this);
     } else if ((event.getClickCount() == 2) && getDescription() != null
-        && mTextArea != null) {
+        && mCodeArea != null) {
       //mTextArea.requestFocus();
       //mEditMode = true;
       mDispatcher.convey(new EdgeEditEvent(this, this.getDataEdge()));
@@ -472,18 +468,20 @@ public class Edge extends EditorComponent implements DocumentContainer {
     repaint(100);
   }
 
-  public Rectangle computeTextBoxBounds() {
-    if (mTextArea == null) return null;
-    // do an exact font positioning
-    FontMetrics fm = getFontMetrics(getFont());
-    int height = fm.getHeight();
-    int width = fm.stringWidth(mTextArea.getText() + "p");
-    // Derive the node's font metrics from the font
-    int mFontHeightCorrection = (fm.getAscent() + fm.getDescent()) / 2;
-
+  private Rectangle computeTextBoxBounds() {
+    if (mCodeArea == null) return null;
+    mCodeArea.setDeselected();
+    Dimension r = mCodeArea.getSize();
+    
+    // center around middle of curve
+    int x = (int) Math.round(mArrow.mLeftCurve.x2 - r.width/2);
+    int y = (int) Math.round(mArrow.mLeftCurve.y2 - r.height/2);
+    mCodeArea.setLocation(x, y);
+    /*
     mTextArea.setBounds((int) Math.round(mArrow.mLeftCurve.x2 - width/2),
         (int) Math.round(mArrow.mLeftCurve.y2 - mFontHeightCorrection), width, height);
-    return mTextArea.getBounds();
+     */
+    return mCodeArea.getBounds();
   }
 
   private void computeBounds() {

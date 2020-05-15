@@ -26,7 +26,7 @@ import de.dfki.grave.util.ios.ResourceLoader;
 /**
  * @author Gregor Mehlmann
  */
-@SuppressWarnings({ "serial", "restriction" })
+@SuppressWarnings({ "serial" })
 public class SceneFlowToolBar extends JToolBar implements EventListener {
 
   /**

@@ -1,6 +1,6 @@
 package de.dfki.grave.editor.action;
 
-import de.dfki.grave.editor.CmdBadge;
+import de.dfki.grave.editor.CodeArea;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.util.evt.EventDispatcher;
@@ -12,9 +12,9 @@ public class EditCommandAction extends EditorAction {
 
   private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
 
-  private final CmdBadge mCmdBadge;
+  private final CodeArea mCmdBadge;
 
-  public EditCommandAction(WorkSpace workSpace, CmdBadge c) {
+  public EditCommandAction(WorkSpace workSpace, CodeArea c) {
     mCmdBadge = c;
   }
 
