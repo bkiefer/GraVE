@@ -9,6 +9,7 @@ import java.awt.event.FocusListener;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import de.dfki.grave.editor.DocumentContainer;
@@ -117,13 +118,13 @@ public class CodeEditor extends JPanel {
     }
 
     public void setEditedObject(DocumentContainer n) {
-      if (editedObject != null) {
+      if (editedObject != null
+          && editedObject.getDoc().contentChanged()) {
         editedObject.getDoc().updateModel();
-        editedObject = null;
       }
-      if (n == null) {
-        textArea.setText("");
-        editedObject = null;
+      editedObject = null;
+      if (n == null || n.getDoc() == null) {
+        textArea.setDocument(new RSyntaxDocument(""));
         return;
       }
       editedObject = n;

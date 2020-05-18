@@ -27,6 +27,7 @@ import de.dfki.grave.model.flow.Expression;
 public class ObserverDocument extends RSyntaxDocument implements Observer {
 
   private ContentHolder mModel;
+  private String mInitialContent;
 
   private static final Logger logger =
       LoggerFactory.getLogger(ObserverDocument.class);
@@ -39,6 +40,7 @@ public class ObserverDocument extends RSyntaxDocument implements Observer {
   public ObserverDocument(ContentHolder h) {
     super(SyntaxConstants.SYNTAX_STYLE_JAVA);
     mModel = h;
+    mInitialContent = h.getContent();
     try {
       insertString(0, mModel.getContent(), null);
     } catch (BadLocationException e) {
@@ -46,16 +48,30 @@ public class ObserverDocument extends RSyntaxDocument implements Observer {
       e.printStackTrace();
     }
   }
-
+  
+  /** Write the document content back to the model */
   public void updateModel() {
     try {
-      mModel.setContent(getText(0, getLength()));
+      String newContent = getText(0, getLength()); 
+      mModel.setContent(newContent);
+      // explicitely changes, so make sure we consider this
+      mInitialContent = mModel.getContent();
     } catch (BadLocationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      // can not happen
+      throw new RuntimeException(e);
     }
   }
 
+  /** Did the content change from init or last explicit update? */
+  public boolean contentChanged() {
+    try {
+      return ! mInitialContent.equals(getText(0, getLength()));
+    } catch (BadLocationException e) {
+      // can not happen
+      throw new RuntimeException(e);
+    }
+  }
+  
   @Override
   public void update(Observable o, Object o1) {
     try {
@@ -66,6 +82,15 @@ public class ObserverDocument extends RSyntaxDocument implements Observer {
       }
     } catch (BadLocationException ex) {
       logger.error("bad loc: {}", ex);
+    }
+  }
+  
+  public String toString() {
+    try {
+      return getText(0, getLength());
+    } catch (BadLocationException e) {
+      // can not happen
+      throw new RuntimeException(e);
     }
   }
 

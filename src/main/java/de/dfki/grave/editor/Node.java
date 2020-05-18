@@ -12,31 +12,25 @@ import java.util.*;
 
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
 
 import de.dfki.grave.editor.action.*;
-import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.panels.*;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
 import de.dfki.grave.model.flow.Position;
 import de.dfki.grave.model.flow.SuperNode;
 import de.dfki.grave.util.ChainedIterator;
-import de.dfki.grave.util.evt.EventDispatcher;
 
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public final class Node extends EditorComponent implements DocumentContainer {
+public final class Node extends EditorComponent {
 
   // interaction flags
-  private boolean mSelected = false;
   public boolean mPressed = false;
 
-  private final EventDispatcher mEventMulticaster = EventDispatcher.getInstance();
   private boolean isBasic;
   private BasicNode mDataNode;
 
@@ -68,12 +62,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
         mDataNode.getPosition().getYPos(),
         getEditorConfig().sNODEWIDTH,
         getEditorConfig().sNODEHEIGHT);
-
-    mDocument = new ObserverDocument(mDataNode);
-    // Create the command badge of the GUI-BasicNode, after setting Position!
-    mCodeArea = new CodeArea(this, mDocument,
-        new Font("Monospaced", Font.ITALIC, 
-            getEditorConfig().sWORKSPACEFONTSIZE), null);
+    initCodeArea(mDataNode.getContent() != null ? mDataNode : null, null);
     // update
     update();
   }
@@ -82,26 +71,24 @@ public final class Node extends EditorComponent implements DocumentContainer {
     return isBasic;
   }
 
-  public ObserverDocument getDoc() {
-    return mDocument;
-  }
-
   public BasicNode getDataNode() {
     return mDataNode;
+  }
+  
+  Point getCodeAreaLocation(Dimension r) {
+    return new Point(getLocation().x + (getWidth() - r.width)/2,
+        getLocation().y + getHeight());
   }
 
   public void setSelected() {
     mPressed = false;
-    mSelected = true;
-    repaint(100);
-    mEventMulticaster.convey(new ElementSelectedEvent(this));
+    super.setSelected();
   }
 
   /** Resets the node to its default visual behavior */
   public void setDeselected() {
-    mSelected = false;
     mPressed = false;
-    repaint(100);
+    super.setDeselected();
   }
 
   public BasicNode changeType(IDManager mgr, Collection<AbstractEdge> incoming,
@@ -131,11 +118,13 @@ public final class Node extends EditorComponent implements DocumentContainer {
     mDataNode.setName(newName);
     update();
   }
-
+  
+  /*
   public void setText(String text) {
     // this automatically sets the text in DataNode, too...
     mCodeArea.setText(text);
   }
+  */
 
   private void setColor() {
     // Update the color of the node that has to be changed
@@ -323,13 +312,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
         pop.add(new JSeparator());
       }
     }
-
-    // TODO: MAYBE INVERT: IF NO CMD, ADD ONE
-    if (getDataNode().getContent() != null) {
-      addItem(pop, "Edit Command", new EditCommandAction(mWorkSpace, getCodeArea()));
-      pop.add(new JSeparator());
-    }
-
+    
     addItem(pop, "Copy", new CopyNodesAction(mWorkSpace, this.mDataNode));
     addItem(pop, "Cut", new RemoveNodesAction(mWorkSpace, this.getDataNode(), true));
     pop.add(new JSeparator());

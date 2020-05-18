@@ -4,20 +4,22 @@ import static de.dfki.grave.Preferences.*;
 import static de.dfki.grave.editor.panels.WorkSpacePanel.addItem;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 
-import javax.swing.*;
+import javax.swing.JPopupMenu;
 
-import de.dfki.grave.editor.action.*;
-import de.dfki.grave.editor.event.EdgeEditEvent;
-import de.dfki.grave.editor.event.ElementSelectedEvent;
-import de.dfki.grave.editor.panels.EditorInstance;
+import de.dfki.grave.editor.action.MoveEdgeCtrlAction;
+import de.dfki.grave.editor.action.MoveEdgeEndPointAction;
+import de.dfki.grave.editor.action.NormalizeEdgeAction;
+import de.dfki.grave.editor.action.RemoveEdgeAction;
+import de.dfki.grave.editor.action.ShortestEdgeAction;
+import de.dfki.grave.editor.action.StraightenEdgeAction;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.*;
-import de.dfki.grave.util.evt.EventDispatcher;
 
 
 /**
@@ -25,10 +27,8 @@ import de.dfki.grave.util.evt.EventDispatcher;
  * @author Gregor Mehlmann
  */
 @SuppressWarnings("serial")
-public class Edge extends EditorComponent implements DocumentContainer {
+public class Edge extends EditorComponent {
   /** MIN POSITION OF THE CONTROLPOINTS OF THE EDGE */
-
-  private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
 
   // Reference to data model edges and nodes
   private AbstractEdge mDataEdge = null;
@@ -37,9 +37,6 @@ public class Edge extends EditorComponent implements DocumentContainer {
   private Node mSourceNode = null;
   private Node mTargetNode = null;
   private EdgeArrow mArrow = null;
-
-  // edit panel
-  private boolean mEditMode = false;
 
   //
   // other stuff
@@ -94,11 +91,10 @@ public class Edge extends EditorComponent implements DocumentContainer {
     mTargetNode = targetNode;
 
     setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-    initEditBox();
     mArrow = new EdgeArrow();
-    setDeselected();
-
     update();
+    initCodeArea(mDataEdge.getContent() != null ? mDataEdge : null, color());
+    setDeselected();
     setVisible(true);
   }
 
@@ -116,14 +112,18 @@ public class Edge extends EditorComponent implements DocumentContainer {
     return name() + "(" + mSourceNode.getDataNode().getId() + "->" + mTargetNode.getDataNode().getId() + ")";
   }
 
-  public ObserverDocument getDoc() {
-    return mDocument;
-  }
-
   public String getDescription() {
     return mDataEdge != null ? mDataEdge.getContent() : null;
   }
 
+  Point getCodeAreaLocation(Dimension r) {
+    Point2D p = getCurveCenter();
+    // center around middle of curve
+    int x = (int) Math.round(p.getX() - r.width / 2.0);
+    int y = (int) Math.round(p.getY() - r.height / 2.0);
+    return new Point(x, y);
+  }
+  
   // **********************************************************************
   // All methods use view coordinates
   // **********************************************************************
@@ -148,16 +148,23 @@ public class Edge extends EditorComponent implements DocumentContainer {
     return Geom.add(getEnd(), mWorkSpace.toViewPoint(mDataEdge.getTargetCtrlPoint()));
   }
 
-  /** is p (in view coordinates) on the curve of this edge? */
+  /** is p (in view coordinates) on the curve or the code area of this edge? */
   public boolean containsPoint(Point p) {
     if (mArrow.curveContainsPoint(p)) return true;
-    // also look at the text box, if any. 
-    if (mCodeArea != null) {
-      return mCodeArea.getBounds().contains(p);
+    // also look at the text box, if any.
+    CodeArea c = getCodeArea();
+    if (c != null) {
+      return c.getBounds().contains(p);
     }
     return false;
   }
 
+  /** is p (in view coordinates) on the curve, the code area, or the control points
+   *  of this edge? */
+  public boolean containsPointSelected(Point p) {
+    return containsPoint(p) || mArrow.controlContainsPoint(p);
+  }
+  
   public boolean outOfBounds() {
     Point ctrl1 = getStartCtrl();
     Point ctrl2 = getEndCtrl();
@@ -184,73 +191,11 @@ public class Edge extends EditorComponent implements DocumentContainer {
     updateEdgeGraphics();
   }
 
-  /**
-   * Initialize mTextPane and mValueEditor
-   */
-  private void initEditBox() {
-    //if (getDescription() == null) return;
-    // TODO: ACTIVATE AFTER FIXING CODEEDITOR.SETEDITEDOBJECT
-
-    mDocument = new ObserverDocument(mDataEdge);
-    mCodeArea = new CodeArea(this,  mDocument, 
-        new Font("Monospaced", Font.ITALIC,
-            getEditorConfig().sWORKSPACEFONTSIZE), color());
-    /*
-
-    mTextArea.setBorder(BorderFactory.createLineBorder(color()));
-    mTextArea.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      // character added
-      public void insertUpdate(DocumentEvent e) { computeBounds(); }
-
-      @Override
-      // character removed
-      public void removeUpdate(DocumentEvent e) { insertUpdate(e); }
-
-      @Override
-      public void changedUpdate(DocumentEvent e) { insertUpdate(e); }
-    });
-
-    mTextArea.addFocusListener(new FocusListener() {
-      @Override
-      public void focusGained(FocusEvent e) {
-        mDispatcher.convey(new ElementSelectedEvent(Edge.this));
-      }
-      @Override
-      public void focusLost(FocusEvent e) {
-        mDocument.updateModel();
-      }
-    });
-
-    // Attributes
-    mTextArea.setFont(this.getFont());
-    mTextArea.setForeground(color());
-
-    mTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
-    mTextArea.getActionMap().put("enter", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        setDeselected();
-        mDispatcher.convey(new ElementSelectedEvent(null));
-        updateFromTextEditor();
-      }
-    });
-    mTextArea.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
-    mTextArea.getActionMap().put("escape", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        setDeselected();
-      }
-    });
-    */
-    mCodeArea.setVisible(mCodeArea.getText().trim().length() > 0);
-  }
-
   /*
    * Take input value of mValueEditor and set it as value of the edge
    * EDGE MODIFICATION  
-   */
-  private void updateFromTextEditor() {
+   *
+  void updateFromTextEditor() {
     if (mCodeArea == null) return;
     String input = mCodeArea.getText();
     if (mDataEdge != null) {
@@ -267,20 +212,22 @@ public class Edge extends EditorComponent implements DocumentContainer {
       }
     }
     EditorInstance.getInstance().refresh();
-  }
+  }*/
 
   public void setSelected() {
-    mEditMode = true;
-    mCodeArea.setSelected();
-    repaint(100);
+    mArrow.showControlPoints();
+    super.setSelected();
   }
-
+  
   public void setDeselected() {
     mArrow.deselectMCs();
-    mEditMode = false;
-    repaint(100);
+    super.setDeselected();
   }
 
+  public boolean isInEditMode() {
+    return mSelected;
+  }
+  
   /**
    */
   private void showContextMenu(MouseEvent evt, Edge edge) {
@@ -301,19 +248,11 @@ public class Edge extends EditorComponent implements DocumentContainer {
 
   @Override
   public void mouseClicked(MouseEvent event) {
-
-    mDispatcher.convey(new ElementSelectedEvent(this));
-    mousePressed(event);
-
     // show context menu
     if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
       showContextMenu(event, this);
-    } else if ((event.getClickCount() == 2) && getDescription() != null
-        && mCodeArea != null) {
-      //mTextArea.requestFocus();
-      //mEditMode = true;
-      mDispatcher.convey(new EdgeEditEvent(this, this.getDataEdge()));
     }
+    repaint(100);
   }
 
   /**
@@ -321,9 +260,11 @@ public class Edge extends EditorComponent implements DocumentContainer {
    */
   @Override
   public void mousePressed(MouseEvent e) {
-    mArrow.edgeSelected(e.getPoint());
-    // revalidate();
-    repaint(100);
+    if (mSelected) {
+      mArrow.edgeSelected(e.getPoint());
+      // revalidate();
+      repaint(100);
+    }
   }
 
   private void deflectSource(Node newNode) {
@@ -459,20 +400,21 @@ public class Edge extends EditorComponent implements DocumentContainer {
     repaint(100);
   }
 
+  Point2D getCurveCenter() {
+    return new Point2D.Double(mArrow.mLeftCurve.x2, mArrow.mLeftCurve.y2);
+  }
+  
   private Rectangle computeTextBoxBounds() {
-    if (mCodeArea == null) return null;
-    mCodeArea.setDeselected();
-    Dimension r = mCodeArea.getSize();
+    CodeArea c = getCodeArea();
+    if (c == null) return null;
+    c.setDeselected();
+    Dimension r = c.getSize();
     
     // center around middle of curve
     int x = (int) Math.round(mArrow.mLeftCurve.x2 - r.width/2);
     int y = (int) Math.round(mArrow.mLeftCurve.y2 - r.height/2);
-    mCodeArea.setLocation(x, y);
-    /*
-    mTextArea.setBounds((int) Math.round(mArrow.mLeftCurve.x2 - width/2),
-        (int) Math.round(mArrow.mLeftCurve.y2 - mFontHeightCorrection), width, height);
-     */
-    return mCodeArea.getBounds();
+    c.setLocation(x, y);
+    return c.getBounds();
   }
 
   private void computeBounds() {
@@ -491,9 +433,10 @@ public class Edge extends EditorComponent implements DocumentContainer {
     Graphics2D graphics = (Graphics2D) g;
 
     graphics.setColor(color());
-    graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+        RenderingHints.VALUE_ANTIALIAS_ON);
     graphics.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
-            BasicStroke.JOIN_MITER));
+        BasicStroke.JOIN_MITER));
 
     // NOTE: This is the magic command that makes all drawing relative
     // to the position of this component, and removes the "absolute" position
@@ -501,16 +444,5 @@ public class Edge extends EditorComponent implements DocumentContainer {
     graphics.translate(-getLocation().x, -getLocation().y);
     // draw the arrow
     mArrow.paintArrow(graphics, lineWidth, color());
-
-    /*
-    if (mEditMode == true) {
-      //graphics.setColor(color());
-      mTextArea.requestFocusInWindow();
-    }*/
   }
-
-  public boolean isInEditMode() {
-    return mEditMode;
-  }
-
 }

@@ -202,7 +202,9 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       Object edited = ((ElementSelectedEvent) event).getElement();
       if (edited instanceof DocumentContainer) {
         mCodeEditor.setEditedNodeOrEdge((DocumentContainer) edited);
-      }
+      } else {
+        mCodeEditor.setEditedNodeOrEdge(null);
+      } 
     } else if (event instanceof ClearCodeEditorEvent) {
       mCodeEditor.setEditedNodeOrEdge(null);
     }

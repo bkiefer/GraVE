@@ -1,11 +1,19 @@
 package de.dfki.grave.editor.panels;
 
-import static de.dfki.grave.Preferences.*;
+import static de.dfki.grave.Preferences.sCEDGE_COLOR;
+import static de.dfki.grave.Preferences.sFEDGE_COLOR;
+import static de.dfki.grave.Preferences.sIEDGE_COLOR;
+import static de.dfki.grave.Preferences.sPEDGE_COLOR;
+import static de.dfki.grave.Preferences.sTEDGE_COLOR;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.*;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -13,10 +21,15 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.grave.editor.CodeArea;
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
-import de.dfki.grave.editor.action.*;
+import de.dfki.grave.editor.action.CompoundAction;
+import de.dfki.grave.editor.action.EditorAction;
+import de.dfki.grave.editor.action.MoveNodesAction;
+import de.dfki.grave.editor.action.NormalizeEdgeAction;
+import de.dfki.grave.editor.action.StraightenEdgeAction;
 import de.dfki.grave.editor.event.ClearCodeEditorEvent;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
@@ -73,6 +86,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   public float mZoomFactor = 1.0f;
   private boolean mShowGrid = false;
+  
+  // to suspend mouse input when the workspace changes drastically
+  private boolean mIgnoreMouseInput = false;
 
   /**
    *
@@ -100,9 +116,16 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     showCurrentWorkSpace();
   }
 
-  /** Inhibit mouse actions for a while. Must be implemented by subclass */
-  protected abstract void ignoreMouseInput();
+  /** Inhibit mouse actions for a while. */
+  protected void ignoreMouseInput(boolean ignore) {
+    mIgnoreMouseInput = ignore;
+  }
 
+  /** Return true if mouse actions are suspended. */
+  protected boolean shouldIgnoreMouseInput() {
+    return mIgnoreMouseInput;
+  }
+  
   //
   public void refresh() {
     mObservable.update(null);
@@ -343,10 +366,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Jump into the SuperNode node (currently present on the WorkSpace) */
   public void increaseWorkSpaceLevel(Node node) {
     // Reset mouse interaction
-    ignoreMouseInput();
+    ignoreMouseInput(true);
     SuperNode superNode = (SuperNode) node.getDataNode();
     mSceneFlowEditor.addActiveSuperNode(superNode);
     showNewSuperNode();
+    ignoreMouseInput(false);
   }
 
   /** Pop out to the specified SuperNode */
@@ -612,7 +636,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mEdges.put(e.getDataEdge(), e);
     // add to Panel
     super.add(e);
-    super.add(e.getCodeArea());
+    CodeArea c = e.getCodeArea();
+    if (c != null)
+      super.add(c);
     mObservable.addObserver(e);
   }
 
