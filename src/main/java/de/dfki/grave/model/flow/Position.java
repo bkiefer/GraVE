@@ -1,4 +1,4 @@
-package de.dfki.grave.model.flow.geom;
+package de.dfki.grave.model.flow;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -103,5 +103,13 @@ public final class Position implements Copyable {
   
   public double dotProd(Point2D b) {
     return x * b.getX() + y * b.getY();
+  }
+  
+  // returns an angle in the range 0 .. 2*pi, where (0, 1) returns zero, and
+  // (1,0) returns pi/2
+  public double angle(Position p) { 
+    double res = Math.atan2(p.x - x, p.y - y);
+    if (res < 0) res = 2 * Math.PI + res;
+    return res;
   }
 }

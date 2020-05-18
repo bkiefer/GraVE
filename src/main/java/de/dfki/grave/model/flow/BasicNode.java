@@ -12,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.editor.panels.IDManager;
-import de.dfki.grave.model.flow.geom.Geom;
-import de.dfki.grave.model.flow.geom.Position;
 import de.dfki.grave.util.ChainedIterator;
 
 /**
@@ -479,7 +477,7 @@ public class BasicNode implements ContentHolder {
 
   public int getNearestFreeDock(Position p) {
     // start with the closest angle with a reasonable representation
-    double angle = Geom.angle(getCenter(), p);
+    double angle = getCenter().angle(p);
     return Geom.findClosestDock(mDocksTaken, angle);
   }
 

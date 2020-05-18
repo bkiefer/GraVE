@@ -1,10 +1,9 @@
 package de.dfki.grave.model.flow.geom;
 
-import java.awt.Point;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
+import de.dfki.grave.model.flow.Position;
 import de.dfki.grave.util.Copyable;
 
 /**

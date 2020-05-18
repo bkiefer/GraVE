@@ -9,8 +9,6 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.model.flow.geom.Position;
-
 /**
  * @author Patrick
  * This class manages the node placement on the workspace.

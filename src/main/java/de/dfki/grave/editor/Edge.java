@@ -17,8 +17,6 @@ import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.panels.EditorInstance;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.*;
-import de.dfki.grave.model.flow.geom.Geom;
-import de.dfki.grave.model.flow.geom.Position;
 import de.dfki.grave.util.evt.EventDispatcher;
 
 

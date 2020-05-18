@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import javax.xml.bind.annotation.*;
 
-import de.dfki.grave.model.flow.geom.Position;
-
 /**
  * @author Gregor Mehlmann
  */

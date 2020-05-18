@@ -5,8 +5,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-//~--- JDK imports ------------------------------------------------------------
-import de.dfki.grave.model.flow.geom.Boundary;
 import de.dfki.grave.util.Copyable;
 
 /**

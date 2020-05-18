@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.editor.panels.EditorInstance;
-import de.dfki.grave.model.flow.geom.Geom;
+import de.dfki.grave.model.flow.Geom;
 
 /**
  * @author Gregor Mehlmann

@@ -20,8 +20,8 @@ import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.panels.*;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.flow.Position;
 import de.dfki.grave.model.flow.SuperNode;
-import de.dfki.grave.model.flow.geom.Position;
 import de.dfki.grave.util.ChainedIterator;
 import de.dfki.grave.util.evt.EventDispatcher;
 

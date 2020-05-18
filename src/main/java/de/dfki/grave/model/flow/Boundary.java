@@ -1,4 +1,4 @@
-package de.dfki.grave.model.flow.geom;
+package de.dfki.grave.model.flow;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;

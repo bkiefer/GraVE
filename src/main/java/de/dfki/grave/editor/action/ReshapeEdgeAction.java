@@ -8,7 +8,7 @@ package de.dfki.grave.editor.action;
 
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.geom.Position;
+import de.dfki.grave.model.flow.Position;
 
 /**
  * @author Bernd Kiefer

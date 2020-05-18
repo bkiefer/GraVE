@@ -13,8 +13,9 @@ import javax.swing.*;
 import de.dfki.grave.editor.action.MoveCommentAction;
 import de.dfki.grave.editor.action.RemoveCommentAction;
 import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.model.flow.Boundary;
 import de.dfki.grave.model.flow.CommentBadge;
-import de.dfki.grave.model.flow.geom.Boundary;
+
 import java.util.Observer;
 
 /**

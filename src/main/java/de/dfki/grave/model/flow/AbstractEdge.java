@@ -1,6 +1,6 @@
 package de.dfki.grave.model.flow;
 
-import static de.dfki.grave.model.flow.geom.Geom.*;
+import static de.dfki.grave.model.flow.Geom.*;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.model.flow.geom.ControlPoint;
 import de.dfki.grave.model.flow.geom.EdgeArrow;
-import de.dfki.grave.model.flow.geom.Geom;
-import de.dfki.grave.model.flow.geom.Position;
 
 /**
  * @author Gregor Mehlmann
