@@ -192,20 +192,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     return mSceneFlowEditor;
   }
 
-  private Node getNode(String id) {
-    for (Node node : mNodeSet.values()) {
-      if (node.getDataNode().getId().equals(id)) {
-        return node;
-      }
-    }
 
-    return null;
-  }
-
-  public Collection<Node> getNodes() {
-    return mNodeSet.values();
-  }
-
+  /* ######################################################################
+   * Zoom Methods, followed by Coordinate transformations
+   * ###################################################################### */
+  
   public void zoomOut() {
     if (mZoomFactor > 0.5) mZoomFactor -= .1;
     getEditorConfig().sZOOM_FACTOR = mZoomFactor;
@@ -227,10 +218,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     refreshAll();
   }
 
-  /* ######################################################################
-   * The split in x and y is currently not necessary, for possible future 
-   * extensions, where x and y might behave differently
-   * ###################################################################### */
+  /* The split in x and y for the next four methods is currently not necessary,
+   * for possible future extensions, where x and y might behave differently
+   */
   
   /** Convert from model x position to x view position */
   public int toViewXPos(int modx) {
@@ -260,6 +250,25 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Convert from model to view coordinates */
   public Point toViewPoint(Position val) {
     return new Point(toViewXPos(val.getXPos()), toViewYPos(val.getYPos()));
+  }
+  
+  
+  /* ######################################################################
+   * Node/Edge access methods
+   * ###################################################################### */
+  
+  private Node getNode(String id) {
+    for (Node node : mNodeSet.values()) {
+      if (node.getDataNode().getId().equals(id)) {
+        return node;
+      }
+    }
+
+    return null;
+  }
+
+  public Collection<Node> getNodes() {
+    return mNodeSet.values();
   }
 
   private class EdgeIterator implements Iterator<Edge> {
@@ -625,7 +634,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mEdges.remove(e.getDataEdge());
     // remove from Panel
     super.remove(e);
-    super.remove(e.getCodeArea());
+    CodeArea c = e.getCodeArea();
+    if (c != null)
+      super.remove(c);
     mObservable.deleteObserver(e);
   }
 
@@ -649,7 +660,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
       mGridManager.releaseGridPosition(n.getDataNode());
     // remove from Panel
     super.remove(n);
-    super.remove(n.getCodeArea());
+    CodeArea c = n.getCodeArea();
+    if (c != null)
+      super.remove(c);
     mObservable.deleteObserver(n);
   }
 
@@ -660,7 +673,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mNodeSet.put(n.getDataNode(), n);
     // add to Panel
     super.add(n);
-    super.add(n.getCodeArea());
+    CodeArea c = n.getCodeArea();
+    if (c != null)
+      super.add(c);
     mObservable.addObserver(n);
   }
 

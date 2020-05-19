@@ -69,6 +69,18 @@ public class SuperNode extends BasicNode {
     mStartNode = value;
     mStartNodeId = value.getId();
   }
+  
+  /** No code allowed with SuperNodes, must be associated with the 
+   *  SuperNode's Start or End Node(s)
+   */
+  public String getContent() {
+    return null;
+  }
+  
+  public void setContent(String s) {
+    throw new UnsupportedOperationException(
+        "SuperNode code must moved inside the Node");
+  }
 
   public void setComment(String value) {
     mComment = value;
