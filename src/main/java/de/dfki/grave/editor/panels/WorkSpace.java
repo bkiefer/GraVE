@@ -254,7 +254,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   
   
   /* ######################################################################
-   * Node/Edge access methods
+   * Node/Edge/Comment access methods
    * ###################################################################### */
   
   private Node getNode(String id) {
@@ -831,10 +831,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   public BasicNode changeType(BasicNode n, BasicNode changeTo) {
     Node node = mNodeSet.get(n);
     BasicNode result = null;
-    Collection<Edge> incoming =
-        computeIncomingEdges(new ArrayList<Node>(){{add(node);}});
     try {
-      result = node.changeType(mIDManager, edgeModels(incoming), changeTo);
+      result = node.changeType(mIDManager, changeTo);
+      mNodeSet.put(node.getDataNode(), node);
+      // removing the old node and adding a new changed one would require to
+      // re-create the edges too, which is not necessary
     } catch (Exception e) {
       // complain: operation not legal
       setMessageLabelText(e.getMessage());

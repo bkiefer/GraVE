@@ -121,10 +121,24 @@ public class SuperNode extends BasicNode {
   }
   */
 
-  public boolean isStartNode(BasicNode value) {
+  /** Only for BasicNode */
+  boolean isStartNode(BasicNode value) {
     return mStartNode == value;
   }
 
+  /** Only for BasicNode */
+  List<AbstractEdge> computeIncomingEdges(BasicNode node) {
+    ArrayList<AbstractEdge> result = new ArrayList<>();
+    for (BasicNode n : mNodeList) {
+      for (AbstractEdge e : n.getEdgeList()) {
+        if (e.getTargetNode() == node) {
+          result.add(e);
+        }
+      }
+    }
+    return result;
+  }
+  
   /** Add a node to the list of nodes
    *
    *  NODE MODIFICATION

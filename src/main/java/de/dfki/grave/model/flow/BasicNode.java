@@ -195,8 +195,10 @@ public class BasicNode implements ContentHolder {
 
   /** NODE MODIFICATION, ONLY THROUGH ACTION! 
    * @throws Exception */
-  public BasicNode changeType(IDManager mgr, Collection<AbstractEdge> incoming,
-      BasicNode newNode) throws Exception {
+  public BasicNode changeType(IDManager mgr, BasicNode newNode) throws Exception {
+    // adapt node lists of parent SuperNode
+    SuperNode s = getParentNode();
+    Collection<AbstractEdge> incoming = s.computeIncomingEdges(this); 
     if (newNode == null) {
       if (this instanceof SuperNode) {
         SuperNode n = (SuperNode)this;
@@ -216,12 +218,9 @@ public class BasicNode implements ContentHolder {
     for (AbstractEdge e : incoming) {
       e.connect(e.getSourceNode(), newNode);
     }
-    // adapt node lists of parent SuperNode
-    SuperNode s = getParentNode();
     s.removeNode(this);
     s.addNode(newNode);
-    BasicNode oldNode = this;
-    return oldNode;
+    return newNode;
   }
 
   /** Add an outgoing edge from this node, with all consequences.

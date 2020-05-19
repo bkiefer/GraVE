@@ -52,17 +52,17 @@ public final class Node extends EditorComponent {
   public Node(WorkSpace workSpace, BasicNode dataNode) {
     mWorkSpace = workSpace;
     mDataNode = dataNode;
-    //setToolTipText(mDataNode.getId());
-    // the former overrides any MouseListener!!!
-
     isBasic = !(mDataNode instanceof SuperNode);
 
-    // Set initial position and size
+    //setToolTipText(mDataNode.getId());
+    // the former overrides any MouseListener!!!
+        // Set initial position and size
     setViewBounds(mDataNode.getPosition().getXPos(),
         mDataNode.getPosition().getYPos(),
         getEditorConfig().sNODEWIDTH,
         getEditorConfig().sNODEHEIGHT);
     initCodeArea(mDataNode.getContent() != null ? mDataNode : null, null);
+    
     // update
     update();
   }
@@ -91,10 +91,10 @@ public final class Node extends EditorComponent {
     super.setDeselected();
   }
 
-  public BasicNode changeType(IDManager mgr, Collection<AbstractEdge> incoming,
-      BasicNode newNode) throws Exception {
+  /** newNode is only non-null if it's an undo */
+  public BasicNode changeType(IDManager mgr, BasicNode newNode) throws Exception {
     BasicNode oldNode = mDataNode;
-    newNode = oldNode.changeType(mgr, incoming, newNode);
+    newNode = oldNode.changeType(mgr, newNode);
     mDataNode = newNode;
     isBasic = !isBasic;
     update();
@@ -142,7 +142,6 @@ public final class Node extends EditorComponent {
   }
 
   private void update() {
-
     // Update the font and the font metrics that have to be
     // recomputed if the node's font size has changed
     // TODO: Move attributes to preferences and make editable
@@ -294,27 +293,29 @@ public final class Node extends EditorComponent {
    */
   public void showContextMenu(WorkSpacePanel mWorkSpace) {
     JPopupMenu pop = new JPopupMenu();
-    SuperNode curr = mDataNode.getParentNode();
 
-    if (!(getDataNode() instanceof SuperNode)) {
-      // Only BasicNodes can become start nodes
-      addItem(pop, curr.isStartNode(getDataNode()) ? "Unset Start" : "Set Start",
-          new ToggleStartNodeAction(mWorkSpace, this.getDataNode()));
-      pop.add(new JSeparator());
-      addItem(pop, "To Supernode", new ChangeNodeTypeAction(mWorkSpace, mDataNode));
-      pop.add(new JSeparator());
-    } else {
+    if (! isBasic) {
       SuperNode n = (SuperNode)getDataNode();
       if (n.getNodeSize() == 0) {
         addItem(pop, "To BasicNode", new ChangeNodeTypeAction(mWorkSpace, mDataNode));
         pop.add(new JSeparator());
       }
+    } else {
+      // Only BasicNodes can become start nodes
+      if (! mDataNode.isStartNode()) {
+        addItem(pop, "Set Start",
+            new ToggleStartNodeAction(mWorkSpace, this.getDataNode()));
+        addItem(pop, "To Supernode", new ChangeNodeTypeAction(mWorkSpace, mDataNode));
+        pop.add(new JSeparator());
+      }
     }
     
-    addItem(pop, "Copy", new CopyNodesAction(mWorkSpace, this.mDataNode));
-    addItem(pop, "Cut", new RemoveNodesAction(mWorkSpace, this.getDataNode(), true));
-    pop.add(new JSeparator());
-    addItem(pop, "Delete", new RemoveNodesAction(mWorkSpace, this.getDataNode(), false));
+    addItem(pop, "Copy", new CopyNodesAction(mWorkSpace, mDataNode));
+    if (! mDataNode.isStartNode()) {
+      addItem(pop, "Cut", new RemoveNodesAction(mWorkSpace, mDataNode, true));
+      pop.add(new JSeparator());
+      addItem(pop, "Delete", new RemoveNodesAction(mWorkSpace, mDataNode, false));
+    }
     pop.show(this, getWidth(), 0);
   }
 
