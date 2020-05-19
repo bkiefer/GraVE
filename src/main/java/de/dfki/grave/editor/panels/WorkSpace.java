@@ -818,10 +818,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     BasicNode result = null;
     Collection<Edge> incoming =
         computeIncomingEdges(new ArrayList<Node>(){{add(node);}});
-    if ((result = node.changeType(mIDManager, edgeModels(incoming) , changeTo))
-        == null) {
+    try {
+      result = node.changeType(mIDManager, edgeModels(incoming), changeTo);
+    } catch (Exception e) {
       // complain: operation not legal
-      setMessageLabelText("SuperNode contains Nodes: Type change not possible");
+      setMessageLabelText(e.getMessage());
     }
     return result;
   }

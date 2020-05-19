@@ -45,8 +45,13 @@ public class SuperNode extends BasicNode {
     copyBasicFields(node);
   }
 
-  /** Get a new SuperNode from the GUI */
+  /** Get a new SuperNode from the GUI, but only if the parent SuperNode already
+   *  has a BasicNode as StartNode.
+   */
   public BasicNode createNode(IDManager mgr, Position p, SuperNode s) {
+    // first node created must be a BasicNode!
+    if (s.getNodeSize() == 0)
+      return null;
     return new SuperNode().init(mgr.getNextFreeID(this), p, s);
   }
 
@@ -55,7 +60,11 @@ public class SuperNode extends BasicNode {
     return mStartNode;
   }
 
-  /** NODE MODIFICATION (?) */
+  /** NODE MODIFICATION (?)
+   * TODO: In the future, this should only be allowed for BasicNodes. Currently
+   * it's still in because old style projects have SuperNodes that are start
+   * nodes
+   */
   public void setStartNode(BasicNode value) {
     mStartNode = value;
     mStartNodeId = value.getId();

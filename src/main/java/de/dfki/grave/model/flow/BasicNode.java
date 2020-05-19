@@ -193,18 +193,22 @@ public class BasicNode implements ContentHolder {
     return ! (mComment == null || mComment.isEmpty());
   }
 
-  /** NODE MODIFICATION, ONLY THROUGH ACTION! */
+  /** NODE MODIFICATION, ONLY THROUGH ACTION! 
+   * @throws Exception */
   public BasicNode changeType(IDManager mgr, Collection<AbstractEdge> incoming,
-      BasicNode newNode) {
+      BasicNode newNode) throws Exception {
     if (newNode == null) {
       if (this instanceof SuperNode) {
         SuperNode n = (SuperNode)this;
         if (n.getNodeSize() > 0) {
           // complain: this operation can not be done, SuperNode has subnodes
-          return null;
+          throw new Exception("SuperNode contains Nodes: Type change not possible");
         }
         newNode = new BasicNode(mgr, n);
       } else {
+        if (getContent() != null && ! getContent().trim().isEmpty())  {
+          throw new Exception("BasicNode with Code: Type change not possible");
+        }
         newNode = new SuperNode(mgr, this);
         // adapt node lists of parent SuperNode
       }

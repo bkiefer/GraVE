@@ -92,11 +92,9 @@ public final class Node extends EditorComponent {
   }
 
   public BasicNode changeType(IDManager mgr, Collection<AbstractEdge> incoming,
-      BasicNode newNode) {
+      BasicNode newNode) throws Exception {
     BasicNode oldNode = mDataNode;
     newNode = oldNode.changeType(mgr, incoming, newNode);
-    if (newNode == null)
-      return null;
     mDataNode = newNode;
     isBasic = !isBasic;
     update();
@@ -298,11 +296,11 @@ public final class Node extends EditorComponent {
     JPopupMenu pop = new JPopupMenu();
     SuperNode curr = mDataNode.getParentNode();
 
-    addItem(pop, curr.isStartNode(getDataNode()) ? "Unset Start" : "Set Start",
-        new ToggleStartNodeAction(mWorkSpace, this.getDataNode()));
-    pop.add(new JSeparator());
-
     if (!(getDataNode() instanceof SuperNode)) {
+      // Only BasicNodes can become start nodes
+      addItem(pop, curr.isStartNode(getDataNode()) ? "Unset Start" : "Set Start",
+          new ToggleStartNodeAction(mWorkSpace, this.getDataNode()));
+      pop.add(new JSeparator());
       addItem(pop, "To Supernode", new ChangeNodeTypeAction(mWorkSpace, mDataNode));
       pop.add(new JSeparator());
     } else {

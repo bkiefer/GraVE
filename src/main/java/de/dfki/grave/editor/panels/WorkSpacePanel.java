@@ -148,8 +148,12 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
           if (data instanceof BasicNode) {
             BasicNode n = (BasicNode) data;
-            new CreateNodeAction(WorkSpacePanel.this,
-                createNode(dtde.getLocation(), n)).run();
+            BasicNode newModel = createNode(dtde.getLocation(), n);
+            if (newModel != null) {
+              new CreateNodeAction(WorkSpacePanel.this, newModel).run();
+            } else {
+              setMessageLabelText("First (Start) node must be basic node");
+            }
             dtde.acceptDrop(mAcceptableActions);
             dtde.getDropTargetContext().dropComplete(true);
           } else if (data instanceof AbstractEdge) {
