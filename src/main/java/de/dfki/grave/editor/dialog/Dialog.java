@@ -3,7 +3,6 @@ package de.dfki.grave.editor.dialog;
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -15,11 +14,11 @@ import de.dfki.grave.util.ResourceLoader;
 /**
  * @author Gregor Mehlmann
  */
+@SuppressWarnings("serial")
 public abstract class Dialog extends JDialog {
 
   protected final JPanel mMainPanel = new JPanel(null);
   protected final ImageIcon mIcon = ResourceLoader.loadImageIcon("img/logo.png");
-  protected final Font mFont = new Font("SansSerif", Font.PLAIN, 11);
 
   //
   protected Button mPressedButton = Button.CANCEL;

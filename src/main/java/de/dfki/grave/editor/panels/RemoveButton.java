@@ -10,19 +10,20 @@ package de.dfki.grave.editor.panels;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
+import de.dfki.grave.Preferences;
 import de.dfki.grave.util.ResourceLoader;
 
 /**
  *
  * @author mfallas
  */
+@SuppressWarnings("serial")
 public class RemoveButton extends JLabel {
 
   private final Dimension buttonSize = new Dimension(20, 20);
@@ -38,7 +39,7 @@ public class RemoveButton extends JLabel {
     setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
     setToolTipText("Remove");
     setIconTextGap(10);
-    setFont(new Font("Helvetica", Font.PLAIN, 24));
+    setFont(Preferences.getPrefs().editorConfig.sBUTTON_FONT.getFont());
     setFocusable(false);
     setPreferredSize(buttonSize);
     setMinimumSize(buttonSize);

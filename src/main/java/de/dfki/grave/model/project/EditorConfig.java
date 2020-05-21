@@ -1,6 +1,12 @@
 package de.dfki.grave.model.project;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -52,6 +58,24 @@ public class EditorConfig {
   public boolean sSHOW_CODEEDITOR = true;
   public int sCODE_DIVIDER_LOCATION = 450;
   public double sSCENEFLOW_SCENE_EDITOR_RATIO = 0.85;
+  
+  public FontConfig sNODE_FONT;  // Node name font
+  // Font f = new Font(Font.SANS_SERIF, DEMIBOLD, 16);
+  public FontConfig sCODE_FONT;  // Code Font for code attached to Nodes/Edges
+  //new Font("Monospaced", Font.ITALIC, 11)
+  // new Font(Font.SANS_SERIF, Font.PLAIN, 16);
+  public FontConfig sCODEAREA_FONT; // Code Font for code in Code Editor Areas
+  // new Font(Font.SANS_SERIF, Font.PLAIN, 16);
+  public FontConfig sCOMMENT_FONT; // Font in Comment Badges
+  // new Font(Font.SANS_SERIF, Font.PLAIN, 16);
+  public FontConfig sBUTTON_FONT; // Button Font
+  //new Font("Helvetica", Font.PLAIN, 20)
+  public FontConfig sDIALOG_FONT; // Dialog Font
+  //new Font("SansSerif", Font.PLAIN, 11)
+  public FontConfig sTREE_FONT; // Tree View Font
+  // new Font("Helvetica", Font.PLAIN, 10);
+  public FontConfig sUI_FONT; // Editor Menu and Control Elements font
+  // new Font("Helvetica", Font.PLAIN, 14);
 
   public EditorConfig() {
   }
@@ -107,10 +131,15 @@ public class EditorConfig {
       }
     }
 
-    return (EditorConfig)JaxbUtilities.unmarshal(
-        inputStream, file.getAbsolutePath(), EditorConfig.class);
+    return (EditorConfig)JaxbUtilities.unmarshal(inputStream,
+        file.getAbsolutePath(), EditorConfig.class, FontConfig.class);
   }
 
+  public static EditorConfig loadBundleDefault() {
+    InputStream in = EditorConfig.class.getResourceAsStream("editorconfig.xml");
+    return (EditorConfig)JaxbUtilities.unmarshal(
+        in, "default", EditorConfig.class, FontConfig.class);
+  }
 
   // Get the string representation of the configuration
   public final EditorConfig copy() {

@@ -25,7 +25,7 @@ public class JaxbUtilities {
       Unmarshaller u = jc.createUnmarshaller();
       result = u.unmarshal(inputStream);
     } catch (JAXBException e) {
-      mLogger.error("Error: Cannot parse sceneflow file " + path + " : " + e);
+      mLogger.error("Error: Cannot parse file {}: {}", path, e);
     }
     return result;
   }
@@ -40,7 +40,7 @@ public class JaxbUtilities {
       file.renameTo(temp);
       m.marshal(o, new FileOutputStream(file));
     } catch (JAXBException|FileNotFoundException e) {
-      mLogger.error("Error: Cannot write file " + file + " : " + e);
+      mLogger.error("Error: Cannot write file {}: {}", file, e);
       temp.renameTo(file);
       temp.delete();
       return false;

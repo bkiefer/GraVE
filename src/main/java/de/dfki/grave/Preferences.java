@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.model.project.EditorConfig;
+import de.dfki.grave.model.project.FontConfig;
 import de.dfki.grave.util.JaxbUtilities;
 import de.dfki.grave.util.ResourceLoader;
 
@@ -255,7 +256,7 @@ public final class Preferences {
   //BACKGROUND WELCOME
   public static final Image BACKGROUND_IMAGE = ResourceLoader.loadImageIcon("img/icon_big.png").getImage();   // Background for the welcome screen
 
-  public static String FRAME_TITLE = "Graphical VonDA Editor";
+  public static String FRAME_TITLE = "Graphical VOnDA Editor";
   public String FRAME_NAME = "GraphEditor";
   public String ICON_FILE = "res/img/icon.png";
   public int FRAME_POS_X = 0;
@@ -270,7 +271,7 @@ public final class Preferences {
   public ArrayList<String> recentProjectNames = new ArrayList<>();
   public ArrayList<String> recentProjectDates = new ArrayList<>();
 
-  public EditorConfig editorConfig = new EditorConfig();
+  public EditorConfig editorConfig;
 
   @XmlTransient
   private static Preferences single_instance = null;
@@ -278,7 +279,7 @@ public final class Preferences {
   private Preferences() {}
 
   public static Preferences getPrefs() {
-    if (single_instance == null)
+    if (single_instance == null) 
         single_instance = new Preferences();
     return single_instance;
   }
@@ -287,15 +288,19 @@ public final class Preferences {
   public static synchronized void save() {
     // write the Preferences file
     JaxbUtilities.marshal(new File(sCONFIG_FILE), getPrefs(),
-            Preferences.class);
+            Preferences.class, EditorConfig.class, FontConfig.class);
   }
 
   public static synchronized void load() {
     try {
-      JaxbUtilities.unmarshal(new FileInputStream(sCONFIG_FILE), sCONFIG_FILE,
-              Preferences.class);
+      single_instance = (Preferences)JaxbUtilities.unmarshal(
+          new FileInputStream(sCONFIG_FILE), sCONFIG_FILE,
+          Preferences.class, EditorConfig.class, FontConfig.class);
     } catch (IOException e) {
-      mLogger.error("Cannot read preference file: " + sCONFIG_FILE + " :\n" + e);
+      mLogger.warn("Cannot read global preference file " + sCONFIG_FILE + ", creating default");
+      single_instance = new Preferences();
+      single_instance.editorConfig = EditorConfig.loadBundleDefault();
+      save();
     }
   }
 

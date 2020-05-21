@@ -31,8 +31,7 @@ import de.dfki.grave.Preferences;
 public class AboutDialog extends JDialog {
 
   // Singelton instance
-  private static AboutDialog sInstance = null;
-  private Font mFont = new Font("SansSerif", Font.PLAIN, 11);
+  private static AboutDialog sInstance = null; 
   private JPanel mContentPanel = null;
   private JScrollPane mAboutTextScrollPane = null;
   private MyEditorPane mAboutPane = null;
@@ -120,7 +119,7 @@ public class AboutDialog extends JDialog {
         dispose();
       }
     });
-    setFont(mFont);
+    setFont(Preferences.getPrefs().editorConfig.sDIALOG_FONT.getFont());
 
     JPanel buttonPanel = new JPanel();
 

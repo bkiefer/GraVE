@@ -10,6 +10,7 @@ import java.util.Observable;
 
 import javax.swing.*;
 
+import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.action.MoveCommentAction;
 import de.dfki.grave.editor.action.RemoveCommentAction;
 import de.dfki.grave.editor.panels.WorkSpace;
@@ -30,8 +31,6 @@ public class Comment extends JTextArea
   private ObserverDocument mDocument;
   private CommentBadge mDataComment;
   protected WorkSpace mWorkSpace;
-
-  private Font mFont = null;
 
   // position
   private Point mClickPosition = new Point(0, 0);
@@ -58,15 +57,15 @@ public class Comment extends JTextArea
     setDocument(mDocument = new ObserverDocument(dataComment));
 
     // font setup
-    mFont = new Font("SansSerif", Font.ITALIC, /* (mWorkSpace != null) ? */
-            mWorkSpace.getEditorConfig().sWORKSPACEFONTSIZE /* : sBUILDING_BLOCK_FONT_SIZE */);
+    setFont(mWorkSpace.getEditorConfig().sCOMMENT_FONT.getFont());
 
-    Boundary b = mDataComment.getBoundary();
+    Color borderColor = Preferences.sCOMMENT_BADGE_COLOR.darker();
+    Border border = BorderFactory.createMatteBorder(3, 3, 3, 3, borderColor);
+    setBorder(border);
 
     // size setup
     setBounds(b.getXPos(), b.getYPos(), b.getWidth(), b.getHeight());
 
-    setFont(mFont);
     setVisible(true);
     setLineWrap(true);
     setWrapStyleWord(true);

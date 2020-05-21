@@ -2,7 +2,13 @@ package de.dfki.grave;
 
 import static de.dfki.grave.Preferences.getPrefs;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
 import java.awt.event.*;
 import java.io.File;
 import java.util.Date;
@@ -179,39 +185,45 @@ public final class AppFrame extends JFrame implements ChangeListener {
   }
 
   private void setUIFonts() {
-    String defaultFont = "Helvetica";    // DEFAULT FONT FOR ALL COMPONENTS
+    Font uiFont = Preferences.getPrefs().editorConfig.sUI_FONT.getFont();
+    Font treeFont = Preferences.getPrefs().editorConfig.sTREE_FONT.getFont();
 
-    UIManager.put("Button.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("ToggleButton.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("RadioButton.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("CheckBox.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("ColorChooser.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("ComboBox.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("Label.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("List.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("MenuBar.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("MenuItem.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("RadioButtonMenuItem.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("CheckBoxMenuItem.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("Menu.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("PopupMenu.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("OptionPane.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("Panel.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("ProgressBar.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("ScrollPane.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("Viewport.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("TabbedPane.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("Table.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("TableHeader.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("TextField.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("PasswordField.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("TextArea.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("TextPane.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("EditorPane.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("TitledBorder.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("ToolBar.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("ToolTip.font", new Font(defaultFont, Font.PLAIN, 14));
-    UIManager.put("Tree.font", new Font(defaultFont, Font.PLAIN, 10));
+    String[] uiElements = {
+        "Button.font",
+        "ToggleButton.font",
+        "RadioButton.font",
+        "CheckBox.font",
+        "ColorChooser.font",
+        "ComboBox.font",
+        "Label.font",
+        "List.font",
+        "MenuBar.font",
+        "MenuItem.font",
+        "RadioButtonMenuItem.font",
+        "CheckBoxMenuItem.font",
+        "Menu.font",
+        "PopupMenu.font",
+        "OptionPane.font",
+        "Panel.font",
+        "ProgressBar.font",
+        "ScrollPane.font",
+        "Viewport.font",
+        "TabbedPane.font",
+        "Table.font",
+        "TableHeader.font",
+        "TextField.font",
+        "PasswordField.font",
+        "TextArea.font",
+        "TextPane.font",
+        "EditorPane.font",
+        "TitledBorder.font",
+        "ToolBar.font",
+        "ToolTip.font"
+    };
+    for (String uiElement : uiElements) {
+      UIManager.put(uiElement, uiFont);
+    }
+    UIManager.put("Tree.font", treeFont);
   }
 
   private void setUIBackgrounds() {

@@ -4,7 +4,6 @@ package de.dfki.grave.editor.dialog;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
@@ -31,7 +30,7 @@ public class CancelButton extends JLabel {
     setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
     setToolTipText("Cancel");
     setIconTextGap(10);
-    setFont(new Font("Helvetica", Font.PLAIN, 20));
+    setFont(Preferences.getPrefs().editorConfig.sBUTTON_FONT.getFont());
     setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
     setPreferredSize(buttonSize);
     setMinimumSize(buttonSize);

@@ -84,16 +84,14 @@ public class Edge extends EditorComponent {
    *  a new edge is created.
    */
   public Edge(WorkSpace ws, AbstractEdge edge, Node sourceNode, Node targetNode) {
-    setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-    mDataEdge = edge;
     mWorkSpace = ws;
+    mDataEdge = edge;
     mSourceNode = sourceNode;
     mTargetNode = targetNode;
-
-    setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
     mArrow = new EdgeArrow();
     update();
-    initCodeArea(mDataEdge.getContent() != null ? mDataEdge : null, color());
+    initCodeArea(edge, color());
+    setFont(getEditorConfig().sCODE_FONT.getFont());
     setDeselected();
     setVisible(true);
   }
@@ -178,19 +176,11 @@ public class Edge extends EditorComponent {
     return mArrow.isIntersectByRectangle(x1, x2, y1, y2);
   }
 
-  public void updateEdgeGraphics() {
+  public void update() {
     mArrow.computeCurve(getStart(), getStartCtrl(), getEndCtrl(), getEnd());
     computeBounds();
   }
-
-  private void update() {
-    // Adapt font size
-    if (getEditorConfig().sWORKSPACEFONTSIZE != getFont().getSize())
-      getFont().deriveFont(getEditorConfig().sWORKSPACEFONTSIZE);
-
-    updateEdgeGraphics();
-  }
-
+  
   /*
    * Take input value of mValueEditor and set it as value of the edge
    * EDGE MODIFICATION  
@@ -318,7 +308,7 @@ public class Edge extends EditorComponent {
    */
   public void straightenEdge() {
     mDataEdge.straightenEdge(mSourceNode.getWidth());
-    updateEdgeGraphics();
+    update();
   }
 
   /** Try to give this edge a better shape (TODO: define! implement!)
@@ -354,7 +344,7 @@ public class Edge extends EditorComponent {
         new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), true, dock,
             newNode.getDataNode()).run();
       } else {
-        updateEdgeGraphics(); // put arrow back into old position
+        update(); // put arrow back into old position
       }
       break;
     }
@@ -365,7 +355,7 @@ public class Edge extends EditorComponent {
         new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), false, dock,
             newNode.getDataNode()).run();
       } else {
-        updateEdgeGraphics(); // put arrow back into old position
+        update(); // put arrow back into old position
       }
       break;
     }

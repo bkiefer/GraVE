@@ -5,12 +5,14 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Optional;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -41,7 +43,7 @@ public class CodeArea extends RSyntaxTextArea {
    */
   public class MyMouseListener extends MouseAdapter{
 
-    //t his will be called when mouse is pressed on the component
+    // this will be called when mouse is pressed on the component
     public void mousePressed(MouseEvent me) { 
       if (! CodeArea.this.isEnabled()) {
         Component child = me.getComponent();
@@ -65,8 +67,7 @@ public class CodeArea extends RSyntaxTextArea {
   // The node to which the badge is connected
   protected final EditorComponent mComponent;
 
-  // TODO: put preferences into external yml
-  private final Font mFont;
+  // TODO: put preferences into external file
   private final int maxWidth = 800;
   private final int maxHeight = 300;
 
@@ -97,8 +98,7 @@ public class CodeArea extends RSyntaxTextArea {
     */
     addMouseListener(new MyMouseListener());
     mComponent = compo;
-    mFont = font;    
-    setFont(mFont);
+    setFont(font);
     if (col != null) {
       setBorder(BorderFactory.createLineBorder(col));
     }
@@ -176,18 +176,27 @@ public class CodeArea extends RSyntaxTextArea {
     setVisible(true);
     //int lines = (int) getText().chars().filter(x -> x == '\n').count() + 1;
     int lines = getLineCount();
+    setRows(lines);
+    int newHeight = lines * this.getLineHeight();
+    newHeight = newHeight > maxHeight? maxHeight : newHeight;
+    
+    FontMetrics fm = getFontMetrics(getFont());
+    Optional<Integer> longestLine = Arrays.asList(text.split("\n")).stream()
+        .map(s -> fm.stringWidth(s)).max(Comparator.naturalOrder());
+    /** This is a lot of handwaving ...
     String longestLine = Arrays.asList(text.split("\n")).stream()
         .max(Comparator.comparingInt(String::length)).get();
-    setRows(lines);
     setColumns(longestLine.length() + 1);
-    //FontMetrics fm = getFontMetrics(getFont());
+    FontMetrics fm = getFontMetrics(getFont());
     //int newHeight = fm.getHeight() * lines;
     // font is monospaced, so this always works
-    //int newWidth = fm.stringWidth("p") * longestLine.length();
-    int newHeight = lines * this.getLineHeight();
-    int newWidth = getColumns() * getColumnWidth();
+    int newWidth = fm.stringWidth("p") * longestLine.length();
+    //int newWidth = getColumns() * getColumnWidth();
     newWidth = newWidth > maxWidth? maxWidth : newWidth;
-    newHeight = newHeight > maxHeight? maxHeight : newHeight;
+    */
+    // No idea why i have to add 2 here
+    int newWidth = longestLine.isPresent() ? longestLine.get() + 2: 0;
+    
     setSize(new Dimension(newWidth, newHeight));
     setLocation();
   }

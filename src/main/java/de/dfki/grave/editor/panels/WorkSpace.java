@@ -253,6 +253,23 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     return new Point(toViewXPos(val.getXPos()), toViewYPos(val.getYPos()));
   }
   
+  /** Convert from view to model coordinates */
+  public Boundary toModelBoundary(Rectangle r) {
+    int x = toModelXPos(r.x);
+    int y = toModelYPos(r.y);
+    int width = toModelXPos(r.x + r.width) - x;
+    int height = toModelYPos(r.y + r.height) - y;
+    return new Boundary(x, y, width, height);
+  }
+  
+  /** Convert from model to view coordinates */
+  public Rectangle toViewRectangle(Boundary r) {
+    int x = toViewXPos(r.getXPos());
+    int y = toViewYPos(r.getYPos());
+    int width = toViewXPos(r.getXPos() + r.getWidth()) - x;
+    int height = toViewYPos(r.getYPos() + r.getHeight()) - y;
+    return new Rectangle(x, y, width, height);
+  }
   
   /* ######################################################################
    * Node/Edge/Comment access methods

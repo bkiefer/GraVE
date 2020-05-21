@@ -2,7 +2,6 @@ package de.dfki.grave.editor;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -33,16 +32,14 @@ public abstract class EditorComponent extends JComponent
   protected EditorConfig getEditorConfig() {
     return mWorkSpace.getEditorConfig();
   }
-
+  
   protected void initCodeArea(ContentHolder ch, Color col) {
     //if (getDescription() == null) return;
     // TODO: ACTIVATE AFTER FIXING CODEEDITOR.SETEDITEDOBJECT
 
-    if (ch != null) {
+    if (ch != null && ch.getContent() != null) {
       mDocument = new ObserverDocument(ch);
-      mCodeArea = new CodeArea(this, 
-          new Font("Monospaced", Font.ITALIC,
-              getEditorConfig().sWORKSPACEFONTSIZE), col);
+      mCodeArea = new CodeArea(this, getEditorConfig().sCODEAREA_FONT.getFont(), col);
       /*
     mTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
     mTextArea.getActionMap().put("enter", new AbstractAction() {

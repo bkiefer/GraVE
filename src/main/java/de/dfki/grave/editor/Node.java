@@ -6,7 +6,6 @@ import static de.dfki.grave.editor.panels.WorkSpacePanel.addItem;
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.font.TextAttribute;
 import java.awt.geom.Point2D;
 import java.util.*;
 
@@ -53,16 +52,15 @@ public final class Node extends EditorComponent {
     mWorkSpace = workSpace;
     mDataNode = dataNode;
     isBasic = !(mDataNode instanceof SuperNode);
+    setFont(getEditorConfig().sNODE_FONT.getFont());
 
-    //setToolTipText(mDataNode.getId());
-    // the former overrides any MouseListener!!!
-        // Set initial position and size
+    //setToolTipText(mDataNode.getId()); overrides any MouseListener!!!
+    // Set initial position and size
     setViewBounds(mDataNode.getPosition().getXPos(),
         mDataNode.getPosition().getYPos(),
         getEditorConfig().sNODEWIDTH,
-        getEditorConfig().sNODEHEIGHT);
-    initCodeArea(mDataNode.getContent() != null ? mDataNode : null, null);
-    
+        getEditorConfig().sNODEHEIGHT);  
+    initCodeArea(mDataNode, null);
     // update
     update();
   }
@@ -142,24 +140,8 @@ public final class Node extends EditorComponent {
   }
 
   private void update() {
-    // Update the font and the font metrics that have to be
-    // recomputed if the node's font size has changed
-    // TODO: Move attributes to preferences and make editable
-    Map<TextAttribute, Object> map = new Hashtable<>();
-
-    map.put(TextAttribute.KERNING, TextAttribute.KERNING_ON);
-    map.put(TextAttribute.FAMILY, Font.SANS_SERIF);
-    map.put(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
-    map.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_DEMIBOLD);
-    map.put(TextAttribute.SIZE, getEditorConfig().sWORKSPACEFONTSIZE);
-
-    // Derive the font from the attribute map
-    Font font = Font.getFont(map);
-    // Derive the node's font metrics from the font
-    FontMetrics fontMetrics = getFontMetrics(font);
-    // Set the node's font to the updated font
-    setFont(font);
-
+    FontMetrics fontMetrics = getFontMetrics(getFont());
+    
     //TODO!!!
     // Update the display name that has to be changed if the
     // node's size or the node's font size have changed
@@ -267,7 +249,7 @@ public final class Node extends EditorComponent {
   public void moveTo(Position newLocation) {
     mDataNode.setPosition(newLocation);
     for (Edge edge : getConnectedEdges()) {
-      edge.updateEdgeGraphics();
+      edge.update();
     }
     setViewLocation(newLocation.getXPos(), newLocation.getYPos());
     CodeArea badge = getCodeArea();
