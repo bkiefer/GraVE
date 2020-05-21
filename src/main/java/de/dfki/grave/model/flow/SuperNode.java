@@ -190,9 +190,6 @@ public class SuperNode extends BasicNode {
         ((SuperNode)node).establishParentNodes();
       }
     }
-    for (CommentBadge c : mCommentList) {
-      c.setParentNode(this);
-    }
   }
 
   /** Only for reading the graph from file */

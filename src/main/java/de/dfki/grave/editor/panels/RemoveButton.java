@@ -17,7 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import de.dfki.grave.util.ios.ResourceLoader;
+import de.dfki.grave.util.ResourceLoader;
 
 /**
  *

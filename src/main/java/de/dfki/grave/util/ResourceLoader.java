@@ -1,4 +1,4 @@
-package de.dfki.grave.util.ios;
+package de.dfki.grave.util;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Image;

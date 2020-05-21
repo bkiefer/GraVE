@@ -22,11 +22,12 @@ import javax.swing.border.EmptyBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.grave.AppFrame;
 import de.dfki.grave.MainGrave;
 import de.dfki.grave.editor.dialog.NewProjectDialog;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.model.project.RunTimeProject;
-import de.dfki.grave.util.ios.ResourceLoader;
+import de.dfki.grave.util.ResourceLoader;
 
 /**
  *
@@ -53,7 +54,7 @@ public class EditorStarter extends JPanel {
   private final File SampleProjFolder = new File(getPrefs().sSAMPLE_PROJECTS);
   private final File TutorialsProjFolder = new File(getPrefs().sTUTORIALS_PROJECTS);
 
-  private final EditorInstance mEditorInstance;
+  private final AppFrame mEditorInstance;
   private final Box mCenterProjectBox;
   private final Box mLeftProjectBox;//Recent Projects
   private final Box mRightProjectBox;
@@ -83,7 +84,7 @@ public class EditorStarter extends JPanel {
     }
   }
 
-  public EditorStarter(final EditorInstance mParent) {
+  public EditorStarter(final AppFrame mParent) {
     mEditorInstance = mParent;
 
     JPanel content = new JPanel();
@@ -181,9 +182,9 @@ public class EditorStarter extends JPanel {
     mParentFrame = null;
     Window windows[] = Window.getWindows();
     for (Window w : windows) {
-      if (w instanceof EditorInstance) {
+      if (w instanceof AppFrame) {
         // There is only one, so ...
-        mParentFrame = (EditorInstance) w;
+        mParentFrame = (AppFrame) w;
       }
     }
 

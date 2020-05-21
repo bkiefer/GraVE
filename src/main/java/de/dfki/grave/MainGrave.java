@@ -8,7 +8,6 @@ import javax.swing.SwingUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.editor.panels.EditorInstance;
 import de.dfki.grave.model.flow.Geom;
 
 /**
@@ -47,7 +46,7 @@ public final class MainGrave {
   // Start the editor without a project
   private static void editor() {
     // Get the singelton editor instance
-    final EditorInstance sEditor = EditorInstance.getInstance();
+    final AppFrame sEditor = AppFrame.getInstance();
     // Show the singelton editor instance
     sEditor.setVisible(true);
   }
@@ -59,7 +58,7 @@ public final class MainGrave {
     // Get the singelton runtime instance
     //final RunTimeInstance sRunTime = RunTimeInstance.getInstance();
     // Get the singelton editor instance
-    final EditorInstance sEditor = EditorInstance.getInstance();
+    final AppFrame sEditor = AppFrame.getInstance();
     // Get an editor project from file
     sEditor.openProject(file.getPath());
     // Show the singelton editor instance

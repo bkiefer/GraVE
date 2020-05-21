@@ -10,7 +10,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
-import de.dfki.grave.util.ios.ResourceLoader;
+import de.dfki.grave.util.ResourceLoader;
 
 /**
  * @author Gregor Mehlmann

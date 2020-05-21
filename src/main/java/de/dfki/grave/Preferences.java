@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.model.project.EditorConfig;
 import de.dfki.grave.util.JaxbUtilities;
-import de.dfki.grave.util.ios.ResourceLoader;
+import de.dfki.grave.util.ResourceLoader;
 
 import java.io.File;
 

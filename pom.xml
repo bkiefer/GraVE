@@ -56,6 +56,9 @@
           <source>1.8</source>
           <target>1.8</target>
           <excludes>
+            <exclude>**/de/dfki/grave/editor/NodeVariableBadge.java</exclude>
+            <exclude>**/de/dfki/grave/util/TextFormat.java</exclude>
+            <exclude>**/de/dfki/grave/util/extensions/**/*.java</exclude>
             <exclude>**/xtesting/**/*.java</exclude>
           </excludes>
         </configuration>

@@ -15,6 +15,7 @@ import javax.swing.undo.UndoableEdit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.util.evt.EventDispatcher;
 
@@ -78,7 +79,7 @@ public class UndoRedoProvider {
 
 
   private static UndoManager getManager() {
-    return EditorInstance.getInstance().getSelectedProjectEditor()
+    return AppFrame.getInstance().getSelectedProjectEditor()
         .getSceneFlowEditor().getUndoManager();
   }
 

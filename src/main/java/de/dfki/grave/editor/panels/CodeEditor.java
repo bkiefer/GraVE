@@ -14,7 +14,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import de.dfki.grave.editor.DocumentContainer;
 import de.dfki.grave.model.project.EditorProject;
-import de.dfki.grave.util.ios.ResourceLoader;
+import de.dfki.grave.util.ResourceLoader;
 
 /** This class provides the code editing regions in the bottom part of the
  *  window

@@ -16,11 +16,11 @@ import javax.swing.event.ChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
-import de.dfki.grave.editor.panels.EditorInstance;
 import de.dfki.grave.model.project.EditorConfig;
+import de.dfki.grave.util.ResourceLoader;
 import de.dfki.grave.util.evt.EventDispatcher;
-import de.dfki.grave.util.ios.ResourceLoader;
 
 /**
  * @author Gregor Mehlmann
@@ -31,7 +31,7 @@ public class OptionsDialog extends JDialog {
   private static OptionsDialog sSingeltonInstance = null;
 
   private final Logger mLogger = LoggerFactory.getLogger(OptionsDialog.class);;
-  private final EditorInstance mEditor = EditorInstance.getInstance();
+  private final AppFrame mEditor = AppFrame.getInstance();
   private final Dimension mLabelDimension = new Dimension(100, 10);
   private final Dimension buttonSize = new Dimension(125, 30);
   private final Dimension textfieldSize = new Dimension(150, 30);
@@ -78,8 +78,8 @@ public class OptionsDialog extends JDialog {
   private final EditorConfig mEditorConfig;
 
   private OptionsDialog() {
-    super(EditorInstance.getInstance(), "Preferences", false);
-    EditorInstance.getInstance().addEscapeListener(this);
+    super(AppFrame.getInstance(), "Preferences", false);
+    AppFrame.getInstance().addEscapeListener(this);
     mEditorConfig = mEditor.getSelectedProjectEditor().getEditorProject().getEditorConfig();
     initComponents();
     initEditorConfig();
@@ -194,7 +194,7 @@ public class OptionsDialog extends JDialog {
         JFileChooser file = new JFileChooser(sUSER_DIR);
 
         file.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        file.showDialog(EditorInstance.getInstance(), "Select Sceneflow XSD");
+        file.showDialog(AppFrame.getInstance(), "Select Sceneflow XSD");
 
         if (file.getSelectedFile() != null) {
           mXSDFileTextField.setText(file.getSelectedFile().getPath());

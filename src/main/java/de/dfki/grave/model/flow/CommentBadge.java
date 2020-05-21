@@ -15,7 +15,6 @@ import de.dfki.grave.util.Copyable;
 @XmlAccessorType(XmlAccessType.NONE)
 public class CommentBadge implements ContentHolder, Copyable {
 
-  private SuperNode mParentNode = null;
   @XmlElement(name="Text")
   private String text = "";
   @XmlElement(name="Boundary")
@@ -28,10 +27,6 @@ public class CommentBadge implements ContentHolder, Copyable {
 
   public void setContent(String s) {
     text = s;
-  }
-
-  public void setParentNode(SuperNode value) {
-    mParentNode = value;
   }
 
   public Boundary getBoundary() {

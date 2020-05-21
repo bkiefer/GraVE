@@ -11,11 +11,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.grave.AppFrame;
 import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.dialog.NewProjectDialog;
 import de.dfki.grave.editor.dialog.QuitDialog;
@@ -27,7 +33,7 @@ import de.dfki.grave.editor.dialog.QuitDialog;
 public final class EditorMenuBar extends JMenuBar {
 
   private final Logger mLogger = LoggerFactory.getLogger(EditorMenuBar.class);;
-  private final EditorInstance mEditorInstance;
+  private final AppFrame mEditorInstance;
 
   // File menu
   private JMenu mFileMenu;
@@ -55,7 +61,7 @@ public final class EditorMenuBar extends JMenuBar {
   private JMenuItem mInfoMenuItem;
 
   // Construct the editor's menu bar
-  public EditorMenuBar(final EditorInstance editor) {
+  public EditorMenuBar(final AppFrame editor) {
     // Initialize the parent editor
     mEditorInstance = editor;
     // Initialize the GUI components

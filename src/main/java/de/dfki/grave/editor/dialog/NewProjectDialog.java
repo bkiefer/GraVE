@@ -15,7 +15,7 @@ import javax.swing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.editor.panels.EditorInstance;
+import de.dfki.grave.AppFrame;
 
 /**
  * @author Sergio Soto
@@ -42,8 +42,8 @@ public class NewProjectDialog extends JDialog {
   private final Logger mLogger = LoggerFactory.getLogger(NewProjectDialog.class);;
 
   public NewProjectDialog() {
-    super(EditorInstance.getInstance(), "New Project", true);
-    EditorInstance.getInstance().addEscapeListener(this);
+    super(AppFrame.getInstance(), "New Project", true);
+    AppFrame.getInstance().addEscapeListener(this);
     initComponents();
     setVisible(true);
   }
@@ -175,7 +175,7 @@ public class NewProjectDialog extends JDialog {
 
   protected void okActionPerformed() {
     if (validateValues()) {
-      EditorInstance.getInstance().newProject(mNameTextField.getText());
+      AppFrame.getInstance().newProject(mNameTextField.getText());
       dispose();
     }
   }

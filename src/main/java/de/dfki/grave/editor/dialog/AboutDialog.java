@@ -21,8 +21,8 @@ import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
 
+import de.dfki.grave.AppFrame;
 import de.dfki.grave.Preferences;
-import de.dfki.grave.editor.panels.EditorInstance;
 
 /**
  * @author Patrick Gebhard
@@ -66,8 +66,8 @@ public class AboutDialog extends JDialog {
 
   // Construction
   private AboutDialog() {
-    super(EditorInstance.getInstance(), "About", false);
-    EditorInstance.getInstance().addEscapeListener(this);
+    super(AppFrame.getInstance(), "About", false);
+    AppFrame.getInstance().addEscapeListener(this);
     // Init close operation
     setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
     addWindowListener(new WindowAdapter() {

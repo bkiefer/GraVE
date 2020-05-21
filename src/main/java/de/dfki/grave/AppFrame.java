@@ -1,4 +1,4 @@
-package de.dfki.grave.editor.panels;
+package de.dfki.grave;
 
 import static de.dfki.grave.Preferences.getPrefs;
 
@@ -15,23 +15,27 @@ import javax.swing.filechooser.FileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.MainGrave;
-import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.dialog.AboutDialog;
 import de.dfki.grave.editor.dialog.OptionsDialog;
 import de.dfki.grave.editor.dialog.QuitDialog;
+import de.dfki.grave.editor.panels.AddButton;
+import de.dfki.grave.editor.panels.ClipBoard;
+import de.dfki.grave.editor.panels.EditorMenuBar;
+import de.dfki.grave.editor.panels.EditorStarter;
+import de.dfki.grave.editor.panels.OpenProjectView;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.model.project.ProjectConfig;
-import de.dfki.grave.util.ios.ResourceLoader;
+import de.dfki.grave.util.ResourceLoader;
 
 /**
  * @author Gregor Mehlmann
  */
 @SuppressWarnings("serial")
-public final class EditorInstance extends JFrame implements ChangeListener {
+public final class AppFrame extends JFrame implements ChangeListener {
 
   // The singelton editor instance
-  public static EditorInstance sInstance = null;
+  public static AppFrame sInstance = null;
   // The singelton runtime instance
   //private final RunTimeInstance mRunTime = RunTimeInstance.getInstance();
   // The singelton logger instance
@@ -43,9 +47,9 @@ public final class EditorInstance extends JFrame implements ChangeListener {
   private final EditorStarter mWelcomePanel;
 
   // Get the singelton editor instance
-  public synchronized static EditorInstance getInstance() {
+  public synchronized static AppFrame getInstance() {
     if (sInstance == null) {
-      sInstance = new EditorInstance();
+      sInstance = new AppFrame();
     }
 
     return sInstance;
@@ -106,7 +110,7 @@ public final class EditorInstance extends JFrame implements ChangeListener {
   };
 
   // Private construction of an editor
-  private EditorInstance() {
+  private AppFrame() {
     Preferences.configure();
 
     // Load the preferences

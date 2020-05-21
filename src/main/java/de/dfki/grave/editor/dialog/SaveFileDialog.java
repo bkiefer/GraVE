@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 
-import de.dfki.grave.editor.panels.EditorInstance;
+import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.panels.SceneFlowToolBar;
 
 /**
@@ -32,7 +32,7 @@ public class SaveFileDialog extends JFileChooser {
   }
 
   public boolean save() {
-    int userSelection = showSaveDialog(EditorInstance.getInstance());
+    int userSelection = showSaveDialog(AppFrame.getInstance());
     if (userSelection == JFileChooser.APPROVE_OPTION) {
       try {
         File fileToSave = getSelectedFile();

@@ -18,6 +18,7 @@ import javax.swing.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
@@ -173,7 +174,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         }
 
         // Update whole editor after a drop!!!!
-        EditorInstance.getInstance().refresh();
+        AppFrame.getInstance().refresh();
       }
     };
     mDropTarget = new DropTarget(this, mDropTargetListener);

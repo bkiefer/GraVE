@@ -13,15 +13,16 @@ import java.util.LinkedList;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 
+import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.dialog.OptionsDialog;
 import de.dfki.grave.editor.dialog.SaveFileDialog;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.model.flow.SuperNode;
 import de.dfki.grave.model.project.EditorConfig;
 import de.dfki.grave.model.project.EditorProject;
+import de.dfki.grave.util.ResourceLoader;
 import de.dfki.grave.util.evt.EventDispatcher;
 import de.dfki.grave.util.evt.EventListener;
-import de.dfki.grave.util.ios.ResourceLoader;
 
 /**
  * @author Gregor Mehlmann
@@ -104,7 +105,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   // The singelton logger instance
   //private final Logger mLogger = LoggerFactory.getLogger(SceneFlowToolBar.class);
   // The singelton editor instance
-  private final EditorInstance mEditorInstance = EditorInstance.getInstance();
+  private final AppFrame mEditorInstance = AppFrame.getInstance();
   // The singelton system clipboard
   private final Clipboard mSystemClipBoard = getToolkit().getSystemClipboard();
   // The parent sceneflow editor
@@ -181,7 +182,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
 
     mEditorConfig.save(mEditorInstance.getSelectedProjectEditor().getEditorProject().getProjectFile());
 
-    EditorInstance.getInstance().refresh();
+    AppFrame.getInstance().refresh();
   }
 
   //TODO: adding not explicit but via refresh method

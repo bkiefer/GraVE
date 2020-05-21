@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.CodeArea;
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
@@ -149,11 +150,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   protected void checkChangesOnWorkspace() {
     //mLogger.message("Checking changes on workspace");
     // checkHash
-    if (EditorInstance.getInstance().getSelectedProjectEditor() != null) {
-      if (EditorInstance.getInstance().getSelectedProjectEditor().getEditorProject() != null) {
+    if (AppFrame.getInstance().getSelectedProjectEditor() != null) {
+      if (AppFrame.getInstance().getSelectedProjectEditor().getEditorProject() != null) {
         if (mProject.hasChanged()) {
           //int selectecTabIndex = EditorInstance.getInstance().getProjectEditors().getSelectedIndex();
-          EditorInstance.getInstance().setTabNameModified();
+          AppFrame.getInstance().setTabNameModified();
           //mLogger.message("Changes on workspace detected");
         }
       }
