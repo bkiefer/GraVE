@@ -176,9 +176,14 @@ public abstract class AbstractEdge implements ContentHolder {
     mArrow = value;
   }
 
-  /* TODO: DROP AFTER REVAMP */
+  /* TODO: DROP AFTER REVAMP: Only keep dock occupation at the beginning */
   public final void arrowToDock() {
-    if (mSourceCtrlPoint != null) return;
+    if (mSourceCtrlPoint != null) {
+      // only occupy docks
+      getSourceNode().occupyDock(mSourceDock);
+      getTargetNode().occupyDock(mTargetDock);
+      return;
+    }
     EdgeArrow arr = getArrow();
     List<ControlPoint> pl = arr.getPointList();
     // For start and target node:
