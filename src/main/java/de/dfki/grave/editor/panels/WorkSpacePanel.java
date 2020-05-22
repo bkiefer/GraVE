@@ -423,7 +423,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   }
 
   private Comment findCommentAt(Point p) {
-    // We'll try the selected edge first
+    // We'll try the selected comment first
     if (mSelectedComment != null && mSelectedComment.containsPoint(p)) {
       return mSelectedComment;
     }
@@ -617,21 +617,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       }
     }
 
-
-    // if there is a specific selected comment use it - much faster than checking all nodes
-    if (mSelectedComment != null) {
-      if (mSelectedComment.containsPoint(event.getPoint())) {
-        //mSelectedComment.mouseReleased(event);
-        revalidate();
-        repaint(100);
-
-        return;
-      } else {
-        deselectComment();
-      }
-
-      repaint(100);
-    }
     if (! somethingSelected()) launchElementSelectedEvent(null);
   }
 
@@ -673,6 +658,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     }
 
     // if there is a specific selected comment use it
+    /*
     if (mSelectedComment != null) {
       if (mSelectedComment.mPressed) {
         //mSelectedComment.mouseDragged(event);
@@ -685,6 +671,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         deselectComment();
       }
     }
+    */
 
     // mouse interaction has to be the selection of an area ...
     if (mSelectedEdge == null) {

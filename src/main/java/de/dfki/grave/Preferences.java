@@ -263,9 +263,9 @@ public final class Preferences {
   public int FRAME_POS_Y = 0;
   public int FRAME_WIDTH = 800;
   public int FRAME_HEIGHT = 600;
-  public String XMLNS = "xml.sceneflow.dfki.de";
-  public String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
-  public String XSI_SCHEMELOCATION = "res/xsd/sceneflow.xsd";
+  //public String XMLNS = "xml.sceneflow.dfki.de";
+  //public String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
+  //public String XSI_SCHEMELOCATION = "res/xsd/sceneflow.xsd";
 
   public ArrayList<String> recentProjectPaths = new ArrayList<>();
   public ArrayList<String> recentProjectNames = new ArrayList<>();
@@ -306,11 +306,6 @@ public final class Preferences {
 
   public static synchronized void configure() {
     try {
-
-      // Mac/Apple Settings
-      System.setProperty("apple.laf.useScreenMenuBar", "true");
-      System.setProperty("com.apple.mrj.application.apple.menu.about.name", FRAME_TITLE);
-
       // Use system look and feel
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
@@ -321,6 +316,10 @@ public final class Preferences {
 
       // paint a nice doc icon when os is mac
       if (isMac()) {
+        // Mac/Apple Settings
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", FRAME_TITLE);
+
         final Class appClass = Class.forName("com.apple.eawt.Application");
         // Get the application and the method to set the dock icon
         final Object app = appClass.getMethod("getApplication", new Class[]{}).invoke(null, new Object[]{});
