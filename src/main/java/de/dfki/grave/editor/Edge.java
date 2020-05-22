@@ -169,7 +169,8 @@ public class Edge extends EditorComponent {
     // return ctrl1.x < 0 || ctrl1.y < 0 || ctrl2.x < 0 || ctrl2.y < 0;
     // what do we consider as out of bounds?
     // If the control point is covered by the node
-    return mSourceNode.contains(ctrl1) || mTargetNode.contains(ctrl2);
+    return mSourceNode.getBounds().contains(ctrl1) 
+        || mTargetNode.getBounds().contains(ctrl2);
   }
 
   public boolean isIntersectByRectangle(double x1, double x2, double y1, double y2) {
