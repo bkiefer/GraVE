@@ -238,9 +238,11 @@ public class Comment extends JTextArea
       int dx = currentMousePosition.x - mPressedLocation.x;
       int dy = currentMousePosition.y - mPressedLocation.y;
 
-      mWorkSpace.setMessageLabelText(String.format("(%d, %d)/(%d, %d)",
-          mPressedLocation.x, mPressedLocation.y, dx, dy));
-
+      if (Preferences.DEBUG_MOUSE_LOCATIONS) {
+        mWorkSpace.setMessageLabelText(String.format("(%d, %d)/(%d, %d)",
+            mPressedLocation.x, mPressedLocation.y, dx, dy));
+      }
+      
       if (mResizing) {
         // Change the size of a comment with the mouse
         Dimension d = getSize();

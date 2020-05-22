@@ -38,6 +38,9 @@ import java.io.File;
 public final class Preferences {
   private static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
 
+  public static boolean DEBUG_COMPONENT_BOUNDARIES = false;
+  public static boolean DEBUG_MOUSE_LOCATIONS = false;
+  
   // The global properties file
   private static final String sCONFIG_FILE
           = System.getProperty("user.home")

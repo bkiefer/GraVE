@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.AppFrame;
+import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
@@ -32,7 +33,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
   private static final Logger logger = LoggerFactory.getLogger(WorkSpacePanel.class);
 
-  public static boolean DEBUG_COMPONENT_BOUNDARIES = true;
+
   
   // Drag & Drop support
   @SuppressWarnings("unused")
@@ -757,7 +758,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       }
     }
     /* Debugging: check boundaries of all components on workspace */
-    if (DEBUG_COMPONENT_BOUNDARIES) {
+    if (Preferences.DEBUG_COMPONENT_BOUNDARIES) {
       g2d.setColor(Color.pink);
       g2d.setStroke(new BasicStroke(0.5f));
       for (int i = 0 ; i <  this.getComponentCount(); ++i) {

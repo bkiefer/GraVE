@@ -48,6 +48,10 @@ public class GridManager {
   public int gridWidth() {
     return (int)(mMaxNodeSize * mGridScale);
   }
+  
+  public int nodeSize() {
+    return mMaxNodeSize;
+  }
 
   /** Compute the closest free point by increasing the manhattan distance
    *  incrementally and checking all points in the same distance first

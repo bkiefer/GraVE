@@ -579,16 +579,16 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   void drawGrid(Graphics2D g2d, Rectangle visibleRect) {
     g2d.setStroke(new BasicStroke(1.0f));
     g2d.setColor(Color.GRAY.brighter());
-    int gridWidth = (int)(mGridManager.gridWidth() * mZoomFactor);
+    float gridWidth = mGridManager.gridWidth() * mZoomFactor;
 
     // compute row and col of the first and last grid point
-    int offset = gridWidth / 4;
-    int col = visibleRect.x / gridWidth;
-    int lastCol = (visibleRect.x + visibleRect.width) / gridWidth + 1;
-    int lastRow = (visibleRect.y + visibleRect.height) / gridWidth + 1;
-    for (int x = col * gridWidth ; col <= lastCol; ++col, x += gridWidth) {
-      int row = visibleRect.y / gridWidth;
-      for (int y = row * gridWidth; row <= lastRow; ++row, y += gridWidth) {
+    float offset = mGridManager.nodeSize() / 2;
+    int col = (int)(visibleRect.x / gridWidth);
+    int lastCol = (int)((visibleRect.x + visibleRect.width) / gridWidth) + 1;
+    int lastRow = (int)((visibleRect.y + visibleRect.height) / gridWidth) + 1;
+    for (int x = (int)(col * gridWidth) ; col <= lastCol; ++col, x += gridWidth) {
+      int row = (int)(visibleRect.y / gridWidth);
+      for (int y = (int)(row * gridWidth); row <= lastRow; ++row, y += gridWidth) {
         // TODO: this is for debugging only, wasteful, and should go
         if (mGridManager.positionOccupiedBy(
             toModelPos(new Point(x, y))) != null) {
@@ -596,10 +596,10 @@ public abstract class WorkSpace extends JPanel implements EventListener {
         } else {
           g2d.setColor(Color.GRAY.brighter());
         }
-        int xx = x + offset; 
-        int yy = y + offset;
+        int xx = (int)(x + offset); 
+        int yy = (int)(y + offset);
         // draw small cross
-        int width = gridWidth / 20;
+        int width = (int)(gridWidth / 20);
         g2d.drawLine(xx - width, yy, xx + width, yy);
         g2d.drawLine(xx, yy - width, xx, yy + width);
       }
@@ -616,6 +616,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     if (mShowGrid)
       drawGrid(g2d, this.getVisibleRect());
 
+    // draw colored border all around the workspace to indicate supernode type
     Color indicator;
     switch (getSuperNode().getFlavour()) {
       case CNODE: indicator = sCEDGE_COLOR; break;
