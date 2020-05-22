@@ -273,9 +273,15 @@ public abstract class AbstractEdge implements ContentHolder {
         ? nodeWidth * .9
         : Math.max(start.distance(target) / nodeWidth - 0.5, 1.25)
           * nodeWidth/3; // TODO: not my preferred solution.
+    
+    double xcorr = (mSourceNode == mTargetNode) 
+        ? Math.abs(startVec.getX() * scale * .7)
+        : 0;
 
-    mSourceCtrlPoint = new Position((int) (scale * startVec.getX()), (int) (scale * startVec.getY()));
-    mTargetCtrlPoint = new Position((int) (scale * targVec.getX()), (int) (scale * targVec.getY()));
+    mSourceCtrlPoint = new Position( (int) (scale * startVec.getX() - xcorr),
+        (int) (scale * startVec.getY()));
+    mTargetCtrlPoint = new Position((int) (scale * targVec.getX() + xcorr),
+        (int) (scale * targVec.getY()));
 
     // re-done for relative control pointss
     checkControl(mSourceCtrlPoint, mSourceDock);
@@ -292,9 +298,9 @@ public abstract class AbstractEdge implements ContentHolder {
     if (mSourceNode == mTargetNode) { // loop
       Position p = mSourceNode.getPosition();
       mSourceDock = mSourceNode.getNearestFreeDock(
-          new Position(p.getXPos()+(int)(nodeWidth*0.3), p.getYPos()));
+          new Position(p.getXPos()+(int)(nodeWidth*0.35), p.getYPos()));
       mTargetDock = mTargetNode.getNearestFreeDock(
-          new Position(p.getXPos()+(int)(nodeWidth*0.7), p.getYPos()));
+          new Position(p.getXPos()+(int)(nodeWidth*0.65), p.getYPos()));
     } else {
       mSourceDock = mSourceNode.getNearestFreeDock(mTargetNode.getCenter());
       mTargetDock = mTargetNode.getNearestFreeDock(mSourceNode.getCenter());
