@@ -183,6 +183,11 @@ public class EditorProject extends RunTimeProject {
   public final EditorConfig getEditorConfig() {
     return mEditorConfig;
   }
+  
+  // Set the editor configuration: only for the Options dialogue
+  public final void setEditorConfig(EditorConfig newConfig) {
+    mEditorConfig = newConfig;
+  }
 
 //    // Get the project file's path (moved in super class RuntimeProject (PG 11.4.2016)
 //    public final String getProjectPath() {

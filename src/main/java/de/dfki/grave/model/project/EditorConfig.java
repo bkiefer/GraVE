@@ -8,10 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -39,16 +36,18 @@ public class EditorConfig {
   ////////////////////////////////////////////////////////////////////////////
   public int sNODEWIDTH = 100;
   public int sNODEHEIGHT = 100;
-  public float sGRID_SCALE = 2;
+  
   public float sZOOM_FACTOR = 1;
-  public int sWORKSPACEFONTSIZE = 16;
-  public float sEDITORFONTSIZE = 11;
+  public float sZOOM_INCREMENT = 1.2f;
+  
+  public float sGRID_SCALE = 2;
   public boolean sSHOWGRID = true;
+  public boolean sSNAPTOGRID = true;
+  
+  public boolean sSHOWIDSOFNODES = true;
+
   public boolean sSHOW_VARIABLE_BADGE_ON_WORKSPACE = true;
   public boolean sSHOW_SMART_PATH_DEBUG = false;
-  public boolean sSHOWIDSOFNODES = true;
-  public String sSCRIPT_FONT_TYPE = "Monospaced";
-  public int sSCRIPT_FONT_SIZE = 16;
   public boolean sAUTOHIDE_BOTTOMPANEL = true; // Saves the pricked pin of the bottom panel of the editor
   public String sMAINSUPERNODENAME = "default";
 
@@ -57,7 +56,7 @@ public class EditorConfig {
   public boolean sSHOW_SCENEFLOWEDITOR = true;
   public boolean sSHOW_CODEEDITOR = true;
   public int sCODE_DIVIDER_LOCATION = 450;
-  public double sSCENEFLOW_SCENE_EDITOR_RATIO = 0.85;
+  public double sSCENEFLOW_SCENE_EDITOR_RATIO = 0.15;
   
   public FontConfig sNODE_FONT;  // Node name font
   // Font f = new Font(Font.SANS_SERIF, DEMIBOLD, 16);
@@ -145,50 +144,17 @@ public class EditorConfig {
   public final EditorConfig copy() {
 
     // Create a new byte array buffer stream
-    final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
     EditorConfig result = null;
     try {
-      JAXBContext jc = JAXBContext.newInstance( EditorConfig.class );
-      Marshaller m = jc.createMarshaller();
-      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
-      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-
-      m.marshal(this, buffer);
-      Unmarshaller u = jc.createUnmarshaller();
-
-      result = (EditorConfig)u.unmarshal(
-          new ByteArrayInputStream(buffer.toByteArray()));
+      JaxbUtilities.marshal(out, this, EditorConfig.class, FontConfig.class);
+      ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+      result = (EditorConfig) JaxbUtilities.unmarshal(in, "EdConf",
+          EditorConfig.class, FontConfig.class);
     } catch (JAXBException e) {
       mLogger.error("Error: Cannot convert editor configuration to string: " + e);
     }
     return result;
   }
   
-  @Override
-  public int hashCode(){
-    int boolPart = 0;
-    boolPart = 23 * boolPart + Boolean.hashCode(sSHOWGRID);
-    boolPart = 23 * boolPart + Boolean.hashCode(sSHOW_VARIABLE_BADGE_ON_WORKSPACE);
-    boolPart = 23 * boolPart + Boolean.hashCode(sSHOW_SMART_PATH_DEBUG);
-    boolPart = 23 * boolPart + Boolean.hashCode(sSHOWIDSOFNODES);
-    boolPart = 23 * boolPart + Boolean.hashCode(sAUTOHIDE_BOTTOMPANEL);
-    boolPart = 23 * boolPart + Boolean.hashCode(sSHOW_ELEMENTS);
-    boolPart = 23 * boolPart + Boolean.hashCode(sSHOW_SCENEFLOWEDITOR);
-    boolPart = 23 * boolPart + Boolean.hashCode(sSHOW_CODEEDITOR);
-    int intPart = boolPart;
-    intPart = 31 * intPart + sNODEWIDTH;
-    intPart = 31 * intPart + sNODEHEIGHT;
-    intPart = 31 * intPart + (int) Math.floor(sGRID_SCALE * 10);
-    intPart = 31 * intPart + (int) Math.floor(sZOOM_FACTOR);
-    intPart = 31 * intPart + sWORKSPACEFONTSIZE;
-    intPart = 31 * intPart + (int) Math.floor(sEDITORFONTSIZE);
-    intPart = 31 * intPart + sSCRIPT_FONT_SIZE;
-    intPart = 31 * intPart + sELEMENTS_DIVIDER_LOCATION;
-    intPart = 31 * intPart + sCODE_DIVIDER_LOCATION;
-    intPart = 31 * intPart + (int) Math.floor(sSCENEFLOW_SCENE_EDITOR_RATIO);
-    int result = intPart;
-    result = 31 * result + sSCRIPT_FONT_TYPE.hashCode();
-    result = 31 * result + sMAINSUPERNODENAME.hashCode();
-    return result;
-  }
 }

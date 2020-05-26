@@ -28,4 +28,17 @@ public class FontConfig {
     }
     return f;
   }
+
+  public void set(Font font) {
+    family = font.getName();
+    size = font.getSize();
+    bold = font.isBold();
+    italic = font.isItalic();
+    f = font;
+  }
+  
+  public String toString() {
+    return family + " " + size + " "  
+        + (bold ? "bold" : "") + (italic ? "italic" : "");
+  }
 }

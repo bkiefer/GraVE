@@ -156,11 +156,6 @@ public final class Preferences {
   public static final URL sHELP_FILE = MainGrave.class.getResource("doc/index.html");
 
   //////////////////////////////////////////////////////////////////////////////
-  // FONT DATA
-  //////////////////////////////////////////////////////////////////////////////
-  public static final String sFONT_FAMILY_LIST[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-  public static final Integer sFONT_SIZE_LIST[] = {6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30};
-  //////////////////////////////////////////////////////////////////////////////
   // DATE FORMAT
   //////////////////////////////////////////////////////////////////////////////
   public static final SimpleDateFormat sDATE_FORMAT = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");

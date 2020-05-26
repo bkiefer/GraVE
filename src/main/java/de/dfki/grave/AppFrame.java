@@ -794,8 +794,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
 
   // Show the options dialog
   public final void showOptions() {
-    final OptionsDialog optionsDialog = OptionsDialog.getInstance();
-
+    final OptionsDialog optionsDialog = new OptionsDialog();
     optionsDialog.setVisible(true);
   }
 
