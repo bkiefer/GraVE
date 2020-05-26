@@ -45,6 +45,8 @@ public class SuperNode extends BasicNode {
     copyBasicFields(node);
   }
 
+  public boolean isBasic() { return false; }
+  
   /** Get a new SuperNode from the GUI, but only if the parent SuperNode already
    *  has a BasicNode as StartNode.
    */

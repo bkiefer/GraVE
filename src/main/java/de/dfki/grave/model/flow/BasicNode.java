@@ -76,6 +76,7 @@ public class BasicNode implements ContentHolder {
     NONE, ENODE, TNODE, CNODE, PNODE, INODE, FNODE
   };
 
+  public boolean isBasic() { return true; }
 
   /** For a given set of nodes that are subnodes of the same SuperNode, compute
    *  all edge views that emerge from a node inside the set and end in a node

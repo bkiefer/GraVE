@@ -30,7 +30,6 @@ public final class Node extends EditorComponent {
   // interaction flags
   public boolean mPressed = false;
 
-  private boolean isBasic;
   private BasicNode mDataNode;
 
   /** The list of outgoing edge views, representing the edges of the model */
@@ -51,7 +50,6 @@ public final class Node extends EditorComponent {
   public Node(WorkSpace workSpace, BasicNode dataNode) {
     mWorkSpace = workSpace;
     mDataNode = dataNode;
-    isBasic = !(mDataNode instanceof SuperNode);
     setFont(getEditorConfig().sNODE_FONT.getFont());
 
     //setToolTipText(mDataNode.getId()); overrides any MouseListener!!!
@@ -66,7 +64,7 @@ public final class Node extends EditorComponent {
   }
 
   public boolean isBasic() {
-    return isBasic;
+    return mDataNode.isBasic();
   }
 
   public BasicNode getDataNode() {
@@ -94,7 +92,6 @@ public final class Node extends EditorComponent {
     BasicNode oldNode = mDataNode;
     newNode = oldNode.changeType(mgr, newNode);
     mDataNode = newNode;
-    isBasic = !isBasic;
     update();
     return oldNode;
   }
@@ -125,7 +122,7 @@ public final class Node extends EditorComponent {
   private void setColor() {
     // Update the color of the node that has to be changed
     // if the type or the flavour of the node have changed
-    mColor = (isBasic) ? sBASIC_NODE_COLOR : sSUPER_NODE_COLOR;
+    mColor = (isBasic()) ? sBASIC_NODE_COLOR : sSUPER_NODE_COLOR;
 
     // Set the flavour dependent color
     switch (mDataNode.getFlavour()) {
@@ -276,7 +273,7 @@ public final class Node extends EditorComponent {
   public void showContextMenu(WorkSpacePanel mWorkSpace) {
     JPopupMenu pop = new JPopupMenu();
 
-    if (! isBasic) {
+    if (! isBasic()) {
       SuperNode n = (SuperNode)getDataNode();
       if (n.getNodeSize() == 0) {
         addItem(pop, "To BasicNode", new ChangeNodeTypeAction(mWorkSpace, mDataNode));
@@ -351,7 +348,7 @@ public final class Node extends EditorComponent {
     int nh = nodeHeight - borderOffset * 2;
     int lu = borderOffset + 1; // left or upper
     // Draw the node as a supernode
-    if (!isBasic) {
+    if (!isBasic()) {
       if (mDataNode.isStartNode()) {
         int rght = nw + 4; // right
         int low = nh + 4;  // lower
