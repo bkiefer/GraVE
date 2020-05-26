@@ -23,8 +23,6 @@ public class BasicNode implements ContentHolder {
 
   private static final Logger logger = LoggerFactory.getLogger(BasicNode.class);
 
-  private static final int WIDTH = 100; // default width for model
-
   public static class CodeAdapter extends XmlAdapter<String, Code> {
     @Override
     public String marshal(Code v) throws Exception {
@@ -62,7 +60,7 @@ public class BasicNode implements ContentHolder {
   // XML handling using access functions (see below)
   protected AbstractEdge mDEdge = null;
 
-  /** Top-left corner of the node */
+  /** Center point of the node */
   @XmlElement(name="Position")
   protected Position mPosition = null;
 
@@ -272,7 +270,10 @@ public class BasicNode implements ContentHolder {
   public void setPosition(Position value) {
     mPosition = value;
   }
-
+  
+  /** Return center point (position) of the node: for the model, nodes are 
+   *  points.
+   */
   public Position getPosition() {
     return mPosition;
   }
@@ -282,8 +283,7 @@ public class BasicNode implements ContentHolder {
    * NODE MODIFICATION
    */
   public void translate(int x, int y) {
-    mPosition.setXPos(mPosition.getXPos() + x);
-    mPosition.setYPos(mPosition.getYPos() + y);
+    mPosition.translate(x, y);
   }
 
   public void setParentNode(SuperNode value) {
@@ -475,14 +475,10 @@ public class BasicNode implements ContentHolder {
     return false;
   }
 
-  public Position getCenter() {
-    return new Position(mPosition.getXPos() + WIDTH/2, mPosition.getYPos() + WIDTH/2);
-  }
-
-  public int getNearestFreeDock(Position p) {
+  public int getNearestFreeDock(Position p, boolean target) {
     // start with the closest angle with a reasonable representation
-    double angle = getCenter().angle(p);
-    return Geom.findClosestDock(mDocksTaken, angle);
+    double angle = getPosition().angle(p);
+    return Geom.findClosestDock(mDocksTaken, angle, target);
   }
 
   private class EdgeIterator implements Iterator<AbstractEdge> {

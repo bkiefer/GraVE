@@ -76,7 +76,7 @@ public class Geom {
     return new Point2D.Double(p.x * f, p.y * f);
   }
 
-  public static int findClosestDock(BitSet taken, double angle) {
+  public static int findClosestDock(BitSet taken, double angle, boolean target) {
     if (taken.cardinality() >= max_bits) return -1; // all docks taken
     // compute the closest angle
     int k = Arrays.binarySearch(angles, angle);
@@ -85,7 +85,7 @@ public class Geom {
     if (Math.abs(angle - angles[k]) > Math.abs(angle - angles[kprime])) {
       k = kprime;
     }
-    int d = 1;
+    int d = target ? 1 : 2;
     do { // alternate back and forth,
       // TODO: START WITH THE ONE THAT IS CLOSEST: I.E. IF k < angle < k-1
       // start with k-1, otherwise k+1

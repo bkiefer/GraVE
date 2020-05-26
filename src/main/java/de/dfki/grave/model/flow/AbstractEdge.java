@@ -189,8 +189,8 @@ public abstract class AbstractEdge implements ContentHolder {
     // For start and target node:
     // a) find a dock close to the dock point
     // b) turn the absolute control point into a relative control point
-    mSourceDock = getSourceNode().getNearestFreeDock(pl.get(0).getPoint());
-    mTargetDock = getTargetNode().getNearestFreeDock(pl.get(1).getPoint());
+    mSourceDock = getSourceNode().getNearestFreeDock(pl.get(0).getPoint(), false);
+    mTargetDock = getTargetNode().getNearestFreeDock(pl.get(1).getPoint(), true);
     getSourceNode().occupyDock(mSourceDock);
     getTargetNode().occupyDock(mTargetDock);
     Position cp = pl.get(0).getCtrlPoint();
@@ -261,8 +261,8 @@ public abstract class AbstractEdge implements ContentHolder {
    *  (using node center point and edge connection points)
    */
   private void initCurve(int nodeWidth) {
-    Point start = mSourceNode.getCenter().toPoint();
-    Point target = mTargetNode.getCenter().toPoint();
+    Point start = mSourceNode.getPosition().toPoint();
+    Point target = mTargetNode.getPosition().toPoint();
 
     // Unit Vector from Center to Dock
     Point2D startVec = Geom.getDockPointCircle(mSourceDock, 2);
@@ -298,12 +298,12 @@ public abstract class AbstractEdge implements ContentHolder {
     if (mSourceNode == mTargetNode) { // loop
       Position p = mSourceNode.getPosition();
       mSourceDock = mSourceNode.getNearestFreeDock(
-          new Position(p.getXPos()+(int)(nodeWidth*0.35), p.getYPos()));
+          new Position(p.getXPos()+(int)(nodeWidth*0.35), p.getYPos()), false);
       mTargetDock = mTargetNode.getNearestFreeDock(
-          new Position(p.getXPos()+(int)(nodeWidth*0.65), p.getYPos()));
+          new Position(p.getXPos()+(int)(nodeWidth*0.65), p.getYPos()), true);
     } else {
-      mSourceDock = mSourceNode.getNearestFreeDock(mTargetNode.getCenter());
-      mTargetDock = mTargetNode.getNearestFreeDock(mSourceNode.getCenter());
+      mSourceDock = mSourceNode.getNearestFreeDock(mTargetNode.getPosition(), false);
+      mTargetDock = mTargetNode.getNearestFreeDock(mSourceNode.getPosition(), true);
     }
     mSourceNode.occupyDock(mSourceDock);
     mTargetNode.occupyDock(mTargetDock);

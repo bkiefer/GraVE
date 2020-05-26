@@ -341,7 +341,7 @@ public class Edge extends EditorComponent {
     case EdgeArrow.S: {
       Node newNode = mWorkSpace.findNodeAtPoint(p);
       if (canDeflect(newNode, mSourceNode)) {
-        int dock = newNode.getNearestFreeDock(p);
+        int dock = newNode.getNearestFreeDock(p, false);
         new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), true, dock,
             newNode.getDataNode()).run();
       } else {
@@ -352,7 +352,7 @@ public class Edge extends EditorComponent {
     case EdgeArrow.E: {
       Node newNode = mWorkSpace.findNodeAtPoint(p);
       if (canDeflect(newNode, mTargetNode)) {
-        int dock = newNode.getNearestFreeDock(p);
+        int dock = newNode.getNearestFreeDock(p, true);
         new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), false, dock,
             newNode.getDataNode()).run();
       } else {

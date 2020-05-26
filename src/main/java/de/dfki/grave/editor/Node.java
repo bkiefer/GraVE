@@ -50,14 +50,6 @@ public final class Node extends EditorComponent {
   public Node(WorkSpace workSpace, BasicNode dataNode) {
     mWorkSpace = workSpace;
     mDataNode = dataNode;
-    setFont(getEditorConfig().sNODE_FONT.getFont());
-
-    //setToolTipText(mDataNode.getId()); overrides any MouseListener!!!
-    // Set initial position and size
-    setViewBounds(mDataNode.getPosition().getXPos(),
-        mDataNode.getPosition().getYPos(),
-        getEditorConfig().sNODEWIDTH,
-        getEditorConfig().sNODEHEIGHT);  
     initCodeArea(mDataNode, null);
     // update
     update();
@@ -137,6 +129,15 @@ public final class Node extends EditorComponent {
   }
 
   protected void update() {
+    setFont(getEditorConfig().sNODE_FONT.getFont());
+
+    //setToolTipText(mDataNode.getId()); overrides any MouseListener!!!
+    // Set initial position and size
+    setViewBounds(mDataNode.getPosition().getXPos(),
+        mDataNode.getPosition().getYPos(),
+        getEditorConfig().sNODEWIDTH,
+        getEditorConfig().sNODEHEIGHT);
+    
     FontMetrics fontMetrics = getFontMetrics(getFont());
     
     //TODO!!!
@@ -156,8 +157,9 @@ public final class Node extends EditorComponent {
       mDisplayName = mDataNode.getName();
     }
 
-    // Set the flavour dependend color
+    // Set the flavour dependent color
     setColor();
+    super.update();
   }
 
   @Override
@@ -212,10 +214,12 @@ public final class Node extends EditorComponent {
   // **********************************************************************
 
   /** Return the ID of a free dock point closest to p, which is in (zoomed)
-   *  workspace coordinates.
+   *  view coordinates. In addition, we have to account for the translation
+   *  of the node center in the view.
    */
-  public int getNearestFreeDock(Point p) {
-    return mDataNode.getNearestFreeDock(toModelPos(p));
+  public int getNearestFreeDock(Point p, boolean target) {
+    p.translate(- getWidth()/2, - getHeight()/2);
+    return mDataNode.getNearestFreeDock(toModelPos(p), target);
   }
 
   /** Return the dock point for the given ID, in (zoomed)
@@ -224,7 +228,7 @@ public final class Node extends EditorComponent {
   public Point getDockPoint(int which) {
     // dp contains the zoom factor, it's in getWidth()
     Point2D dp = mDataNode.getDockPoint(which, getWidth());
-    Point center = toViewPoint(mDataNode.getCenter());
+    Point center = getCenterPoint();
     center.translate((int)dp.getX(), (int)dp.getY());
     return center;
   }
@@ -232,6 +236,14 @@ public final class Node extends EditorComponent {
   // **********************************************************************
   // Other location functions
   // **********************************************************************
+
+  /** Returns the center of a node, in (zoomed) workspace coordinates.
+   */
+  public Point getCenterPoint() {
+    Point center = toViewPoint(mDataNode.getPosition());
+    center.translate(getWidth() / 2, getHeight()/2);
+    return center;
+  }
 
   /** Given x, y in workspace coordinates, is the point contained in this
    *  node?
@@ -253,14 +265,6 @@ public final class Node extends EditorComponent {
     if (badge != null) {
       badge.setLocation();
     }
-  }
-
-  /** Returns the center of a node, in (zoomed) workspace coordinates.
-   *
-   *  The location is in the top left corner.
-   */
-  public Point getCenterPoint() {
-    return toViewPoint(mDataNode.getCenter());
   }
 
   // **********************************************************************

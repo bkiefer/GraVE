@@ -86,7 +86,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private final IDManager mIDManager; // manages new IDs for the SceneFlow
 
   public float mZoomFactor = 1.0f;
-  private boolean mShowGrid = false;
+  public int mNodeWidth, mNodeHeight;
   
   // to suspend mouse input when the workspace changes drastically
   private boolean mIgnoreMouseInput = false;
@@ -101,11 +101,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mSceneFlow = mProject.getSceneFlow();
     mSceneFlowEditor.addActiveSuperNode(mSceneFlow);
     mIDManager = new IDManager(mSceneFlow);
-    mGridManager = new de.dfki.grave.model.flow.GridManager(
-        Math.max(getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT),
-        getEditorConfig().sGRID_SCALE);
+    mGridManager = new GridManager(this);
     mZoomFactor = getEditorConfig().sZOOM_FACTOR;
-    mShowGrid = getEditorConfig().sSHOWGRID;
+    mNodeWidth = getEditorConfig().sNODEWIDTH;
+    mNodeHeight = getEditorConfig().sNODEHEIGHT;
+    
 
     // init layout
     setLayout(new SceneFlowLayoutManager());
@@ -582,7 +582,8 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     float gridWidth = mGridManager.gridWidth() * mZoomFactor;
 
     // compute row and col of the first and last grid point
-    float offset = mGridManager.nodeSize() / 2;
+    int offs = getEditorConfig().sNODEWIDTH / 2;
+    Point offset = toViewPoint(new Position(offs, offs));
     int col = (int)(visibleRect.x / gridWidth);
     int lastCol = (int)((visibleRect.x + visibleRect.width) / gridWidth) + 1;
     int lastRow = (int)((visibleRect.y + visibleRect.height) / gridWidth) + 1;
@@ -596,8 +597,8 @@ public abstract class WorkSpace extends JPanel implements EventListener {
         } else {
           g2d.setColor(Color.GRAY.brighter());
         }
-        int xx = (int)(x + offset); 
-        int yy = (int)(y + offset);
+        int xx = (int)(x + offset.x); 
+        int yy = (int)(y + offset.y);
         // draw small cross
         int width = (int)(gridWidth / 20);
         g2d.drawLine(xx - width, yy, xx + width, yy);
@@ -613,7 +614,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     Graphics2D g2d = (Graphics2D) g;
 
     super.paintComponent(g);
-    if (mShowGrid)
+    if (getEditorConfig().sSHOWGRID)
       drawGrid(g2d, this.getVisibleRect());
 
     // draw colored border all around the workspace to indicate supernode type
