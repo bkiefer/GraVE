@@ -12,19 +12,20 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.dfki.grave.AppFrame;
 import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.dialog.NewProjectDialog;
 import de.dfki.grave.editor.dialog.QuitDialog;
+import de.dfki.grave.editor.event.ProjectChangedEvent;
+import de.dfki.grave.model.project.EditorConfig;
+import de.dfki.grave.util.evt.EventDispatcher;
 
 /**
  * @author Gregor Mehlmann
@@ -32,11 +33,10 @@ import de.dfki.grave.editor.dialog.QuitDialog;
 @SuppressWarnings("serial")
 public final class EditorMenuBar extends JMenuBar {
 
-  private final Logger mLogger = LoggerFactory.getLogger(EditorMenuBar.class);;
+  //private final Logger mLogger = LoggerFactory.getLogger(EditorMenuBar.class);
   private final AppFrame mEditorInstance;
 
   // File menu
-  private JMenu mFileMenu;
   private JMenuItem mCreateFileMenuItem;
   private JMenuItem mOpenFileMenuItem;
   private JMenuItem mOpenRecentFileMenu;
@@ -47,16 +47,18 @@ public final class EditorMenuBar extends JMenuBar {
   private JMenuItem mSaveAllMenuItem;
   private JMenuItem mExitEditorMenuItem;
   // Edit menu
-  private JMenu mEditMenu;
   private JMenuItem mCutMenuItem;
   private JMenuItem mCopyMenuItem;
   private JMenuItem mPasteMenuItem;
   private JMenuItem mDeleteMenuItem;
   private JMenuItem mStraightenMenuItem;
   private JMenuItem mNormalizeMenuItem;
+  // View Menu
+  private JCheckBoxMenuItem mShowGridMenuItem;
+  private JCheckBoxMenuItem mShowIdMenuItem;
+  private JCheckBoxMenuItem mSnapToGridMenuItem;
   private JMenuItem mOptionsMenuItem;
   // Help menu
-  private JMenu mHelpMenu;
   private JMenuItem mQuestionMenuItem;
   private JMenuItem mInfoMenuItem;
 
@@ -67,14 +69,37 @@ public final class EditorMenuBar extends JMenuBar {
     // Initialize the GUI components
     initComponents();
   }
-
-  // Refresh the visual appearance
-  public final void refresh() {
-    // Print some information
-    //mLogger.message("Refreshing '" + this + "'");
-    // TODO: Refresh the appearance, i.e. the recent file menu
+    
+  private WorkSpacePanel getCurrentWorkSpace() {
+    return mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor()
+        .getWorkSpace();
   }
 
+  private EditorConfig getEditorConfig() {
+    return getCurrentWorkSpace().getEditorConfig();
+  }
+  
+
+  // Refresh the state of all items
+  public final void refresh() {
+    // File Menu: 
+    // check save & save all status, refresh recent open files, if any
+    
+    // Edit menu
+    // cut, copy, delete : is sth selected
+    // paste is sth in clipboard
+    
+    // View Menu
+    mShowGridMenuItem.setState(getEditorConfig().sSHOWGRID);
+    mShowIdMenuItem.setState(getEditorConfig().sSHOWIDSOFNODES);
+    mSnapToGridMenuItem.setState(getEditorConfig().sSNAPTOGRID);
+  }
+  
+  private void stateChanged() {
+    AppFrame.getInstance().refresh();
+    EventDispatcher.getInstance().convey(new ProjectChangedEvent(this));
+  }
+  
   @Override
   protected void paintComponent(Graphics g) {
     super.paintComponent(g);
@@ -98,6 +123,7 @@ public final class EditorMenuBar extends JMenuBar {
   private void initComponents() {
     initFileMenu();
     initEditMenu();
+    initViewMenu();
     initHelpMenu();
   }
 
@@ -139,7 +165,7 @@ public final class EditorMenuBar extends JMenuBar {
   }
 
   private void initFileMenu() {
-    mFileMenu = new JMenu("File");
+    JMenu fileMenu = new JMenu("File");
     mCreateFileMenuItem = new JMenuItem("New Project...");
 
     // mCreateFileMenuItem.setIcon(new ImageIcon("data/img/new.png"));
@@ -240,56 +266,42 @@ public final class EditorMenuBar extends JMenuBar {
         //System.exit(0);
       }
     });
-    mFileMenu.add(mCreateFileMenuItem);
-    mFileMenu.add(mOpenFileMenuItem);
-    mFileMenu.add(mOpenRecentFileMenu);
-    mFileMenu.add(new JSeparator());
-    mFileMenu.add(mCloseFileMenuItem);
-    mFileMenu.add(mSaveFileMenuItem);
-    mFileMenu.add(mSaveAsMenuItem);
-    mFileMenu.add(mSaveAllMenuItem);
+    fileMenu.add(mCreateFileMenuItem);
+    fileMenu.add(mOpenFileMenuItem);
+    fileMenu.add(mOpenRecentFileMenu);
+    fileMenu.add(new JSeparator());
+    fileMenu.add(mCloseFileMenuItem);
+    fileMenu.add(mSaveFileMenuItem);
+    fileMenu.add(mSaveAsMenuItem);
+    fileMenu.add(mSaveAllMenuItem);
 
     if (System.getProperty("os.name").toLowerCase().indexOf("windows") != -1) {
-      mFileMenu.add(new JSeparator());
-      mFileMenu.add(mExitEditorMenuItem);
+      fileMenu.add(new JSeparator());
+      fileMenu.add(mExitEditorMenuItem);
     }
 
-    add(mFileMenu);
+    add(fileMenu);
   }
 
   private void initEditMenu() {
-    mEditMenu = new JMenu("Edit");
+    JMenu editMenu = new JMenu("Edit");
 
     //COPY ACTION
     mCopyMenuItem = new JMenuItem("Copy");
     mCopyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
             Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-    mCopyMenuItem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().copySelectedNodes();
-      }
-    });
+    mCopyMenuItem.addActionListener((e) -> getCurrentWorkSpace().copySelectedNodes());
     //CUT ACTION
     mCutMenuItem = new JMenuItem("Cut");
     mCutMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
             Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-    mCutMenuItem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().cutSelectedNodes();
-      }
-    });
+    mCutMenuItem.addActionListener((e) -> getCurrentWorkSpace().cutSelectedNodes());
+
     //PASTE ACTION
     mPasteMenuItem = new JMenuItem("Paste");
     mPasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
             Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-    mPasteMenuItem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().pasteNodesFromClipboard();
-      }
-    });
+    mPasteMenuItem.addActionListener((e) -> getCurrentWorkSpace().pasteNodesFromClipboard());
     //TODO DELETE ACTIONS
     mDeleteMenuItem = new JMenuItem("Delete");
     mDeleteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
@@ -298,23 +310,54 @@ public final class EditorMenuBar extends JMenuBar {
     mNormalizeMenuItem = new JMenuItem("Normalize all Edges");
     mNormalizeMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
             (java.awt.event.InputEvent.ALT_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
-    mNormalizeMenuItem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().normalizeAllEdges();
-      }
-    });
+    mNormalizeMenuItem.addActionListener((e) -> getCurrentWorkSpace().normalizeAllEdges());
+
     //STRAIGHTEN EDGES
     mStraightenMenuItem = new JMenuItem("Straighen all Edges");
     mStraightenMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B,
             (java.awt.event.InputEvent.ALT_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
-    mStraightenMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        mEditorInstance.getSelectedProjectEditor().getSceneFlowEditor().getWorkSpace().straightenAllEdges();
-      }
-    });
+    mStraightenMenuItem.addActionListener((e) -> getCurrentWorkSpace().straightenAllEdges());
 
-    //***************************************OPTIONS********************************************************************
+    editMenu.add(UndoRedoProvider.getUndoAction());
+    editMenu.add(UndoRedoProvider.getRedoAction());
+    editMenu.add(new JSeparator());
+    editMenu.add(mCopyMenuItem);
+    editMenu.add(mCutMenuItem);
+    editMenu.add(mPasteMenuItem);
+    editMenu.add(mDeleteMenuItem);
+    editMenu.add(new JSeparator());
+    editMenu.add(mStraightenMenuItem);
+    editMenu.add(mNormalizeMenuItem);
+    
+    add(editMenu);
+  }
+  
+  private void initViewMenu() {
+    JMenu viewMenu = new JMenu("View");
+    
+    mShowGridMenuItem = new JCheckBoxMenuItem("Show Grid");
+    mShowGridMenuItem.addActionListener((e) -> {
+      getEditorConfig().sSHOWGRID = ((JCheckBoxMenuItem)e.getSource()).getState();
+      stateChanged();
+    });
+      
+    viewMenu.add(mShowGridMenuItem);
+
+    mShowIdMenuItem = new JCheckBoxMenuItem("Show Node IDs");
+    mShowIdMenuItem.addActionListener((e) -> {
+      getEditorConfig().sSHOWIDSOFNODES = ((JCheckBoxMenuItem)e.getSource()).getState();
+      stateChanged();
+    });
+    viewMenu.add(mShowIdMenuItem);
+
+    mSnapToGridMenuItem = new JCheckBoxMenuItem("Snap to Grid");
+    mSnapToGridMenuItem.addActionListener((e) -> { 
+      getEditorConfig().sSNAPTOGRID = ((JCheckBoxMenuItem)e.getSource()).getState();
+      stateChanged();
+    });
+    viewMenu.add(mSnapToGridMenuItem);
+
+    // **************************OPTIONS*************************************
     mOptionsMenuItem = new JMenuItem("Options");
     mOptionsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA,
             (Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
@@ -324,27 +367,14 @@ public final class EditorMenuBar extends JMenuBar {
         mEditorInstance.showOptions();
       }
     });
-
-    mEditMenu.add(UndoRedoProvider.getUndoAction());
-    mEditMenu.add(UndoRedoProvider.getRedoAction());
-    mEditMenu.add(new JSeparator());
-    mEditMenu.add(mCopyMenuItem);
-    mEditMenu.add(mCutMenuItem);
-    mEditMenu.add(mPasteMenuItem);
-    mEditMenu.add(mDeleteMenuItem);
-    mEditMenu.add(new JSeparator());
-    mEditMenu.add(mStraightenMenuItem);
-    mEditMenu.add(mNormalizeMenuItem);
-    mEditMenu.add(new JSeparator());
-
-//      mEditMenu.add(mFormatSceneDocument);
-    mEditMenu.add(new JSeparator());
-    mEditMenu.add(mOptionsMenuItem);
-    add(mEditMenu);
+    viewMenu.add(new JSeparator());
+    viewMenu.add(mOptionsMenuItem);
+    
+    add(viewMenu);
   }
-
+  
   private void initHelpMenu() {
-    mHelpMenu = new JMenu("Help");
+    JMenu helpMenu = new JMenu("Help");
     mQuestionMenuItem = new JMenuItem("Help");
 
     // mQuestionMenuItem.setIcon(new ImageIcon("data/img/help.png"));
@@ -367,9 +397,9 @@ public final class EditorMenuBar extends JMenuBar {
         mEditorInstance.showAbout();
       }
     });
-    mHelpMenu.add(mQuestionMenuItem);
-    mHelpMenu.add(new JSeparator());
-    mHelpMenu.add(mInfoMenuItem);
-    add(mHelpMenu);
+    helpMenu.add(mQuestionMenuItem);
+    helpMenu.add(new JSeparator());
+    helpMenu.add(mInfoMenuItem);
+    add(helpMenu);
   }
 }

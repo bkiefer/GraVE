@@ -169,7 +169,7 @@ public final class SceneFlowEditor extends JPanel {
     });
 
     //ACTIVATE THE CONTENT OF THE ElementEditor
-    mEventCaster.convey(new ElementSelectedEvent(getActiveSuperNode()));
+    //mEventCaster.convey(new ElementSelectedEvent(getActiveSuperNode()));
 
     //
     mFooterLabel.setForeground(Color.red);

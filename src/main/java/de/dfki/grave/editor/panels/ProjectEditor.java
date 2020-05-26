@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.DocumentContainer;
-import de.dfki.grave.editor.event.ClearCodeEditorEvent;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.TreeEntrySelectedEvent;
 import de.dfki.grave.model.project.EditorProject;
@@ -205,8 +204,6 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       } else {
         mCodeEditor.setEditedNodeOrEdge(null);
       } 
-    } else if (event instanceof ClearCodeEditorEvent) {
-      mCodeEditor.setEditedNodeOrEdge(null);
     }
   }
 

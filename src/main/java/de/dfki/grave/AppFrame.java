@@ -821,9 +821,9 @@ public final class AppFrame extends JFrame implements ChangeListener {
     // Refresh the selected project editor
     if (editor != null) {
       editor.refresh();
+      // Refresh the editor's menu bar
+      mEditorMenuBar.refresh();
     }
-    // Refresh the editor's menu bar
-    mEditorMenuBar.refresh();
     // Refresh editor welcome panel
     mWelcomePanel.refresh();
   }
