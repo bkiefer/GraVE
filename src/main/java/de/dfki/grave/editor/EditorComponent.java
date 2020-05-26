@@ -64,6 +64,10 @@ public abstract class EditorComponent extends JComponent
     }
   }
   
+  protected void update() {
+    if (mCodeArea != null) mCodeArea.update();
+  }
+  
   public CodeArea getCodeArea() { return mCodeArea; }
   
   abstract Point getCodeAreaLocation(Dimension r);

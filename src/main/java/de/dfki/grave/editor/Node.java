@@ -139,7 +139,7 @@ public final class Node extends EditorComponent {
     }
   }
 
-  private void update() {
+  protected void update() {
     FontMetrics fontMetrics = getFontMetrics(getFont());
     
     //TODO!!!

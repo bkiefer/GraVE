@@ -107,7 +107,7 @@ public class CodeArea extends RSyntaxTextArea {
     this.setDocument(d);
     d.addDocumentListener(new DocumentListener(){
       @Override
-      public void insertUpdate(DocumentEvent e) { computeAndSetNewSize(); }
+      public void insertUpdate(DocumentEvent e) { update(); }
       @Override
       public void removeUpdate(DocumentEvent e) { insertUpdate(e); }
       @Override
@@ -135,7 +135,7 @@ public class CodeArea extends RSyntaxTextArea {
             UndoRedoProvider.addEdit(e.getEdit());
           }
         });
-    computeAndSetNewSize();
+    update();
     setEnabled(false);
   }
 
@@ -153,7 +153,7 @@ public class CodeArea extends RSyntaxTextArea {
       d.updateModel();
     //mDispatcher.convey(new ProjectChangedEvent(this));
     //mDispatcher.convey(new ElementSelectedEvent(mComponent));
-    computeAndSetNewSize();
+    update();
     setEnabled(false);
   }
 
@@ -167,7 +167,7 @@ public class CodeArea extends RSyntaxTextArea {
     return getBounds().contains(x, y);
   }
 
-  private void computeAndSetNewSize() {
+  public void update() {
     String text = getText();
     if (text.trim().isEmpty()) {
       setVisible(false);
