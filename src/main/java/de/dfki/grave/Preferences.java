@@ -120,7 +120,7 @@ public final class Preferences {
   public static final Color sTRANSLUCENT_BLUE_COLOR = new Color(0, 0, 246, 100);        // Do not change opacity!
   public static final Color sTRANSLUCENT_GREEN_COLOR = new Color(0, 246, 0, 100);        // Do not change opacity!
   public static final Color sTRANSLUCENT_YELLOW_COLOR = new Color(0, 246, 246, 100);      // Do not change opacity!
-  public static final Color sCOMMENT_BADGE_COLOR = new Color(246, 231, 191, 128);
+  public static final Color sCOMMENT_BADGE_COLOR = new Color(211, 215, 207, 128);
   public static final Color sSTART_SIGN_COLOR = new Color(181, 45, 13);
   public static final Color sMESSAGE_COLOR = new Color(181, 45, 13);
   public static final Color sHIGHLIGHT_SCENE_COLOR = Color.YELLOW;

@@ -45,8 +45,11 @@ public class Comment extends JTextArea
 
   // interaction flags
   private boolean mResizing;
+  
+  private final Color activeColor, inactiveColor;
 
   public Comment() {
+    activeColor = inactiveColor = null;
     setDocument(mDocument = new ObserverDocument(""));
   }
 
@@ -59,8 +62,9 @@ public class Comment extends JTextArea
     // font setup
     setFont(mWorkSpace.getEditorConfig().sCOMMENT_FONT.getFont());
 
-    Color borderColor = Preferences.sCOMMENT_BADGE_COLOR.darker();
-    Border border = BorderFactory.createMatteBorder(3, 3, 3, 3, borderColor);
+    inactiveColor = Preferences.sCOMMENT_BADGE_COLOR;
+    Border border = new TextBubbleBorder(Color.gray,3,7,9);
+    //BorderFactory.createMatteBorder(3, 3, 3, 3, borderColor);
     setBorder(border);
 
     // size setup
@@ -72,8 +76,9 @@ public class Comment extends JTextArea
 
     // setLayout(new BorderLayout());
 
-    setBackground(Preferences.sCOMMENT_BADGE_COLOR);
-
+    Color c = inactiveColor;
+    activeColor = new Color(c.getRed(), c.getGreen(), c.getBlue(), 255);
+    
     // TODO: add DocumentListener to resize after text changes?
 
     // add our own listener so we can drag this thing around
@@ -87,18 +92,9 @@ public class Comment extends JTextArea
     addMouseMotionListener(myDrag);
     addMouseListener(myDrag);
     
+    setDisabledTextColor(Color.gray);
+    setBackground(inactiveColor);
     setEnabled(false);
-    addFocusListener(new FocusListener() {
-
-      @Override
-      public void focusGained(FocusEvent e) {
-      }
-
-      @Override
-      public void focusLost(FocusEvent e) {
-        setDeselected();
-      }
-    });
   }
 
   @Override
@@ -160,7 +156,7 @@ public class Comment extends JTextArea
   }
 
   public void setSelected() {
-
+    setBackground(activeColor);
   };
 
   /** Resets the comment to its default visual behavior */
@@ -170,9 +166,9 @@ public class Comment extends JTextArea
       mEditMode = false;
       mDocument.updateModel();
     }
-
     mResizing = false;
     update();
+    setBackground(inactiveColor);
     setEnabled(false);
   }
 
@@ -181,7 +177,7 @@ public class Comment extends JTextArea
 
     @Override
     public void mouseClicked(MouseEvent e) {
-      if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() == 2)) {
+      if ((e.getButton() == MouseEvent.BUTTON1)) {
         mEditMode = true;
         Comment.this.setEditable(true);
         Comment.this.setEnabled(true);
@@ -237,11 +233,6 @@ public class Comment extends JTextArea
       // compute movement trajectory vectors
       int dx = currentMousePosition.x - mPressedLocation.x;
       int dy = currentMousePosition.y - mPressedLocation.y;
-
-      if (Preferences.DEBUG_MOUSE_LOCATIONS) {
-        mWorkSpace.setMessageLabelText(String.format("(%d, %d)/(%d, %d)",
-            mPressedLocation.x, mPressedLocation.y, dx, dy));
-      }
       
       if (mResizing) {
         // Change the size of a comment with the mouse
