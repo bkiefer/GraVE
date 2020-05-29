@@ -1,10 +1,6 @@
 package de.dfki.grave.editor.panels;
 
-import static de.dfki.grave.Preferences.sCEDGE_COLOR;
-import static de.dfki.grave.Preferences.sFEDGE_COLOR;
-import static de.dfki.grave.Preferences.sIEDGE_COLOR;
-import static de.dfki.grave.Preferences.sPEDGE_COLOR;
-import static de.dfki.grave.Preferences.sTEDGE_COLOR;
+import static de.dfki.grave.Preferences.*;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -31,7 +27,6 @@ import de.dfki.grave.editor.action.EditorAction;
 import de.dfki.grave.editor.action.MoveNodesAction;
 import de.dfki.grave.editor.action.NormalizeEdgeAction;
 import de.dfki.grave.editor.action.StraightenEdgeAction;
-import de.dfki.grave.editor.event.ClearCodeEditorEvent;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.editor.event.WorkSpaceSelectedEvent;
@@ -139,11 +134,26 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     showCurrentWorkSpace();
   }
 
+  public void updateAll() {
+    for (Node n : mNodeSet.values()) {
+      n.update(null,  null);
+    }
+    for (Edge e: mEdges.values()) {
+      e.update(null,  null);
+    }
+    for (Comment c: mCmtSet) {
+      c.update();
+    }
+    revalidate();
+    repaint(100);    
+  }
+  
   /**
    */
   @Override
   public void update(Object event) {
     checkChangesOnWorkspace();
+    updateAll();
   }
 
   // TODO: Move that up to to the editor
@@ -343,7 +353,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     // Create a new Gridmanager for the workspace
     mGridManager.clear();
     revalidate();
-    mEventCaster.convey(new ClearCodeEditorEvent(this));
     repaint(100);
     // TODO: Refresh here!
   }

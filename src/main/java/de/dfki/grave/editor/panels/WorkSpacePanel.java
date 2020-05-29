@@ -33,8 +33,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
   private static final Logger logger = LoggerFactory.getLogger(WorkSpacePanel.class);
 
-
-  
   // Drag & Drop support
   @SuppressWarnings("unused")
   private DropTarget mDropTarget;
@@ -702,7 +700,9 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       */
       repaint(100);
     }
-    //setMessageLabelText(String.format("%d, %d", event.getPoint().x, event.getPoint().y));
+    if (Preferences.DEBUG_MOUSE_LOCATIONS) {
+      setMessageLabelText(String.format("%d, %d", event.getPoint().x, event.getPoint().y));
+    }
     return;
   }
 
@@ -712,21 +712,10 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     super.paintComponent(g);
     Graphics2D g2d = (Graphics2D) g;
 
+    // Edge construction in progress?
     if (mEdgeSourceNode != null) {
       setBackground(Color.LIGHT_GRAY);
-    } else {
-      setBackground(Color.WHITE);
-    }
-
-    if (mAreaSelection != null) {
-      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      g2d.setStroke(new BasicStroke(3.0f));
-      g2d.setColor(Color.LIGHT_GRAY);
-      g2d.draw(mAreaSelection);
-    }
-
-    // draw line between source node and current mouse position
-    if (mEdgeSourceNode != null) {
+      // draw line between source node and current mouse position
       mSelectNodePoint = getMousePosition();
       if (mSelectNodePoint != null) {
         Point sourceNodeCenter = mEdgeSourceNode.getCenterPoint();
@@ -756,7 +745,17 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         g2d.drawString(sEdgeCreationHint.getIterator(), mSelectNodePoint.x - (width / 2),
                 mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) + 1);
       }
+    } else {
+      setBackground(Color.WHITE);
     }
+
+    if (mAreaSelection != null) {
+      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      g2d.setStroke(new BasicStroke(3.0f));
+      g2d.setColor(Color.LIGHT_GRAY);
+      g2d.draw(mAreaSelection);
+    }
+
     /* Debugging: check boundaries of all components on workspace */
     if (Preferences.DEBUG_COMPONENT_BOUNDARIES) {
       g2d.setColor(Color.pink);
