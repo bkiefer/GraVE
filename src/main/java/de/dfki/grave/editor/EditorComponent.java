@@ -70,7 +70,7 @@ public abstract class EditorComponent extends JComponent
   
   public CodeArea getCodeArea() { return mCodeArea; }
   
-  abstract Point getCodeAreaLocation(Dimension r);
+  protected abstract Point getCodeAreaLocation(Dimension r);
   
   @Override
   public void mouseEntered(MouseEvent e) {
@@ -80,8 +80,8 @@ public abstract class EditorComponent extends JComponent
   public void mouseExited(MouseEvent e) {
   }   
 
-  // Set initial view position and size, given *model* coordinates
-  public void setViewBounds(int x, int y, int width, int height) {
+  /** Set initial view position and size, given *model* coordinates */
+  protected final void setViewBounds(int x, int y, int width, int height) {
     // transfer to view coordinates
     int xx = mWorkSpace.toViewXPos(x), yy = mWorkSpace.toViewYPos(y);
     int w = mWorkSpace.toViewXPos(x + width) - xx;  
@@ -89,17 +89,19 @@ public abstract class EditorComponent extends JComponent
     setBounds(xx, yy, w, h);
   }
   
-  public void setViewLocation(int x, int y) {
+  /** Set this component to the given view position, given *model* coordinates
+   */
+  protected final void setViewLocation(int x, int y) {
     super.setLocation(mWorkSpace.toViewXPos(x), mWorkSpace.toViewYPos(y));
   }
   
   /** Convert from view to model coordinates */
-  public Position toModelPos(Point val) {
+  protected final Position toModelPos(Point val) {
     return mWorkSpace.toModelPos(val);
   }
 
   /** Convert from model to view coordinates */
-  public Point toViewPoint(Position val) {
+  protected final Point toViewPoint(Position val) {
     return mWorkSpace.toViewPoint(val);
   }
 

@@ -63,7 +63,7 @@ public final class Node extends EditorComponent {
     return mDataNode;
   }
   
-  Point getCodeAreaLocation(Dimension r) {
+  protected Point getCodeAreaLocation(Dimension r) {
     return new Point(getLocation().x + (getWidth() - r.width)/2,
         getLocation().y + getHeight());
   }

@@ -114,7 +114,7 @@ public class Edge extends EditorComponent {
     return mDataEdge != null ? mDataEdge.getContent() : null;
   }
 
-  Point getCodeAreaLocation(Dimension r) {
+  protected Point getCodeAreaLocation(Dimension r) {
     Point2D p = getCurveCenter();
     // center around middle of curve
     int x = (int) Math.round(p.getX() - r.width / 2.0);
