@@ -189,8 +189,8 @@ public abstract class AbstractEdge implements ContentHolder {
     // For start and target node:
     // a) find a dock close to the dock point
     // b) turn the absolute control point into a relative control point
-    mSourceDock = getSourceNode().getNearestFreeDock(pl.get(0).getPoint(), false);
-    mTargetDock = getTargetNode().getNearestFreeDock(pl.get(1).getPoint(), true);
+    mSourceDock = getSourceNode().getNearestFreeDock(pl.get(0).getPoint(), true);
+    mTargetDock = getTargetNode().getNearestFreeDock(pl.get(1).getPoint(), false);
     getSourceNode().occupyDock(mSourceDock);
     getTargetNode().occupyDock(mTargetDock);
     Position cp = pl.get(0).getCtrlPoint();
@@ -298,12 +298,12 @@ public abstract class AbstractEdge implements ContentHolder {
     if (mSourceNode == mTargetNode) { // loop
       Position p = mSourceNode.getPosition();
       mSourceDock = mSourceNode.getNearestFreeDock(
-          new Position(p.getXPos()+(int)(nodeWidth*0.35), p.getYPos()), false);
+          new Position(p.getXPos()+(int)(nodeWidth*0.35), p.getYPos()), true);
       mTargetDock = mTargetNode.getNearestFreeDock(
-          new Position(p.getXPos()+(int)(nodeWidth*0.65), p.getYPos()), true);
+          new Position(p.getXPos()+(int)(nodeWidth*0.65), p.getYPos()), false);
     } else {
-      mSourceDock = mSourceNode.getNearestFreeDock(mTargetNode.getPosition(), false);
-      mTargetDock = mTargetNode.getNearestFreeDock(mSourceNode.getPosition(), true);
+      mSourceDock = mSourceNode.getNearestFreeDock(mTargetNode.getPosition(), true);
+      mTargetDock = mTargetNode.getNearestFreeDock(mSourceNode.getPosition(), false);
     }
     mSourceNode.occupyDock(mSourceDock);
     mTargetNode.occupyDock(mTargetDock);

@@ -257,6 +257,61 @@ public class Edge extends EditorComponent {
       repaint(100);
     }
   }
+  
+  private boolean canDeflect(Node curr, Node old) {
+    return (curr != null &&
+        (curr == old || curr.getDataNode().canAddEdge(mDataEdge)));
+  }
+
+  /** This takes all the responsibility for edge changes using the mouse, except
+   *  creation of a new edge:
+   *  - Assigning a new dock to the start point
+   *  - Modification of a control point
+   *  - Assigning a new dock, possibly at a new target node, to the end point
+   */
+  @Override
+  public void mouseReleased(MouseEvent e) {
+    Point p = e.getPoint();
+    switch (mArrow.mSelected) {
+    case EdgeArrow.S: 
+    case EdgeArrow.E: {
+      boolean isSource = mArrow.mSelected == EdgeArrow.S;
+      Node newNode = mWorkSpace.findNodeAtPoint(p);
+      if (canDeflect(newNode, isSource ? mSourceNode : mTargetNode)) {
+        int dock = newNode.getNearestFreeDock(p, isSource);
+        new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), isSource, dock,
+            newNode.getDataNode()).run();
+      } else {
+        update(); // put arrow back into old position
+      }
+      break;
+    }
+    case EdgeArrow.C1:     
+    case EdgeArrow.C2: {
+      boolean isSource = mArrow.mSelected == EdgeArrow.C1;
+      // compute vector from dock point to p (relative ctrls)
+      Point dock = mSourceNode.getDockPoint(
+          isSource ? mDataEdge.getSourceDock() : mDataEdge.getTargetDock());
+      p.translate(-dock.x, -dock.y);
+      // All actions use Positions (model coordinates)
+      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), isSource, toModelPos(p)).run();
+      break;
+    }
+    }
+  }
+
+  public void mouseDragged(java.awt.event.MouseEvent e) {
+    Point p = e.getPoint();
+    // do not allow x and y values below 10
+    if (p.x - 10 < 0)
+      p.x = 10;
+    if (p.y - 10 < 0)
+      p.y = 10;
+
+    mArrow.mouseDragged(this, p);
+    computeBounds();
+    repaint(100);
+  }
 
   private void deflectSource(Node newNode) {
     // change the SOURCE view and model to reflect edge change
@@ -318,77 +373,6 @@ public class Edge extends EditorComponent {
   public void rebuildEdgeNicely() {
     // disconnectEdge
     straightenEdge();
-  }
-
-  private boolean canDeflect(Node curr, Node old) {
-    return (curr != null &&
-        (curr == old || curr.getDataNode().canAddEdge(mDataEdge)));
-  }
-
-  /** This takes all the responsibility for edge changes using the mouse, except
-   *  creation of a new edge:
-   *  - Assigning a new dock to the start point
-   *  - Modification of a control point
-   *  - Assigning a new dock, possibly at a new target node, to the end point
-   *
-   *  TODO: Here, any change that has happened during drag should be registered in an
-   *  undoable way
-   */
-  @Override
-  public void mouseReleased(java.awt.event.MouseEvent e) {
-    Point p = e.getPoint();
-    switch (mArrow.mSelected) {
-    case EdgeArrow.S: {
-      Node newNode = mWorkSpace.findNodeAtPoint(p);
-      if (canDeflect(newNode, mSourceNode)) {
-        int dock = newNode.getNearestFreeDock(p, false);
-        new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), true, dock,
-            newNode.getDataNode()).run();
-      } else {
-        update(); // put arrow back into old position
-      }
-      break;
-    }
-    case EdgeArrow.E: {
-      Node newNode = mWorkSpace.findNodeAtPoint(p);
-      if (canDeflect(newNode, mTargetNode)) {
-        int dock = newNode.getNearestFreeDock(p, true);
-        new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), false, dock,
-            newNode.getDataNode()).run();
-      } else {
-        update(); // put arrow back into old position
-      }
-      break;
-    }
-    case EdgeArrow.C1: {
-      // compute vector from dock point to p (relative ctrls)
-      Point dock = mSourceNode.getDockPoint(mDataEdge.getSourceDock());
-      p.translate(-dock.x, -dock.y);
-      // All actions use Positions (model coordinates)
-      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), true, toModelPos(p)).run();
-      break;
-    }
-    case EdgeArrow.C2: {
-      Point dock = mTargetNode.getDockPoint(mDataEdge.getTargetDock());
-      p.translate(-dock.x, -dock.y);
-      // All actions use Positions (model coordinates)
-      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), false, toModelPos(p)).run();
-      break;
-    }
-    }
-  }
-
-  public void mouseDragged(java.awt.event.MouseEvent e) {
-    Point p = e.getPoint();
-    // do not allow x and y values below 10
-    if (p.x - 10 < 0)
-      p.x = 10;
-    if (p.y - 10 < 0)
-      p.y = 10;
-
-    mArrow.mouseDragged(this, p);
-    computeBounds();
-    repaint(100);
   }
 
   Point2D getCurveCenter() {

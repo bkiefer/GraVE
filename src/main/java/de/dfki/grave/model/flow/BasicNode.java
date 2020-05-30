@@ -475,10 +475,10 @@ public class BasicNode implements ContentHolder {
     return false;
   }
 
-  public int getNearestFreeDock(Position p, boolean target) {
+  public int getNearestFreeDock(Position p, boolean source) {
     // start with the closest angle with a reasonable representation
     double angle = getPosition().angle(p);
-    return Geom.findClosestDock(mDocksTaken, angle, target);
+    return Geom.findClosestDock(mDocksTaken, angle, source);
   }
 
   private class EdgeIterator implements Iterator<AbstractEdge> {

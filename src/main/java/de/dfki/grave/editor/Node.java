@@ -217,9 +217,9 @@ public final class Node extends EditorComponent {
    *  view coordinates. In addition, we have to account for the translation
    *  of the node center in the view.
    */
-  public int getNearestFreeDock(Point p, boolean target) {
+  public int getNearestFreeDock(Point p, boolean source) {
     p.translate(- getWidth()/2, - getHeight()/2);
-    return mDataNode.getNearestFreeDock(toModelPos(p), target);
+    return mDataNode.getNearestFreeDock(toModelPos(p), source);
   }
 
   /** Return the dock point for the given ID, in (zoomed)
