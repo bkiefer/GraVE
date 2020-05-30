@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.undo.*;
 
-import de.dfki.grave.editor.panels.UndoRedoProvider;
 import de.dfki.grave.editor.panels.WorkSpace;
 
 /**

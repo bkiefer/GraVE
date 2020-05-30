@@ -14,6 +14,7 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 import de.dfki.grave.AppFrame;
+import de.dfki.grave.editor.action.UndoRedoProvider;
 import de.dfki.grave.editor.dialog.OptionsDialog;
 import de.dfki.grave.editor.dialog.SaveFileDialog;
 import de.dfki.grave.editor.event.ProjectChangedEvent;

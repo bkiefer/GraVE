@@ -21,6 +21,7 @@ import javax.swing.KeyStroke;
 
 import de.dfki.grave.AppFrame;
 import de.dfki.grave.Preferences;
+import de.dfki.grave.editor.action.UndoRedoProvider;
 import de.dfki.grave.editor.dialog.NewProjectDialog;
 import de.dfki.grave.editor.dialog.QuitDialog;
 import de.dfki.grave.editor.event.ProjectChangedEvent;

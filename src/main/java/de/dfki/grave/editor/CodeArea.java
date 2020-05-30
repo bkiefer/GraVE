@@ -24,7 +24,7 @@ import javax.swing.event.UndoableEditListener;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
-import de.dfki.grave.editor.panels.UndoRedoProvider;
+import de.dfki.grave.editor.action.UndoRedoProvider;
 
 /**
  * @author Gregor Mehlmann

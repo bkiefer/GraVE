@@ -1,4 +1,4 @@
-package de.dfki.grave.editor.panels;
+package de.dfki.grave.editor.action;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
