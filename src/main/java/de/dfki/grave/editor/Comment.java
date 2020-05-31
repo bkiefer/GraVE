@@ -3,11 +3,8 @@ package de.dfki.grave.editor;
 import static de.dfki.grave.editor.panels.WorkSpacePanel.addItem;
 
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.util.Observable;
 
 import javax.swing.*;
@@ -22,32 +19,28 @@ import de.dfki.grave.model.flow.CommentBadge;
 
 import java.util.Observer;
 
-/**
- * @author Patrick Gebhard
- * @author Gregor Mehlmann
+/** A class for Comment Text Bubbles
+ *  .----.
+ *  |    |
+ *  |   o|
+ *  `----'
+ *   |/
+ * @author kiefer
+ *
  */
 @SuppressWarnings("serial")
-public class Comment extends JTextArea
-    implements DocumentContainer, Observer {
+public class Comment extends JTextArea implements DocumentContainer, Observer {
 
   private ObserverDocument mDocument;
   private CommentBadge mDataComment;
-  protected WorkSpace mWorkSpace;
+  private WorkSpace mWorkSpace;
 
-  // position
-  // private Point mClickPosition = new Point(0, 0);
-
-  // for drag: move or resize
-  private Rectangle mCommentStartBounds = null;
-
-  // edit
+  // in edit, or not
   private boolean mEditMode = false;
-
-  // interaction flags
-  private boolean mResizing;
   
   private final Color activeColor, inactiveColor;
 
+  /** Constructor for prototype in the "Create item" area */
   public Comment() {
     activeColor = inactiveColor = null;
     setDocument(mDocument = new ObserverDocument(""));
@@ -63,8 +56,11 @@ public class Comment extends JTextArea
     setFont(mWorkSpace.getEditorConfig().sCOMMENT_FONT.getFont());
 
     inactiveColor = Preferences.sCOMMENT_BADGE_COLOR;
+    // active color only sets the alpha channel to opaque
+    activeColor = new Color(inactiveColor.getRed(), inactiveColor.getGreen(), 
+        inactiveColor.getBlue(), 255);
+    setDisabledTextColor(Color.gray);
     Border border = new TextBubbleBorder(Color.gray,3,7,9);
-    //BorderFactory.createMatteBorder(3, 3, 3, 3, borderColor);
     setBorder(border);
 
     // size setup
@@ -74,27 +70,11 @@ public class Comment extends JTextArea
     setLineWrap(true);
     setWrapStyleWord(true);
 
-    // setLayout(new BorderLayout());
-
-    Color c = inactiveColor;
-    activeColor = new Color(c.getRed(), c.getGreen(), c.getBlue(), 255);
-    
-    // TODO: add DocumentListener to resize after text changes?
-
-    // add our own listener so we can drag this thing around
-    /*
-    for (MouseMotionListener m : getMouseMotionListeners())
-      removeMouseMotionListener(m);
-    for (MouseListener m : getMouseListeners())
-      removeMouseListener(m);
-     */
     MyMouseListener myDrag = new MyMouseListener();
     addMouseMotionListener(myDrag);
     addMouseListener(myDrag);
     
-    setDisabledTextColor(Color.gray);
-    setBackground(inactiveColor);
-    setEnabled(false);
+    setDeselected();
   }
 
   @Override
@@ -130,11 +110,7 @@ public class Comment extends JTextArea
     return getBounds().contains(p.x, p.y);
   }
 
-  /*
-   * Returns true if mouse in the lower right area, which stands for the resizng
-   * area. ------ | | | | | -| | | | ------
-   *
-   */
+  /** Returns true if mouse in the lower right (resizing) area */
   private boolean isResizingAreaSelected(Point p) {
     Rectangle r = getBounds();
     // Since added to workspace, now in local coordinates
@@ -145,9 +121,7 @@ public class Comment extends JTextArea
     }
   }
 
-  /**
-   * Show the context menu for a comment
-   */
+  /** Show the context menu for a comment  */
   public void showContextMenu(MouseEvent evt, Comment comment) {
     JPopupMenu pop = new JPopupMenu();
     addItem(pop, "Delete", new RemoveCommentAction(mWorkSpace, comment));
@@ -157,6 +131,10 @@ public class Comment extends JTextArea
 
   public void setSelected() {
     setBackground(activeColor);
+    mEditMode = true;
+    setEditable(true);
+    setEnabled(true);
+    requestFocus();
   };
 
   /** Resets the comment to its default visual behavior */
@@ -164,37 +142,28 @@ public class Comment extends JTextArea
     if (mEditMode) {
       // TODO: write Text back to model with an undoable action.
       mEditMode = false;
-      mDocument.updateModel();
+      if (mDocument.contentChanged())
+        // TODO: THIS MUST BE A CONTENTCHANGEDACTION
+        mDocument.updateModel();
     }
-    mResizing = false;
     update();
     setBackground(inactiveColor);
+    setEditable(false);
     setEnabled(false);
   }
 
-  private class MyMouseListener implements MouseListener, MouseMotionListener {
+  private class MyMouseListener extends MouseAdapter {
+    
+    // interaction flags: move or resize?
+    private boolean mResizing;
+  
+    // for drag: move or resize
+    private Rectangle mCommentStartBounds = null;
+    
+    // To compute movement delta
     Point mPressedLocation = null;
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-      if ((e.getButton() == MouseEvent.BUTTON1)) {
-        mEditMode = true;
-        Comment.this.setEditable(true);
-        Comment.this.setEnabled(true);
-        Comment.this.requestFocus();
-      }
-
-      // show context menu
-      if ((e.getButton() == MouseEvent.BUTTON3) && (e.getClickCount() == 1)) {
-        showContextMenu(e, Comment.this);
-      }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent me) {
-      mPressedLocation = me.getPoint();
-      // DEBUG System.out.println("mouse pressed");
-
+    
+    private void passEventToParent(MouseEvent me, int what) {
       // Now make sure the WorkSpacePanel knows about the mouse press event
       Component child = me.getComponent();
       Component parent = child.getParent();
@@ -204,11 +173,33 @@ public class Comment extends JTextArea
       int deltay = child.getY() + me.getY();
 
       // build new mouse event:
-      MouseEvent parentMouseEvent = new MouseEvent(parent,
-          MouseEvent.MOUSE_PRESSED, me.getWhen(), me.getModifiersEx(), deltax,
-          deltay, me.getClickCount(), false);
+      MouseEvent parentMouseEvent = new MouseEvent(parent, what, me.getWhen(),
+          me.getModifiersEx(), deltax, deltay, me.getClickCount(), false);
       // dispatch it to the parent component
       parent.dispatchEvent(parentMouseEvent);
+    }
+    
+    @Override
+    /** Pass on the mouse press event if this component is not enabled */
+    public void mouseClicked(MouseEvent me) {
+      // show context menu
+      if ((me.getButton() == MouseEvent.BUTTON3)
+          && (me.getClickCount() == 1)) { 
+        showContextMenu(me, Comment.this);
+        return;
+      } 
+      if (Comment.this.isEnabled()) return;
+      mPressedLocation = me.getPoint();
+      // parent (WorkSpacePanel) will handle selection/deselection
+      passEventToParent(me, MouseEvent.MOUSE_CLICKED);
+    } 
+    
+    @Override
+    /** Pass on the mouse press event if this component is not enabled */
+    public void mousePressed(MouseEvent me) {
+      if (Comment.this.isEnabled()) return;
+      mPressedLocation = me.getPoint();
+      // TODO: CHANGE CURSOR FOR RESIZE/MOVE
     }
 
     @Override
@@ -217,11 +208,14 @@ public class Comment extends JTextArea
         new MoveCommentAction(mWorkSpace, Comment.this, mCommentStartBounds)
             .run();
         mCommentStartBounds = null;
+        mResizing = false;
       }
     }
-
+    
     @Override
     public void mouseDragged(MouseEvent e) {
+      // If selected, leave it to the text area
+      if (Comment.this.isEnabled()) return;
       Point currentMousePosition = e.getPoint();
       if (mCommentStartBounds == null) {
         mCommentStartBounds = getBounds();
@@ -240,31 +234,17 @@ public class Comment extends JTextArea
         d.width = Math.max(mWorkSpace.toViewXPos(50), d.width + dx);
         d.height = Math.max(mWorkSpace.toViewYPos(50), d.height + dy);
         setSize(d);
-        mPressedLocation.x += dx;
-        mPressedLocation.y += dy;
+        mPressedLocation.translate(dx, dy);
       } else {
         // Change the location of a comment with the mouse
         Point currPos = getLocation();
-        dx += currPos.x;
-        dy += currPos.y;
-        if (dx >= 0 && dy >= 0) {
-          setLocation(dx, dy);
+        currPos.translate(dx, dy);
+        if (currPos.x >= 0 && currPos.y >= 0) {
+          setLocation(currPos);
         }
       }
       // update model boundary
       setBoundary(getBounds());
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent me) {
-    }
-
-    @Override
-    public void mouseExited(MouseEvent me) {
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent me) {
     }
   }
 }
