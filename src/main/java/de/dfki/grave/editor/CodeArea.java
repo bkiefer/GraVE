@@ -130,7 +130,7 @@ public class CodeArea extends RSyntaxTextArea {
     d.addUndoableEditListener(
         new UndoableEditListener() {
           public void undoableEditHappened(UndoableEditEvent e) {
-            UndoRedoProvider.getInstance().addEdit(e.getEdit());
+            UndoRedoProvider.getInstance().addTextEdit(e.getEdit());
           }
         });
     update();
@@ -146,11 +146,8 @@ public class CodeArea extends RSyntaxTextArea {
 
   public synchronized void setDeselected() {
     setBackground(inactiveColour);
-    // TODO: maybe issue a warning/dialogue if unsaved changes instead
-    ObserverDocument d = mComponent.getDoc();
-    if (d.contentChanged())
-      d.updateModel();
     UndoRedoProvider.getInstance().endTextMode();
+    mComponent.checkDocumentChange();
     //mDispatcher.convey(new ProjectChangedEvent(this));
     //mDispatcher.convey(new ElementSelectedEvent(mComponent));
     update();

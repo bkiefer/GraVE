@@ -19,6 +19,7 @@ import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 
 import de.dfki.grave.Preferences;
+import de.dfki.grave.editor.action.EditContentAction;
 import de.dfki.grave.editor.action.MoveCommentAction;
 import de.dfki.grave.editor.action.RemoveCommentAction;
 import de.dfki.grave.editor.action.UndoRedoProvider;
@@ -61,7 +62,7 @@ public class Comment extends JTextArea implements DocumentContainer, Observer {
     mDocument.addUndoableEditListener(
         new UndoableEditListener() {
           public void undoableEditHappened(UndoableEditEvent e) {
-            UndoRedoProvider.getInstance().addEdit(e.getEdit());
+            UndoRedoProvider.getInstance().addTextEdit(e.getEdit());
           }
         });
     // font setup
@@ -154,11 +155,9 @@ public class Comment extends JTextArea implements DocumentContainer, Observer {
   public void setDeselected() {
     UndoRedoProvider.getInstance().endTextMode();
     if (mEditMode) {
-      // TODO: write Text back to model with an undoable action.
       mEditMode = false;
       if (mDocument.contentChanged())
-        // TODO: THIS MUST BE A CONTENTCHANGEDACTION
-        mDocument.updateModel();
+        new EditContentAction(mWorkSpace, mDocument).run();
     }
     update();
     setBackground(inactiveColor);
@@ -213,7 +212,6 @@ public class Comment extends JTextArea implements DocumentContainer, Observer {
     public void mousePressed(MouseEvent me) {
       if (Comment.this.isEnabled()) return;
       mPressedLocation = me.getPoint();
-      // TODO: CHANGE CURSOR FOR RESIZE/MOVE
     }
 
     @Override

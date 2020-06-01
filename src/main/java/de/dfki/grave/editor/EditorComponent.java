@@ -9,6 +9,7 @@ import java.util.Observer;
 
 import javax.swing.JComponent;
 
+import de.dfki.grave.editor.action.EditContentAction;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.ContentHolder;
@@ -107,6 +108,11 @@ public abstract class EditorComponent extends JComponent
 
   public ObserverDocument getDoc() {
     return mDocument;
+  }
+  
+  public void checkDocumentChange() {
+    if (mDocument.contentChanged())
+      new EditContentAction(mWorkSpace, mDocument).run();
   }
   
   public void setSelected() {

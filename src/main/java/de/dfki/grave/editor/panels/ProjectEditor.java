@@ -1,12 +1,10 @@
 package de.dfki.grave.editor.panels;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -16,7 +14,7 @@ import org.slf4j.LoggerFactory;
 //import org.fife.ui.autocomplete.AutoCompletion;
 
 import de.dfki.grave.Preferences;
-import de.dfki.grave.editor.DocumentContainer;
+import de.dfki.grave.editor.EditorComponent;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.TreeEntrySelectedEvent;
 import de.dfki.grave.model.project.EditorProject;
@@ -195,8 +193,8 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       //showAuxiliaryEditor();
     } else if (event instanceof ElementSelectedEvent) {
       Object edited = ((ElementSelectedEvent) event).getElement();
-      if (edited instanceof DocumentContainer) {
-        mCodeEditor.setEditedNodeOrEdge((DocumentContainer) edited);
+      if (edited instanceof EditorComponent) {
+        mCodeEditor.setEditedNodeOrEdge((EditorComponent) edited);
       } else {
         mCodeEditor.setEditedNodeOrEdge(null);
       } 

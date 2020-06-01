@@ -129,6 +129,16 @@ public class UndoRedoProvider {
     getManager().addEdit(e);
     refreshState();
   }
+  
+  /** This is for edits of text, and will be ignored if not in text mode, since
+   *  it's triggered not from the UI
+   */
+  public void addTextEdit(UndoableEdit e) {
+    if (mInTextMode) {
+      getManager().addEdit(e);
+      refreshState();
+    }
+  }
 
   /** refresh tool and menu bar */
   private void refreshMenus() {

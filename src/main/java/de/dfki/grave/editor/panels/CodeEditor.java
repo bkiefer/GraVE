@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -13,7 +11,7 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
-import de.dfki.grave.editor.DocumentContainer;
+import de.dfki.grave.editor.EditorComponent;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.ResourceLoader;
 
@@ -86,7 +84,7 @@ public class CodeEditor extends JPanel {
 
   private class EditCodeArea extends JPanel {
     RSyntaxTextArea textArea;
-    DocumentContainer editedObject;
+    EditorComponent editedObject;
     JScrollPane s;
 
     // make this jpane, with scrollpane, and textarea
@@ -105,23 +103,13 @@ public class CodeEditor extends JPanel {
       textArea.setHighlightSecondaryLanguages(false);
       s = new JScrollPane();
       s.add(textArea);
-      textArea.addFocusListener(new FocusListener() {
-        @Override
-        public void focusGained(FocusEvent e) { }
-
-        @Override
-        public void focusLost(FocusEvent e) {
-          if (editedObject != null)
-            editedObject.getDoc().updateModel();
-        }});
-
       add(s, BorderLayout.CENTER);
     }
 
-    public void setEditedObject(DocumentContainer n) {
+    public void setEditedObject(EditorComponent n) {
       if (editedObject != null
           && editedObject.getDoc().contentChanged()) {
-        editedObject.getDoc().updateModel();
+        editedObject.checkDocumentChange();
       }
       editedObject = null;
       if (n == null || n.getDoc() == null) {
@@ -167,7 +155,7 @@ public class CodeEditor extends JPanel {
     setPin(true); // true pricks the pin
   }
 
-  public void setEditedNodeOrEdge(DocumentContainer n) {
+  public void setEditedNodeOrEdge(EditorComponent n) {
     if (mRightTextArea.editedObject == n) return; // may be due to FocusGained
     // update text area with current code & object
     mRightTextArea.setEditedObject(n);
