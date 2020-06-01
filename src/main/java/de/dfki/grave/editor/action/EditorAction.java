@@ -23,7 +23,7 @@ public abstract class EditorAction implements ActionListener, UndoableEdit {
 
   public void run() {
     doIt();
-    UndoRedoProvider.addEdit(this);
+    UndoRedoProvider.getInstance().addEdit(this);
     refresh();
   }
 

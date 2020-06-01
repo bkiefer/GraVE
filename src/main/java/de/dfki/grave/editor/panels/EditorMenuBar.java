@@ -319,8 +319,8 @@ public final class EditorMenuBar extends JMenuBar {
             (java.awt.event.InputEvent.ALT_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
     mStraightenMenuItem.addActionListener((e) -> getCurrentWorkSpace().straightenAllEdges());
 
-    editMenu.add(UndoRedoProvider.getUndoAction());
-    editMenu.add(UndoRedoProvider.getRedoAction());
+    editMenu.add(UndoRedoProvider.getInstance().getUndoAction());
+    editMenu.add(UndoRedoProvider.getInstance().getRedoAction());
     editMenu.add(new JSeparator());
     editMenu.add(mCopyMenuItem);
     editMenu.add(mCutMenuItem);

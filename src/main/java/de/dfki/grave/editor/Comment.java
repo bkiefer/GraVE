@@ -2,22 +2,29 @@ package de.dfki.grave.editor;
 
 import static de.dfki.grave.editor.panels.WorkSpacePanel.addItem;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Observable;
+import java.util.Observer;
 
-import javax.swing.*;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextArea;
 import javax.swing.border.Border;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 
 import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.action.MoveCommentAction;
 import de.dfki.grave.editor.action.RemoveCommentAction;
+import de.dfki.grave.editor.action.UndoRedoProvider;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.Boundary;
 import de.dfki.grave.model.flow.CommentBadge;
-
-import java.util.Observer;
 
 /** A class for Comment Text Bubbles
  *  .----.
@@ -51,7 +58,12 @@ public class Comment extends JTextArea implements DocumentContainer, Observer {
     mWorkSpace = workSpace;
     mDataComment = dataComment;
     setDocument(mDocument = new ObserverDocument(dataComment));
-
+    mDocument.addUndoableEditListener(
+        new UndoableEditListener() {
+          public void undoableEditHappened(UndoableEditEvent e) {
+            UndoRedoProvider.getInstance().addEdit(e.getEdit());
+          }
+        });
     // font setup
     setFont(mWorkSpace.getEditorConfig().sCOMMENT_FONT.getFont());
 
@@ -131,6 +143,7 @@ public class Comment extends JTextArea implements DocumentContainer, Observer {
 
   public void setSelected() {
     setBackground(activeColor);
+    UndoRedoProvider.getInstance().startTextMode();
     mEditMode = true;
     setEditable(true);
     setEnabled(true);
@@ -139,6 +152,7 @@ public class Comment extends JTextArea implements DocumentContainer, Observer {
 
   /** Resets the comment to its default visual behavior */
   public void setDeselected() {
+    UndoRedoProvider.getInstance().endTextMode();
     if (mEditMode) {
       // TODO: write Text back to model with an undoable action.
       mEditMode = false;

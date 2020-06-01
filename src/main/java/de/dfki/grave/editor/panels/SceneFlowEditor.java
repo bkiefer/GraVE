@@ -33,7 +33,6 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.undo.UndoManager;
 
-import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.model.flow.SceneFlow;
 import de.dfki.grave.model.flow.SuperNode;
 import de.dfki.grave.model.project.EditorProject;
@@ -174,7 +173,10 @@ public final class SceneFlowEditor extends JPanel {
     //
     mFooterLabel.setForeground(Color.red);
     add(mFooterLabel, BorderLayout.SOUTH);
-
+    // Set Background Color
+    setBackground(Color.WHITE);
+    // Set An Empty Border
+    setBorder(BorderFactory.createEmptyBorder());
   }
 
   /**
@@ -249,11 +251,15 @@ public final class SceneFlowEditor extends JPanel {
 
   public final void refresh() {
     // Refresh editor toolbar
-    mSceneFlowToolBar.refresh();
+    refreshToolBar();
     mDynamicElementsPanel.refresh();
     mWorkSpacePanel.refresh();
   }
-
+  
+  public final void refreshToolBar() {
+    mSceneFlowToolBar.refresh();
+  }
+  
   private class SceneFlowImage extends TransferHandler implements Transferable {
 
     private final DataFlavor flavors[] = { DataFlavor.imageFlavor };

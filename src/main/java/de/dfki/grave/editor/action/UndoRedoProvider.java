@@ -19,11 +19,15 @@ import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.util.evt.EventDispatcher;
 
+/** A singleton to handle all undo/redo actions and connect it to the UI 
+ *  elements that allow to trigger them
+ * @author kiefer
+ */
 public class UndoRedoProvider {
   private static final Logger mLogger = LoggerFactory.getLogger(UndoRedoProvider.class);
 
   @SuppressWarnings("serial")
-  private static class UndoRedoAction extends AbstractAction {
+  private class UndoRedoAction extends AbstractAction {
     private final String name;
     private final Supplier<String> getName;
     private final Runnable action;
@@ -48,7 +52,7 @@ public class UndoRedoProvider {
         mLogger.error(ex.getMessage());
       }
 
-      UndoRedoProvider.refreshState();
+      UndoRedoProvider.this.refreshState();
       EventDispatcher.getInstance().convey(new ProjectChangedEvent(this));
     }
 
@@ -59,8 +63,19 @@ public class UndoRedoProvider {
           val ? getName.get() : name + " last action");
     }
   }
+  
+  private static UndoRedoProvider mInstance;
+  
+  private final UndoRedoAction undoAction;
+  private final UndoRedoAction redoAction;
 
-  private static final UndoRedoAction undoAction =
+  // undo manager for typing changes in comments and code areas
+  private final UndoManager mTextUndoManager;
+  
+  private boolean mInTextMode;
+  
+  private UndoRedoProvider() {
+    undoAction =
       new UndoRedoAction("Undo",
           KeyStroke.getKeyStroke(KeyEvent.VK_Z,
               Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
@@ -68,7 +83,7 @@ public class UndoRedoProvider {
           (() -> getManager().undo()),
           (() -> getManager().canUndo()));
 
-  private static final UndoRedoAction redoAction =
+    redoAction =
       new UndoRedoAction("Redo",
           KeyStroke.getKeyStroke(KeyEvent.VK_Z,
               java.awt.event.InputEvent.SHIFT_MASK
@@ -76,24 +91,62 @@ public class UndoRedoProvider {
           (() -> getManager().getRedoPresentationName()),
           (() -> getManager().redo()),
           (() -> getManager().canRedo()));
+    mTextUndoManager = new UndoManager();
+    mInTextMode = false;
+  }
+  
+  public static UndoRedoProvider getInstance() {
+    if (mInstance == null) {
+      mInstance = new UndoRedoProvider();
+    }
+    return mInstance;
+  }
+  
 
-
-  private static UndoManager getManager() {
+  private UndoManager getManager() {
+    if (mInTextMode) {
+      return mTextUndoManager;
+    }
     return AppFrame.getInstance().getSelectedProjectEditor()
         .getSceneFlowEditor().getUndoManager();
   }
 
-  private static void refreshState() {
+  private void refreshState() {
     undoAction.refreshState();
     redoAction.refreshState();
   }
 
-  public static Action getUndoAction() { return undoAction; }
+  public Action getUndoAction() { return undoAction; }
 
-  public static Action getRedoAction() { return redoAction; }
+  public Action getRedoAction() { return redoAction; }
 
-  public static void addEdit(UndoableEdit e) {
+  /** TODO: The provider should have two states: either it's in text editing
+   *  mode or not, and accept either one edit or the other.
+   */
+  
+  /** This is for edits of an item, not text */
+  public void addEdit(UndoableEdit e) {
     getManager().addEdit(e);
     refreshState();
+  }
+
+  /** refresh tool and menu bar */
+  private void refreshMenus() {
+    refreshState();
+    AppFrame.getInstance().refreshMenuBar();
+    AppFrame.getInstance().getSelectedProjectEditor().refreshToolBar();
+  }
+  
+  public void startTextMode() {
+    mInTextMode = true;
+    refreshMenus();
+  }
+
+  public void endTextMode() {
+    if (mInTextMode) {
+      mInTextMode = false;
+      mTextUndoManager.discardAllEdits();
+      refreshMenus();
+    }
   }
 }

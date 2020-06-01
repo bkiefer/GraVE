@@ -41,7 +41,7 @@ public class CodeArea extends RSyntaxTextArea {
    * @author kiefer
    *
    */
-  public class MyMouseListener extends MouseAdapter{
+  private class MyMouseListener extends MouseAdapter {
 
     // this will be called when mouse is pressed on the component
     public void mousePressed(MouseEvent me) { 
@@ -67,10 +67,11 @@ public class CodeArea extends RSyntaxTextArea {
   // The node to which the badge is connected
   protected final EditorComponent mComponent;
 
-  // TODO: put preferences into external file
+  // TODO: put into preferences
   private final int maxWidth = 800;
   private final int maxHeight = 300;
 
+  // TODO: color to preferences
   private Color activeColour = new Color(200, 200, 200, 255);
   private Color inactiveColour = new Color(175, 175, 175, 100);
   
@@ -116,10 +117,7 @@ public class CodeArea extends RSyntaxTextArea {
     getInputMap().put(KeyStroke.getKeyStroke("ctrl ENTER"), "enter");
     getActionMap().put("enter", new AbstractAction() {
       @Override
-      public void actionPerformed(ActionEvent e) {
-        setDeselected();
-        //compo.updateFromTextEditor();
-      }
+      public void actionPerformed(ActionEvent e) { setDeselected(); }
     });
     getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
     getActionMap().put("escape", new AbstractAction() {
@@ -132,7 +130,7 @@ public class CodeArea extends RSyntaxTextArea {
     d.addUndoableEditListener(
         new UndoableEditListener() {
           public void undoableEditHappened(UndoableEditEvent e) {
-            UndoRedoProvider.addEdit(e.getEdit());
+            UndoRedoProvider.getInstance().addEdit(e.getEdit());
           }
         });
     update();
@@ -142,6 +140,7 @@ public class CodeArea extends RSyntaxTextArea {
   public void setSelected() {
     setBackground(activeColour);
     //mDispatcher.convey(new ElementSelectedEvent(mComponent));
+    UndoRedoProvider.getInstance().startTextMode();
     setEnabled(true);
   }
 
@@ -151,6 +150,7 @@ public class CodeArea extends RSyntaxTextArea {
     ObserverDocument d = mComponent.getDoc();
     if (d.contentChanged())
       d.updateModel();
+    UndoRedoProvider.getInstance().endTextMode();
     //mDispatcher.convey(new ProjectChangedEvent(this));
     //mDispatcher.convey(new ElementSelectedEvent(mComponent));
     update();

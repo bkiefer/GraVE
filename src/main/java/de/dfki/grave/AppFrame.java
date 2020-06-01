@@ -822,9 +822,13 @@ public final class AppFrame extends JFrame implements ChangeListener {
     if (editor != null) {
       editor.refresh();
       // Refresh the editor's menu bar
-      mEditorMenuBar.refresh();
+      refreshMenuBar();
     }
     // Refresh editor welcome panel
     mWelcomePanel.refresh();
+  }
+  
+  public final void refreshMenuBar() {
+    mEditorMenuBar.refresh();
   }
 }

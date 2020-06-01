@@ -125,8 +125,8 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   //
   public void refresh() {
     mObservable.update(null);
-    revalidate();
     repaint(100);
+    revalidate();
   }
 
   public void refreshAll() {

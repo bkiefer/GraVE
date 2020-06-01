@@ -303,7 +303,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     add(createSeparator());
 
     //Undo last action
-    JButton mUndo = add(UndoRedoProvider.getUndoAction());
+    JButton mUndo = add(UndoRedoProvider.getInstance().getUndoAction());
     mUndo.setIcon(ICON_UNDO_STANDARD);
     mUndo.setRolloverIcon(ICON_UNDO_ROLLOVER);
     mUndo.setDisabledIcon(ICON_UNDO_DISABLED);
@@ -311,7 +311,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     sanitizeButton(mUndo, tinyButtonDim);
 
     //Redo last action
-    JButton mRedo = add(UndoRedoProvider.getRedoAction());
+    JButton mRedo = add(UndoRedoProvider.getInstance().getRedoAction());
     mRedo.setIcon(ICON_REDO_STANDARD);
     mRedo.setRolloverIcon(ICON_REDO_ROLLOVER);
     mRedo.setDisabledIcon(ICON_REDO_DISABLED);
