@@ -27,11 +27,9 @@ import de.dfki.grave.editor.dialog.QuitDialog;
 import de.dfki.grave.editor.panels.AddButton;
 import de.dfki.grave.editor.panels.ClipBoard;
 import de.dfki.grave.editor.panels.EditorMenuBar;
-import de.dfki.grave.editor.panels.EditorStarter;
 import de.dfki.grave.editor.panels.OpenProjectView;
 import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.project.EditorProject;
-import de.dfki.grave.model.project.ProjectConfig;
 import de.dfki.grave.util.ResourceLoader;
 
 /**
@@ -39,25 +37,19 @@ import de.dfki.grave.util.ResourceLoader;
  */
 @SuppressWarnings("serial")
 public final class AppFrame extends JFrame implements ChangeListener {
+  private static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
 
   // The singelton editor instance
   public static AppFrame sInstance = null;
-  // The singelton runtime instance
-  //private final RunTimeInstance mRunTime = RunTimeInstance.getInstance();
-  // The singelton logger instance
-  private final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);;
   // The editor's GUI components
   private final EditorMenuBar mEditorMenuBar;
   private final JTabbedPane mProjectEditors;
-  private final JScrollPane mWelcomeScreen;
-  private final EditorStarter mWelcomePanel;
 
   // Get the singelton editor instance
   public synchronized static AppFrame getInstance() {
     if (sInstance == null) {
       sInstance = new AppFrame();
     }
-
     return sInstance;
   }
 
@@ -145,13 +137,6 @@ public final class AppFrame extends JFrame implements ChangeListener {
             JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
     //mObservable.addObserver(mProjectEditors);
 
-    // Init welcome screen
-    mWelcomePanel = new EditorStarter(this);
-    mWelcomeScreen = new JScrollPane(mWelcomePanel);
-    mWelcomeScreen.setMaximumSize(java.awt.Toolkit.getDefaultToolkit().getScreenSize());
-    mWelcomeScreen.setOpaque(false);
-    mWelcomeScreen.getViewport().setOpaque(false);
-    add(mWelcomeScreen);
     setIconImage(ResourceLoader.loadImageIcon("img/dociconsmall.png").getImage());
     setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     // Init the windows closing support
@@ -246,10 +231,11 @@ public final class AppFrame extends JFrame implements ChangeListener {
     UIManager.put("ScrollBar.thumb", Color.LIGHT_GRAY);
   }
 
+  
   public void clearRecentProjects() {
-    mWelcomePanel.updateWelcomePanel();
+    // TODO: DO SOMETHING MEANINGFUL HERE
   }
-
+  
   private void checkAndSetLocation() {
     Point finalPos = new Point(0, 0);
     Point editorPosition = new Point(getPrefs().FRAME_POS_X,
@@ -289,7 +275,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
     return (ProjectEditor) mProjectEditors.getSelectedComponent();
   }
 
-
+  /*
   public final boolean newProject(String projectName) {
     // Create a new project config, and new EditorProject
     EditorProject epj = new EditorProject(new ProjectConfig(projectName));
@@ -316,6 +302,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
     // Return true at success
     return true;
   }
+  */
 
   ////////////////////////////////////////////////////////////////////////////
   // Open a new project editor with chooser
@@ -352,10 +339,6 @@ public final class AppFrame extends JFrame implements ChangeListener {
     }
   }
 
-  public final void hideWelcomeStickman() {
-    mWelcomePanel.showWelcomeStickman(false);
-  }
-
   public final ProjectEditor showProject(final EditorProject project) {
     // Show the project editors
     setContentPane(mProjectEditors);
@@ -378,7 +361,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
     // Remove the component
     mProjectEditors.remove(editor);
     // Hide the project editors
-    setContentPane(mWelcomeScreen);
+    //setContentPane(mWelcomeScreen);
     // Refresh the appearance
     refresh();
     // Set editor invisible
@@ -393,16 +376,15 @@ public final class AppFrame extends JFrame implements ChangeListener {
       // And return failure here
       return false;
     }
-    final EditorProject project = new EditorProject();
+    final EditorProject project = EditorProject.load(new File(path));
     // Try to loadRunTimePlugins it from the file
-    if (project.parse(path)) {
+    if (project != null) {
       // Toggle the editor main screen
       if (mProjectEditors.getTabCount() == 0) {
         // Show the project editors
         setContentPane(mProjectEditors);
         // Show the menu bar items
         mEditorMenuBar.setVisible(true);
-
       }
       // Create a new project editor from project
       final ProjectEditor projectEditor = new ProjectEditor(project);
@@ -420,11 +402,10 @@ public final class AppFrame extends JFrame implements ChangeListener {
       return true;
     } else {
       // Print an error message
-      mLogger.error("Error: Cannot load editor project from Stream");
+      mLogger.error("Cannot load editor project");
       // Return false at failure
       return false;
     }
-
   }
 
   // Save the selected project editor
@@ -441,9 +422,9 @@ public final class AppFrame extends JFrame implements ChangeListener {
       // Check if the project is valid
       if (project != null) {
         // Check if the project is pending
-        if (!project.isPending()) {
+        if (!project.hasChanged()) {
           // Try to write the editor project
-          if (project.write()) {
+          if (project.saveProject()) {
             // Refresh the title of the project tab
             //final int index = mProjectEditors.getSelectedIndex();
             //final String title = mProjectEditors.getTitleAt(index);
@@ -521,7 +502,8 @@ public final class AppFrame extends JFrame implements ChangeListener {
       mProjectEditors.setComponentAt(mProjectEditors.getTabCount() - 1, content);
       mProjectEditors.setSelectedIndex(mProjectEditors.getTabCount() - 1);
       mProjectEditors.setTitleAt(mProjectEditors.getTabCount() - 1, tabName);
-      mProjectEditors.setToolTipTextAt(mProjectEditors.getTabCount() - 1, ((ProjectEditor) content).getEditorProject().getProjectPath());
+      mProjectEditors.setToolTipTextAt(mProjectEditors.getTabCount() - 1,
+          ((ProjectEditor) content).getEditorProject().getProjectPath().getAbsolutePath());
 
     }
 
@@ -573,7 +555,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
           // Get the chooser's selected file
           final File file = chooser.getSelectedFile();
           // Try to write the editor project
-          if (project.write(file)) {
+          if (project.saveNewProject(file)) {
             // Refresh the title of the project tab
             //final int index = mProjectEditors.getSelectedIndex();
             setTabNameSaved();
@@ -638,7 +620,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
       // Toggle the editor main screen
       if (mProjectEditors.getTabCount() == 0) {
         // Show the project editors
-        setContentPane(mWelcomeScreen);
+        //setContentPane(mWelcomeScreen);
         // Hide the menu bar items
         mEditorMenuBar.setVisible(false);
       }
@@ -656,7 +638,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
       // Toggle the editor main screen
       if (mProjectEditors.getTabCount() == 0) {
         // Show the project editors
-        setContentPane(mWelcomeScreen);
+        //setContentPane(mWelcomeScreen);
         // Hide the menu bar items
         mEditorMenuBar.setVisible(false);
       }
@@ -727,8 +709,9 @@ public final class AppFrame extends JFrame implements ChangeListener {
      }*/
 
   // Update list of recent projects
+  // TODO: NEEDS MASSIVE REVAMP
   public void updateRecentProjects(final EditorProject project) {
-    String projectPath = project.getProjectPath();
+    String projectPath = project.getProjectPath().getAbsolutePath();
     String projectName = project.getProjectName();
     getPrefs();
     String projectDate = Preferences.sDATE_FORMAT.format(new Date());
@@ -788,7 +771,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
 
     // save properties
     Preferences.save();
-    mWelcomePanel.createRecentAndSamplePrjList();
+    //mWelcomePanel.createRecentAndSamplePrjList();
     mEditorMenuBar.refreshRecentFileMenu();
   }
 
@@ -825,7 +808,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
       refreshMenuBar();
     }
     // Refresh editor welcome panel
-    mWelcomePanel.refresh();
+    //mWelcomePanel.refresh();
   }
   
   public final void refreshMenuBar() {

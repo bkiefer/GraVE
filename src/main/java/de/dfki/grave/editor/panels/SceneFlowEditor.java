@@ -192,8 +192,7 @@ public final class SceneFlowEditor extends JPanel {
       mSplitPane.setDividerLocation(mEditorProject.getEditorConfig()
               .sELEMENTS_DIVIDER_LOCATION);
     }
-    mEditorProject.getEditorConfig().save(mEditorProject.getProjectFile()
-        .getParentFile());
+    mEditorProject.saveEditorConfig();
   }
 
   public void expandTree() {

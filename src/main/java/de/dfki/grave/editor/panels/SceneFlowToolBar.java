@@ -2,16 +2,11 @@ package de.dfki.grave.editor.panels;
 
 import static de.dfki.grave.Preferences.getPrefs;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.util.LinkedList;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicButtonUI;
 
 import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.action.UndoRedoProvider;
@@ -19,7 +14,6 @@ import de.dfki.grave.editor.dialog.OptionsDialog;
 import de.dfki.grave.editor.dialog.SaveFileDialog;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.model.flow.SuperNode;
-import de.dfki.grave.model.project.EditorConfig;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.ResourceLoader;
 import de.dfki.grave.util.evt.EventDispatcher;
@@ -111,13 +105,9 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   private final Clipboard mSystemClipBoard = getToolkit().getSystemClipboard();
   // The parent sceneflow editor
   private final SceneFlowEditor mSceneFlowEditor;
-  // The supernodes of the path display
-  private final LinkedList<JButton> mPathComponents = new LinkedList<>();
 
   // The current editor project
   private final EditorProject mEditorProject;
-  // The current editor config
-  private final EditorConfig mEditorConfig;
 
   // The button GUI components
   private JButton mTogglePalette;
@@ -134,9 +124,10 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   private Dimension smallButtonDim = new Dimension(50, 40);
 
   // Path Display GUI Components
-  private JPanel mPathDisplay;
-  private JScrollBar mPathScrollBar;
-  private JScrollPane mPathScrollPane;
+  //private JPanel mPathDisplay;
+  //private JScrollBar mPathScrollBar;
+  //private JScrollPane mPathScrollPane;
+  private BreadCrumb mBreadCrumb; 
 
   // Construct a sceneflow editor toolbar
   public SceneFlowToolBar(
@@ -152,8 +143,6 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     mSceneFlowEditor = editor;
     // Initialize the editor project
     mEditorProject = project;
-    // Initialize the editor config
-    mEditorConfig = mEditorProject.getEditorConfig();
     // Initialize the GUI components
     setRollover(true);
     setFloatable(false);
@@ -175,28 +164,6 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
 
   private WorkSpace getWorkSpace() {
     return mSceneFlowEditor.getWorkSpace();
-  }
-
-  private void saveEditorConfig() {
-    //mEditorConfig.sNODEWIDTH = mNodeSize;
-    //mEditorConfig.sNODEHEIGHT = mNodeSize;
-
-    mEditorConfig.save(mEditorInstance.getSelectedProjectEditor().getEditorProject().getProjectFile());
-
-    AppFrame.getInstance().refresh();
-  }
-
-  //TODO: adding not explicit but via refresh method
-  public void addPathComponent(SuperNode supernode) {
-    mPathComponents.addLast(createPathButton(supernode));
-    refreshDisplay();
-    int va = mPathScrollBar.getMaximum();
-    mPathScrollBar.setValue(va);
-  }
-
-  public void removePathComponent() {
-    mPathComponents.removeLast();
-    refreshDisplay();
   }
 
   private void sanitizeButton(JButton b, Dimension bDim) {
@@ -279,7 +246,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     mProjectSettings = add(new AbstractAction("ACTION_SHOW_OPTIONS", ICON_PROJECT_SETTINGS_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (mEditorProject.getProjectFile() != null) {
+        if (! mEditorProject.isNew()) {
           /*
           PropertyManagerGUI gui = new PropertyManagerGUI();
           gui.init(mEditorProject);
@@ -291,7 +258,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
 
       }
     });
-    if (mEditorProject.getProjectFile() == null) {
+    if (! mEditorProject.isNew()) {
       mProjectSettings.setEnabled(false);
     }
     mProjectSettings.setRolloverIcon(ICON_PROJECT_SETTINGS_ROLLOVER);
@@ -402,8 +369,8 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     //******************************************************************************************************
     // CONTROL OF NODES
     // Add Some Horizontal Space
-    initPathDisplay();
-    add(mPathScrollPane);
+    mBreadCrumb = new BreadCrumb();
+    add(mBreadCrumb);
 
     //UP TO PARENT NODE
     JButton b = add(new AbstractAction("ACTION_LEVEL_UP", ICON_UP_STANDARD) {
@@ -507,26 +474,13 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
             : "Show Variables");
   }
   */
+  
+  public void addPathComponent(SuperNode supernode) {
+    mBreadCrumb.addPathComponent(supernode);
+  }
 
-  private void initPathDisplay() {
-    mPathDisplay = new JPanel();    // new FlowLayout(FlowLayout.LEFT, 0, 0));
-    mPathDisplay.setLayout(new BoxLayout(mPathDisplay, BoxLayout.X_AXIS));
-    //mPathDisplay.setMaximumSize(new Dimension(500, 22));
-    mPathDisplay.setMinimumSize(new Dimension(500, 22));
-    //mPathDisplay.setPreferredSize(new Dimension(500, 22));
-
-    // mPathDisplay.setBorder(BorderFactory.createEmptyBorder());
-    mPathScrollPane = new JScrollPane(mPathDisplay);
-    mPathScrollPane.setViewportBorder(BorderFactory.createLineBorder(Color.gray));
-    mPathScrollPane.setMaximumSize(new Dimension(7000, 40));
-    mPathScrollPane.setMinimumSize(new Dimension(300, 30));
-    mPathScrollPane.setPreferredSize(new Dimension(400, 30));
-    mPathScrollPane.setBorder(BorderFactory.createEmptyBorder());
-    mPathScrollBar = new JScrollBar(JScrollBar.HORIZONTAL);
-    mPathScrollBar.setPreferredSize(new Dimension(300, 10));
-    mPathScrollBar.setOpaque(false);
-    mPathScrollBar.setBorder(BorderFactory.createEmptyBorder());
-    mPathScrollPane.setHorizontalScrollBar(mPathScrollBar);
+  public void removePathComponent() {
+    mBreadCrumb.removePathComponent();
   }
 
   public final void refresh() {
@@ -534,62 +488,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     //mLogger.message("Refreshing '" + this + "'");
     // Refresh all components
     refreshButtons();
-    refreshDisplay();
+    mBreadCrumb.refreshDisplay();
   }
 
-  private JButton createPathButton(SuperNode supernode) {
-    final Action action = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        //System.err.println("setting level to node " + getValue(Action.NAME));
-        mSceneFlowEditor.getWorkSpace().selectNewWorkSpaceLevel(supernode);
-      }
-    };
-    action.putValue(Action.NAME, supernode.getName());
-    action.putValue(Action.SHORT_DESCRIPTION, supernode.getName());
-    final JButton pathElement = new JButton(action);
-    pathElement.setUI(new BasicButtonUI());
-    pathElement.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-    pathElement.setMinimumSize(new Dimension(80, 18));
-    pathElement.setMaximumSize(new Dimension(80, 18));
-    pathElement.setPreferredSize(new Dimension(80, 18));
-    pathElement.setBackground(new Color(255, 255, 255));
-    pathElement.addMouseMotionListener(new MouseMotionAdapter() {
-      // TODO: Does not work smoothly, revise
-      @Override
-      public void mouseDragged(MouseEvent e) {
-        int dir = e.getX();
-
-        if (dir < 0) {
-          mPathScrollBar.setValue(mPathScrollBar.getValue() + 10);
-        } else {
-          mPathScrollBar.setValue(mPathScrollBar.getValue() - 10);
-        }
-      }
-    });
-    return pathElement;
-  }
-
-  // Refresh the path display
-  private void refreshDisplay() {
-    // Remove all path components
-    mPathDisplay.removeAll();
-    // For each supernode component in the path
-    for (final JButton pathElement : mPathComponents) {
-      // Compute color intensity
-      int index = mPathDisplay.getComponentCount();
-      int intensity = 255 - 5 * index;
-      intensity = (intensity < 0) ? 0 : intensity;
-      // Create a button with the name
-      pathElement.setBackground(new Color(intensity, intensity, intensity));
-      // Create a label with an arrow
-      final JLabel arrow = new JLabel("\u2192");
-      if (index > 0) {
-        mPathDisplay.add(arrow);
-      }
-      mPathDisplay.add(pathElement);
-    }
-    revalidate();
-    repaint(100);
-  }
 }

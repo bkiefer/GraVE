@@ -38,11 +38,6 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   // Code editing panel
   private final CodeEditor mCodeEditor;
 
-  // Create an empty project editor
-  public ProjectEditor() {
-    this(new EditorProject());
-  }
-
   // Construct a project editor with a project
   public ProjectEditor(final EditorProject project) {
     // Initialize the parent split pane

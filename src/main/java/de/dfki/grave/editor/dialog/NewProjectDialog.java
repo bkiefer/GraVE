@@ -19,6 +19,8 @@ import de.dfki.grave.AppFrame;
 
 /**
  * @author Sergio Soto
+ * 
+ * TODO: REVAMP COMPLETELY
  */
 public class NewProjectDialog extends JDialog {
 
@@ -175,7 +177,8 @@ public class NewProjectDialog extends JDialog {
 
   protected void okActionPerformed() {
     if (validateValues()) {
-      AppFrame.getInstance().newProject(mNameTextField.getText());
+      
+      //AppFrame.getInstance().newProject(mNameTextField.getText());
       dispose();
     }
   }

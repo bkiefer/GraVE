@@ -302,6 +302,7 @@ public final class Preferences {
     }
   }
 
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public static synchronized void configure() {
     try {
       // Use system look and feel

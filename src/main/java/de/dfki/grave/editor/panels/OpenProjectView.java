@@ -7,7 +7,6 @@ import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileView;
 
 import de.dfki.grave.model.project.EditorProject;
-import de.dfki.grave.model.project.RunTimeProject;
 
 public final class OpenProjectView extends FileView {
   // The Icon To Show For Project Directories
@@ -31,14 +30,10 @@ public final class OpenProjectView extends FileView {
     return icon;
   }
 
+  /** Return the name of the project, which is the name of the directory */
   public String getName(File f) {
-    if (OpenProjectView.isVSMProject(f)) {
-      RunTimeProject project = new EditorProject();
-      project.parse(f.getPath());
-      return project.getProjectName() + " (Dir: " + f.getName() + ")";
-    }
+    assert(f.isDirectory());
     return f.getName();
-
   }
 
   public static boolean isAcceptedFile(File f) {

@@ -2,213 +2,176 @@ package de.dfki.grave.model.project;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.dfki.grave.Preferences;
+import de.dfki.grave.model.flow.*;
 
 /**
  * @author Gregor Mehlmann
  */
-public class EditorProject extends RunTimeProject {
+public class EditorProject {
+
+  private static final Logger mLogger = LoggerFactory.getLogger(EditorProject.class);
+
+  private static final String PROJECT_CONFIG_NAME = "project.xml";
+  private static final String SCENEFLOW_NAME = "sceneflow.xml";
+
+  private String mProjectName;
+  // The project Path (added PG 11.4.2016);
+  private File mProjectPath = null;
+  // The sceneflow of the project
+  private SceneFlow mSceneFlow = null;
 
   // The editor configuration
   private EditorConfig mEditorConfig;
-  // The file of the project
-  private File mProjectFile;
-  // The hash of the project
-  private int mInitialHash;
-  // Construct an editor project
 
-  /** To load an existing project */
-  public EditorProject() {
-    // Initialize the project file
-    mProjectFile = null;
-    isNewProject = false;
+  private EditorProject(File path, String name, EditorConfig ec, SceneFlow sc) {
+    mProjectPath = path;
+    mProjectName = name;
+    // create a new editor config with default settings (user or system)
+    mEditorConfig = ec;
+    mSceneFlow = sc;
+  }
+  
+  /** Create a new EditorProject: this is a completely new project, with an
+   *  yet unknown project directory.
+   *
+   *  Creates an initial project configuration and an empty Sceneflow.
+   */
+  public EditorProject(String name) {
+    mProjectPath = null;
+    mProjectName = name;
+    // create a new editor config with default settings (user or system)
+    mEditorConfig = Preferences.getPrefs().editorConfig.copy();
+    mSceneFlow = new SceneFlow();
   }
 
-  /** Create brand new project */
-  public EditorProject(ProjectConfig config) {
-    super(config);
-    this.isNewProject = true;
-    this.mEditorConfig = Preferences.getPrefs().editorConfig.copy();
-  }
-
-  @Override
-  public final boolean parse(final String path) {
-    // Check if the file is null
-    if (path == null) {
-      // Print an error message
-      mLogger.error("Error: Cannot parse editor project from a bad file");
-      // Return false at error
-      return false;
+  /** Load an existing project, from the directory base */
+  /** Load project configuration file from the directory base.
+   *
+   * @param base the base directory of the project
+   * @return the project on success, null otherwise
+   */
+  public static EditorProject load(File base) {
+    if (!base.isDirectory()) {
+      base = base.getParentFile();
     }
-    // Get the a file for this path
-    final File file = new File(path);
-    if (file.exists()) {
-      final File base = file.getAbsoluteFile();
-      if (base.exists()) {
-        // First set the project file
-        mProjectFile = base;
-        // And then loadRunTimePlugins the project
-        return parse();
-      } else {
-        // Print an error message
-        mLogger.error("Error: Cannot find editor project directory '" + base + "'");
-        // Return false at error
-        return false;
-      }
+    SceneFlow sc = SceneFlow.load(new File(base, SCENEFLOW_NAME));
+    if (sc == null)
+      return null;
+    ProjectConfig pc = ProjectConfig.load(new File(base, PROJECT_CONFIG_NAME));
+    String name;
+    EditorConfig ec;
+    if (pc == null) {
+      mLogger.warn("Missing project config file {}, using defaults",
+          PROJECT_CONFIG_NAME);
+      name = base.getName();
+      ec = Preferences.getPrefs().editorConfig.copy();
     } else {
-      try {
-        if (super.parse(path) && loadEditorConfig(path)) {
-          return true;
-        }
-      } catch (Exception e) {
-        mLogger.error("Error: Cannot find editor project directory '");
-      }
-      // Print an error message
-      mLogger.error("Error: Cannot find editor project directory '" + file + "'");
-      // Return false at error
-      return false;
+      name = pc.getProjectName();
+      ec = pc.getEditorConfig();
     }
+    return new EditorProject(base, name, ec, sc);
+  }
+  
+  // Get the path of the project (added PG 11.4.2016)
+  public final File getProjectPath() {
+    return mProjectPath;
   }
 
-  // Save the editor project
-  @Override
-  public final boolean write(final File file) {
-    // Check if the file is null
-    if (file == null) {
-      // Print an error message
-      mLogger.error("Error: Cannot write editor project into a bad file");
-      // Return false at error
-      return false;
-    }
-    // Get the absolute file for the directory
-    final File base = file.getAbsoluteFile();
-    // Check if the project directory does exist
-    if (!base.exists()) {
-      // Print a warning message in this case
-      mLogger.warn("Warning: Creating a new editor project directory '" + base + "'");
-      // Try to create a project base directory
-      if (!base.mkdir()) {
-        // Print an error message
-        mLogger.error("Failure: Cannot create a new editor project directory '" + base + "'");
-        // Return false at error
-        return false;
-      }
-    }
-    // First set the project file
-    mProjectFile = base;
-    // And then save the project
-    return write();
+  public boolean isNew() {
+    return mProjectPath == null;
+  }
+  
+  // Get the name of the project's configuration
+  public final String getProjectName() {
+    return mProjectName;
   }
 
-  // Load the project data
-  public final boolean parse() {
-    // Check if the file is null
-    if (mProjectFile == null) {
-      // Print an error message
-      mLogger.error("Error: Cannot parse editor project from a bad file");
-      // Return false at error
-      return false;
-    }
-    // Check if the project directory does exist
-    if (!mProjectFile.exists()) {
-      // Print an error message
-      mLogger.error("Error: Cannot find editor project directory '" + mProjectFile + "'");
-      // Return false at error
-      return false;
-    }
-    // Load the project data
-    if (super.parse(mProjectFile.getPath())
-        && loadEditorConfig(mProjectFile.getPath())) {
-      // Set the initial hash code
-      mInitialHash = hashCode();
-      // Return true if project is saved
-      return true;
-    } else {
-      // Return false when saving failed
-      return false;
-    }
+  // Set the name in the project's configuration
+  public final void setProjectName(final String name) {
+    mProjectName = name;
+  }
+  
+  // Get the sceneflow of the project
+  public final SceneFlow getSceneFlow() {
+    return mSceneFlow;
   }
 
-  public boolean loadEditorConfig(String path) {
-    mEditorConfig = EditorConfig.load(path);
-    if (mEditorConfig == null)
-      mEditorConfig = Preferences.getPrefs().editorConfig.copy();
-    return mEditorConfig != null;
-  }
-
-  // Save the project data
-  public final boolean write() {
-    // Check if the file is null
-    if (mProjectFile == null) {
-      // Print an error message
-      mLogger.error("Error: Cannot write editor project into a bad file");
-      // Return false at error
-      return false;
-    }
-    // Check if the project directory does exist
-    if (!mProjectFile.exists()) {
-      // Print a warning message in this case
-      mLogger.warn("Warning: Creating a new editor project directory '" + mProjectFile + "'");
-      // Try to create a project base directory
-      if (!mProjectFile.mkdir()) {
-        // Print an error message
-        mLogger.error("Failure: Cannot create a new editor project directory '" + mProjectFile + "'");
-        // Return false at error
-        return false;
-      }
-    }
-    // Save the project data
-    if (super.write(mProjectFile) && mEditorConfig.save(mProjectFile)) {
-      // Reset the initial hash code here
-      mInitialHash = hashCode();
-      // Return true when project is saved
-      return true;
-    } else {
-      // Return false when saving failed
-      return false;
-    }
-  }
-
-  // Get the project base directory
-  public final File getProjectFile() {
-    return mProjectFile;
-  }
-
-  // Get the project pending flag
-  public final boolean isPending() {
-    return (mProjectFile == null);
-  }
-
-  // Get the editor configuration
+  /** Get the editor configuration of this project */
   public final EditorConfig getEditorConfig() {
     return mEditorConfig;
   }
   
-  // Set the editor configuration: only for the Options dialogue
-  public final void setEditorConfig(EditorConfig newConfig) {
-    mEditorConfig = newConfig;
+  /** Set the editor configuration of this project: to enable cancelling
+   *  of changes
+   */
+  public final void setEditorConfig(EditorConfig conf) {
+    mEditorConfig = conf;
   }
 
-//    // Get the project file's path (moved in super class RuntimeProject (PG 11.4.2016)
-//    public final String getProjectPath() {
-//        if (mProjectFile != null) {
-//            return mProjectFile.getPath();
-//        } else {
-//            return null;
-//        }
-//    }
-  // Check if the hash code has changed
-  public final boolean hasChanged() {
-
-    // TODO: PG: DEBUG: mLogger.failure(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> HAS CHANGED was called! " + mInitialHash + " vs " + getHashCode());
-    return (mInitialHash != hashCode());
+  /** Save only the editor configuration */
+  public boolean saveEditorConfig() {
+    if (mProjectPath == null) return false;
+    return writeProjectConfig(mProjectPath);
+  }
+  
+  public boolean hasChanged() {
+    // TODO: DO SOMETHING MEANINGFUL HERE, BUT ALWAYS BE ON THE SAFE SIDE
+    return true;
   }
 
-  @Override
-  public int hashCode() {
-    int hash = 5;
-    hash = mEditorConfig != null? 79 * hash + this.mEditorConfig.hashCode() : hash;
-    hash = mProjectFile != null? 79 * hash + this.mProjectFile.hashCode() : hash;
-    return hash;
+  /** Write project configuration file into the directory base.
+   *
+   * @param base the base directory of the project
+   * @return true on success, false otherwise
+   */
+  private boolean writeProjectConfig(final File base) {
+    ProjectConfig conf = new ProjectConfig(mProjectName, mEditorConfig);
+    File file = new File(base, PROJECT_CONFIG_NAME);
+    boolean result;
+    if (result = conf.save(file)) {
+      mLogger.info("Saved project configuration to file '{}'", file);
+    } else {
+      mLogger.error("Cannot write project configuration to file '{}'", file);
+    }
+    return result;
   }
+
+  private boolean writeSceneFlow(final File base) {
+    // Create the sceneflow configuration file
+    final File file = new File(base, SCENEFLOW_NAME);
+    return mSceneFlow.save(file);
+  }
+
+  /** Save a *new* project file, i.e., where the base directory is not yet 
+   *  specified, and now put into parentDirectory. Can also be used for
+   *  "Save As"
+   * @param parentDirectory
+   * @return true on success, false otherwise
+   */
+  public boolean saveNewProject(File parentDirectory) {
+    if (! parentDirectory.exists() || !parentDirectory.isDirectory()) {
+      mLogger.error("{} does not exist or is not a directory.", parentDirectory);
+      return false;
+    }
+    File projectDir = new File(parentDirectory, mProjectName);
+    if (! projectDir.mkdir()) {
+      mLogger.error("directory {} could not be created.", projectDir);
+      return false;
+    }
+    mProjectPath = parentDirectory;
+    if (saveProject()) return true;
+    mProjectPath = null;
+    return false;
+  }
+
+  /** Save a project file that was loaded from file */
+  public boolean saveProject() {
+    assert(mProjectPath != null);
+    return writeProjectConfig(mProjectPath) && writeSceneFlow(mProjectPath); 
+  }
+
 }
