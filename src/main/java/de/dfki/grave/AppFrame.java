@@ -1,7 +1,8 @@
 package de.dfki.grave;
 
 import static de.dfki.grave.Icons.*;
-import static de.dfki.grave.Preferences.getPrefs;
+import static de.dfki.grave.Preferences.*;
+import static de.dfki.grave.Constants.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -12,6 +13,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,16 +78,12 @@ public final class AppFrame extends JFrame implements ChangeListener {
   private ComponentListener mComponentListener = new ComponentListener() {
     @Override
     public void componentResized(ComponentEvent e) {
-      getPrefs().FRAME_HEIGHT = getHeight();
-      getPrefs().FRAME_WIDTH = getWidth();
-      Preferences.save();
+      getPrefs().updateBounds(getX(), getY(), getWidth(), getHeight());
     }
 
     @Override
     public void componentMoved(ComponentEvent e) {
-      getPrefs().FRAME_POS_X = getX();
-      getPrefs().FRAME_POS_Y = getY();
-      Preferences.save();
+      getPrefs().updateBounds(getX(), getY(), getWidth(), getHeight());
     }
 
     @Override
@@ -97,10 +95,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
 
   // Private construction of an editor
   private AppFrame() {
-    Preferences.configure();
-
-    // Load the preferences
-    Preferences.load();
+    configure();
 
     getContentPane().setBackground(Color.WHITE);
     /*try {
@@ -114,7 +109,6 @@ public final class AppFrame extends JFrame implements ChangeListener {
     // SET BACKGROUNDS
     setUIBackgrounds();
 
-    // Preferences.info();
     // Init the menu bar
     mEditorMenuBar = new EditorMenuBar(this);
     // Hide the menu bar
@@ -133,8 +127,6 @@ public final class AppFrame extends JFrame implements ChangeListener {
       public void windowClosing(WindowEvent event) {
         // Close all project editors
         closeAll();
-        // And finally exit the system
-        //System.exit(0);
       }
     });
 
@@ -143,8 +135,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
     
     setContentPane(mProjectEditors);
     
-    Dimension editorSize = new Dimension(getPrefs().FRAME_WIDTH,
-            getPrefs().FRAME_WIDTH);
+    Dimension editorSize = getPrefs().getFrameDimension();
 
     setPreferredSize(editorSize);
     setSize(editorSize);
@@ -163,8 +154,8 @@ public final class AppFrame extends JFrame implements ChangeListener {
   }
 
   private void setUIFonts() {
-    Font uiFont = Preferences.getPrefs().editorConfig.sUI_FONT.getFont();
-    Font treeFont = Preferences.getPrefs().editorConfig.sTREE_FONT.getFont();
+    Font uiFont = getPrefs().editorConfig.sUI_FONT.getFont();
+    Font treeFont = getPrefs().editorConfig.sTREE_FONT.getFont();
 
     String[] uiElements = {
         "Button.font",
@@ -226,17 +217,14 @@ public final class AppFrame extends JFrame implements ChangeListener {
 
   
   public void clearRecentProjects() {
-    Preferences.clearRecentProjects();
-    Preferences.save();
+    clearRecentProjects();
     mEditorMenuBar.refreshRecentFileMenu();
   }
   
   private void checkAndSetLocation() {
     Point finalPos = new Point(0, 0);
-    Point editorPosition = new Point(getPrefs().FRAME_POS_X,
-            getPrefs().FRAME_POS_Y);
-    Dimension editorSize = new Dimension(getPrefs().FRAME_WIDTH,
-            getPrefs().FRAME_HEIGHT);
+    Point editorPosition = getPrefs().getFramePosition();
+    Dimension editorSize = getPrefs().getFrameDimension();
 
     // check systems monitor setup
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -277,9 +265,9 @@ public final class AppFrame extends JFrame implements ChangeListener {
     return pe.getSceneFlowEditor().getWorkSpace();
   }
   
-  @SuppressWarnings("unused")
   public final boolean newProject() {
     String[] newName = { "New Project" };
+    @SuppressWarnings("unused")
     NewProjectDialog np = new NewProjectDialog(newName);
     if (newName[0] == null) // cancel
       return false;
@@ -299,25 +287,37 @@ public final class AppFrame extends JFrame implements ChangeListener {
     return true;
   }
 
+  private class GraveFileFilter extends FileFilter {
+    @Override
+    public boolean accept(File f) {
+      if (f.isDirectory()) {
+        if (EditorProject.isProjectDirectory(f)) return true;
+        for (File g : f.listFiles()) {
+          if (accept(g)) return true;
+        }
+      }
+      return false;
+    }
+
+    @Override
+    public String getDescription() { return "GraVE Project File Filter"; }
+  }
+  
   ////////////////////////////////////////////////////////////////////////////
   // Open a new project editor with chooser
   public final boolean openProject() {
     // Create a new file chooser
     final JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
     // Configure The File Chooser
-    chooser.setFileView(new OpenProjectView());
-    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    chooser.setFileFilter(new FileFilter() {
+    chooser.setFileView(new FileView() {
       @Override
-      public boolean accept(File f) {
-        return OpenProjectView.isAcceptedFile(f);
+      public final Icon getIcon(final File file) {
+        return EditorProject.isProjectDirectory(file) ? Icons.ICON_FILE : null;
       }
-
-      @Override
-      public String getDescription() {
-        return "SceneMaker Project File Filter";
-      }
+      
     });
+    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    chooser.setFileFilter(new GraveFileFilter());
     // Show the file chooser in open mode
     final int option = chooser.showOpenDialog(this);
     // Check the result of the file chooser
@@ -388,7 +388,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
       // Add the project editor to list of project editors and select it
       addProjectTab(projectEditor);
       // Update the recent project list
-      updateRecentProjects(project);
+      updateRecent(project);
       // Refresh the appearance
       refresh();
       //projectEditor.expandTree();
@@ -422,11 +422,9 @@ public final class AppFrame extends JFrame implements ChangeListener {
         // Try to write the editor project
         if (project.saveProject()) {
           // Refresh the title of the project tab
-          //final int index = mProjectEditors.getSelectedIndex();
-          //final String title = mProjectEditors.getTitleAt(index);
           setTabNameSaved();
           // Update rectent project list
-          updateRecentProjects(project);
+          updateRecent(project);
           // Refresh the appearance
           refresh();
           // Return true at success
@@ -463,20 +461,17 @@ public final class AppFrame extends JFrame implements ChangeListener {
 
     // Create an AddButton
     final AddButton addButton = new AddButton();
-    getPrefs();
     addButton.setIcon(ICON_CANCEL_STANDARD_TINY);
     addButton.setTabPos(mProjectEditors.getTabCount() - 1);
     addButton.removeMouseListener(addButton.getMouseListeners()[1]);
     addButton.addMouseListener(new java.awt.event.MouseAdapter() {
       @Override
       public void mouseEntered(MouseEvent me) {
-        getPrefs();
         addButton.setIcon(ICON_CANCEL_ROLLOVER_TINY);
       }
 
       @Override
       public void mouseExited(MouseEvent me) {
-        getPrefs();
         addButton.setIcon(ICON_CANCEL_STANDARD_TINY);
       }
 
@@ -548,7 +543,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
             //final int index = mProjectEditors.getSelectedIndex();
             setTabNameSaved();
             // Update rectent project list
-            updateRecentProjects(project);
+            updateRecent(project);
             // Refresh the appearance
             refresh();
             // Return true at success
@@ -646,37 +641,11 @@ public final class AppFrame extends JFrame implements ChangeListener {
   }
 
   /** Update list of recent projects */
-  public void updateRecentProjects(final EditorProject project) {
-    String projectPath = project.getProjectPath().getAbsolutePath();
-    String projectName = project.getProjectName();
-    String projectDate = Preferences.sDATE_FORMAT.format(new Date());
-
-    if (getPrefs().recentProjectPaths.contains(projectPath)) {
-      int index = getPrefs().recentProjectPaths.indexOf(projectPath);
-      // case: project in recent list
-      if (getPrefs().recentProjectNames.contains(projectName)) {
-        // case: project is on list - has now to be at first pos
-        getPrefs().recentProjectPaths.add(0, projectPath);
-        getPrefs().recentProjectNames.add(0, projectName);
-        getPrefs().recentProjectDates.add(0, projectDate);
-        getPrefs().recentProjectNames.remove(index + 1);
-        getPrefs().recentProjectPaths.remove(index + 1);
-        getPrefs().recentProjectDates.remove(index + 1);
-      }
-    } else {
-      getPrefs().recentProjectPaths.add(projectPath);
-      getPrefs().recentProjectNames.add(projectName);
-      getPrefs().recentProjectDates.add(projectDate);
-    }
-    int si = getPrefs().recentProjectPaths.size();
-    if (si > getPrefs().sMAX_RECENT_PROJECTS) {
-      getPrefs().recentProjectPaths.remove(si);
-      getPrefs().recentProjectNames.remove(si);
-      getPrefs().recentProjectDates.remove(si);
-    }
-
-    // save properties
-    Preferences.save();
+  public void updateRecent(final EditorProject project) {
+    String path = project.getProjectPath().getAbsolutePath();
+    String date = DATE_FORMAT.format(new Date());
+    getPrefs().updateRecentProjects(project.getProjectName(), path, date);
+    
     mEditorMenuBar.refreshRecentFileMenu();
   }
 

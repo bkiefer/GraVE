@@ -15,7 +15,7 @@ import java.io.File;
 import javax.swing.*;
 
 import de.dfki.grave.AppFrame;
-import de.dfki.grave.Preferences;
+import de.dfki.grave.RecentProject;
 import de.dfki.grave.editor.action.UndoRedoProvider;
 import de.dfki.grave.editor.dialog.QuitDialog;
 import de.dfki.grave.model.project.EditorConfig;
@@ -26,7 +26,14 @@ import de.dfki.grave.model.project.EditorConfig;
 @SuppressWarnings("serial")
 public final class EditorMenuBar extends JMenuBar {
 
-  //private final Logger mLogger = LoggerFactory.getLogger(EditorMenuBar.class);
+  // private final Logger mLogger =
+  // LoggerFactory.getLogger(EditorMenuBar.class);
+
+  private static final int[] sDYNAMIC_KEYS = { 
+      KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5,
+      KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9
+  };
+  
   private final AppFrame mEditorInstance;
 
   // File menu
@@ -68,7 +75,9 @@ public final class EditorMenuBar extends JMenuBar {
         mask | Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
   }
 
-  private static KeyStroke getAccel(int code) { return getAccel(code, 0); }
+  private static KeyStroke getAccel(int code) {
+    return getAccel(code, 0);
+  }
 
   // Refresh the state of all items
   public final void refreshViewOptions() {
@@ -100,14 +109,14 @@ public final class EditorMenuBar extends JMenuBar {
   }
 
   public void somethingSelected(boolean flag, boolean sthOnClipboard) {
-    if (!mEditMenu.isEnabled()) return;
+    if (!mEditMenu.isEnabled())
+      return;
     mCutMenuItem.setEnabled(flag);
     mCopyMenuItem.setEnabled(flag);
     mPasteMenuItem.setEnabled(sthOnClipboard);
     mDeleteMenuItem.setEnabled(flag);
   }
-  
-  
+
   private void initComponents() {
     initFileMenu();
     initEditMenu();
@@ -119,20 +128,16 @@ public final class EditorMenuBar extends JMenuBar {
     mOpenRecentFileMenu.removeAll();
     boolean hasEntries = false;
 
-    for (int i = 0; i < getPrefs().recentProjectPaths.size(); i++) {
-      String projectDirName = getPrefs().recentProjectNames.get(i);
-      String projectName = getPrefs().recentProjectPaths.get(i);
-
-      if (projectDirName != null) {
-        final File projectDir = new File(projectDirName);
+    int i = 0;
+    for (RecentProject rp : getPrefs().getRecentProjects()) {
+      if (rp.name != null) {
+        final File projectDir = new File(rp.path);
 
         if (projectDir.exists()) {
           hasEntries = true;
 
-          JMenuItem recentFileMenuItem = new JMenuItem(projectName);
-
-          recentFileMenuItem.setAccelerator(
-              getAccel(getPrefs().sDYNAMIC_KEYS.get(i)));
+          JMenuItem recentFileMenuItem = new JMenuItem(rp.name);
+          recentFileMenuItem.setAccelerator(getAccel(sDYNAMIC_KEYS[i++]));
           recentFileMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
               mEditorInstance.openProject(projectDir.getPath());
@@ -147,19 +152,21 @@ public final class EditorMenuBar extends JMenuBar {
 
     if (hasEntries) {
       mOpenRecentFileMenu.add(new JSeparator());
-      addItem(mOpenRecentFileMenu, "Clear List", null, 
+      addItem(mOpenRecentFileMenu, "Clear List", null,
           (e) -> mEditorInstance.clearRecentProjects());
     }
   }
 
-  private JMenuItem addItem(JMenu menu, String text, KeyStroke accel, ActionListener act) {
+  private JMenuItem addItem(JMenu menu, String text, KeyStroke accel,
+      ActionListener act) {
     JMenuItem item = new JMenuItem(text);
-    if (accel != null) item.setAccelerator(accel);
+    if (accel != null)
+      item.setAccelerator(accel);
     item.addActionListener(act);
     menu.add(item);
     return item;
   }
-    
+
   private void initFileMenu() {
     JMenu fileMenu = new JMenu("File");
     addItem(fileMenu, "New Project...", getAccel(KeyEvent.VK_N),
@@ -170,40 +177,37 @@ public final class EditorMenuBar extends JMenuBar {
     fileMenu.add(mOpenRecentFileMenu);
     // mOpenRecentFileMenu.setIcon(new ImageIcon("data/img/recent.png"));
     fileMenu.add(new JSeparator());
-    
+
     refreshRecentFileMenu();
 
     // someOpen
-    mCloseFileMenuItem = 
-        addItem(fileMenu, "Close Project", getAccel(KeyEvent.VK_W),
-            (e) -> mEditorInstance.close(QuitDialog.CLOSE_PROJ_DIALOG));
+    mCloseFileMenuItem = addItem(fileMenu, "Close Project",
+        getAccel(KeyEvent.VK_W),
+        (e) -> mEditorInstance.close(QuitDialog.CLOSE_PROJ_DIALOG));
 
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
-    
+
     // someOpen && projectChanged
-    mSaveFileMenuItem = 
-        addItem(fileMenu, "Save", getAccel(KeyEvent.VK_S), 
-            (e) -> mEditorInstance.save());
+    mSaveFileMenuItem = addItem(fileMenu, "Save", getAccel(KeyEvent.VK_S),
+        (e) -> mEditorInstance.save());
     // someOpen
-    mSaveAsMenuItem =
-        addItem(fileMenu, "Save As", getAccel(KeyEvent.VK_S, SHIFT_DOWN_MASK),
-            (e) -> mEditorInstance.saveAs());
-    //mSaveAsMenuItem.setIcon(new ImageIcon("data/img/saveas.png"));
+    mSaveAsMenuItem = addItem(fileMenu, "Save As",
+        getAccel(KeyEvent.VK_S, SHIFT_DOWN_MASK),
+        (e) -> mEditorInstance.saveAs());
+    // mSaveAsMenuItem.setIcon(new ImageIcon("data/img/saveas.png"));
 
     // someOpen
-    mSaveAllMenuItem = 
-        addItem(fileMenu, "Save All", getAccel(KeyEvent.VK_S, ALT_DOWN_MASK),
-            (e) -> mEditorInstance.saveAll());
-    //mSaveAllMenuItem.setIcon(new ImageIcon("data/img/saveall.png"));
+    mSaveAllMenuItem = addItem(fileMenu, "Save All",
+        getAccel(KeyEvent.VK_S, ALT_DOWN_MASK),
+        (e) -> mEditorInstance.saveAll());
+    // mSaveAllMenuItem.setIcon(new ImageIcon("data/img/saveall.png"));
 
-    if (Preferences.isWindows()) {
-      fileMenu.add(new JSeparator());
-      addItem(fileMenu, "Quit", getAccel(KeyEvent.VK_Q),
-          (e) -> mEditorInstance.closeAll());
-      // mExitEditorMenuItem.setIcon(new ImageIcon("data/img/exit.png"));
-    }
+    fileMenu.add(new JSeparator());
+    addItem(fileMenu, "Quit", getAccel(KeyEvent.VK_Q),
+        (e) -> mEditorInstance.closeAll());
+    // mExitEditorMenuItem.setIcon(new ImageIcon("data/img/exit.png"));
 
     add(fileMenu);
   }
@@ -215,7 +219,7 @@ public final class EditorMenuBar extends JMenuBar {
     mEditMenu.add(UndoRedoProvider.getInstance().getRedoAction());
     mEditMenu.add(new JSeparator());
     // sth selected
-    mCopyMenuItem = addItem(mEditMenu, "Copy", getAccel(KeyEvent.VK_C), 
+    mCopyMenuItem = addItem(mEditMenu, "Copy", getAccel(KeyEvent.VK_C),
         (e) -> getCurrentWorkSpace().copySelectedNodes());
     // sth selected
     mCutMenuItem = addItem(mEditMenu, "Cut", getAccel(KeyEvent.VK_X),
@@ -226,13 +230,15 @@ public final class EditorMenuBar extends JMenuBar {
         (e) -> getCurrentWorkSpace().pasteNodesFromClipboard());
     // sth selected TODO: MISSING
     mDeleteMenuItem = addItem(mEditMenu, "Delete", getAccel(KeyEvent.VK_DELETE),
-        (e) -> getCurrentWorkSpace()//.delete()
-        );
+        (e) -> getCurrentWorkSpace()// .delete()
+    );
     mEditMenu.add(new JSeparator());
     // always
-    addItem(mEditMenu, "Normalize all Edges", getAccel(KeyEvent.VK_N, ALT_DOWN_MASK),
+    addItem(mEditMenu, "Normalize all Edges",
+        getAccel(KeyEvent.VK_N, ALT_DOWN_MASK),
         (e) -> getCurrentWorkSpace().normalizeAllEdges());
-    addItem(mEditMenu, "Straighen all Edges", getAccel(KeyEvent.VK_B, ALT_DOWN_MASK),
+    addItem(mEditMenu, "Straighen all Edges",
+        getAccel(KeyEvent.VK_B, ALT_DOWN_MASK),
         (e) -> getCurrentWorkSpace().straightenAllEdges());
     add(mEditMenu);
   }
@@ -242,23 +248,23 @@ public final class EditorMenuBar extends JMenuBar {
 
     mShowGridMenuItem = new JCheckBoxMenuItem("Show Grid");
     mShowGridMenuItem.addActionListener((e) -> {
-      getCurrentWorkSpace().setShowGrid(
-          ((JCheckBoxMenuItem)e.getSource()).getState());
+      getCurrentWorkSpace()
+          .setShowGrid(((JCheckBoxMenuItem) e.getSource()).getState());
     });
 
     mViewMenu.add(mShowGridMenuItem);
 
     mShowIdMenuItem = new JCheckBoxMenuItem("Show Node IDs");
     mShowIdMenuItem.addActionListener((e) -> {
-      getCurrentWorkSpace().setShowNodeIds(
-          ((JCheckBoxMenuItem)e.getSource()).getState());
+      getCurrentWorkSpace()
+          .setShowNodeIds(((JCheckBoxMenuItem) e.getSource()).getState());
     });
     mViewMenu.add(mShowIdMenuItem);
 
     mSnapToGridMenuItem = new JCheckBoxMenuItem("Snap to Grid");
     mSnapToGridMenuItem.addActionListener((e) -> {
-      getCurrentWorkSpace().setSnapToGrid(
-          ((JCheckBoxMenuItem)e.getSource()).getState());
+      getCurrentWorkSpace()
+          .setSnapToGrid(((JCheckBoxMenuItem) e.getSource()).getState());
     });
     mViewMenu.add(mSnapToGridMenuItem);
 
@@ -272,11 +278,11 @@ public final class EditorMenuBar extends JMenuBar {
 
   private void initHelpMenu() {
     JMenu helpMenu = new JMenu("Help");
-    addItem(helpMenu, 
-        "Help", getAccel(KeyEvent.VK_H), (e) -> mEditorInstance.showHelp());
+    addItem(helpMenu, "Help", getAccel(KeyEvent.VK_H),
+        (e) -> mEditorInstance.showHelp());
     helpMenu.add(new JSeparator());
-    addItem(helpMenu, 
-        "About", getAccel(KeyEvent.VK_I), (e) -> mEditorInstance.showAbout());
+    addItem(helpMenu, "About", getAccel(KeyEvent.VK_I),
+        (e) -> mEditorInstance.showAbout());
     add(helpMenu);
   }
 }

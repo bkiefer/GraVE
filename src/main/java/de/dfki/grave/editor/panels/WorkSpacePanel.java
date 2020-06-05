@@ -1,5 +1,7 @@
 package de.dfki.grave.editor.panels;
 
+import static de.dfki.grave.Preferences.*;
+
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -19,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.AppFrame;
-import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
@@ -683,7 +684,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       */
       repaint(100);
     }
-    if (Preferences.DEBUG_MOUSE_LOCATIONS) {
+    if (DEBUG_MOUSE_LOCATIONS) {
       setMessageLabelText(String.format("%d, %d", event.getPoint().x, event.getPoint().y));
     }
     return;
@@ -740,7 +741,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     }
 
     /* Debugging: check boundaries of all components on workspace */
-    if (Preferences.DEBUG_COMPONENT_BOUNDARIES) {
+    if (DEBUG_COMPONENT_BOUNDARIES) {
       g2d.setColor(Color.pink);
       g2d.setStroke(new BasicStroke(0.5f));
       for (int i = 0 ; i <  this.getComponentCount(); ++i) {

@@ -1,7 +1,7 @@
 package de.dfki.grave.editor.dialog;
 
 import static de.dfki.grave.Icons.ICON_LOGO;
-import static de.dfki.grave.Preferences.sABOUT_FILE;
+import static de.dfki.grave.Constants.*;
 import static de.dfki.grave.editor.dialog.Dialog.getFillerBox;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -95,10 +95,10 @@ public class AboutDialog extends JDialog {
     mAboutPane.setBackground(new Color(224, 223, 227));
 
     try {
-      URL pageURL = sABOUT_FILE;
+      URL pageURL = ABOUT_FILE;
       mAboutPane.setPage(pageURL);
     } catch (Exception e) {
-      mAboutPane.setText("<html><body><font color=\"red\">No about available!<br>Unable to locate " + sABOUT_FILE
+      mAboutPane.setText("<html><body><font color=\"red\">No about available!<br>Unable to locate " + ABOUT_FILE
               + "</font></body></html>");
       e.printStackTrace();
     }
@@ -164,6 +164,7 @@ public class AboutDialog extends JDialog {
     return sInstance;
   }
 
+  @SuppressWarnings("serial")
   class MyEditorPane extends JEditorPane {
 
     public MyEditorPane() {

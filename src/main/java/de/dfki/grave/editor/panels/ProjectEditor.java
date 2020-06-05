@@ -155,7 +155,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
           mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = true;
           mCodeEditor.updateBorders();
         }
-        Preferences.save();
+        Preferences.savePrefs();
       }
 
       @Override

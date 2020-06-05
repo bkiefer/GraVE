@@ -3,15 +3,12 @@ package de.dfki.grave;
 import static de.dfki.grave.Icons.*;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -37,45 +34,13 @@ import java.io.File;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class Preferences {
   private static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
-
+  
+  // The global preferences and settings file
+  private static final String CONFIG_FILE = System.getProperty("user.home") 
+      + System.getProperty("file.separator") + ".grave";
+  
   public static boolean DEBUG_COMPONENT_BOUNDARIES = false;
   public static boolean DEBUG_MOUSE_LOCATIONS = false;
-  
-  // The global properties file
-  private static final String sCONFIG_FILE
-          = System.getProperty("user.home")
-          + System.getProperty("file.separator") + ".grave";
-
-  //////////////////////////////////////////////////////////////////////////////
-  // SYSTEM PROPERTIES
-  //////////////////////////////////////////////////////////////////////////////
-  public static final String sSYSPROPS_LINE_SEPR = System.getProperty("line.separator");
-  public static final String sSYSPROPS_FILE_SEPR = System.getProperty("file.separator");
-  public static final String sSYSPROPS_PATH_SEPR = System.getProperty("path.separator");
-  public static final String sSYSPROPS_JAVA_PATH = System.getProperty("java.class.path");
-  public static final String sSYSPROPS_JAVA_HOME = System.getProperty("java.home");
-  public static final String sSYSPROPS_JAVA_VEND = System.getProperty("java.vendor");
-  public static final String sSYSPROPS_JAVA_VURL = System.getProperty("java.vendor.url");
-  public static final String sSYSPROPS_OSYS_ARCH = System.getProperty("os.arch");
-  public static final String sSYSPROPS_OSYS_NAME = System.getProperty("os.name");
-  public static final String sSYSPROPS_OSYS_VERS = System.getProperty("os.version");
-
-  ////////////////////////////////////////////////////////////////////////////
-  // VERSION INFORMATION
-  ////////////////////////////////////////////////////////////////////////////
-  public static final URL sVSM_VERSIONURL = MainGrave.class.getResource("version.ini");
-
-  ////////////////////////////////////////////////////////////////////////////
-  // URL RESOURCES
-  ////////////////////////////////////////////////////////////////////////////
-  public static final URL sSTYLESURL = MainGrave.class.getResource("sty/scripts.xml");
-
-  ////////////////////////////////////////////////////////////////////////////
-  // DIRECTORIES
-  ////////////////////////////////////////////////////////////////////////////
-  public static final String sUSER_NAME = System.getProperty("user.name");
-  public static final String sUSER_HOME = System.getProperty("user.home");
-  public static final String sUSER_DIR = System.getProperty("user.dir");
 
   //////////////////////////////////////////////////////////////////////////////
   // NODE COLORS
@@ -123,71 +88,53 @@ public final class Preferences {
   public Dimension SF_PALETTEITEM_SIZE = new Dimension(61, 65);
 
   //////////////////////////////////////////////////////////////////////////////
-  // RECENT FILES
+  // RECENT PROJECTS
   //////////////////////////////////////////////////////////////////////////////
-  public final int sMAX_RECENT_FILE_COUNT = 8;
-  public final int sMAX_RECENT_PROJECTS = 8;
-  public final ArrayList<Integer> sDYNAMIC_KEYS = new ArrayList<>(Arrays.asList(KeyEvent.VK_1,
-          KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4,
-          KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7,
-          KeyEvent.VK_8, KeyEvent.VK_9));
-
-  //////////////////////////////////////////////////////////////////////////////
-  // FILE RESSOURCES
-  //////////////////////////////////////////////////////////////////////////////
-  public static final URL sABOUT_FILE = MainGrave.class.getResource("doc/about.html");
-  public static final URL sHELP_FILE = MainGrave.class.getResource("doc/index.html");
-
-  //////////////////////////////////////////////////////////////////////////////
-  // DATE FORMAT
-  //////////////////////////////////////////////////////////////////////////////
-  public static final SimpleDateFormat sDATE_FORMAT = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+  private final int sMAX_RECENT_PROJECTS = 8;
 
   public String FRAME_TITLE = "Graphical VOnDA Editor";
   public String FRAME_NAME = "GraphEditor";
-  public String ICON_FILE = "res/img/icon.png";
-  public int FRAME_POS_X = 0;
-  public int FRAME_POS_Y = 0;
-  public int FRAME_WIDTH = 800;
-  public int FRAME_HEIGHT = 600;
+  private int FRAME_POS_X = 0;
+  private int FRAME_POS_Y = 0;
+  private int FRAME_WIDTH = 800;
+  private int FRAME_HEIGHT = 600;
   //public String XMLNS = "xml.sceneflow.dfki.de";
   //public String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
   //public String XSI_SCHEMELOCATION = "res/xsd/sceneflow.xsd";
 
-  public ArrayList<String> recentProjectPaths = new ArrayList<>();
-  public ArrayList<String> recentProjectNames = new ArrayList<>();
-  public ArrayList<String> recentProjectDates = new ArrayList<>();
+  private ArrayList<RecentProject> recentProjects = new ArrayList<>();
 
   public EditorConfig editorConfig;
 
   @XmlTransient
-  private static Preferences single_instance = null;
+  private static Preferences instance = null;
 
   private Preferences() {}
 
   public static Preferences getPrefs() {
-    if (single_instance == null) 
-        single_instance = new Preferences();
-    return single_instance;
+    if (instance == null) 
+        instance = new Preferences();
+    return instance;
   }
 
 
-  public static synchronized void save() {
+  public static synchronized void savePrefs() {
     // write the Preferences file
-    JaxbUtilities.marshal(new File(sCONFIG_FILE), getPrefs(),
+    JaxbUtilities.marshal(new File(CONFIG_FILE), getPrefs(),
             Preferences.class, EditorConfig.class, FontConfig.class);
   }
 
-  public static synchronized void load() {
+  private static synchronized void load() {
     try {
-      single_instance = (Preferences)JaxbUtilities.unmarshal(
-          new FileInputStream(sCONFIG_FILE), sCONFIG_FILE,
+      instance = (Preferences)JaxbUtilities.unmarshal(
+          new FileInputStream(CONFIG_FILE), CONFIG_FILE,
           Preferences.class, EditorConfig.class, FontConfig.class);
     } catch (IOException e) {
-      mLogger.warn("Cannot read global preference file " + sCONFIG_FILE + ", creating default");
-      single_instance = new Preferences();
-      single_instance.editorConfig = EditorConfig.loadBundleDefault();
-      save();
+      mLogger.warn("Cannot read global preference file {}, creating default",
+          CONFIG_FILE);
+      instance = new Preferences();
+      instance.editorConfig = EditorConfig.loadBundleDefault();
+      savePrefs();
     }
   }
 
@@ -209,7 +156,7 @@ public final class Preferences {
         // Mac/Apple Settings
         System.setProperty("apple.laf.useScreenMenuBar", "true");
         System.setProperty("com.apple.mrj.application.apple.menu.about.name",
-            single_instance.FRAME_TITLE);
+            instance.FRAME_TITLE);
 
         final Class appClass = Class.forName("com.apple.eawt.Application");
         // Get the application and the method to set the dock icon
@@ -225,11 +172,73 @@ public final class Preferences {
       mLogger.error("Error: " + exc.getMessage());
     }
   }
+  
+  /* **********************************************************************
+   * Frame Position and Size
+   * ********************************************************************** */
+  
+  public Point getFramePosition() {
+    return new Point(FRAME_POS_X, FRAME_POS_Y);
+  }
+  
+  public Dimension getFrameDimension() {
+    return new Dimension(FRAME_WIDTH, FRAME_HEIGHT);
+  }
+  
+  public void updateBounds(int x, int y, int width, int height) {
+    FRAME_POS_X = x;
+    FRAME_POS_Y = y;
+    FRAME_WIDTH = width;
+    FRAME_HEIGHT = height;
+    savePrefs();
+  }
 
-  public static void clearRecentProjects(){
-    single_instance.recentProjectPaths.clear();
-    single_instance.recentProjectNames.clear();
-    single_instance.recentProjectDates.clear();
+  /* **********************************************************************
+   * Recent Projects
+   * ********************************************************************** */
+  
+  public Iterable<RecentProject> getRecentProjects() {
+    return recentProjects;
+  }
+  
+  public void clearRecentProjects(){
+    recentProjects.clear();
+    savePrefs();
+  }
+  
+  private int findRecentProject(String path) {
+    int i = 0;
+    for (RecentProject rp : recentProjects) {
+      if (isWindows()) {
+        if (rp.path.equalsIgnoreCase(path))
+          return i;
+      } else {
+        if (rp.path.equals(path))
+          return i;
+      }
+      ++i;
+    }
+    return -1;
+  }
+  
+  public void updateRecentProjects(String name, String path, String date) {
+    int index = findRecentProject(path);
+    if (index >= 0) {
+      RecentProject rp = recentProjects.get(index);
+      recentProjects.remove(index);
+      recentProjects.add(0, rp);
+      rp.name = name;
+      rp.date = date;
+    } else {
+      recentProjects.add(0, new RecentProject(name, path, date));
+    }
+    
+    int si = recentProjects.size();
+    while (si > sMAX_RECENT_PROJECTS) {
+      recentProjects.remove(si);
+      --si;
+    }
+    savePrefs();
   }
 
   // Check if we are on a WINDOWS system

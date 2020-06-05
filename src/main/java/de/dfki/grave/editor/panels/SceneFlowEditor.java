@@ -36,7 +36,6 @@ import javax.swing.undo.UndoManager;
 import de.dfki.grave.model.flow.SceneFlow;
 import de.dfki.grave.model.flow.SuperNode;
 import de.dfki.grave.model.project.EditorProject;
-import de.dfki.grave.util.evt.EventDispatcher;
 
 /**
  * @author Gregor Mehlmann

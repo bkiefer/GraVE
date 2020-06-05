@@ -1,5 +1,7 @@
 package de.dfki.grave.model.project;
 
+import static de.dfki.grave.Constants.*;
+
 import java.io.File;
 
 import org.slf4j.Logger;
@@ -15,9 +17,6 @@ public class EditorProject {
 
   private static final Logger mLogger = LoggerFactory.getLogger(EditorProject.class);
 
-  private static final String PROJECT_CONFIG_NAME = "project.xml";
-  private static final String SCENEFLOW_NAME = "sceneflow.xml";
-
   private String mProjectName;
   // The project Path (added PG 11.4.2016);
   private File mProjectPath = null;
@@ -27,6 +26,10 @@ public class EditorProject {
   // The editor configuration
   private EditorConfig mEditorConfig;
 
+  public static boolean isProjectDirectory(File f) {
+    return (f.isDirectory() && (new File(f, SCENEFLOW_NAME)).exists());
+  }
+  
   private EditorProject(File path, String name, EditorConfig ec, SceneFlow sc) {
     mProjectPath = path;
     mProjectName = name;

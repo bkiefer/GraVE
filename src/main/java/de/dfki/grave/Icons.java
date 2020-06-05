@@ -10,6 +10,10 @@ public abstract class Icons {
   //////////////////////////////////////////////////////////////////////////////
   // IMAGE RESSOURCES
   //////////////////////////////////////////////////////////////////////////////
+  
+  // THE APP ICON
+  public static final ImageIcon ICON_FILE = ResourceLoader.loadImageIcon("img/icon.png");
+  
   public static final ImageIcon ICON_LOGO = ResourceLoader.loadImageIcon("img/smlogo.png");
   public static final ImageIcon ICON_DOC = ResourceLoader.loadImageIcon("img/docicon.png");
   public static final ImageIcon ICON_SHOW_GRID = ResourceLoader.loadImageIcon("img/grid.png");
