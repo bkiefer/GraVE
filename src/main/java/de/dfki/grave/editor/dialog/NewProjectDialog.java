@@ -39,12 +39,15 @@ public class NewProjectDialog extends JDialog {
   // Labels
   private JLabel errorMsg;
   private JLabel lblName;
+  
+  private String[] name;
 
   // logger
   private final Logger mLogger = LoggerFactory.getLogger(NewProjectDialog.class);;
 
-  public NewProjectDialog() {
+  public NewProjectDialog(String[] newName) {
     super(AppFrame.getInstance(), "New Project", true);
+    name = newName;
     AppFrame.getInstance().addEscapeListener(this);
     initComponents();
     setVisible(true);
@@ -54,12 +57,13 @@ public class NewProjectDialog extends JDialog {
 
     // create contentfields and set inital content
     Dimension tSize = new Dimension(250, 30);
-    Dimension labelSize = new Dimension(100, 30);
+    Dimension labelSize = new Dimension(120, 30);
 
     setBackground(Color.white);
     mNameTextField = new HintTextField("Enter Project Name");
     mNameTextField.setMinimumSize(tSize);
     mNameTextField.setPreferredSize(tSize);
+    mNameTextField.setText(name[0]);
 
     mNameTextField.addActionListener(new ActionListener() {
       @Override
@@ -184,6 +188,7 @@ public class NewProjectDialog extends JDialog {
   }
 
   protected void cancelActionPerformed() {
+    name[0] = null;
     dispose();
   }
 
@@ -194,6 +199,7 @@ public class NewProjectDialog extends JDialog {
       return false;
     }
 
+    name[0] = mNameTextField.getText();
     errorMsg.setForeground(Color.white);
     return true;
   }

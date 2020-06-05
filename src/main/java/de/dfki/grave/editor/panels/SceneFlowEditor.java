@@ -67,7 +67,6 @@ public final class SceneFlowEditor extends JPanel {
   private final JPanel mNewElementDisplay;
   private final JLabel mFooterLabel;
   private final JSplitPane mSplitPane;
-  private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
   // Create a sceneflow editor
   public SceneFlowEditor(final EditorProject project) {
@@ -241,11 +240,6 @@ public final class SceneFlowEditor extends JPanel {
   public void close() {
     // Cleanup workspace
     mWorkSpacePanel.cleanup();
-  }
-
-
-  public JSplitPane getSplitPane() {
-    return mSplitPane;
   }
 
   public final void refresh() {

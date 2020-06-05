@@ -364,7 +364,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     clearCurrentWorkspace();
   }
 
-  /** Try to get all edges as straight as possible */
+  /** Try to get all edges as straight as possible: menu/button */
   public void straightenAllEdges() {
     List<EditorAction> actions = new ArrayList<>();
     for (Edge edge : getEdges()) {
@@ -373,7 +373,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     new CompoundAction(this, actions, "Straighten all Edges").run();
   }
 
-  /** Try to find nice paths for all edges */
+  /** Try to find nice paths for all edges: menu/button */
   public void normalizeAllEdges() {
     List<EditorAction> actions = new ArrayList<>();
     for (Edge edge : getEdges()) {
@@ -585,7 +585,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    * Currently, we assume a square grid, and take
    * nodeWidth = nodeHeight = max(nodeWidth, nodeHeight)
    */
-  void drawGrid(Graphics2D g2d, Rectangle visibleRect) {
+  private void drawGrid(Graphics2D g2d, Rectangle visibleRect) {
     g2d.setStroke(new BasicStroke(1.0f));
     g2d.setColor(Color.GRAY.brighter());
     float gridWidth = mGridManager.gridWidth() * mZoomFactor;

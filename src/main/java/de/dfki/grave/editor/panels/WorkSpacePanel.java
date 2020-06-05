@@ -298,6 +298,18 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     action.run();
   }
 
+  public void setShowGrid(boolean flag) {
+    getEditorConfig().sSHOWGRID = flag;
+  }
+  
+  public void setShowNodeIds(boolean flag) {
+    getEditorConfig().sSHOWIDSOFNODES = flag;
+  }
+  
+  public void setSnapToGrid(boolean flag) {
+    getEditorConfig().sSNAPTOGRID = flag;
+  }
+  
   /* ######################################################################
    * End provide functionality for the global menu bar
    * ###################################################################### */

@@ -30,7 +30,7 @@ import java.io.File;
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  *
- * Standard VSM configurations
+ * User preferences and app-wide "constants"
  */
 @XmlRootElement(name="Preferences")
 @XmlType(name="Preferences")
@@ -44,7 +44,7 @@ public final class Preferences {
   // The global properties file
   private static final String sCONFIG_FILE
           = System.getProperty("user.home")
-          + System.getProperty("file.separator") + ".vsm";
+          + System.getProperty("file.separator") + ".grave";
 
   //////////////////////////////////////////////////////////////////////////////
   // SYSTEM PROPERTIES
@@ -59,22 +59,6 @@ public final class Preferences {
   public static final String sSYSPROPS_OSYS_ARCH = System.getProperty("os.arch");
   public static final String sSYSPROPS_OSYS_NAME = System.getProperty("os.name");
   public static final String sSYSPROPS_OSYS_VERS = System.getProperty("os.version");
-
-  ////////////////////////////////////////////////////////////////////////////
-  // LOGFILE BASE CONFIGURATION
-  ////////////////////////////////////////////////////////////////////////////
-  public static final String sLOGFILE_FILE_NAME = "./log/vsm3.log";
-
-  ////////////////////////////////////////////////////////////////////////////
-  // LOGFILE BASE CONFIGURATION
-  ////////////////////////////////////////////////////////////////////////////
-  // PG: Why is this in the VSM preferences?
-  public static final String sNOVAFILE_FILE_NAME = "./log/nova.log";
-
-  ////////////////////////////////////////////////////////////////////////////
-  // LOGFILE BASE CONFIGURATION
-  ////////////////////////////////////////////////////////////////////////////
-  public static final String sSOCKFILE_FILE_NAME = "./log/sock.log";
 
   ////////////////////////////////////////////////////////////////////////////
   // VERSION INFORMATION
@@ -92,8 +76,7 @@ public final class Preferences {
   public static final String sUSER_NAME = System.getProperty("user.name");
   public static final String sUSER_HOME = System.getProperty("user.home");
   public static final String sUSER_DIR = System.getProperty("user.dir");
-  public static final String sSAMPLE_PROJECTS = "res" + System.getProperty("file.separator") + "prj";
-  public static final String sTUTORIALS_PROJECTS = "res" + System.getProperty("file.separator") + "tutorials";
+
   //////////////////////////////////////////////////////////////////////////////
   // NODE COLORS
   //////////////////////////////////////////////////////////////////////////////
@@ -160,7 +143,7 @@ public final class Preferences {
   //////////////////////////////////////////////////////////////////////////////
   public static final SimpleDateFormat sDATE_FORMAT = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
 
-  public static String FRAME_TITLE = "Graphical VOnDA Editor";
+  public String FRAME_TITLE = "Graphical VOnDA Editor";
   public String FRAME_NAME = "GraphEditor";
   public String ICON_FILE = "res/img/icon.png";
   public int FRAME_POS_X = 0;
@@ -211,6 +194,8 @@ public final class Preferences {
   @SuppressWarnings({ "rawtypes", "unchecked" })
   public static synchronized void configure() {
     try {
+      load();
+      
       // Use system look and feel
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
@@ -223,16 +208,20 @@ public final class Preferences {
       if (isMac()) {
         // Mac/Apple Settings
         System.setProperty("apple.laf.useScreenMenuBar", "true");
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name", FRAME_TITLE);
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name",
+            single_instance.FRAME_TITLE);
 
         final Class appClass = Class.forName("com.apple.eawt.Application");
         // Get the application and the method to set the dock icon
         final Object app = appClass.getMethod("getApplication", new Class[]{}).invoke(null, new Object[]{});
         final Method setDockIconImage = appClass.getMethod("setDockIconImage", new Class[]{Image.class});
         // Set the dock icon to the logo of Visual Scene Maker 3
-        setDockIconImage.invoke(app, new Object[]{Preferences.ICON_SCENEMAKER_DOC.getImage()});
+        setDockIconImage.invoke(app, new Object[]{ICON_DOC.getImage()});
       }
-    } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException exc) {
+    } catch (final ClassNotFoundException | InstantiationException | 
+        IllegalAccessException | UnsupportedLookAndFeelException | 
+        NoSuchMethodException | SecurityException | IllegalArgumentException | 
+        InvocationTargetException exc) {
       mLogger.error("Error: " + exc.getMessage());
     }
   }
@@ -244,19 +233,19 @@ public final class Preferences {
   }
 
   // Check if we are on a WINDOWS system
-  private static synchronized boolean isWindows() {
+  public static synchronized boolean isWindows() {
     final String os = System.getProperty("os.name").toLowerCase();
     return (os.contains("win"));
   }
 
   // Check if we are on a MAC system
-  private static synchronized boolean isMac() {
+  public static synchronized boolean isMac() {
     final String os = System.getProperty("os.name").toLowerCase();
     return (os.contains("mac"));
   }
 
   // Check if we are on a UNIX system
-  private static synchronized boolean isUnix() {
+  public static synchronized boolean isUnix() {
     final String os = System.getProperty("os.name").toLowerCase();
     return ((os.contains("nix")) || (os.contains("nux")));
   }

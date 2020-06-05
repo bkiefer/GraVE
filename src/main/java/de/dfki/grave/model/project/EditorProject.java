@@ -46,6 +46,7 @@ public class EditorProject {
     // create a new editor config with default settings (user or system)
     mEditorConfig = Preferences.getPrefs().editorConfig.copy();
     mSceneFlow = new SceneFlow();
+    mSceneFlow.setName(name);
   }
 
   /** Load an existing project, from the directory base */
@@ -72,6 +73,11 @@ public class EditorProject {
     } else {
       name = pc.getProjectName();
       ec = pc.getEditorConfig();
+      if (name == null || ec == null) {
+        mLogger.error("Corrupt project config file {}, delete it!",
+            PROJECT_CONFIG_NAME);
+        return null;
+      }
     }
     return new EditorProject(base, name, ec, sc);
   }
@@ -162,7 +168,7 @@ public class EditorProject {
       mLogger.error("directory {} could not be created.", projectDir);
       return false;
     }
-    mProjectPath = parentDirectory;
+    mProjectPath = projectDir;
     if (saveProject()) return true;
     mProjectPath = null;
     return false;
