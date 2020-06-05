@@ -1,5 +1,7 @@
 package de.dfki.grave.editor.dialog;
 
+import static de.dfki.grave.Icons.*;
+
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
 import java.awt.ComponentOrientation;
@@ -26,7 +28,7 @@ public class CancelButton extends JLabel {
     setHorizontalAlignment(SwingConstants.RIGHT);
     setOpaque(true);
     setBackground(Color.white);
-    setIcon(Preferences.ICON_CANCEL_STANDARD);
+    setIcon(ICON_CANCEL_STANDARD);
     setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
     setToolTipText("Cancel");
     setIconTextGap(10);
@@ -41,13 +43,13 @@ public class CancelButton extends JLabel {
 //          }
       public void mouseEntered(MouseEvent me) {
         if (isEnabled()) {
-          setIcon(Preferences.ICON_CANCEL_ROLLOVER);
+          setIcon(ICON_CANCEL_ROLLOVER);
           setBackground(new Color(82, 127, 255));
         }
       }
 
       public void mouseExited(MouseEvent me) {
-        setIcon(Preferences.ICON_CANCEL_STANDARD);
+        setIcon(ICON_CANCEL_STANDARD);
         setBackground(new Color(255, 255, 255));
       }
     });

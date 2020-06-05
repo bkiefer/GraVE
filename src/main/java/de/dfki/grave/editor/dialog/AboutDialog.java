@@ -1,5 +1,6 @@
 package de.dfki.grave.editor.dialog;
 
+import static de.dfki.grave.Icons.ICON_LOGO;
 import static de.dfki.grave.Preferences.sABOUT_FILE;
 import static de.dfki.grave.editor.dialog.Dialog.getFillerBox;
 
@@ -81,9 +82,9 @@ public class AboutDialog extends JDialog {
     JPanel logoPanel = new JPanel();
 
     logoPanel.setLayout(new BoxLayout(logoPanel, BoxLayout.X_AXIS));
-    logoPanel.add(new JLabel(Preferences.ICON_SCENEMAKER_LOGO));
+    logoPanel.add(new JLabel(ICON_LOGO));
 
-    int logoXSize = Preferences.ICON_SCENEMAKER_LOGO.getIconWidth();
+    int logoXSize = ICON_LOGO.getIconWidth();
 
     mAboutPane = new MyEditorPane();
     mAboutPane.setEditorKit(editorKit);

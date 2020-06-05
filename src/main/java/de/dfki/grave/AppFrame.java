@@ -1,14 +1,9 @@
 package de.dfki.grave;
 
+import static de.dfki.grave.Icons.*;
 import static de.dfki.grave.Preferences.getPrefs;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.Date;
@@ -22,13 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.editor.dialog.AboutDialog;
+import de.dfki.grave.editor.dialog.NewProjectDialog;
 import de.dfki.grave.editor.dialog.OptionsDialog;
 import de.dfki.grave.editor.dialog.QuitDialog;
-import de.dfki.grave.editor.panels.AddButton;
-import de.dfki.grave.editor.panels.ClipBoard;
-import de.dfki.grave.editor.panels.EditorMenuBar;
-import de.dfki.grave.editor.panels.OpenProjectView;
-import de.dfki.grave.editor.panels.ProjectEditor;
+import de.dfki.grave.editor.panels.*;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.ResourceLoader;
 
