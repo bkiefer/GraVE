@@ -9,8 +9,8 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.*;
 
-import de.dfki.grave.editor.panels.EditorInstance;
-import de.dfki.grave.util.ios.ResourceLoader;
+import de.dfki.grave.AppFrame;
+import de.dfki.grave.util.ResourceLoader;
 
 /**
  * @author Martín Fallas
@@ -48,8 +48,8 @@ public class QuitDialog extends JDialog {
 
   // Construction
   public QuitDialog(int quitType) {
-    super(EditorInstance.getInstance(), "Quit", false);
-    EditorInstance.getInstance().addEscapeListener(this);
+    super(AppFrame.getInstance(), "Quit", false);
+    AppFrame.getInstance().addEscapeListener(this);
     if (quitType == EXIT_DIALOG) {
       exitMessage = "<html><body>This Project has been modified but not saved. <br> Do you want to save before quitting?</body></html>";
       yesButtonMessage = "Save";

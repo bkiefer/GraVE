@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.undo.*;
 
-import de.dfki.grave.editor.panels.UndoRedoProvider;
 import de.dfki.grave.editor.panels.WorkSpace;
 
 /**
@@ -24,7 +23,7 @@ public abstract class EditorAction implements ActionListener, UndoableEdit {
 
   public void run() {
     doIt();
-    UndoRedoProvider.addEdit(this);
+    UndoRedoProvider.getInstance().addEdit(this);
     refresh();
   }
 

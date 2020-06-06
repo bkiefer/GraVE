@@ -1,5 +1,7 @@
 package de.dfki.grave.editor.panels;
 
+import static de.dfki.grave.Icons.*;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -52,7 +54,7 @@ public final class SceneFlowElementPanel extends JScrollPane {
 
     //Global element tree
     private final TreeEntry mElementTree = new TreeEntry("SceneFlow",
-        Preferences.ICON_ROOT_FOLDER, null);
+        ICON_ROOT_FOLDER, null);
 
     //Popup menu buttons //TODO: does it work?
     private final JMenuItem functionsAdd = new JMenuItem("Add...");
@@ -82,8 +84,8 @@ public final class SceneFlowElementPanel extends JScrollPane {
 
       for (final FunctionDefinition def : functionDefinitions) {
       mFunctionsEntry.add(new TreeEntry(def.getName(), def.isValidClass()
-              ? Preferences.ICON_FUNCTION_ENTRY
-              : Preferences.ICON_FUNCTION_ERROR_ENTRY, def));
+              ? ICON_FUNCTION_ENTRY
+              : ICON_FUNCTION_ERROR_ENTRY, def));
       }
       */
     }

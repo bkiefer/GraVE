@@ -1,8 +1,9 @@
 package de.dfki.grave.editor.panels;
 
+import static de.dfki.grave.Icons.*;
+
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
@@ -30,21 +31,21 @@ public class AddButton extends JLabel {
 
   public AddButton() {
     setHorizontalAlignment(SwingConstants.RIGHT);
-    setIcon(Preferences.ICON_PLUS_STANDARD);
+    setIcon(ICON_PLUS_STANDARD);
     setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
     setToolTipText("Add");
     setIconTextGap(10);
-    setFont(new Font("Helvetica", Font.PLAIN, 24));
+    setFont(Preferences.getPrefs().editorConfig.sBUTTON_FONT.getFont());
     setFocusable(false);
     setPreferredSize(buttonSize);
     setMinimumSize(buttonSize);
     addMouseListener(new java.awt.event.MouseAdapter() {
       public void mouseEntered(MouseEvent me) {
-        setIcon(Preferences.ICON_PLUS_ROLLOVER);
+        setIcon(ICON_PLUS_ROLLOVER);
       }
 
       public void mouseExited(MouseEvent me) {
-        setIcon(Preferences.ICON_PLUS_STANDARD);
+        setIcon(ICON_PLUS_STANDARD);
       }
     });
   }

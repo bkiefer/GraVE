@@ -6,38 +6,30 @@ import static de.dfki.grave.editor.panels.WorkSpacePanel.addItem;
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.font.TextAttribute;
 import java.awt.geom.Point2D;
 import java.util.*;
 
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
 
 import de.dfki.grave.editor.action.*;
-import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.panels.*;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.flow.Position;
 import de.dfki.grave.model.flow.SuperNode;
-import de.dfki.grave.model.flow.geom.Position;
 import de.dfki.grave.util.ChainedIterator;
-import de.dfki.grave.util.evt.EventDispatcher;
 
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public final class Node extends EditorComponent implements DocumentContainer {
+public final class Node extends EditorComponent {
 
   // interaction flags
-  private boolean mSelected = false;
   public boolean mPressed = false;
 
-  private final EventDispatcher mEventMulticaster = EventDispatcher.getInstance();
-  private boolean isBasic;
   private BasicNode mDataNode;
 
   /** The list of outgoing edge views, representing the edges of the model */
@@ -58,60 +50,40 @@ public final class Node extends EditorComponent implements DocumentContainer {
   public Node(WorkSpace workSpace, BasicNode dataNode) {
     mWorkSpace = workSpace;
     mDataNode = dataNode;
-    //setToolTipText(mDataNode.getId());
-    // the former overrides any MouseListener!!!
-
-    isBasic = !(mDataNode instanceof SuperNode);
-
-    // Set initial position and size
-    setViewBounds(mDataNode.getPosition().getXPos(),
-        mDataNode.getPosition().getYPos(),
-        getEditorConfig().sNODEWIDTH,
-        getEditorConfig().sNODEHEIGHT);
-
-    mDocument = new ObserverDocument(mDataNode);
-    // Create the command badge of the GUI-BasicNode, after setting Position!
-    mCodeArea = new CodeArea(this, mDocument,
-        new Font("Monospaced", Font.ITALIC, 
-            getEditorConfig().sWORKSPACEFONTSIZE), null);
+    initCodeArea(mDataNode, null);
     // update
     update();
   }
 
   public boolean isBasic() {
-    return isBasic;
-  }
-
-  public ObserverDocument getDoc() {
-    return mDocument;
+    return mDataNode.isBasic();
   }
 
   public BasicNode getDataNode() {
     return mDataNode;
   }
+  
+  protected Point getCodeAreaLocation(Dimension r) {
+    return new Point(getLocation().x + (getWidth() - r.width)/2,
+        getLocation().y + getHeight());
+  }
 
   public void setSelected() {
     mPressed = false;
-    mSelected = true;
-    repaint(100);
-    mEventMulticaster.convey(new ElementSelectedEvent(this));
+    super.setSelected();
   }
 
   /** Resets the node to its default visual behavior */
   public void setDeselected() {
-    mSelected = false;
     mPressed = false;
-    repaint(100);
+    super.setDeselected();
   }
 
-  public BasicNode changeType(IDManager mgr, Collection<AbstractEdge> incoming,
-      BasicNode newNode) {
+  /** newNode is only non-null if it's an undo */
+  public BasicNode changeType(IDManager mgr, BasicNode newNode) throws Exception {
     BasicNode oldNode = mDataNode;
-    newNode = oldNode.changeType(mgr, incoming, newNode);
-    if (newNode == null)
-      return null;
+    newNode = oldNode.changeType(mgr, newNode);
     mDataNode = newNode;
-    isBasic = !isBasic;
     update();
     return oldNode;
   }
@@ -131,16 +103,18 @@ public final class Node extends EditorComponent implements DocumentContainer {
     mDataNode.setName(newName);
     update();
   }
-
+  
+  /*
   public void setText(String text) {
     // this automatically sets the text in DataNode, too...
     mCodeArea.setText(text);
   }
+  */
 
   private void setColor() {
     // Update the color of the node that has to be changed
     // if the type or the flavour of the node have changed
-    mColor = (isBasic) ? sBASIC_NODE_COLOR : sSUPER_NODE_COLOR;
+    mColor = (isBasic()) ? sBASIC_NODE_COLOR : sSUPER_NODE_COLOR;
 
     // Set the flavour dependent color
     switch (mDataNode.getFlavour()) {
@@ -154,26 +128,18 @@ public final class Node extends EditorComponent implements DocumentContainer {
     }
   }
 
-  private void update() {
+  protected void update() {
+    setFont(getEditorConfig().sNODE_FONT.getFont());
 
-    // Update the font and the font metrics that have to be
-    // recomputed if the node's font size has changed
-    // TODO: Move attributes to preferences and make editable
-    Map<TextAttribute, Object> map = new Hashtable<>();
-
-    map.put(TextAttribute.KERNING, TextAttribute.KERNING_ON);
-    map.put(TextAttribute.FAMILY, Font.SANS_SERIF);
-    map.put(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
-    map.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_DEMIBOLD);
-    map.put(TextAttribute.SIZE, getEditorConfig().sWORKSPACEFONTSIZE);
-
-    // Derive the font from the attribute map
-    Font font = Font.getFont(map);
-    // Derive the node's font metrics from the font
-    FontMetrics fontMetrics = getFontMetrics(font);
-    // Set the node's font to the updated font
-    setFont(font);
-
+    //setToolTipText(mDataNode.getId()); overrides any MouseListener!!!
+    // Set initial position and size
+    setViewBounds(mDataNode.getPosition().getXPos(),
+        mDataNode.getPosition().getYPos(),
+        getEditorConfig().sNODEWIDTH,
+        getEditorConfig().sNODEHEIGHT);
+    
+    FontMetrics fontMetrics = getFontMetrics(getFont());
+    
     //TODO!!!
     // Update the display name that has to be changed if the
     // node's size or the node's font size have changed
@@ -191,8 +157,9 @@ public final class Node extends EditorComponent implements DocumentContainer {
       mDisplayName = mDataNode.getName();
     }
 
-    // Set the flavour dependend color
+    // Set the flavour dependent color
     setColor();
+    super.update();
   }
 
   @Override
@@ -247,10 +214,12 @@ public final class Node extends EditorComponent implements DocumentContainer {
   // **********************************************************************
 
   /** Return the ID of a free dock point closest to p, which is in (zoomed)
-   *  workspace coordinates.
+   *  view coordinates. In addition, we have to account for the translation
+   *  of the node center in the view.
    */
-  public int getNearestFreeDock(Point p) {
-    return mDataNode.getNearestFreeDock(toModelPos(p));
+  public int getNearestFreeDock(Point p, boolean source) {
+    p.translate(- getWidth()/2, - getHeight()/2);
+    return mDataNode.getNearestFreeDock(toModelPos(p), source);
   }
 
   /** Return the dock point for the given ID, in (zoomed)
@@ -259,7 +228,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
   public Point getDockPoint(int which) {
     // dp contains the zoom factor, it's in getWidth()
     Point2D dp = mDataNode.getDockPoint(which, getWidth());
-    Point center = toViewPoint(mDataNode.getCenter());
+    Point center = getCenterPoint();
     center.translate((int)dp.getX(), (int)dp.getY());
     return center;
   }
@@ -267,6 +236,14 @@ public final class Node extends EditorComponent implements DocumentContainer {
   // **********************************************************************
   // Other location functions
   // **********************************************************************
+
+  /** Returns the center of a node, in (zoomed) workspace coordinates.
+   */
+  public Point getCenterPoint() {
+    Point center = toViewPoint(mDataNode.getPosition());
+    center.translate(getWidth() / 2, getHeight()/2);
+    return center;
+  }
 
   /** Given x, y in workspace coordinates, is the point contained in this
    *  node?
@@ -281,21 +258,13 @@ public final class Node extends EditorComponent implements DocumentContainer {
   public void moveTo(Position newLocation) {
     mDataNode.setPosition(newLocation);
     for (Edge edge : getConnectedEdges()) {
-      edge.updateEdgeGraphics();
+      edge.update();
     }
     setViewLocation(newLocation.getXPos(), newLocation.getYPos());
     CodeArea badge = getCodeArea();
     if (badge != null) {
       badge.setLocation();
     }
-  }
-
-  /** Returns the center of a node, in (zoomed) workspace coordinates.
-   *
-   *  The location is in the top left corner.
-   */
-  public Point getCenterPoint() {
-    return toViewPoint(mDataNode.getCenter());
   }
 
   // **********************************************************************
@@ -307,33 +276,29 @@ public final class Node extends EditorComponent implements DocumentContainer {
    */
   public void showContextMenu(WorkSpacePanel mWorkSpace) {
     JPopupMenu pop = new JPopupMenu();
-    SuperNode curr = mDataNode.getParentNode();
 
-    addItem(pop, curr.isStartNode(getDataNode()) ? "Unset Start" : "Set Start",
-        new ToggleStartNodeAction(mWorkSpace, this.getDataNode()));
-    pop.add(new JSeparator());
-
-    if (!(getDataNode() instanceof SuperNode)) {
-      addItem(pop, "To Supernode", new ChangeNodeTypeAction(mWorkSpace, mDataNode));
-      pop.add(new JSeparator());
-    } else {
+    if (! isBasic()) {
       SuperNode n = (SuperNode)getDataNode();
       if (n.getNodeSize() == 0) {
         addItem(pop, "To BasicNode", new ChangeNodeTypeAction(mWorkSpace, mDataNode));
         pop.add(new JSeparator());
       }
+    } else {
+      // Only BasicNodes can become start nodes
+      if (! mDataNode.isStartNode()) {
+        addItem(pop, "Set Start",
+            new ToggleStartNodeAction(mWorkSpace, this.getDataNode()));
+        addItem(pop, "To Supernode", new ChangeNodeTypeAction(mWorkSpace, mDataNode));
+        pop.add(new JSeparator());
+      }
     }
-
-    // TODO: MAYBE INVERT: IF NO CMD, ADD ONE
-    if (getDataNode().getContent() != null) {
-      addItem(pop, "Edit Command", new EditCommandAction(mWorkSpace, getCodeArea()));
+    
+    addItem(pop, "Copy", new CopyNodesAction(mWorkSpace, mDataNode));
+    if (! mDataNode.isStartNode()) {
+      addItem(pop, "Cut", new RemoveNodesAction(mWorkSpace, mDataNode, true));
       pop.add(new JSeparator());
+      addItem(pop, "Delete", new RemoveNodesAction(mWorkSpace, mDataNode, false));
     }
-
-    addItem(pop, "Copy", new CopyNodesAction(mWorkSpace, this.mDataNode));
-    addItem(pop, "Cut", new RemoveNodesAction(mWorkSpace, this.getDataNode(), true));
-    pop.add(new JSeparator());
-    addItem(pop, "Delete", new RemoveNodesAction(mWorkSpace, this.getDataNode(), false));
     pop.show(this, getWidth(), 0);
   }
 
@@ -387,7 +352,7 @@ public final class Node extends EditorComponent implements DocumentContainer {
     int nh = nodeHeight - borderOffset * 2;
     int lu = borderOffset + 1; // left or upper
     // Draw the node as a supernode
-    if (!isBasic) {
+    if (!isBasic()) {
       if (mDataNode.isStartNode()) {
         int rght = nw + 4; // right
         int low = nh + 4;  // lower

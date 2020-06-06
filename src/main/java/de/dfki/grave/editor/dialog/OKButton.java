@@ -1,10 +1,11 @@
 package de.dfki.grave.editor.dialog;
 
+import static de.dfki.grave.Icons.*;
+
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
@@ -17,6 +18,7 @@ import de.dfki.grave.Preferences;
  *
  * @author mfallas
  */
+@SuppressWarnings("serial")
 public class OKButton extends JLabel {
 
   private final Dimension buttonSize = new Dimension(135, 30);
@@ -26,11 +28,11 @@ public class OKButton extends JLabel {
     setHorizontalAlignment(SwingConstants.RIGHT);
     setOpaque(true);
     setBackground(Color.white);
-    setIcon(Preferences.ICON_OK_STANDARD);
+    setIcon(ICON_OK_STANDARD);
     setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
     setToolTipText("OK");
     setIconTextGap(20);
-    setFont(new Font("Helvetica", Font.PLAIN, 20));
+    setFont(Preferences.getPrefs().editorConfig.sBUTTON_FONT.getFont());
     setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
     setPreferredSize(buttonSize);
     setMinimumSize(buttonSize);
@@ -42,14 +44,14 @@ public class OKButton extends JLabel {
       @Override
       public void mouseEntered(MouseEvent me) {
         if (isEnabled()) {
-          setIcon(Preferences.ICON_OK_ROLLOVER);
+          setIcon(ICON_OK_ROLLOVER);
           setBackground(new Color(82, 127, 255));
         }
       }
 
       @Override
       public void mouseExited(MouseEvent me) {
-        setIcon(Preferences.ICON_OK_STANDARD);
+        setIcon(ICON_OK_STANDARD);
         setBackground(new Color(255, 255, 255));
       }
     });

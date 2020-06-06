@@ -1,12 +1,10 @@
 package de.dfki.grave.editor.panels;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.JSplitPane;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -16,8 +14,7 @@ import org.slf4j.LoggerFactory;
 //import org.fife.ui.autocomplete.AutoCompletion;
 
 import de.dfki.grave.Preferences;
-import de.dfki.grave.editor.DocumentContainer;
-import de.dfki.grave.editor.event.ClearCodeEditorEvent;
+import de.dfki.grave.editor.EditorComponent;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.TreeEntrySelectedEvent;
 import de.dfki.grave.model.project.EditorProject;
@@ -40,11 +37,6 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   private final SceneFlowEditor mSceneFlowEditor;
   // Code editing panel
   private final CodeEditor mCodeEditor;
-
-  // Create an empty project editor
-  public ProjectEditor() {
-    this(new EditorProject());
-  }
 
   // Construct a project editor with a project
   public ProjectEditor(final EditorProject project) {
@@ -90,10 +82,6 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
   // Initialize the GUI components
   private void initComponents() {
-    // Set Background Color
-    mSceneFlowEditor.setBackground(Color.WHITE);
-    // Set An Empty Border
-    mSceneFlowEditor.setBorder(BorderFactory.createEmptyBorder());
 
     setOneTouchExpandable(true);
 
@@ -167,7 +155,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
           mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = true;
           mCodeEditor.updateBorders();
         }
-        Preferences.save();
+        Preferences.savePrefs();
       }
 
       @Override
@@ -200,11 +188,11 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       //showAuxiliaryEditor();
     } else if (event instanceof ElementSelectedEvent) {
       Object edited = ((ElementSelectedEvent) event).getElement();
-      if (edited instanceof DocumentContainer) {
-        mCodeEditor.setEditedNodeOrEdge((DocumentContainer) edited);
-      }
-    } else if (event instanceof ClearCodeEditorEvent) {
-      mCodeEditor.setEditedNodeOrEdge(null);
+      if (edited instanceof EditorComponent) {
+        mCodeEditor.setEditedNodeOrEdge((EditorComponent) edited);
+      } else {
+        mCodeEditor.setEditedNodeOrEdge(null);
+      } 
     }
   }
 
@@ -215,5 +203,9 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     // Refresh the components
     mSceneFlowEditor.refresh();
   }
-
+  
+  public final void refreshToolBar() {
+    if (mSceneFlowEditor != null)
+      mSceneFlowEditor.refreshToolBar();
+  }
 }

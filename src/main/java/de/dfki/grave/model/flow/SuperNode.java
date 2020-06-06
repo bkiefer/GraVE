@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.editor.panels.IDManager;
-import de.dfki.grave.model.flow.geom.Geom;
-import de.dfki.grave.model.flow.geom.Position;
 import de.dfki.grave.util.Pair;
 
 /**
@@ -47,8 +45,15 @@ public class SuperNode extends BasicNode {
     copyBasicFields(node);
   }
 
-  /** Get a new SuperNode from the GUI */
+  public boolean isBasic() { return false; }
+  
+  /** Get a new SuperNode from the GUI, but only if the parent SuperNode already
+   *  has a BasicNode as StartNode.
+   */
   public BasicNode createNode(IDManager mgr, Position p, SuperNode s) {
+    // first node created must be a BasicNode!
+    if (s.getNodeSize() == 0)
+      return null;
     return new SuperNode().init(mgr.getNextFreeID(this), p, s);
   }
 
@@ -57,10 +62,26 @@ public class SuperNode extends BasicNode {
     return mStartNode;
   }
 
-  /** NODE MODIFICATION (?) */
+  /** NODE MODIFICATION (?)
+   * TODO: In the future, this should only be allowed for BasicNodes. Currently
+   * it's still in because old style projects have SuperNodes that are start
+   * nodes
+   */
   public void setStartNode(BasicNode value) {
     mStartNode = value;
     mStartNodeId = value.getId();
+  }
+  
+  /** No code allowed with SuperNodes, must be associated with the 
+   *  SuperNode's Start or End Node(s)
+   */
+  public String getContent() {
+    return null;
+  }
+  
+  public void setContent(String s) {
+    throw new UnsupportedOperationException(
+        "SuperNode code must moved inside the Node");
   }
 
   public void setComment(String value) {
@@ -102,10 +123,24 @@ public class SuperNode extends BasicNode {
   }
   */
 
-  public boolean isStartNode(BasicNode value) {
+  /** Only for BasicNode */
+  boolean isStartNode(BasicNode value) {
     return mStartNode == value;
   }
 
+  /** Only for BasicNode */
+  List<AbstractEdge> computeIncomingEdges(BasicNode node) {
+    ArrayList<AbstractEdge> result = new ArrayList<>();
+    for (BasicNode n : mNodeList) {
+      for (AbstractEdge e : n.getEdgeList()) {
+        if (e.getTargetNode() == node) {
+          result.add(e);
+        }
+      }
+    }
+    return result;
+  }
+  
   /** Add a node to the list of nodes
    *
    *  NODE MODIFICATION
@@ -156,9 +191,6 @@ public class SuperNode extends BasicNode {
       if (node instanceof SuperNode) {
         ((SuperNode)node).establishParentNodes();
       }
-    }
-    for (CommentBadge c : mCommentList) {
-      c.setParentNode(this);
     }
   }
 

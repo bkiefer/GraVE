@@ -1,6 +1,7 @@
 package de.dfki.grave.editor.dialog;
 
-import static de.dfki.grave.Preferences.sABOUT_FILE;
+import static de.dfki.grave.Icons.ICON_LOGO;
+import static de.dfki.grave.Constants.*;
 import static de.dfki.grave.editor.dialog.Dialog.getFillerBox;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -21,8 +22,8 @@ import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
 
+import de.dfki.grave.AppFrame;
 import de.dfki.grave.Preferences;
-import de.dfki.grave.editor.panels.EditorInstance;
 
 /**
  * @author Patrick Gebhard
@@ -31,8 +32,7 @@ import de.dfki.grave.editor.panels.EditorInstance;
 public class AboutDialog extends JDialog {
 
   // Singelton instance
-  private static AboutDialog sInstance = null;
-  private Font mFont = new Font("SansSerif", Font.PLAIN, 11);
+  private static AboutDialog sInstance = null; 
   private JPanel mContentPanel = null;
   private JScrollPane mAboutTextScrollPane = null;
   private MyEditorPane mAboutPane = null;
@@ -66,8 +66,8 @@ public class AboutDialog extends JDialog {
 
   // Construction
   private AboutDialog() {
-    super(EditorInstance.getInstance(), "About", false);
-    EditorInstance.getInstance().addEscapeListener(this);
+    super(AppFrame.getInstance(), "About", false);
+    AppFrame.getInstance().addEscapeListener(this);
     // Init close operation
     setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
     addWindowListener(new WindowAdapter() {
@@ -82,9 +82,9 @@ public class AboutDialog extends JDialog {
     JPanel logoPanel = new JPanel();
 
     logoPanel.setLayout(new BoxLayout(logoPanel, BoxLayout.X_AXIS));
-    logoPanel.add(new JLabel(Preferences.ICON_SCENEMAKER_LOGO));
+    logoPanel.add(new JLabel(ICON_LOGO));
 
-    int logoXSize = Preferences.ICON_SCENEMAKER_LOGO.getIconWidth();
+    int logoXSize = ICON_LOGO.getIconWidth();
 
     mAboutPane = new MyEditorPane();
     mAboutPane.setEditorKit(editorKit);
@@ -95,10 +95,10 @@ public class AboutDialog extends JDialog {
     mAboutPane.setBackground(new Color(224, 223, 227));
 
     try {
-      URL pageURL = sABOUT_FILE;
+      URL pageURL = ABOUT_FILE;
       mAboutPane.setPage(pageURL);
     } catch (Exception e) {
-      mAboutPane.setText("<html><body><font color=\"red\">No about available!<br>Unable to locate " + sABOUT_FILE
+      mAboutPane.setText("<html><body><font color=\"red\">No about available!<br>Unable to locate " + ABOUT_FILE
               + "</font></body></html>");
       e.printStackTrace();
     }
@@ -120,7 +120,7 @@ public class AboutDialog extends JDialog {
         dispose();
       }
     });
-    setFont(mFont);
+    setFont(Preferences.getPrefs().editorConfig.sDIALOG_FONT.getFont());
 
     JPanel buttonPanel = new JPanel();
 
@@ -164,6 +164,7 @@ public class AboutDialog extends JDialog {
     return sInstance;
   }
 
+  @SuppressWarnings("serial")
   class MyEditorPane extends JEditorPane {
 
     public MyEditorPane() {

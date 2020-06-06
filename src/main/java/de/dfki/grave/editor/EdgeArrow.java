@@ -67,7 +67,6 @@ public final class EdgeArrow {
     };
   }
 
-
   /** On mouse click or press, set the selection mask for the control points */
   public void edgeSelected(Point p) {
     Point2D[] controlPoints = getCoords();
@@ -82,6 +81,12 @@ public final class EdgeArrow {
     mSelected = 4; // selected, but none of the control points
   }
 
+  /** Show the control points, too */
+  public void showControlPoints() {
+    mSelected = 4;
+  }
+  
+  
   public void mouseDragged(Edge e, Point p) {
     if (mSelected < 0 || mSelected > 3) return;
     Point2D[] ctrl = getCoords();
@@ -91,20 +96,23 @@ public final class EdgeArrow {
   }
 
 
-  private boolean controlPointHandlerContainsPoint(Point point, int threshold) {
+  private boolean controlPointHandleContainsPoint(Point point, int threshold) {
     return mCurve.getCtrlP1().distance(point) < threshold
         || mCurve.getCtrlP2().distance(point) < threshold;
   }
 
-  public boolean curveContainsPoint(Point point) {
-    Point2D[] ctrl = getCoords();
-
+  public boolean controlContainsPoint(Point point) {
     // check if point is inside the control point handlers
-    if (controlPointHandlerContainsPoint(point, 10)
+    if (controlPointHandleContainsPoint(point, 10)
         || mCurve.getP1().distance(point) < 10
         || mCurve.getP2().distance(point) < 10) {
       return true;
     }
+    return false;
+  }
+  
+  public boolean curveContainsPoint(Point point) {
+    Point2D[] ctrl = getCoords();
 
     double x1 = ctrl[0].getX();
     double y1 = ctrl[0].getY();

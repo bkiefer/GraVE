@@ -12,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.editor.panels.IDManager;
-import de.dfki.grave.model.flow.geom.Geom;
-import de.dfki.grave.model.flow.geom.Position;
 import de.dfki.grave.util.ChainedIterator;
 
 /**
@@ -24,8 +22,6 @@ import de.dfki.grave.util.ChainedIterator;
 public class BasicNode implements ContentHolder {
 
   private static final Logger logger = LoggerFactory.getLogger(BasicNode.class);
-
-  private static final int WIDTH = 100; // default width for model
 
   public static class CodeAdapter extends XmlAdapter<String, Code> {
     @Override
@@ -64,7 +60,7 @@ public class BasicNode implements ContentHolder {
   // XML handling using access functions (see below)
   protected AbstractEdge mDEdge = null;
 
-  /** Top-left corner of the node */
+  /** Center point of the node */
   @XmlElement(name="Position")
   protected Position mPosition = null;
 
@@ -78,6 +74,7 @@ public class BasicNode implements ContentHolder {
     NONE, ENODE, TNODE, CNODE, PNODE, INODE, FNODE
   };
 
+  public boolean isBasic() { return true; }
 
   /** For a given set of nodes that are subnodes of the same SuperNode, compute
    *  all edge views that emerge from a node inside the set and end in a node
@@ -195,18 +192,24 @@ public class BasicNode implements ContentHolder {
     return ! (mComment == null || mComment.isEmpty());
   }
 
-  /** NODE MODIFICATION, ONLY THROUGH ACTION! */
-  public BasicNode changeType(IDManager mgr, Collection<AbstractEdge> incoming,
-      BasicNode newNode) {
+  /** NODE MODIFICATION, ONLY THROUGH ACTION! 
+   * @throws Exception */
+  public BasicNode changeType(IDManager mgr, BasicNode newNode) throws Exception {
+    // adapt node lists of parent SuperNode
+    SuperNode s = getParentNode();
+    Collection<AbstractEdge> incoming = s.computeIncomingEdges(this); 
     if (newNode == null) {
       if (this instanceof SuperNode) {
         SuperNode n = (SuperNode)this;
         if (n.getNodeSize() > 0) {
           // complain: this operation can not be done, SuperNode has subnodes
-          return null;
+          throw new Exception("SuperNode contains Nodes: Type change not possible");
         }
         newNode = new BasicNode(mgr, n);
       } else {
+        if (getContent() != null && ! getContent().trim().isEmpty())  {
+          throw new Exception("BasicNode with Code: Type change not possible");
+        }
         newNode = new SuperNode(mgr, this);
         // adapt node lists of parent SuperNode
       }
@@ -214,12 +217,9 @@ public class BasicNode implements ContentHolder {
     for (AbstractEdge e : incoming) {
       e.connect(e.getSourceNode(), newNode);
     }
-    // adapt node lists of parent SuperNode
-    SuperNode s = getParentNode();
     s.removeNode(this);
     s.addNode(newNode);
-    BasicNode oldNode = this;
-    return oldNode;
+    return newNode;
   }
 
   /** Add an outgoing edge from this node, with all consequences.
@@ -270,7 +270,10 @@ public class BasicNode implements ContentHolder {
   public void setPosition(Position value) {
     mPosition = value;
   }
-
+  
+  /** Return center point (position) of the node: for the model, nodes are 
+   *  points.
+   */
   public Position getPosition() {
     return mPosition;
   }
@@ -280,8 +283,7 @@ public class BasicNode implements ContentHolder {
    * NODE MODIFICATION
    */
   public void translate(int x, int y) {
-    mPosition.setXPos(mPosition.getXPos() + x);
-    mPosition.setYPos(mPosition.getYPos() + y);
+    mPosition.translate(x, y);
   }
 
   public void setParentNode(SuperNode value) {
@@ -473,14 +475,10 @@ public class BasicNode implements ContentHolder {
     return false;
   }
 
-  public Position getCenter() {
-    return new Position(mPosition.getXPos() + WIDTH/2, mPosition.getYPos() + WIDTH/2);
-  }
-
-  public int getNearestFreeDock(Position p) {
+  public int getNearestFreeDock(Position p, boolean source) {
     // start with the closest angle with a reasonable representation
-    double angle = Geom.angle(getCenter(), p);
-    return Geom.findClosestDock(mDocksTaken, angle);
+    double angle = getPosition().angle(p);
+    return Geom.findClosestDock(mDocksTaken, angle, source);
   }
 
   private class EdgeIterator implements Iterator<AbstractEdge> {

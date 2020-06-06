@@ -4,22 +4,22 @@ import static de.dfki.grave.Preferences.*;
 import static de.dfki.grave.editor.panels.WorkSpacePanel.addItem;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 
-import javax.swing.*;
+import javax.swing.JPopupMenu;
 
-import de.dfki.grave.editor.action.*;
-import de.dfki.grave.editor.event.EdgeEditEvent;
-import de.dfki.grave.editor.event.ElementSelectedEvent;
-import de.dfki.grave.editor.panels.EditorInstance;
+import de.dfki.grave.editor.action.MoveEdgeCtrlAction;
+import de.dfki.grave.editor.action.MoveEdgeEndPointAction;
+import de.dfki.grave.editor.action.NormalizeEdgeAction;
+import de.dfki.grave.editor.action.RemoveEdgeAction;
+import de.dfki.grave.editor.action.ShortestEdgeAction;
+import de.dfki.grave.editor.action.StraightenEdgeAction;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.*;
-import de.dfki.grave.model.flow.geom.Geom;
-import de.dfki.grave.model.flow.geom.Position;
-import de.dfki.grave.util.evt.EventDispatcher;
 
 
 /**
@@ -27,10 +27,8 @@ import de.dfki.grave.util.evt.EventDispatcher;
  * @author Gregor Mehlmann
  */
 @SuppressWarnings("serial")
-public class Edge extends EditorComponent implements DocumentContainer {
+public class Edge extends EditorComponent {
   /** MIN POSITION OF THE CONTROLPOINTS OF THE EDGE */
-
-  private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
 
   // Reference to data model edges and nodes
   private AbstractEdge mDataEdge = null;
@@ -39,9 +37,6 @@ public class Edge extends EditorComponent implements DocumentContainer {
   private Node mSourceNode = null;
   private Node mTargetNode = null;
   private EdgeArrow mArrow = null;
-
-  // edit panel
-  private boolean mEditMode = false;
 
   //
   // other stuff
@@ -89,18 +84,15 @@ public class Edge extends EditorComponent implements DocumentContainer {
    *  a new edge is created.
    */
   public Edge(WorkSpace ws, AbstractEdge edge, Node sourceNode, Node targetNode) {
-    setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-    mDataEdge = edge;
     mWorkSpace = ws;
+    mDataEdge = edge;
     mSourceNode = sourceNode;
     mTargetNode = targetNode;
-
-    setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-    initEditBox();
     mArrow = new EdgeArrow();
-    setDeselected();
-
     update();
+    initCodeArea(edge, color());
+    setFont(getEditorConfig().sCODE_FONT.getFont());
+    setDeselected();
     setVisible(true);
   }
 
@@ -118,14 +110,18 @@ public class Edge extends EditorComponent implements DocumentContainer {
     return name() + "(" + mSourceNode.getDataNode().getId() + "->" + mTargetNode.getDataNode().getId() + ")";
   }
 
-  public ObserverDocument getDoc() {
-    return mDocument;
-  }
-
   public String getDescription() {
     return mDataEdge != null ? mDataEdge.getContent() : null;
   }
 
+  protected Point getCodeAreaLocation(Dimension r) {
+    Point2D p = getCurveCenter();
+    // center around middle of curve
+    int x = (int) Math.round(p.getX() - r.width / 2.0);
+    int y = (int) Math.round(p.getY() - r.height / 2.0);
+    return new Point(x, y);
+  }
+  
   // **********************************************************************
   // All methods use view coordinates
   // **********************************************************************
@@ -150,109 +146,47 @@ public class Edge extends EditorComponent implements DocumentContainer {
     return Geom.add(getEnd(), mWorkSpace.toViewPoint(mDataEdge.getTargetCtrlPoint()));
   }
 
-  /** is p (in view coordinates) on the curve of this edge? */
+  /** is p (in view coordinates) on the curve or the code area of this edge? */
   public boolean containsPoint(Point p) {
     if (mArrow.curveContainsPoint(p)) return true;
-    // also look at the text box, if any. 
-    if (mCodeArea != null) {
-      return mCodeArea.getBounds().contains(p);
+    // also look at the text box, if any.
+    CodeArea c = getCodeArea();
+    if (c != null) {
+      return c.getBounds().contains(p);
     }
     return false;
   }
 
+  /** is p (in view coordinates) on the curve, the code area, or the control points
+   *  of this edge? */
+  public boolean containsPointSelected(Point p) {
+    return containsPoint(p) || mArrow.controlContainsPoint(p);
+  }
+  
   public boolean outOfBounds() {
     Point ctrl1 = getStartCtrl();
     Point ctrl2 = getEndCtrl();
     // return ctrl1.x < 0 || ctrl1.y < 0 || ctrl2.x < 0 || ctrl2.y < 0;
     // what do we consider as out of bounds?
     // If the control point is covered by the node
-    return mSourceNode.contains(ctrl1) || mTargetNode.contains(ctrl2);
+    return mSourceNode.getBounds().contains(ctrl1) 
+        || mTargetNode.getBounds().contains(ctrl2);
   }
 
   public boolean isIntersectByRectangle(double x1, double x2, double y1, double y2) {
     return mArrow.isIntersectByRectangle(x1, x2, y1, y2);
   }
 
-  public void updateEdgeGraphics() {
+  public void update() {
     mArrow.computeCurve(getStart(), getStartCtrl(), getEndCtrl(), getEnd());
     computeBounds();
   }
-
-  private void update() {
-    // Adapt font size
-    if (getEditorConfig().sWORKSPACEFONTSIZE != getFont().getSize())
-      getFont().deriveFont(getEditorConfig().sWORKSPACEFONTSIZE);
-
-    updateEdgeGraphics();
-  }
-
-  /**
-   * Initialize mTextPane and mValueEditor
-   */
-  private void initEditBox() {
-    //if (getDescription() == null) return;
-    // TODO: ACTIVATE AFTER FIXING CODEEDITOR.SETEDITEDOBJECT
-
-    mDocument = new ObserverDocument(mDataEdge);
-    mCodeArea = new CodeArea(this,  mDocument, 
-        new Font("Monospaced", Font.ITALIC,
-            getEditorConfig().sWORKSPACEFONTSIZE), color());
-    /*
-
-    mTextArea.setBorder(BorderFactory.createLineBorder(color()));
-    mTextArea.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      // character added
-      public void insertUpdate(DocumentEvent e) { computeBounds(); }
-
-      @Override
-      // character removed
-      public void removeUpdate(DocumentEvent e) { insertUpdate(e); }
-
-      @Override
-      public void changedUpdate(DocumentEvent e) { insertUpdate(e); }
-    });
-
-    mTextArea.addFocusListener(new FocusListener() {
-      @Override
-      public void focusGained(FocusEvent e) {
-        mDispatcher.convey(new ElementSelectedEvent(Edge.this));
-      }
-      @Override
-      public void focusLost(FocusEvent e) {
-        mDocument.updateModel();
-      }
-    });
-
-    // Attributes
-    mTextArea.setFont(this.getFont());
-    mTextArea.setForeground(color());
-
-    mTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
-    mTextArea.getActionMap().put("enter", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        setDeselected();
-        mDispatcher.convey(new ElementSelectedEvent(null));
-        updateFromTextEditor();
-      }
-    });
-    mTextArea.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
-    mTextArea.getActionMap().put("escape", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        setDeselected();
-      }
-    });
-    */
-    mCodeArea.setVisible(mCodeArea.getText().trim().length() > 0);
-  }
-
+  
   /*
    * Take input value of mValueEditor and set it as value of the edge
    * EDGE MODIFICATION  
-   */
-  private void updateFromTextEditor() {
+   *
+  void updateFromTextEditor() {
     if (mCodeArea == null) return;
     String input = mCodeArea.getText();
     if (mDataEdge != null) {
@@ -269,20 +203,22 @@ public class Edge extends EditorComponent implements DocumentContainer {
       }
     }
     EditorInstance.getInstance().refresh();
-  }
+  }*/
 
   public void setSelected() {
-    mEditMode = true;
-    mCodeArea.setSelected();
-    repaint(100);
+    mArrow.showControlPoints();
+    super.setSelected();
   }
-
+  
   public void setDeselected() {
     mArrow.deselectMCs();
-    mEditMode = false;
-    repaint(100);
+    super.setDeselected();
   }
 
+  public boolean isInEditMode() {
+    return mSelected;
+  }
+  
   /**
    */
   private void showContextMenu(MouseEvent evt, Edge edge) {
@@ -303,19 +239,11 @@ public class Edge extends EditorComponent implements DocumentContainer {
 
   @Override
   public void mouseClicked(MouseEvent event) {
-
-    mDispatcher.convey(new ElementSelectedEvent(this));
-    mousePressed(event);
-
     // show context menu
     if ((event.getButton() == MouseEvent.BUTTON3) && (event.getClickCount() == 1)) {
       showContextMenu(event, this);
-    } else if ((event.getClickCount() == 2) && getDescription() != null
-        && mCodeArea != null) {
-      //mTextArea.requestFocus();
-      //mEditMode = true;
-      mDispatcher.convey(new EdgeEditEvent(this, this.getDataEdge()));
     }
+    repaint(100);
   }
 
   /**
@@ -323,8 +251,66 @@ public class Edge extends EditorComponent implements DocumentContainer {
    */
   @Override
   public void mousePressed(MouseEvent e) {
-    mArrow.edgeSelected(e.getPoint());
-    // revalidate();
+    if (mSelected) {
+      mArrow.edgeSelected(e.getPoint());
+      // revalidate();
+      repaint(100);
+    }
+  }
+  
+  private boolean canDeflect(Node curr, Node old) {
+    return (curr != null &&
+        (curr == old || curr.getDataNode().canAddEdge(mDataEdge)));
+  }
+
+  /** This takes all the responsibility for edge changes using the mouse, except
+   *  creation of a new edge:
+   *  - Assigning a new dock to the start point
+   *  - Modification of a control point
+   *  - Assigning a new dock, possibly at a new target node, to the end point
+   */
+  @Override
+  public void mouseReleased(MouseEvent e) {
+    Point p = e.getPoint();
+    switch (mArrow.mSelected) {
+    case EdgeArrow.S: 
+    case EdgeArrow.E: {
+      boolean isSource = mArrow.mSelected == EdgeArrow.S;
+      Node newNode = mWorkSpace.findNodeAtPoint(p);
+      if (canDeflect(newNode, isSource ? mSourceNode : mTargetNode)) {
+        int dock = newNode.getNearestFreeDock(p, isSource);
+        new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), isSource, dock,
+            newNode.getDataNode()).run();
+      } else {
+        update(); // put arrow back into old position
+      }
+      break;
+    }
+    case EdgeArrow.C1:     
+    case EdgeArrow.C2: {
+      boolean isSource = mArrow.mSelected == EdgeArrow.C1;
+      // compute vector from dock point to p (relative ctrls)
+      Point dock = isSource 
+          ? mSourceNode.getDockPoint(mDataEdge.getSourceDock())
+          : mTargetNode.getDockPoint(mDataEdge.getTargetDock());
+      p.translate(-dock.x, -dock.y);
+      // All actions use Positions (model coordinates)
+      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), isSource, toModelPos(p)).run();
+      break;
+    }
+    }
+  }
+
+  public void mouseDragged(java.awt.event.MouseEvent e) {
+    Point p = e.getPoint();
+    // do not allow x and y values below 10
+    if (p.x - 10 < 0)
+      p.x = 10;
+    if (p.y - 10 < 0)
+      p.y = 10;
+
+    mArrow.mouseDragged(this, p);
+    computeBounds();
     repaint(100);
   }
 
@@ -379,7 +365,7 @@ public class Edge extends EditorComponent implements DocumentContainer {
    */
   public void straightenEdge() {
     mDataEdge.straightenEdge(mSourceNode.getWidth());
-    updateEdgeGraphics();
+    update();
   }
 
   /** Try to give this edge a better shape (TODO: define! implement!)
@@ -390,91 +376,21 @@ public class Edge extends EditorComponent implements DocumentContainer {
     straightenEdge();
   }
 
-  private boolean canDeflect(Node curr, Node old) {
-    return (curr != null &&
-        (curr == old || curr.getDataNode().canAddEdge(mDataEdge)));
+  Point2D getCurveCenter() {
+    return new Point2D.Double(mArrow.mLeftCurve.x2, mArrow.mLeftCurve.y2);
   }
-
-  /** This takes all the responsibility for edge changes using the mouse, except
-   *  creation of a new edge:
-   *  - Assigning a new dock to the start point
-   *  - Modification of a control point
-   *  - Assigning a new dock, possibly at a new target node, to the end point
-   *
-   *  TODO: Here, any change that has happened during drag should be registered in an
-   *  undoable way
-   */
-  @Override
-  public void mouseReleased(java.awt.event.MouseEvent e) {
-    Point p = e.getPoint();
-    switch (mArrow.mSelected) {
-    case EdgeArrow.S: {
-      Node newNode = mWorkSpace.findNodeAtPoint(p);
-      if (canDeflect(newNode, mSourceNode)) {
-        int dock = newNode.getNearestFreeDock(p);
-        new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), true, dock,
-            newNode.getDataNode()).run();
-      } else {
-        updateEdgeGraphics(); // put arrow back into old position
-      }
-      break;
-    }
-    case EdgeArrow.E: {
-      Node newNode = mWorkSpace.findNodeAtPoint(p);
-      if (canDeflect(newNode, mTargetNode)) {
-        int dock = newNode.getNearestFreeDock(p);
-        new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), false, dock,
-            newNode.getDataNode()).run();
-      } else {
-        updateEdgeGraphics(); // put arrow back into old position
-      }
-      break;
-    }
-    case EdgeArrow.C1: {
-      // compute vector from dock point to p (relative ctrls)
-      Point dock = mSourceNode.getDockPoint(mDataEdge.getSourceDock());
-      p.translate(-dock.x, -dock.y);
-      // All actions use Positions (model coordinates)
-      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), true, toModelPos(p)).run();
-      break;
-    }
-    case EdgeArrow.C2: {
-      Point dock = mTargetNode.getDockPoint(mDataEdge.getTargetDock());
-      p.translate(-dock.x, -dock.y);
-      // All actions use Positions (model coordinates)
-      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), false, toModelPos(p)).run();
-      break;
-    }
-    }
-  }
-
-  public void mouseDragged(java.awt.event.MouseEvent e) {
-    Point p = e.getPoint();
-    // do not allow x and y values below 10
-    if (p.x - 10 < 0)
-      p.x = 10;
-    if (p.y - 10 < 0)
-      p.y = 10;
-
-    mArrow.mouseDragged(this, p);
-    computeBounds();
-    repaint(100);
-  }
-
+  
   private Rectangle computeTextBoxBounds() {
-    if (mCodeArea == null) return null;
-    mCodeArea.setDeselected();
-    Dimension r = mCodeArea.getSize();
+    CodeArea c = getCodeArea();
+    if (c == null) return null;
+    c.setDeselected();
+    Dimension r = c.getSize();
     
     // center around middle of curve
     int x = (int) Math.round(mArrow.mLeftCurve.x2 - r.width/2);
     int y = (int) Math.round(mArrow.mLeftCurve.y2 - r.height/2);
-    mCodeArea.setLocation(x, y);
-    /*
-    mTextArea.setBounds((int) Math.round(mArrow.mLeftCurve.x2 - width/2),
-        (int) Math.round(mArrow.mLeftCurve.y2 - mFontHeightCorrection), width, height);
-     */
-    return mCodeArea.getBounds();
+    c.setLocation(x, y);
+    return c.getBounds();
   }
 
   private void computeBounds() {
@@ -493,9 +409,10 @@ public class Edge extends EditorComponent implements DocumentContainer {
     Graphics2D graphics = (Graphics2D) g;
 
     graphics.setColor(color());
-    graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+        RenderingHints.VALUE_ANTIALIAS_ON);
     graphics.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
-            BasicStroke.JOIN_MITER));
+        BasicStroke.JOIN_MITER));
 
     // NOTE: This is the magic command that makes all drawing relative
     // to the position of this component, and removes the "absolute" position
@@ -503,16 +420,5 @@ public class Edge extends EditorComponent implements DocumentContainer {
     graphics.translate(-getLocation().x, -getLocation().y);
     // draw the arrow
     mArrow.paintArrow(graphics, lineWidth, color());
-
-    /*
-    if (mEditMode == true) {
-      //graphics.setColor(color());
-      mTextArea.requestFocusInWindow();
-    }*/
   }
-
-  public boolean isInEditMode() {
-    return mEditMode;
-  }
-
 }

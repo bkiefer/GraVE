@@ -1,10 +1,18 @@
 package de.dfki.grave.model.flow;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.xml.bind.annotation.*;
 
-import de.dfki.grave.model.flow.geom.Position;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.dfki.grave.util.JaxbUtilities;
 
 /**
  * @author Gregor Mehlmann
@@ -12,6 +20,9 @@ import de.dfki.grave.model.flow.geom.Position;
 @XmlType(name="SceneFlow")
 @XmlRootElement(name="SceneFlow")
 public final class SceneFlow extends SuperNode {
+
+  // The singleton logger instance
+  private static final Logger mLogger = LoggerFactory.getLogger(SceneFlow.class);
 
   protected String mXMLNameSpace = new String();
   protected String mXMLSchemeInstance = new String();
@@ -79,17 +90,60 @@ public final class SceneFlow extends SuperNode {
     return copy;
   }
 
-  @Override
-  public int hashCode() {
-    int hash = super.hashCode();
-    hash = 59 * hash + this.mXMLNameSpace.hashCode();
-    hash = 59 * hash + this.mXMLSchemeInstance.hashCode();
-    hash = 59 * hash + this.mXMLSchemeLocation.hashCode();
-    hash = 59 * hash + this.mPackageName.hashCode();
-    hash = 59 * hash + this.mContextClass.hashCode();
-    hash = 59 * hash + this.mContextCode.hashCode();
-    hash = 59 * hash + this.mClassPathList.hashCode();
-    hash = 59 * hash + this.mModifDate.hashCode();
-    return hash;
+  /** Load sceneflow from file, return null upon failure */
+  public static SceneFlow load(final File file) {
+    InputStream inputStream = null;
+    try {
+      inputStream = new FileInputStream(file);
+    } catch (FileNotFoundException e) {
+      mLogger.error("Cannot find or opensceneflow file '{}'", file);
+    }
+    SceneFlow mSceneFlow = (SceneFlow) JaxbUtilities.unmarshal(inputStream,
+        file.getAbsolutePath(),
+        SceneFlow.class, SuperNode.class, BasicNode.class,
+        AbstractEdge.class, TimeoutEdge.class, EpsilonEdge.class,
+        GuardedEdge.class, InterruptEdge.class, ForkingEdge.class,
+        RandomEdge.class, CommentBadge.class);
+
+    // Perform all the postprocessing steps
+    mSceneFlow.establishParentNodes();
+    mSceneFlow.establishStartNodes();
+    mSceneFlow.establishTargetNodes();
+    // Print an information message in this case
+    mLogger.info("Loaded sceneflow from '{}'", file);
+    // Return success if the project was loaded
+    return mSceneFlow;
+  }
+
+  /** Save this sceneflow to file, return true upon success, false otherwise */
+  public boolean save(final File file) {
+    // Check if the configuration file does exist
+    if (!file.exists()) {
+      // Print a warning message in this case
+      mLogger.warn("Creating the new sceneflow file '{}'", file);
+      // Create a new configuration file now
+      try {
+        // Try to create a new configuration file
+        if (!file.createNewFile()) {
+          // Print an error message in this case
+          mLogger.warn("There already exists a sceneflow file '{}'", file);
+        }
+      } catch (final IOException exc) {
+        // Print an error message in this case
+        mLogger.error("Cannot create the new sceneflow file '{}'", file);
+        // Return failure if it does not exist
+        return false;
+      }
+    }
+    // Write the sceneflow configuration file
+    JaxbUtilities.marshal(file, this,
+        SceneFlow.class, SuperNode.class, BasicNode.class,
+        AbstractEdge.class, TimeoutEdge.class, EpsilonEdge.class,
+        GuardedEdge.class, InterruptEdge.class, ForkingEdge.class,
+        RandomEdge.class, CommentBadge.class);
+    // Print an information message in this case
+    mLogger.info("Saved sceneflow configuration file '{}'", file);
+    // Return success if the project was saved
+    return true;
   }
 }

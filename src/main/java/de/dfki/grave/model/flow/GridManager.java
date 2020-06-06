@@ -9,7 +9,7 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.model.flow.geom.Position;
+import de.dfki.grave.editor.panels.WorkSpace;
 
 /**
  * @author Patrick
@@ -35,12 +35,10 @@ public class GridManager {
 
   private HashMap<Position, BasicNode> mPlacedNodes = new HashMap<>();
 
-  private int mMaxNodeSize;
-  private float mGridScale;
+  private WorkSpace mWorkspace;
 
-  public GridManager(int maxNodeSize, float gridScale) {
-    mMaxNodeSize = maxNodeSize;
-    mGridScale = gridScale;    
+  public GridManager(WorkSpace ws) {
+    mWorkspace = ws;
   }
 
   public void clear() {
@@ -48,7 +46,12 @@ public class GridManager {
   }
 
   public int gridWidth() {
-    return (int)(mMaxNodeSize * mGridScale);
+    return (int)(mWorkspace.getEditorConfig().sNODEWIDTH * 
+        mWorkspace.getEditorConfig().sGRID_SCALE);
+  }
+  
+  public int nodeSize() {
+    return mWorkspace.getEditorConfig().sNODEWIDTH;
   }
 
   /** Compute the closest free point by increasing the manhattan distance

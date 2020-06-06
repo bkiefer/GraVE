@@ -33,11 +33,9 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.undo.UndoManager;
 
-import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.model.flow.SceneFlow;
 import de.dfki.grave.model.flow.SuperNode;
 import de.dfki.grave.model.project.EditorProject;
-import de.dfki.grave.util.evt.EventDispatcher;
 
 /**
  * @author Gregor Mehlmann
@@ -68,7 +66,6 @@ public final class SceneFlowEditor extends JPanel {
   private final JPanel mNewElementDisplay;
   private final JLabel mFooterLabel;
   private final JSplitPane mSplitPane;
-  private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
   // Create a sceneflow editor
   public SceneFlowEditor(final EditorProject project) {
@@ -169,12 +166,15 @@ public final class SceneFlowEditor extends JPanel {
     });
 
     //ACTIVATE THE CONTENT OF THE ElementEditor
-    mEventCaster.convey(new ElementSelectedEvent(getActiveSuperNode()));
+    //mEventCaster.convey(new ElementSelectedEvent(getActiveSuperNode()));
 
     //
     mFooterLabel.setForeground(Color.red);
     add(mFooterLabel, BorderLayout.SOUTH);
-
+    // Set Background Color
+    setBackground(Color.WHITE);
+    // Set An Empty Border
+    setBorder(BorderFactory.createEmptyBorder());
   }
 
   /**
@@ -190,8 +190,7 @@ public final class SceneFlowEditor extends JPanel {
       mSplitPane.setDividerLocation(mEditorProject.getEditorConfig()
               .sELEMENTS_DIVIDER_LOCATION);
     }
-    mEditorProject.getEditorConfig().save(mEditorProject.getProjectFile()
-        .getParentFile());
+    mEditorProject.saveEditorConfig();
   }
 
   public void expandTree() {
@@ -242,18 +241,17 @@ public final class SceneFlowEditor extends JPanel {
     mWorkSpacePanel.cleanup();
   }
 
-
-  public JSplitPane getSplitPane() {
-    return mSplitPane;
-  }
-
   public final void refresh() {
     // Refresh editor toolbar
-    mSceneFlowToolBar.refresh();
+    refreshToolBar();
     mDynamicElementsPanel.refresh();
     mWorkSpacePanel.refresh();
   }
-
+  
+  public final void refreshToolBar() {
+    mSceneFlowToolBar.refresh();
+  }
+  
   private class SceneFlowImage extends TransferHandler implements Transferable {
 
     private final DataFlavor flavors[] = { DataFlavor.imageFlavor };

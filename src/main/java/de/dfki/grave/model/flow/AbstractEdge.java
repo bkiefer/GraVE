@@ -1,6 +1,6 @@
 package de.dfki.grave.model.flow;
 
-import static de.dfki.grave.model.flow.geom.Geom.*;
+import static de.dfki.grave.model.flow.Geom.*;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.model.flow.geom.ControlPoint;
 import de.dfki.grave.model.flow.geom.EdgeArrow;
-import de.dfki.grave.model.flow.geom.Geom;
-import de.dfki.grave.model.flow.geom.Position;
 
 /**
  * @author Gregor Mehlmann
@@ -178,16 +176,21 @@ public abstract class AbstractEdge implements ContentHolder {
     mArrow = value;
   }
 
-  /* TODO: DROP AFTER REVAMP */
+  /* TODO: DROP AFTER REVAMP: Only keep dock occupation at the beginning */
   public final void arrowToDock() {
-    if (mSourceCtrlPoint != null) return;
+    if (mSourceCtrlPoint != null) {
+      // only occupy docks
+      getSourceNode().occupyDock(mSourceDock);
+      getTargetNode().occupyDock(mTargetDock);
+      return;
+    }
     EdgeArrow arr = getArrow();
     List<ControlPoint> pl = arr.getPointList();
     // For start and target node:
     // a) find a dock close to the dock point
     // b) turn the absolute control point into a relative control point
-    mSourceDock = getSourceNode().getNearestFreeDock(pl.get(0).getPoint());
-    mTargetDock = getTargetNode().getNearestFreeDock(pl.get(1).getPoint());
+    mSourceDock = getSourceNode().getNearestFreeDock(pl.get(0).getPoint(), true);
+    mTargetDock = getTargetNode().getNearestFreeDock(pl.get(1).getPoint(), false);
     getSourceNode().occupyDock(mSourceDock);
     getTargetNode().occupyDock(mTargetDock);
     Position cp = pl.get(0).getCtrlPoint();
@@ -258,8 +261,8 @@ public abstract class AbstractEdge implements ContentHolder {
    *  (using node center point and edge connection points)
    */
   private void initCurve(int nodeWidth) {
-    Point start = mSourceNode.getCenter().toPoint();
-    Point target = mTargetNode.getCenter().toPoint();
+    Point start = mSourceNode.getPosition().toPoint();
+    Point target = mTargetNode.getPosition().toPoint();
 
     // Unit Vector from Center to Dock
     Point2D startVec = Geom.getDockPointCircle(mSourceDock, 2);
@@ -270,9 +273,15 @@ public abstract class AbstractEdge implements ContentHolder {
         ? nodeWidth * .9
         : Math.max(start.distance(target) / nodeWidth - 0.5, 1.25)
           * nodeWidth/3; // TODO: not my preferred solution.
+    
+    double xcorr = (mSourceNode == mTargetNode) 
+        ? Math.abs(startVec.getX() * scale * .7)
+        : 0;
 
-    mSourceCtrlPoint = new Position((int) (scale * startVec.getX()), (int) (scale * startVec.getY()));
-    mTargetCtrlPoint = new Position((int) (scale * targVec.getX()), (int) (scale * targVec.getY()));
+    mSourceCtrlPoint = new Position( (int) (scale * startVec.getX() - xcorr),
+        (int) (scale * startVec.getY()));
+    mTargetCtrlPoint = new Position((int) (scale * targVec.getX() + xcorr),
+        (int) (scale * targVec.getY()));
 
     // re-done for relative control pointss
     checkControl(mSourceCtrlPoint, mSourceDock);
@@ -289,12 +298,12 @@ public abstract class AbstractEdge implements ContentHolder {
     if (mSourceNode == mTargetNode) { // loop
       Position p = mSourceNode.getPosition();
       mSourceDock = mSourceNode.getNearestFreeDock(
-          new Position(p.getXPos()+(int)(nodeWidth*0.3), p.getYPos()));
+          new Position(p.getXPos()+(int)(nodeWidth*0.35), p.getYPos()), true);
       mTargetDock = mTargetNode.getNearestFreeDock(
-          new Position(p.getXPos()+(int)(nodeWidth*0.7), p.getYPos()));
+          new Position(p.getXPos()+(int)(nodeWidth*0.65), p.getYPos()), false);
     } else {
-      mSourceDock = mSourceNode.getNearestFreeDock(mTargetNode.getCenter());
-      mTargetDock = mTargetNode.getNearestFreeDock(mSourceNode.getCenter());
+      mSourceDock = mSourceNode.getNearestFreeDock(mTargetNode.getPosition(), true);
+      mTargetDock = mTargetNode.getNearestFreeDock(mSourceNode.getPosition(), false);
     }
     mSourceNode.occupyDock(mSourceDock);
     mTargetNode.occupyDock(mTargetDock);

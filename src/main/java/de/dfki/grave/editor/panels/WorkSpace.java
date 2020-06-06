@@ -2,10 +2,14 @@ package de.dfki.grave.editor.panels;
 
 import static de.dfki.grave.Preferences.*;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.*;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -13,18 +17,20 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.grave.AppFrame;
+import de.dfki.grave.editor.CodeArea;
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
-import de.dfki.grave.editor.action.*;
-import de.dfki.grave.editor.event.ClearCodeEditorEvent;
+import de.dfki.grave.editor.action.CompoundAction;
+import de.dfki.grave.editor.action.EditorAction;
+import de.dfki.grave.editor.action.MoveNodesAction;
+import de.dfki.grave.editor.action.NormalizeEdgeAction;
+import de.dfki.grave.editor.action.StraightenEdgeAction;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.editor.event.WorkSpaceSelectedEvent;
 import de.dfki.grave.model.flow.*;
-import de.dfki.grave.model.flow.geom.Boundary;
-import de.dfki.grave.model.flow.geom.Geom;
-import de.dfki.grave.model.flow.geom.Position;
 import de.dfki.grave.model.project.EditorConfig;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.Pair;
@@ -55,8 +61,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private final Set<Comment> mCmtSet = new HashSet<>();
   private final Map<AbstractEdge, Edge> mEdges = new IdentityHashMap<>();
 
-  private boolean snapToGrid = true;
-
   // Snap to grid support
   private GridManager mGridManager = null;
 
@@ -75,7 +79,10 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private final IDManager mIDManager; // manages new IDs for the SceneFlow
 
   public float mZoomFactor = 1.0f;
-  private boolean mShowGrid = false;
+  public int mNodeWidth, mNodeHeight;
+  
+  // to suspend mouse input when the workspace changes drastically
+  private boolean mIgnoreMouseInput = false;
 
   /**
    *
@@ -87,11 +94,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mSceneFlow = mProject.getSceneFlow();
     mSceneFlowEditor.addActiveSuperNode(mSceneFlow);
     mIDManager = new IDManager(mSceneFlow);
-    mGridManager = new de.dfki.grave.model.flow.GridManager(
-        Math.max(getEditorConfig().sNODEWIDTH, getEditorConfig().sNODEHEIGHT),
-        getEditorConfig().sGRID_SCALE);
+    mGridManager = new GridManager(this);
     mZoomFactor = getEditorConfig().sZOOM_FACTOR;
-    mShowGrid = getEditorConfig().sSHOWGRID;
+    mNodeWidth = getEditorConfig().sNODEWIDTH;
+    mNodeHeight = getEditorConfig().sNODEHEIGHT;
+    
 
     // init layout
     setLayout(new SceneFlowLayoutManager());
@@ -103,14 +110,21 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     showCurrentWorkSpace();
   }
 
-  /** Inhibit mouse actions for a while. Must be implemented by subclass */
-  protected abstract void ignoreMouseInput();
+  /** Inhibit mouse actions for a while. */
+  protected void ignoreMouseInput(boolean ignore) {
+    mIgnoreMouseInput = ignore;
+  }
 
+  /** Return true if mouse actions are suspended. */
+  protected boolean shouldIgnoreMouseInput() {
+    return mIgnoreMouseInput;
+  }
+  
   //
   public void refresh() {
     mObservable.update(null);
-    revalidate();
     repaint(100);
+    revalidate();
   }
 
   public void refreshAll() {
@@ -118,22 +132,37 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     showCurrentWorkSpace();
   }
 
+  public void updateAll() {
+    for (Node n : mNodeSet.values()) {
+      n.update(null,  null);
+    }
+    for (Edge e: mEdges.values()) {
+      e.update(null,  null);
+    }
+    for (Comment c: mCmtSet) {
+      c.update();
+    }
+    revalidate();
+    repaint(100);    
+  }
+  
   /**
    */
   @Override
   public void update(Object event) {
     checkChangesOnWorkspace();
+    updateAll();
   }
 
   // TODO: Move that up to to the editor
   protected void checkChangesOnWorkspace() {
     //mLogger.message("Checking changes on workspace");
     // checkHash
-    if (EditorInstance.getInstance().getSelectedProjectEditor() != null) {
-      if (EditorInstance.getInstance().getSelectedProjectEditor().getEditorProject() != null) {
+    if (AppFrame.getInstance().getSelectedProjectEditor() != null) {
+      if (AppFrame.getInstance().getSelectedProjectEditor().getEditorProject() != null) {
         if (mProject.hasChanged()) {
           //int selectecTabIndex = EditorInstance.getInstance().getProjectEditors().getSelectedIndex();
-          EditorInstance.getInstance().setTabNameModified();
+          AppFrame.getInstance().setTabNameModified();
           //mLogger.message("Changes on workspace detected");
         }
       }
@@ -168,24 +197,10 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     return mProject.getEditorConfig();
   }
 
-  public SceneFlowEditor getSceneFlowEditor() {
-    return mSceneFlowEditor;
-  }
-
-  private Node getNode(String id) {
-    for (Node node : mNodeSet.values()) {
-      if (node.getDataNode().getId().equals(id)) {
-        return node;
-      }
-    }
-
-    return null;
-  }
-
-  public Collection<Node> getNodes() {
-    return mNodeSet.values();
-  }
-
+  /* ######################################################################
+   * Zoom Methods, followed by Coordinate transformations
+   * ###################################################################### */
+  
   public void zoomOut() {
     if (mZoomFactor > 0.5) mZoomFactor -= .1;
     getEditorConfig().sZOOM_FACTOR = mZoomFactor;
@@ -207,10 +222,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     refreshAll();
   }
 
-  /* ######################################################################
-   * The split in x and y is currently not necessary, for possible future 
-   * extensions, where x and y might behave differently
-   * ###################################################################### */
+  /* The split in x and y for the next four methods is currently not necessary,
+   * for possible future extensions, where x and y might behave differently
+   */
   
   /** Convert from model x position to x view position */
   public int toViewXPos(int modx) {
@@ -240,6 +254,42 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Convert from model to view coordinates */
   public Point toViewPoint(Position val) {
     return new Point(toViewXPos(val.getXPos()), toViewYPos(val.getYPos()));
+  }
+  
+  /** Convert from view to model coordinates */
+  public Boundary toModelBoundary(Rectangle r) {
+    int x = toModelXPos(r.x);
+    int y = toModelYPos(r.y);
+    int width = toModelXPos(r.x + r.width) - x;
+    int height = toModelYPos(r.y + r.height) - y;
+    return new Boundary(x, y, width, height);
+  }
+  
+  /** Convert from model to view coordinates */
+  public Rectangle toViewRectangle(Boundary r) {
+    int x = toViewXPos(r.getXPos());
+    int y = toViewYPos(r.getYPos());
+    int width = toViewXPos(r.getXPos() + r.getWidth()) - x;
+    int height = toViewYPos(r.getYPos() + r.getHeight()) - y;
+    return new Rectangle(x, y, width, height);
+  }
+  
+  /* ######################################################################
+   * Node/Edge/Comment access methods
+   * ###################################################################### */
+  
+  private Node getNode(String id) {
+    for (Node node : mNodeSet.values()) {
+      if (node.getDataNode().getId().equals(id)) {
+        return node;
+      }
+    }
+
+    return null;
+  }
+
+  public Collection<Node> getNodes() {
+    return mNodeSet.values();
   }
 
   private class EdgeIterator implements Iterator<Edge> {
@@ -296,7 +346,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     // Create a new Gridmanager for the workspace
     mGridManager.clear();
     revalidate();
-    mEventCaster.convey(new ClearCodeEditorEvent(this));
     repaint(100);
     // TODO: Refresh here!
   }
@@ -308,7 +357,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     clearCurrentWorkspace();
   }
 
-  /** Try to get all edges as straight as possible */
+  /** Try to get all edges as straight as possible: menu/button */
   public void straightenAllEdges() {
     List<EditorAction> actions = new ArrayList<>();
     for (Edge edge : getEdges()) {
@@ -317,7 +366,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     new CompoundAction(this, actions, "Straighten all Edges").run();
   }
 
-  /** Try to find nice paths for all edges */
+  /** Try to find nice paths for all edges: menu/button */
   public void normalizeAllEdges() {
     List<EditorAction> actions = new ArrayList<>();
     for (Edge edge : getEdges()) {
@@ -346,10 +395,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Jump into the SuperNode node (currently present on the WorkSpace) */
   public void increaseWorkSpaceLevel(Node node) {
     // Reset mouse interaction
-    ignoreMouseInput();
+    ignoreMouseInput(true);
     SuperNode superNode = (SuperNode) node.getDataNode();
     mSceneFlowEditor.addActiveSuperNode(superNode);
     showNewSuperNode();
+    ignoreMouseInput(false);
   }
 
   /** Pop out to the specified SuperNode */
@@ -419,11 +469,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Move the node n to position loc (in model coordinates) */
   public void moveTo(BasicNode n, Position loc) {
     Node vn = mNodeSet.get(n);
-    if (snapToGrid && mGridManager.positionOccupiedBy(loc) == n) {
+    if (getEditorConfig().sSNAPTOGRID && mGridManager.positionOccupiedBy(loc) == n) {
       mGridManager.releaseGridPosition(n);
     }
     vn.moveTo(loc);
-    if (snapToGrid) {
+    if (getEditorConfig().sSNAPTOGRID) {
       mGridManager.occupyGridPosition(n);
     }
   }
@@ -461,7 +511,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     if (mNodeStartPositions == null) {
       mNodeStartPositions = new IdentityHashMap<>();
       for (Node n : nodes) {
-        if (snapToGrid)
+        if (getEditorConfig().sSNAPTOGRID)
           mGridManager.releaseGridPosition(n.getDataNode());
         mNodeStartPositions.put(n, n.getLocation());
       }
@@ -488,7 +538,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
         new IdentityHashMap<>(mNodeStartPositions.size());
     for (Node node : mNodeStartPositions.keySet()) {
       Position pos = toModelPos(node.getLocation());
-      if (snapToGrid)
+      if (getEditorConfig().sSNAPTOGRID)
         pos = mGridManager.getNodeLocation(pos);
 
       newPositions.put(node.getDataNode(), pos);
@@ -528,19 +578,20 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    * Currently, we assume a square grid, and take
    * nodeWidth = nodeHeight = max(nodeWidth, nodeHeight)
    */
-  void drawGrid(Graphics2D g2d, Rectangle visibleRect) {
+  private void drawGrid(Graphics2D g2d, Rectangle visibleRect) {
     g2d.setStroke(new BasicStroke(1.0f));
     g2d.setColor(Color.GRAY.brighter());
-    int gridWidth = (int)(mGridManager.gridWidth() * mZoomFactor);
+    float gridWidth = mGridManager.gridWidth() * mZoomFactor;
 
     // compute row and col of the first and last grid point
-    int offset = gridWidth / 4;
-    int col = visibleRect.x / gridWidth;
-    int lastCol = (visibleRect.x + visibleRect.width) / gridWidth + 1;
-    int lastRow = (visibleRect.y + visibleRect.height) / gridWidth + 1;
-    for (int x = col * gridWidth ; col <= lastCol; ++col, x += gridWidth) {
-      int row = visibleRect.y / gridWidth;
-      for (int y = row * gridWidth; row <= lastRow; ++row, y += gridWidth) {
+    int offs = getEditorConfig().sNODEWIDTH / 2;
+    Point offset = toViewPoint(new Position(offs, offs));
+    int col = (int)(visibleRect.x / gridWidth);
+    int lastCol = (int)((visibleRect.x + visibleRect.width) / gridWidth) + 1;
+    int lastRow = (int)((visibleRect.y + visibleRect.height) / gridWidth) + 1;
+    for (int x = (int)(col * gridWidth) ; col <= lastCol; ++col, x += gridWidth) {
+      int row = (int)(visibleRect.y / gridWidth);
+      for (int y = (int)(row * gridWidth); row <= lastRow; ++row, y += gridWidth) {
         // TODO: this is for debugging only, wasteful, and should go
         if (mGridManager.positionOccupiedBy(
             toModelPos(new Point(x, y))) != null) {
@@ -548,10 +599,10 @@ public abstract class WorkSpace extends JPanel implements EventListener {
         } else {
           g2d.setColor(Color.GRAY.brighter());
         }
-        int xx = x + offset; 
-        int yy = y + offset;
+        int xx = (int)(x + offset.x); 
+        int yy = (int)(y + offset.y);
         // draw small cross
-        int width = gridWidth / 20;
+        int width = (int)(gridWidth / 20);
         g2d.drawLine(xx - width, yy, xx + width, yy);
         g2d.drawLine(xx, yy - width, xx, yy + width);
       }
@@ -565,9 +616,10 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     Graphics2D g2d = (Graphics2D) g;
 
     super.paintComponent(g);
-    if (mShowGrid)
+    if (getEditorConfig().sSHOWGRID)
       drawGrid(g2d, this.getVisibleRect());
 
+    // draw colored border all around the workspace to indicate supernode type
     Color indicator;
     switch (getSuperNode().getFlavour()) {
       case CNODE: indicator = sCEDGE_COLOR; break;
@@ -604,7 +656,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mEdges.remove(e.getDataEdge());
     // remove from Panel
     super.remove(e);
-    super.remove(e.getCodeArea());
+    CodeArea c = e.getCodeArea();
+    if (c != null)
+      super.remove(c);
     mObservable.deleteObserver(e);
   }
 
@@ -615,29 +669,35 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     mEdges.put(e.getDataEdge(), e);
     // add to Panel
     super.add(e);
-    super.add(e.getCodeArea());
+    CodeArea c = e.getCodeArea();
+    if (c != null)
+      super.add(c);
     mObservable.addObserver(e);
   }
 
   /** Removes node view from workspace, no change in model */
   private void removeFromWorkSpace(Node n) {
     mNodeSet.remove(n.getDataNode());
-    if (snapToGrid)
+    if (getEditorConfig().sSNAPTOGRID)
       mGridManager.releaseGridPosition(n.getDataNode());
     // remove from Panel
     super.remove(n);
-    super.remove(n.getCodeArea());
+    CodeArea c = n.getCodeArea();
+    if (c != null)
+      super.remove(c);
     mObservable.deleteObserver(n);
   }
 
   /** Add node view to workspace, no change in model */
   private void addToWorkSpace(Node n) {
-    if (snapToGrid)
+    if (getEditorConfig().sSNAPTOGRID)
       mGridManager.occupyGridPosition(n.getDataNode());
     mNodeSet.put(n.getDataNode(), n);
     // add to Panel
     super.add(n);
-    super.add(n.getCodeArea());
+    CodeArea c = n.getCodeArea();
+    if (c != null)
+      super.add(c);
     mObservable.addObserver(n);
   }
 
@@ -756,7 +816,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    */
   public BasicNode createNode(Point point, BasicNode model) {
     Position p = toModelPos(point);
-    if (snapToGrid) {
+    if (getEditorConfig().sSNAPTOGRID) {
       p = mGridManager.getNodeLocation(p);
     }
     return model.createNode(mIDManager, p, getSuperNode());
@@ -793,12 +853,14 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   public BasicNode changeType(BasicNode n, BasicNode changeTo) {
     Node node = mNodeSet.get(n);
     BasicNode result = null;
-    Collection<Edge> incoming =
-        computeIncomingEdges(new ArrayList<Node>(){{add(node);}});
-    if ((result = node.changeType(mIDManager, edgeModels(incoming) , changeTo))
-        == null) {
+    try {
+      result = node.changeType(mIDManager, changeTo);
+      mNodeSet.put(node.getDataNode(), node);
+      // removing the old node and adding a new changed one would require to
+      // re-create the edges too, which is not necessary
+    } catch (Exception e) {
       // complain: operation not legal
-      setMessageLabelText("SuperNode contains Nodes: Type change not possible");
+      setMessageLabelText(e.getMessage());
     }
     return result;
   }

@@ -15,9 +15,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.model.flow.Code;
 import de.dfki.grave.model.flow.ContentHolder;
-import de.dfki.grave.model.flow.Expression;
 
 /**
  *
@@ -27,6 +25,7 @@ import de.dfki.grave.model.flow.Expression;
 public class ObserverDocument extends RSyntaxDocument implements Observer {
 
   private ContentHolder mModel;
+  private String mInitialContent;
 
   private static final Logger logger =
       LoggerFactory.getLogger(ObserverDocument.class);
@@ -39,33 +38,65 @@ public class ObserverDocument extends RSyntaxDocument implements Observer {
   public ObserverDocument(ContentHolder h) {
     super(SyntaxConstants.SYNTAX_STYLE_JAVA);
     mModel = h;
+    init();
+  }
+  
+  private void init() {
+    mInitialContent = mModel.getContent();
     try {
-      insertString(0, mModel.getContent(), null);
+      replace(0, getLength(), mInitialContent, null);
     } catch (BadLocationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new RuntimeException(e);      // can not happen
     }
   }
-
-  public void updateModel() {
+  
+  /** Write the document content back to the model */
+  public void updateModel(String newContent) {
+    mModel.setContent(newContent);
+    init();
+  }
+  
+  /** Get the content before the last editing session started */
+  public String getInitialContent() {
+    return mInitialContent;
+  }
+  
+  /** Did the content change from init or last explicit update? */
+  public String getCurrentContent() {
     try {
-      mModel.setContent(getText(0, getLength()));
+      return getText(0, getLength());
     } catch (BadLocationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new RuntimeException(e);      // can not happen
     }
   }
-
+  
+  /** Did the content change from init or last explicit update? */
+  public boolean contentChanged() {
+    try {
+      return ! mInitialContent.equals(getText(0, getLength()));
+    } catch (BadLocationException e) {
+      // can not happen
+      throw new RuntimeException(e);
+    }
+  }
+  
   @Override
   public void update(Observable o, Object o1) {
     try {
-      if (o instanceof Code) {
-        insertString(0, ((Code)o).getContent(), null);
-      } else if (o instanceof Expression) {
-        insertString(0, ((Expression)o).getContent(), null);
+      if (o instanceof ContentHolder) {
+        insertString(0, ((ContentHolder)o).getContent(), null);
       }
     } catch (BadLocationException ex) {
       logger.error("bad loc: {}", ex);
+    }
+  }
+  
+  public String toString() {
+    try {
+      return getText(0, getLength());
+    } catch (BadLocationException e) {
+      // can not happen
+      throw new RuntimeException(e);
     }
   }
 

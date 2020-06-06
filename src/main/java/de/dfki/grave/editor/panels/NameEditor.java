@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.util.evt.EventDispatcher;
@@ -52,7 +53,7 @@ public class NameEditor extends JPanel implements EventListener {
         if (event.getKeyCode() == KeyEvent.VK_ENTER) {
           mNode.issueChangeName(sanitizeString(mNameField.getText()));
         }
-        EditorInstance.getInstance().refresh();
+        AppFrame.getInstance().refresh();
       }
     });
 
