@@ -290,8 +290,9 @@ public class Edge extends EditorComponent {
     case EdgeArrow.C2: {
       boolean isSource = mArrow.mSelected == EdgeArrow.C1;
       // compute vector from dock point to p (relative ctrls)
-      Point dock = mSourceNode.getDockPoint(
-          isSource ? mDataEdge.getSourceDock() : mDataEdge.getTargetDock());
+      Point dock = isSource 
+          ? mSourceNode.getDockPoint(mDataEdge.getSourceDock())
+          : mTargetNode.getDockPoint(mDataEdge.getTargetDock());
       p.translate(-dock.x, -dock.y);
       // All actions use Positions (model coordinates)
       new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), isSource, toModelPos(p)).run();

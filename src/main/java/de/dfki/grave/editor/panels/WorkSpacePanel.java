@@ -582,7 +582,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
    */
   @Override
   public void mouseReleased(MouseEvent event) {
-    launchProjectChangedEvent();
+    //launchProjectChangedEvent();
     straightenAllOutOfBoundEdges();
 
     if (mAreaSelection != null) {
