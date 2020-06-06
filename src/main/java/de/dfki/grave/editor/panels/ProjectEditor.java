@@ -36,7 +36,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   // The sceneflow editor of this project
   private final SceneFlowEditor mSceneFlowEditor;
   // Code editing panel
-  private final CodeEditor mCodeEditor;
+  private final CodeEditPanel mCodeEditor;
 
   // Construct a project editor with a project
   public ProjectEditor(final EditorProject project) {
@@ -47,7 +47,8 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     // Initialize the sceneflow editor
     mSceneFlowEditor = new SceneFlowEditor(mEditorProject);
     // Initialize Code Editing Region
-    mCodeEditor = new CodeEditor(mEditorProject);
+    mCodeEditor = //new CodeEditor(mEditorProject);
+        new CodeEditPanel(mEditorProject.getEditorConfig().sCODE_FONT.getFont());
     // Register at the event dispatcher
     mEventDispatcher.register(this);
     // Initialize the GUI components
@@ -103,13 +104,13 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
             switch (me.getID()) {
 
             case MouseEvent.MOUSE_ENTERED:
-              if (!mCodeEditor.isPinPricked())
-                showAuxiliaryEditor();
+              //if (!mCodeEditor.isPinPricked())
+              //  showAuxiliaryEditor();
               break;
             case MouseEvent.MOUSE_RELEASED:
               int value = ProjectEditor.this.getDividerLocation();
               mEditorProject.getEditorConfig().sCODE_DIVIDER_LOCATION = value;
-              mCodeEditor.setPinPricked();
+              //mCodeEditor.setPinPricked();
               break;
             }
           }
@@ -146,14 +147,14 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
           mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = true;
         } else {
           mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR = true;
-          mCodeEditor.updateBorders();
+          //mCodeEditor.updateBorders();
         }
         if (mCodeEditor.getSize().height == 0) {
           mEditorProject.getEditorConfig().sSHOW_SCENEFLOWEDITOR = true;
           mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = false;
         } else {
           mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = true;
-          mCodeEditor.updateBorders();
+          //mCodeEditor.updateBorders();
         }
         Preferences.savePrefs();
       }
@@ -189,9 +190,9 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     } else if (event instanceof ElementSelectedEvent) {
       Object edited = ((ElementSelectedEvent) event).getElement();
       if (edited instanceof EditorComponent) {
-        mCodeEditor.setEditedNodeOrEdge((EditorComponent) edited);
+        mCodeEditor.setEditedObject((EditorComponent) edited);
       } else {
-        mCodeEditor.setEditedNodeOrEdge(null);
+        mCodeEditor.setEditedObject(null);
       } 
     }
   }
