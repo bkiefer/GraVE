@@ -61,8 +61,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private final Set<Comment> mCmtSet = new HashSet<>();
   private final Map<AbstractEdge, Edge> mEdges = new IdentityHashMap<>();
 
-  private boolean snapToGrid = true;
-
   // Snap to grid support
   private GridManager mGridManager = null;
 
@@ -198,11 +196,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   public EditorConfig getEditorConfig() {
     return mProject.getEditorConfig();
   }
-
-  public SceneFlowEditor getSceneFlowEditor() {
-    return mSceneFlowEditor;
-  }
-
 
   /* ######################################################################
    * Zoom Methods, followed by Coordinate transformations
@@ -476,11 +469,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Move the node n to position loc (in model coordinates) */
   public void moveTo(BasicNode n, Position loc) {
     Node vn = mNodeSet.get(n);
-    if (snapToGrid && mGridManager.positionOccupiedBy(loc) == n) {
+    if (getEditorConfig().sSNAPTOGRID && mGridManager.positionOccupiedBy(loc) == n) {
       mGridManager.releaseGridPosition(n);
     }
     vn.moveTo(loc);
-    if (snapToGrid) {
+    if (getEditorConfig().sSNAPTOGRID) {
       mGridManager.occupyGridPosition(n);
     }
   }
@@ -518,7 +511,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     if (mNodeStartPositions == null) {
       mNodeStartPositions = new IdentityHashMap<>();
       for (Node n : nodes) {
-        if (snapToGrid)
+        if (getEditorConfig().sSNAPTOGRID)
           mGridManager.releaseGridPosition(n.getDataNode());
         mNodeStartPositions.put(n, n.getLocation());
       }
@@ -545,7 +538,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
         new IdentityHashMap<>(mNodeStartPositions.size());
     for (Node node : mNodeStartPositions.keySet()) {
       Position pos = toModelPos(node.getLocation());
-      if (snapToGrid)
+      if (getEditorConfig().sSNAPTOGRID)
         pos = mGridManager.getNodeLocation(pos);
 
       newPositions.put(node.getDataNode(), pos);
@@ -685,7 +678,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Removes node view from workspace, no change in model */
   private void removeFromWorkSpace(Node n) {
     mNodeSet.remove(n.getDataNode());
-    if (snapToGrid)
+    if (getEditorConfig().sSNAPTOGRID)
       mGridManager.releaseGridPosition(n.getDataNode());
     // remove from Panel
     super.remove(n);
@@ -697,7 +690,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** Add node view to workspace, no change in model */
   private void addToWorkSpace(Node n) {
-    if (snapToGrid)
+    if (getEditorConfig().sSNAPTOGRID)
       mGridManager.occupyGridPosition(n.getDataNode());
     mNodeSet.put(n.getDataNode(), n);
     // add to Panel
@@ -823,7 +816,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    */
   public BasicNode createNode(Point point, BasicNode model) {
     Position p = toModelPos(point);
-    if (snapToGrid) {
+    if (getEditorConfig().sSNAPTOGRID) {
       p = mGridManager.getNodeLocation(p);
     }
     return model.createNode(mIDManager, p, getSuperNode());
