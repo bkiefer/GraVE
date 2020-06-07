@@ -220,14 +220,14 @@ public final class EditorMenuBar extends JMenuBar {
     mEditMenu.add(new JSeparator());
     // sth selected
     mCopyMenuItem = addItem(mEditMenu, "Copy", getAccel(KeyEvent.VK_C),
-        (e) -> getCurrentWorkSpace().copySelectedNodes());
+        (e) -> getCurrentWorkSpace().copySelected());
     // sth selected
     mCutMenuItem = addItem(mEditMenu, "Cut", getAccel(KeyEvent.VK_X),
-        (e) -> getCurrentWorkSpace().cutSelectedNodes());
+        (e) -> getCurrentWorkSpace().cutSelected());
 
     // sth on clipboard
     mPasteMenuItem = addItem(mEditMenu, "Paste", getAccel(KeyEvent.VK_V),
-        (e) -> getCurrentWorkSpace().pasteNodesFromClipboard());
+        (e) -> getCurrentWorkSpace().pasteClipboard());
     // sth selected TODO: MISSING
     mDeleteMenuItem = addItem(mEditMenu, "Delete", getAccel(KeyEvent.VK_DELETE),
         (e) -> getCurrentWorkSpace()// .delete()

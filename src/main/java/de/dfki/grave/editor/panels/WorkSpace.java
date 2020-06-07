@@ -287,10 +287,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     return null;
   }
 
-  public Collection<Node> getNodes() {
-    return mNodeSet.values();
-  }
-
   private class EdgeIterator implements Iterator<Edge> {
 
     Iterator<Node> nodeIt = mNodeSet.values().iterator();

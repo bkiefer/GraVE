@@ -274,27 +274,41 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
    * Provide functionality for the global menu bar
    * ###################################################################### */
 
+  private void actionMessage(String act) {
+    String what= (mSelectedNodes.size() > 1) ? " Nodes " : " Node ";
+    setMessageLabelText(mSelectedNodes.size() + what + act);
+  }
+  
   /** Copy the selected nodes to the clipboard, if any */
-  public void copySelectedNodes() {
+  public void copySelected() {
     if (mSelectedNodes.size() == 0) return;
-    CopyNodesAction action = new CopyNodesAction(this, nodeModels(mSelectedNodes));
-    String message = (mSelectedNodes.size() > 1) ? "Nodes copied" : "Node copied";
-    setMessageLabelText(mSelectedNodes.size() + message);
-    action.run();
+    // copy is not undoable
+    //CopyNodesAction action = new CopyNodesAction(this, nodeModels(mSelectedNodes));
+    copyNodes(nodeModels(mSelectedNodes));
+    actionMessage("copied");
+    //action.run();
   }
 
   /** Cut the selected nodes and add them to clipboard, if any */
-  public void cutSelectedNodes() {
+  public void cutSelected() {
     if (mSelectedNodes.size() == 0) return;
-    RemoveNodesAction action = new RemoveNodesAction(this, nodeModels(mSelectedNodes), true);
-    String message = (mSelectedNodes.size() > 1) ? "Nodes cut" : "Node cut";
-    setMessageLabelText(mSelectedNodes.size() + message);
+    RemoveNodesAction action = 
+        new RemoveNodesAction(this, nodeModels(mSelectedNodes), true);
+    actionMessage("cut");
     action.run();
   }
 
   /** Paste nodes in the upper left corner */
-  public void pasteNodesFromClipboard() {
+  public void pasteClipboard() {
     PasteNodesAction action = new PasteNodesAction(this, new Point(0, 0));
+    action.run();
+  }
+  
+  public void deleteSelected() {
+    if (mSelectedNodes.size() == 0) return;
+    RemoveNodesAction action = 
+        new RemoveNodesAction(this, nodeModels(mSelectedNodes), false);
+    actionMessage("deleted");
     action.run();
   }
 
@@ -315,7 +329,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
    * ###################################################################### */
 
   /** Add an item with name and action a to the menu m */
-  public static void addItem(JPopupMenu m, String name, EditorAction a) {
+  public static void addItem(JPopupMenu m, String name, ActionListener a) {
     JMenuItem item = new JMenuItem(name);
     item.addActionListener(a);
     m.add(item);
@@ -324,7 +338,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   /** Show the context menu if multiple nodes are selected */
   private void multipleNodesContextMenu(MouseEvent evt, Node node) {
     JPopupMenu pop = new JPopupMenu();
-    addItem(pop, "Copy Nodes", new CopyNodesAction(this, nodeModels(mSelectedNodes)));
+    // copy is not undoable
+    addItem(pop, "Copy Nodes", new CopyNodesAction(this));
     addItem(pop, "Cut Nodes", new RemoveNodesAction(this, nodeModels(mSelectedNodes), true));
     pop.add(new JSeparator());
     addItem(pop, "Delete Nodes", new RemoveNodesAction(this, nodeModels(mSelectedNodes), false));

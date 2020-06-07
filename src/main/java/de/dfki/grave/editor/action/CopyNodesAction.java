@@ -1,40 +1,41 @@
 package de.dfki.grave.editor.action;
 
-import java.util.Collection;
-//~--- JDK imports ------------------------------------------------------------
-import java.util.HashSet;
-import java.util.Set;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.WorkSpacePanel;
 import de.dfki.grave.model.flow.BasicNode;
 
 /**
- * @author Patrick Gebhard
+ * @author Bernd Kiefer
  *
- * TODO: BK: DOESN'T MAKE A LOT OF SENSE TO ME TO UNDO COPY
+ * doesn't make a lot of sense to me to undo copy, so this is just an 
+ * ActionListener
  */
-public class CopyNodesAction extends EditorAction {
+public class CopyNodesAction implements ActionListener {
 
-  private Set<BasicNode> mNodes = null;
-
-  @SuppressWarnings("serial")
-  public CopyNodesAction(WorkSpace workSpace, BasicNode node) {
+  private final WorkSpacePanel mWorkSpace;
+  private final BasicNode mNode;
+  
+  public CopyNodesAction(WorkSpacePanel workSpace) {
     mWorkSpace = workSpace;
-    mNodes = new HashSet<BasicNode>(){{ add(node); }};
+    mNode = null;
   }
-
-  public CopyNodesAction(WorkSpace workSpace, Collection<BasicNode> mSelectedNodes) {
+  
+  public CopyNodesAction(WorkSpacePanel workSpace, BasicNode n) {
     mWorkSpace = workSpace;
-    mNodes = new HashSet<>(mSelectedNodes);
+    mNode = n;
   }
 
-  protected void doIt() {
-    mWorkSpace.copyNodes(mNodes);
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    if (mNode != null) {
+      List<BasicNode> l = new ArrayList<BasicNode>() {{ add(mNode); }};
+      mWorkSpace.copyNodes(l);
+    } else {
+      mWorkSpace.copySelected();    
+    }
   }
-
-  protected void undoIt() {
-    mWorkSpace.clearClipBoard();
-  }
-
-  protected String msg() { return "Copying Of Nodes "; }
 }
