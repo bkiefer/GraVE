@@ -88,11 +88,12 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
   // Clean up the editor component
   public final void close() {
-    mEditorProject = null;
+    mSceneFlowToolBar.close();
     // Remove from event dispatcher
     mEventDispatcher.remove(this);
     // Cleanup workspace
     mWorkSpacePanel.cleanup();
+    mEditorProject = null;
   }
 
   private void initUpperCompos() {
@@ -136,7 +137,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     mActiveSuperNodes = new LinkedList<SuperNode>();
 
     // TOOLBAR: NORTH ELEMENT
-    mSceneFlowToolBar = new SceneFlowToolBar(this, mEditorProject);
+    mSceneFlowToolBar = new SceneFlowToolBar(this);
     // The center component is the workspace
     mWorkSpacePanel = new WorkSpacePanel(this, mEditorProject);
     mWorkSpacePanel.setTransferHandler(new SceneFlowImage());

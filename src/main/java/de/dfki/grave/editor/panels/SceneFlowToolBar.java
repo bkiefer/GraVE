@@ -14,7 +14,6 @@ import de.dfki.grave.editor.dialog.OptionsDialog;
 import de.dfki.grave.editor.dialog.SaveFileDialog;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.model.flow.SuperNode;
-import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.ResourceLoader;
 import de.dfki.grave.util.evt.EventDispatcher;
 import de.dfki.grave.util.evt.EventListener;
@@ -122,9 +121,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   private BreadCrumb mBreadCrumb; 
 
   // Construct a sceneflow editor toolbar
-  public SceneFlowToolBar(
-          final ProjectEditor editor,
-          final EditorProject project) {
+  public SceneFlowToolBar(final ProjectEditor editor) {
     // Create a horizontal toolbar
     super("SceneFlowToolBar", JToolBar.HORIZONTAL);
     //Set maximum size
@@ -140,6 +137,10 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     initComponents();
     // Add the sceneflowtoolbar to the event multicaster
     EventDispatcher.getInstance().register(this);
+  }
+  
+  public void close() {
+    EventDispatcher.getInstance().remove(this);
   }
 
   @Override
