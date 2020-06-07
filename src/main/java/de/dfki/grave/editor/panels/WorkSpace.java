@@ -876,16 +876,16 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *  undo, they retain their old positions, but what after cut? Treat it like
    *  undo, or copy? I favour undo, since the other can be achieved by dragging.
    */
-  public Collection<BasicNode> pasteNodesFromClipboard(Point mousePosition) {
+  public Collection<BasicNode> pasteNodesFromClipboard(Point mousePoint) {
     List<BasicNode> nodes = mClipboard.getNodes();
     List<AbstractEdge> edges = mClipboard.getEdges();
     if (mClipboard.needsCopy(this)) {
       Pair<Collection<BasicNode>, List<AbstractEdge>> toAdd =
           getSuperNode().copySubgraph(mIDManager, nodes, edges);
-      if (mousePosition != null) {
+      if (mousePoint != null) {
         // snap to grid: currently not.
         //mousePosition = mGridManager.getClosestGridPoint(mousePosition);
-        BasicNode.translateNodes(toAdd.getFirst(), mousePosition);
+        BasicNode.translateNodes(toAdd.getFirst(), toModelPos(mousePoint));
       }
       pasteNodesAndEdges(toAdd.getFirst(), toAdd.getSecond());
       return toAdd.getFirst();

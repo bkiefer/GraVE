@@ -96,7 +96,7 @@ public class BasicNode implements ContentHolder {
    *  Exploits the fact that the node and edge views can be perfectly
    *  reconstructed from the models, and only models are handled internally
    */
-  public static void translateNodes(Collection<BasicNode> nodes, Point p) {
+  public static void translateNodes(Collection<BasicNode> nodes, Position p) {
     int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE,
         maxX = 0, maxY = 0;
     // compute the covered area
@@ -107,8 +107,8 @@ public class BasicNode implements ContentHolder {
       maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
     }
     // translate such that the center of the area is on p
-    int translateX = Math.max(p.x - (maxX + minX) / 2, -minX);
-    int translateY = Math.max(p.y - (maxY + minY) / 2, -minY);
+    int translateX = Math.max(p.getXPos() - (maxX + minX) / 2, -minX);
+    int translateY = Math.max(p.getYPos() - (maxY + minY) / 2, -minY);
     // will move the edges, too
     for (BasicNode n : nodes) {
       n.translate(translateX, translateY);
