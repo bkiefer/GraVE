@@ -1,8 +1,4 @@
 
-/*
-* To change this template, choose Tools | Templates
-* and open the template in the editor.
- */
 package de.dfki.grave.editor.panels;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -10,10 +6,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
-
-import de.dfki.grave.editor.Comment;
-import de.dfki.grave.editor.Edge;
-import de.dfki.grave.editor.Node;
 
 /**
  *
@@ -23,71 +15,25 @@ import de.dfki.grave.editor.Node;
  * Use the LayoutManager facility to compute sizes
  */
 public class SceneFlowLayoutManager implements LayoutManager {
-
-  private Dimension mSize = new Dimension(0, 0);
-
-  public void addLayoutComponent(String name, Component comp) {
-
-    // System.out.println("adding component");
-  }
-
-  public void removeLayoutComponent(Component comp) {
-
-    // System.out.println("removing component");
-  }
+  @Override
+  public void addLayoutComponent(String name, Component comp) {}
+  @Override
+  public void removeLayoutComponent(Component comp) {}
+  @Override
+  public void layoutContainer(Container parent) { }
 
   public Dimension preferredLayoutSize(Container parent) {
-
-    // System.out.println("compute preferred size");
-    recomputeSize(parent);
-
-    return mSize;
+    Dimension size = new Dimension(0, 0);
+    for (Component c : parent.getComponents()) {
+      if (c.getLocation().x > size.getWidth() - c.getWidth())
+        size.setSize(c.getLocation().x + c.getWidth(), size.getHeight());
+      if (c.getLocation().y > size.getHeight() - c.getHeight())
+        size.setSize(size.getWidth(), c.getLocation().y + c.getHeight());
+    }
+    return size;
   }
 
   public Dimension minimumLayoutSize(Container parent) {
-
-    // System.out.println("compute minimum size");
-    recomputeSize(parent);
-
-    return mSize;
-  }
-
-  public void layoutContainer(Container parent) {
-
-    // do nothing
-  }
-
-  private void recomputeSize(Container parent) {
-    mSize = new Dimension(0, 0);
-
-    // mSize = parent.getSize();
-    // System.out.println("parent size is " + parent.getSize());
-    for (Component c : parent.getComponents()) {
-      if (c instanceof Node) {
-
-        // System.out.println("Node");
-      } else if (c instanceof Edge) {
-
-        // System.out.println("Edge");
-      } else if (c instanceof Comment) {
-
-        // System.out.println("Comment");
-      } else {
-
-        // System.out.println("Unknown");
-      }
-
-      // System.out.println("\tat location " + c.getLocation());
-      // System.out.println("\thas size" + c.getSize());
-      if (c.getLocation().x > mSize.getWidth() - c.getWidth()) {
-        mSize.setSize(c.getLocation().x + c.getWidth(), mSize.getHeight());
-      }
-
-      if (c.getLocation().y > mSize.getHeight() - c.getHeight()) {
-        mSize.setSize(mSize.getWidth(), c.getLocation().y + c.getHeight());
-      }
-    }
-
-    // System.out.println("SFLM computed size is " + mSize);
+    return preferredLayoutSize(parent);
   }
 }

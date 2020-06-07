@@ -29,7 +29,6 @@ import de.dfki.grave.editor.action.NormalizeEdgeAction;
 import de.dfki.grave.editor.action.StraightenEdgeAction;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
-import de.dfki.grave.editor.event.WorkSpaceSelectedEvent;
 import de.dfki.grave.model.flow.*;
 import de.dfki.grave.model.project.EditorConfig;
 import de.dfki.grave.model.project.EditorProject;
@@ -454,11 +453,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   // ######################################################################
   // END OF: Turn the current SuperNode model into view objects
   // ######################################################################
-
-  protected void launchWorkSpaceSelectedEvent() {
-    WorkSpaceSelectedEvent ev = new WorkSpaceSelectedEvent(this);
-    mEventCaster.convey(ev);
-  }
 
   protected void launchElementSelectedEvent(Object n) {
     ElementSelectedEvent ev =

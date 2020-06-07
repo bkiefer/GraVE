@@ -468,7 +468,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   @Override
   public void mouseClicked(MouseEvent event) {
     Point current = event.getPoint();
-    launchWorkSpaceSelectedEvent();
     if (shouldIgnoreMouseInput()) {
       return;
     }
@@ -549,7 +548,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       mAreaSelection = new Rectangle2D.Double(event.getX(), event.getY(), 0, 0);
     }
 
-    Comment c;
     Node node;
     if ((node = findNodeAtPoint(event.getPoint())) != null) {
       if (event.getButton() == MouseEvent.BUTTON1
