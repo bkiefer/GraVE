@@ -29,6 +29,7 @@ public class CopyNodesAction implements ActionListener {
     mNode = n;
   }
 
+  @SuppressWarnings("serial")
   @Override
   public void actionPerformed(ActionEvent e) {
     if (mNode != null) {

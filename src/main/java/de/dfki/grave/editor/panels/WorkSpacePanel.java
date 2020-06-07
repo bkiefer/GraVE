@@ -516,7 +516,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   /**
    * Eventually show "Paste" menu item, when clicking on workspace
    */
-  public void globalContextMenu(MouseEvent event) {
+  private void globalContextMenu(MouseEvent event) {
     int eventX = event.getX();
     int eventY = event.getY();
     JPopupMenu pop = new JPopupMenu();

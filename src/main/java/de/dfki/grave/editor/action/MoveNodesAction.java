@@ -1,7 +1,6 @@
 package de.dfki.grave.editor.action;
 
 //~--- JDK imports ------------------------------------------------------------
-import java.awt.Point;
 import java.util.Map;
 
 import de.dfki.grave.editor.panels.WorkSpace;

@@ -78,7 +78,7 @@ public class UndoRedoProvider {
     undoAction =
       new UndoRedoAction("Undo",
           KeyStroke.getKeyStroke(KeyEvent.VK_Z,
-              Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+              Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
           (() -> getManager().getUndoPresentationName()),
           (() -> getManager().undo()),
           (() -> getManager().canUndo()));
@@ -86,8 +86,8 @@ public class UndoRedoProvider {
     redoAction =
       new UndoRedoAction("Redo",
           KeyStroke.getKeyStroke(KeyEvent.VK_Z,
-              java.awt.event.InputEvent.SHIFT_MASK
-              | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
+              java.awt.event.InputEvent.SHIFT_DOWN_MASK
+              | Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
           (() -> getManager().getRedoPresentationName()),
           (() -> getManager().redo()),
           (() -> getManager().canRedo()));

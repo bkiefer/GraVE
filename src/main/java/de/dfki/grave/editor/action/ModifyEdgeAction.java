@@ -1,7 +1,5 @@
 package de.dfki.grave.editor.action;
 
-import java.awt.Point;
-
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;

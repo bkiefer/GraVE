@@ -97,7 +97,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   }
 
   private void initUpperCompos() {
-    // PREPARE THE VERTICAL SPLIT REGION (NOW USED AS CODE EDITOR)
+    // prepare the vertical split region (now used as code editor)
     mSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     mSplitPane.setBorder(BorderFactory.createEmptyBorder());
     mSplitPane.setContinuousLayout(true);
@@ -112,10 +112,10 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
           public void paint(Graphics g) {
             Graphics2D graphics = (Graphics2D) g;
 
-            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
             Rectangle r = getBounds();
-
             graphics.setColor(UIManager.getColor("Panel.background"));
             graphics.fillRect(0, 0, r.width - 1, r.height);
             graphics.fillRect((r.width / 2 - 25), 0, 50, r.height);
