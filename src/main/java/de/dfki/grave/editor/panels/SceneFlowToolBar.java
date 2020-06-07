@@ -97,17 +97,12 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   /**
    * ***********************************************************************************************************************
    */
-  // The singelton logger instance
-  //private final Logger mLogger = LoggerFactory.getLogger(SceneFlowToolBar.class);
-  // The singelton editor instance
+  // The singleton app instance
   private final AppFrame mEditorInstance = AppFrame.getInstance();
-  // The singelton system clipboard
+  // The singleton system clipboard
   private final Clipboard mSystemClipBoard = getToolkit().getSystemClipboard();
   // The parent sceneflow editor
-  private final SceneFlowEditor mSceneFlowEditor;
-
-  // The current editor project
-  private final EditorProject mEditorProject;
+  private final ProjectEditor mEditor;
 
   // The button GUI components
   private JButton mTogglePalette;
@@ -124,14 +119,11 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   private Dimension smallButtonDim = new Dimension(50, 40);
 
   // Path Display GUI Components
-  //private JPanel mPathDisplay;
-  //private JScrollBar mPathScrollBar;
-  //private JScrollPane mPathScrollPane;
   private BreadCrumb mBreadCrumb; 
 
   // Construct a sceneflow editor toolbar
   public SceneFlowToolBar(
-          final SceneFlowEditor editor,
+          final ProjectEditor editor,
           final EditorProject project) {
     // Create a horizontal toolbar
     super("SceneFlowToolBar", JToolBar.HORIZONTAL);
@@ -140,9 +132,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     //setPreferredSize(new Dimension(SCREEN_HORIZONTAL, 40));
     setMaximumSize(new Dimension(getPrefs().SCREEN_HORIZONTAL, 40));
     // Initialize the sceneflow editor
-    mSceneFlowEditor = editor;
-    // Initialize the editor project
-    mEditorProject = project;
+    mEditor = editor;
     // Initialize the GUI components
     setRollover(true);
     setFloatable(false);
@@ -163,7 +153,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   }
 
   private WorkSpace getWorkSpace() {
-    return mSceneFlowEditor.getWorkSpace();
+    return mEditor.getWorkSpace();
   }
 
   private void sanitizeButton(JButton b, Dimension bDim) {
@@ -201,15 +191,18 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
      * LESS AND MORE BUTTONS ARE INVERTED TO MATCH WITH THE LEFT SIZE
      */
     mTogglePalette = add(new AbstractAction("ACTION_SHOW_ELEMENTS",
-            mEditorProject.getEditorConfig().sSHOW_ELEMENTS ? ICON_MORE_STANDARD
+            mEditor.getEditorProject().getEditorConfig().sSHOW_ELEMENTS
+            ? ICON_MORE_STANDARD
             : ICON_LESS_STANDARD) {
       public void actionPerformed(ActionEvent evt) {
-        mSceneFlowEditor.toggleElementEditor();
+        mEditor.toggleElementEditor();
         refreshButtons();
       }
     });
-    mTogglePalette.setRolloverIcon(mEditorProject.getEditorConfig()
-            .sSHOW_ELEMENTS ? ICON_MORE_ROLLOVER : ICON_LESS_ROLLOVER);
+    mTogglePalette.setRolloverIcon(
+        mEditor.getEditorProject().getEditorConfig().sSHOW_ELEMENTS
+            ? ICON_MORE_ROLLOVER
+            : ICON_LESS_ROLLOVER);
     sanitizeButton(mTogglePalette, tinyButtonDim);
     //add(Box.createHorizontalGlue());
     add(Box.createHorizontalStrut(200));
@@ -246,7 +239,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     mProjectSettings = add(new AbstractAction("ACTION_SHOW_OPTIONS", ICON_PROJECT_SETTINGS_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (! mEditorProject.isNew()) {
+        if (! mEditor.getEditorProject().isNew()) {
           /*
           PropertyManagerGUI gui = new PropertyManagerGUI();
           gui.init(mEditorProject);
@@ -258,7 +251,7 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
 
       }
     });
-    if (! mEditorProject.isNew()) {
+    if (! mEditor.getEditorProject().isNew()) {
       mProjectSettings.setEnabled(false);
     }
     mProjectSettings.setRolloverIcon(ICON_PROJECT_SETTINGS_ROLLOVER);
@@ -450,26 +443,26 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     //mLogger.message("Refreshing Buttons Of '" + this + "'");
     //*************************************
     // Refresh the button SAVE when project have been changed
-    mSaveProject.setEnabled(mEditorProject.hasChanged());
+    mSaveProject.setEnabled(mEditor.getEditorProject().hasChanged());
     //*************************************
 
     //*************************************
     // Refresh the element display buttons
-    mTogglePalette.setIcon(mSceneFlowEditor.isElementDisplayVisible()
+    mTogglePalette.setIcon(mEditor.isElementDisplayVisible()
             ? ICON_MORE_STANDARD : ICON_LESS_STANDARD);
-    mTogglePalette.setRolloverIcon(mEditorProject.getEditorConfig().sSHOW_ELEMENTS
+    mTogglePalette.setRolloverIcon(mEditor.getEditorProject().getEditorConfig().sSHOW_ELEMENTS
             ? ICON_MORE_ROLLOVER : ICON_LESS_ROLLOVER);
   }
 
   /*
   private void updateShowVarsButtons() {
-    mShowVarButton.setIcon(mSceneFlowEditor.getWorkSpace().isVarBadgeVisible()
+    mShowVarButton.setIcon(mEditor.getWorkSpace().isVarBadgeVisible()
             ? ICON_VARS_HIDDEN_STANDARD
             : ICON_VARS_STANDARD);
-    mShowVarButton.setRolloverIcon(mSceneFlowEditor.getWorkSpace().isVarBadgeVisible()
+    mShowVarButton.setRolloverIcon(mEditor.getWorkSpace().isVarBadgeVisible()
             ? ICON_VARS_HIDDEN_ROLLOVER
             : ICON_VARS_ROLLOVER);
-    mShowVarButton.setToolTipText(mSceneFlowEditor.getWorkSpace().isVarBadgeVisible()
+    mShowVarButton.setToolTipText(mEditor.getWorkSpace().isVarBadgeVisible()
             ? "Hide Variables"
             : "Show Variables");
   }
@@ -484,9 +477,6 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
   }
 
   public final void refresh() {
-    // Print some information
-    //mLogger.message("Refreshing '" + this + "'");
-    // Refresh all components
     refreshButtons();
     mBreadCrumb.refreshDisplay();
   }

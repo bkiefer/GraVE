@@ -181,29 +181,6 @@ public class Edge extends EditorComponent {
     mArrow.computeCurve(getStart(), getStartCtrl(), getEndCtrl(), getEnd());
     computeBounds();
   }
-  
-  /*
-   * Take input value of mValueEditor and set it as value of the edge
-   * EDGE MODIFICATION  
-   *
-  void updateFromTextEditor() {
-    if (mCodeArea == null) return;
-    String input = mCodeArea.getText();
-    if (mDataEdge != null) {
-      try {
-        mDataEdge.setContent(input);
-      }
-      catch (NumberFormatException ex) {
-        mWorkSpace.getSceneFlowEditor().setMessageLabelText(
-            "Not a number: " + input);
-      }
-      catch (Exception ex) {
-        mWorkSpace.getSceneFlowEditor().setMessageLabelText(
-            "Something wrong here: " + input);
-      }
-    }
-    EditorInstance.getInstance().refresh();
-  }*/
 
   public void setSelected() {
     mArrow.showControlPoints();

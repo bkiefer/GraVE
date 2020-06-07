@@ -46,11 +46,9 @@ public class EditorConfig {
   public boolean sSHOW_VARIABLE_BADGE_ON_WORKSPACE = true;
   public boolean sSHOW_SMART_PATH_DEBUG = false;
   public boolean sAUTOHIDE_BOTTOMPANEL = true; // Saves the pricked pin of the bottom panel of the editor
-  public String sMAINSUPERNODENAME = "default";
 
   public boolean sSHOW_ELEMENTS = true;
   public int sELEMENTS_DIVIDER_LOCATION = 230;
-  public boolean sSHOW_SCENEFLOWEDITOR = true;
   public boolean sSHOW_CODEEDITOR = true;
   public int sCODE_DIVIDER_LOCATION = 450;
   public double sSCENEFLOW_SCENE_EDITOR_RATIO = 0.15;

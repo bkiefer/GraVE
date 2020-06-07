@@ -108,7 +108,7 @@ public class UndoRedoProvider {
       return mTextUndoManager;
     }
     return AppFrame.getInstance().getSelectedProjectEditor()
-        .getSceneFlowEditor().getUndoManager();
+        .getUndoManager();
   }
 
   private void refreshState() {

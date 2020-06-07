@@ -1,6 +1,3 @@
-/*
- * SceneflowEditor - GridManager
- */
 package de.dfki.grave.model.flow;
 
 //~--- JDK imports ------------------------------------------------------------

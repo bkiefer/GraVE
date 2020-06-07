@@ -65,11 +65,11 @@ public final class AppFrame extends JFrame implements ChangeListener {
     if (projectEditor != null) {
       /** ClipBoard is a singleton
       if (previousCB != null) {
-        ClipBoard currentCB = projectEditor.getSceneFlowEditor().getWorkSpace().getClipBoard();
+        ClipBoard currentCB = projectEditor.getWorkSpace().getClipBoard();
         currentCB.set(previousCB.get());
       }
 
-      previousCB = projectEditor.getSceneFlowEditor().getWorkSpace().getClipBoard();
+      previousCB = projectEditor.getWorkSpace().getClipBoard();
       */
     }
   }
@@ -262,7 +262,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
   public final WorkSpacePanel getWorkSpace() {
     ProjectEditor pe = getSelectedProjectEditor();
     if (pe == null) return null;
-    return pe.getSceneFlowEditor().getWorkSpace();
+    return pe.getWorkSpace();
   }
   
   public final boolean newProject() {

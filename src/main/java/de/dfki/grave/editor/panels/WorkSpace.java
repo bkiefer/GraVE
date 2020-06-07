@@ -70,8 +70,8 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   private final Observable mObservable = new Observable();
   private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
-  // The parent SceneFlowEditor (TODO: remove)
-  private final SceneFlowEditor mSceneFlowEditor;
+  // The project editor
+  private final ProjectEditor mEditor;
   private final EditorProject mProject;
 
   private final SceneFlow mSceneFlow;
@@ -87,11 +87,11 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *
    *
    */
-  protected WorkSpace(SceneFlowEditor sceneFlowEditor, EditorProject project) {
-    mSceneFlowEditor = sceneFlowEditor;
+  protected WorkSpace(ProjectEditor editor, EditorProject project) {
+    mEditor = editor;
     mProject = project;
     mSceneFlow = mProject.getSceneFlow();
-    mSceneFlowEditor.addActiveSuperNode(mSceneFlow);
+    mEditor.addActiveSuperNode(mSceneFlow);
     mIDManager = new IDManager(mSceneFlow);
     mGridManager = new GridManager(this);
     mZoomFactor = getEditorConfig().sZOOM_FACTOR;
@@ -180,12 +180,12 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   /** Return the SuperNode this WorkSpace currently displays */
   protected SuperNode getSuperNode() {
-    return mSceneFlowEditor.getActiveSuperNode();
+    return mEditor.getActiveSuperNode();
   }
 
   /** Show a status message on the editor */
   public void setMessageLabelText(String s) {
-    mSceneFlowEditor.setMessageLabelText(s);
+    mEditor.setMessageLabelText(s);
   }
 
   public void clearClipBoard() {
@@ -396,7 +396,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     // Reset mouse interaction
     ignoreMouseInput(true);
     SuperNode superNode = (SuperNode) node.getDataNode();
-    mSceneFlowEditor.addActiveSuperNode(superNode);
+    mEditor.addActiveSuperNode(superNode);
     showNewSuperNode();
     ignoreMouseInput(false);
   }
@@ -404,16 +404,16 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   /** Pop out to the specified SuperNode */
   public void selectNewWorkSpaceLevel(SuperNode supernode) {
     if (getSuperNode().equals(supernode)) return;
-    SuperNode parent = mSceneFlowEditor.removeActiveSuperNode();
+    SuperNode parent = mEditor.removeActiveSuperNode();
     while (parent != null && parent != supernode) {
-      parent = mSceneFlowEditor.removeActiveSuperNode();
+      parent = mEditor.removeActiveSuperNode();
     }
     showNewSuperNode();
  }
 
   /** Pop out one level, if possible */
   public void decreaseWorkSpaceLevel() {
-    SuperNode parent = mSceneFlowEditor.removeActiveSuperNode();
+    SuperNode parent = mEditor.removeActiveSuperNode();
     if (parent == null) return;
     showNewSuperNode();
   }

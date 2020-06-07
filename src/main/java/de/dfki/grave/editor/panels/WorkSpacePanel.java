@@ -53,10 +53,9 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   private Point mSelectNodePoint = null;
   private final AttributedString sEdgeCreationHint = new AttributedString("Select Target Node");
 
-
-
-  public WorkSpacePanel(SceneFlowEditor sceneFlowEditor, EditorProject project) {
-    super(sceneFlowEditor, project);
+  
+  public WorkSpacePanel(ProjectEditor editor, EditorProject project) {
+    super(editor, project);
     // Add the mouse listeners
     addMouseMotionListener(this);
     addMouseListener(this);

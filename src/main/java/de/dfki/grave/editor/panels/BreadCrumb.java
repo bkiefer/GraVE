@@ -47,7 +47,7 @@ public class BreadCrumb extends JPanel {
     final Action action = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        AppFrame.getInstance().getSelectedProjectEditor().getSceneFlowEditor()
+        AppFrame.getInstance().getSelectedProjectEditor()
         .getWorkSpace().selectNewWorkSpaceLevel(supernode);
       }
     };
