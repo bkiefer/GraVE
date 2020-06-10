@@ -25,6 +25,8 @@ import javax.swing.event.UndoableEditListener;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import de.dfki.grave.editor.action.UndoRedoProvider;
+import de.dfki.grave.editor.event.ElementSelectedEvent;
+import de.dfki.grave.util.evt.EventDispatcher;
 
 /**
  * @author Gregor Mehlmann
@@ -61,6 +63,16 @@ public class CodeArea extends RSyntaxTextArea {
         //dispatch it to the parent component
         parent.dispatchEvent( parentMouseEvent);
       }
+    }
+    
+    public void mouseClicked(MouseEvent ev) {
+      if (! CodeArea.this.isEnabled() && ev.getButton() == MouseEvent.BUTTON1)
+        if ((ev.getClickCount() == 1 && mComponent.isSelected())
+            || (ev.getClickCount() == 2)) {
+          setSelected();
+          EventDispatcher.getInstance().convey(
+              new ElementSelectedEvent(CodeArea.this));
+        }
     }
   }
   
@@ -137,9 +149,14 @@ public class CodeArea extends RSyntaxTextArea {
     setEnabled(false);
   }
 
+  public EditorComponent getEditorComponent() {
+    return mComponent;
+  }
+  
   public void setSelected() {
+    if (! mComponent.isSelected())
+      mComponent.setSelected();
     setBackground(activeColour);
-    //mDispatcher.convey(new ElementSelectedEvent(mComponent));
     UndoRedoProvider.getInstance().startTextMode();
     setEnabled(true);
   }
@@ -148,8 +165,6 @@ public class CodeArea extends RSyntaxTextArea {
     setBackground(inactiveColour);
     UndoRedoProvider.getInstance().endTextMode();
     mComponent.checkDocumentChange();
-    //mDispatcher.convey(new ProjectChangedEvent(this));
-    //mDispatcher.convey(new ElementSelectedEvent(mComponent));
     update();
     setEnabled(false);
   }

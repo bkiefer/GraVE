@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 //import org.fife.ui.autocomplete.AutoCompletion;
 
 import de.dfki.grave.Preferences;
-import de.dfki.grave.editor.EditorComponent;
+import de.dfki.grave.editor.CodeArea;
 import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
@@ -436,8 +436,8 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       //showAuxiliaryEditor();
     } else if (event instanceof ElementSelectedEvent) {
       Object edited = ((ElementSelectedEvent) event).getElement();
-      if (edited instanceof EditorComponent) {
-        mCodeEditor.setEditedObject((EditorComponent) edited);
+      if (edited instanceof CodeArea) {
+        mCodeEditor.setEditedObject(((CodeArea) edited).getEditorComponent());
       } else {
         mCodeEditor.setEditedObject(null);
       }

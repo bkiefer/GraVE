@@ -118,9 +118,6 @@ public abstract class EditorComponent extends JComponent
   
   public void setSelected() {
     mSelected = true;
-    if (mCodeArea != null) {
-      mCodeArea.setSelected();
-    }      
     mDispatcher.convey(new ElementSelectedEvent(this));
     repaint(100);
   }
@@ -131,5 +128,9 @@ public abstract class EditorComponent extends JComponent
     }
     mSelected = false;
     repaint(100);
+  }
+  
+  public boolean isSelected() {
+    return mSelected;
   }
 }
