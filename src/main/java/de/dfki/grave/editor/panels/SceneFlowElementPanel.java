@@ -61,9 +61,6 @@ public final class SceneFlowElementPanel extends JScrollPane {
     private final JMenuItem functionModify = new JMenuItem("Modify...");
     private final JMenuItem functionRemove = new JMenuItem("Remove");
 
-    //
-    private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
-
     // Drag & Drop support
     private DragSource mDragSource;
     private DragGestureListener mDragGestureListener;
@@ -296,7 +293,7 @@ public final class SceneFlowElementPanel extends JScrollPane {
         private void launchTreeEntrySelectedEvent(TreeEntry entry) {
           TreeEntrySelectedEvent ev = new TreeEntrySelectedEvent(this, entry);
 
-          mEventCaster.convey(ev);
+          EventDispatcher.getInstance().convey(ev);
         }
 
       };

@@ -35,7 +35,6 @@ import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.Pair;
 import de.dfki.grave.util.Triple;
 import de.dfki.grave.util.evt.EventDispatcher;
-import de.dfki.grave.util.evt.EventListener;
 
 /**
  *
@@ -49,7 +48,7 @@ import de.dfki.grave.util.evt.EventListener;
  * Adding / Removing / Moving
  */
 @SuppressWarnings("serial")
-public abstract class WorkSpace extends JPanel implements EventListener {
+public abstract class WorkSpace extends JPanel {
   private static final Logger logger = LoggerFactory.getLogger(WorkSpace.class);
 
   // The clipboard
@@ -68,7 +67,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
 
   //
   private final Observable mObservable = new Observable();
-  private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
   // The project editor
   private final ProjectEditor mEditor;
@@ -87,9 +85,9 @@ public abstract class WorkSpace extends JPanel implements EventListener {
    *
    *
    */
-  protected WorkSpace(ProjectEditor editor, EditorProject project) {
+  protected WorkSpace(ProjectEditor editor) {
     mEditor = editor;
-    mProject = project;
+    mProject = editor.getEditorProject();
     mSceneFlow = mProject.getSceneFlow();
     mEditor.addActiveSuperNode(mSceneFlow);
     mIDManager = new IDManager(mSceneFlow);
@@ -103,8 +101,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     setLayout(new SceneFlowLayoutManager());
     setBorder(BorderFactory.createEmptyBorder());
 
-    // Add the element editor to the event multicaster
-    mEventCaster.register(this);
     // show all elements
     showCurrentWorkSpace();
   }
@@ -144,14 +140,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
     revalidate();
     repaint(100);    
   }
-  
-  /**
-   */
-  @Override
-  public void update(Object event) {
-    checkChangesOnWorkspace();
-    updateAll();
-  }
 
   // TODO: Move that up to to the editor
   protected void checkChangesOnWorkspace() {
@@ -174,7 +162,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   protected void launchProjectChangedEvent() {
     if (mProject.hasChanged()) {
       ProjectChangedEvent ev = new ProjectChangedEvent(this);
-      mEventCaster.convey(ev);
+      EventDispatcher.getInstance().convey(ev);
     }
   }
 
@@ -453,7 +441,7 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   protected void launchElementSelectedEvent(Object n) {
     ElementSelectedEvent ev =
         new ElementSelectedEvent(n == null ? getSuperNode() : n);
-    mEventCaster.convey(ev);
+    EventDispatcher.getInstance().convey(ev);
   }
 
   /** Move the node n to position loc (in model coordinates) */
@@ -859,7 +847,6 @@ public abstract class WorkSpace extends JPanel implements EventListener {
   public void changeName(BasicNode n, String name) {
     Node node = mNodeSet.get(n);
     node.changeName(name);
-    launchElementSelectedEvent(node);
   }
 
   /** paste nodes from the clipboard

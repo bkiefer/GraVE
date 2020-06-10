@@ -110,6 +110,7 @@ public abstract class EditorComponent extends JComponent
     return mDocument;
   }
   
+  /* project change via action */
   public void checkDocumentChange() {
     if (mDocument.contentChanged())
       new EditContentAction(mWorkSpace, mDocument).run();

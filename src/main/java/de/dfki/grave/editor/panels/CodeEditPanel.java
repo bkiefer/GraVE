@@ -13,8 +13,8 @@ import de.dfki.grave.editor.EditorComponent;
 
 @SuppressWarnings("serial")
 public class CodeEditPanel extends JPanel {
-  public RSyntaxTextArea textArea;
-  public EditorComponent editedObject;
+  private RSyntaxTextArea textArea;
+  private EditorComponent editedObject;
 
   // make this jpane, with scrollpane, and textarea
   // TODO: THE CODE MUST BE ADAPTED WHEN CHANGED IN THE CONFIG
@@ -37,15 +37,16 @@ public class CodeEditPanel extends JPanel {
   }
 
   public void setEditedObject(EditorComponent n) {
-    if (editedObject != null
-        && editedObject.getDoc().contentChanged()) {
+    if (editedObject != null) {
       editedObject.checkDocumentChange();
     }
     editedObject = null;
     if (n == null || n.getDoc() == null) {
       textArea.setDocument(new RSyntaxDocument(""));
+      setEnabled(false);
       return;
     }
+    setEnabled(true);
     editedObject = n;
     textArea.setDocument(n.getDoc());
     revalidate();

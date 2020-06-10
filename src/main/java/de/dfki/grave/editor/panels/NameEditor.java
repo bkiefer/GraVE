@@ -23,17 +23,12 @@ import de.dfki.grave.util.evt.EventListener;
  *
  */
 @SuppressWarnings("serial")
-public class NameEditor extends JPanel implements EventListener {
+public class NameEditor extends JPanel {
 
   private JTextField mNameField;
   private Node mNode = null;
 
   public NameEditor() {
-    initComponents();
-    EventDispatcher.getInstance().register(this);
-  }
-
-  private void initComponents() {
     // Init the node name panel
     setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
     setOpaque(false);
@@ -60,28 +55,19 @@ public class NameEditor extends JPanel implements EventListener {
     add(mNameField);
   }
 
-  @Override
-  public void update(Object event) {
-    if (event instanceof ElementSelectedEvent) {
-      Object elt = ((ElementSelectedEvent) event).getElement();
-      if (elt instanceof Node) {
-        // Update the selected node
-        mNode = (Node)elt;
-        if (mNode == null) {
-          mNameField.setText("");
-          mNameField.setEditable(false);
-        } else {
-          // Reload the node name
-          mNameField.setText(mNode.getDataNode().getName());
-          mNameField.setEditable(true);
-        }
-      }
-    } else {
+  public void setNode(Node elt) {
+    // Update the selected node
+    mNode = elt;
+    if (mNode == null) {
       mNameField.setText("");
       mNameField.setEditable(false);
+    } else {
+      // Reload the node name
+      mNameField.setText(mNode.getDataNode().getName());
+      mNameField.setEditable(true);
     }
   }
-
+  
   // remove all illegal characters
   private String sanitizeString(String st) {
     return st.replaceAll("[^-a-zA-Z0-9_]", "");

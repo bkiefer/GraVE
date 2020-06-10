@@ -25,7 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.EditorComponent;
+import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
+import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.editor.event.TreeEntrySelectedEvent;
 import de.dfki.grave.model.flow.SceneFlow;
 import de.dfki.grave.model.flow.SuperNode;
@@ -41,12 +43,12 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
   private static final Logger mLogger = LoggerFactory.getLogger(ProjectEditor.class);
   
-  // The singelton event multicaster
+  // The singleton event multicaster
   private final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
   // The editor project of this editor
   private EditorProject mEditorProject;
   
-  // TODO: move undo manager up at least to project editor
+  // TODO: make undo manager *local* to this editor, instead of singleton!
   private UndoManager mUndoManager = null;
 
   /** The list of active supernodes from the Sceneflow to the currently
@@ -65,7 +67,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   
   // Code editing panel
   private CodeEditPanel mCodeEditor;
-
+  
   // Construct a project editor with a project
   public ProjectEditor(final EditorProject project) {
     // Initialize the parent split pane
@@ -88,7 +90,6 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
   // Clean up the editor component
   public final void close() {
-    mSceneFlowToolBar.close();
     // Remove from event dispatcher
     mEventDispatcher.remove(this);
     // Cleanup workspace
@@ -139,7 +140,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     // TOOLBAR: NORTH ELEMENT
     mSceneFlowToolBar = new SceneFlowToolBar(this);
     // The center component is the workspace
-    mWorkSpacePanel = new WorkSpacePanel(this, mEditorProject);
+    mWorkSpacePanel = new WorkSpacePanel(this);
     mWorkSpacePanel.setTransferHandler(new SceneFlowImage());
 
     JScrollPane mWorkSpaceScrollPane = new JScrollPane(mWorkSpacePanel);
@@ -439,8 +440,14 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
         mCodeEditor.setEditedObject((EditorComponent) edited);
       } else {
         mCodeEditor.setEditedObject(null);
-      } 
+      }
+      if (edited instanceof Node) {
+        mNameEditor.setNode((Node)edited);
+      } else {
+        mNameEditor.setNode(null);
+      }
+    } else if (event instanceof ProjectChangedEvent) {
+      refreshToolBar();
     }
   }
-
 }

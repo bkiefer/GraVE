@@ -25,6 +25,8 @@ public class EditorProject {
 
   // The editor configuration
   private EditorConfig mEditorConfig;
+  
+  private boolean mChanged, mDefinitelyChanged;
 
   public static boolean isProjectDirectory(File f) {
     return (f.isDirectory() && (new File(f, SCENEFLOW_NAME)).exists());
@@ -36,6 +38,8 @@ public class EditorProject {
     // create a new editor config with default settings (user or system)
     mEditorConfig = ec;
     mSceneFlow = sc;
+    // TODO: DO SOMETHING MEANINGFUL HERE, BUT ALWAYS BE ON THE SAFE SIDE
+    mChanged = mDefinitelyChanged = true; 
   }
   
   /** Create a new EditorProject: this is a completely new project, with an
@@ -127,9 +131,9 @@ public class EditorProject {
     return writeProjectConfig(mProjectPath);
   }
   
+  /** return true if sth in the project was edited */
   public boolean hasChanged() {
-    // TODO: DO SOMETHING MEANINGFUL HERE, BUT ALWAYS BE ON THE SAFE SIDE
-    return true;
+    return mDefinitelyChanged || mChanged;
   }
 
   /** Write project configuration file into the directory base.
@@ -181,6 +185,15 @@ public class EditorProject {
   public boolean saveProject() {
     assert(mProjectPath != null);
     return writeProjectConfig(mProjectPath) && writeSceneFlow(mProjectPath); 
+  }
+
+  /** This project definitely changed, no doubt about it */
+  public void setDefinitelyChanged() {
+    mDefinitelyChanged = true;    
+  }
+  
+  public void setChanged(boolean value) {
+    mChanged = value;    
   }
 
 }

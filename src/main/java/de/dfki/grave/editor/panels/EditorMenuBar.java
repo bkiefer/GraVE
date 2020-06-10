@@ -1,12 +1,12 @@
 package de.dfki.grave.editor.panels;
 
 import static de.dfki.grave.Preferences.getPrefs;
+import static de.dfki.grave.AppFrame.getAccel;
 import static java.awt.event.InputEvent.*;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -68,15 +68,6 @@ public final class EditorMenuBar extends JMenuBar {
 
   private EditorConfig getEditorConfig() {
     return getCurrentWorkSpace().getEditorConfig();
-  }
-
-  private static KeyStroke getAccel(int code, int mask) {
-    return KeyStroke.getKeyStroke(code,
-        mask | Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
-  }
-
-  private static KeyStroke getAccel(int code) {
-    return getAccel(code, 0);
   }
 
   // Refresh the state of all items
@@ -230,7 +221,7 @@ public final class EditorMenuBar extends JMenuBar {
         (e) -> getCurrentWorkSpace().pasteClipboard());
     // sth selected TODO: MISSING
     mDeleteMenuItem = addItem(mEditMenu, "Delete", getAccel(KeyEvent.VK_DELETE),
-        (e) -> getCurrentWorkSpace()// .delete()
+        (e) -> getCurrentWorkSpace().deleteSelected()
     );
     mEditMenu.add(new JSeparator());
     // always

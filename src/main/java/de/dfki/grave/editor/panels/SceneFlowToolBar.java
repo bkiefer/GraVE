@@ -10,19 +10,15 @@ import javax.swing.*;
 
 import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.action.UndoRedoProvider;
-import de.dfki.grave.editor.dialog.OptionsDialog;
 import de.dfki.grave.editor.dialog.SaveFileDialog;
-import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.model.flow.SuperNode;
 import de.dfki.grave.util.ResourceLoader;
-import de.dfki.grave.util.evt.EventDispatcher;
-import de.dfki.grave.util.evt.EventListener;
 
 /**
  * @author Gregor Mehlmann
  */
 @SuppressWarnings({ "serial" })
-public class SceneFlowToolBar extends JToolBar implements EventListener {
+public class SceneFlowToolBar extends JToolBar {
 
   /**
    * ************************************************************************************************************************
@@ -135,22 +131,6 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     setFloatable(false);
     setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
     initComponents();
-    // Add the sceneflowtoolbar to the event multicaster
-    EventDispatcher.getInstance().register(this);
-  }
-  
-  public void close() {
-    EventDispatcher.getInstance().remove(this);
-  }
-
-  @Override
-  public void update(Object event) {
-    refreshButtons();
-    if (event instanceof ProjectChangedEvent) {
-      if (((ProjectChangedEvent)event).getSource() instanceof OptionsDialog) {
-        mSaveProject.setEnabled(true);
-      }
-    }
   }
 
   private WorkSpace getWorkSpace() {
@@ -224,9 +204,6 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     sanitizeButton(mSaveProject, tinyButtonDim);
     mSaveProject.setEnabled(false);
 
-
-    /*add(Box.createHorizontalStrut(10));
-        add(createSeparator());*/
     //Preferences
     mPreferences = add(new AbstractAction("ACTION_SHOW_OPTIONS", ICON_SETTINGS_STANDARD) {
       @Override
@@ -433,16 +410,12 @@ public class SceneFlowToolBar extends JToolBar implements EventListener {
     b.setToolTipText("Zoom Out");
     b.setRolloverIcon(ICON_ZOOMOUT_ROLLOVER);
     sanitizeButton(b, smallButtonDim);
-    //add(Box.createHorizontalGlue());
   }
 
   ////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
   private void refreshButtons() {
-    // Print some information
-    //mLogger.message("Refreshing Buttons Of '" + this + "'");
-    //*************************************
     // Refresh the button SAVE when project have been changed
     mSaveProject.setEnabled(mEditor.getEditorProject().hasChanged());
     //*************************************

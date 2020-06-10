@@ -626,6 +626,15 @@ public final class AppFrame extends JFrame implements ChangeListener {
     System.exit(0);
   }
 
+  public static KeyStroke getAccel(int code, int mask) {
+    return KeyStroke.getKeyStroke(code,
+        mask | Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+  }
+
+  public static KeyStroke getAccel(int code) {
+    return getAccel(code, 0);
+  }
+
   //ESCAPE LISTENER- Closes dialog with escape key
   public static void addEscapeListener(final JDialog dialog) {
     ActionListener escListner = new ActionListener() {
@@ -651,7 +660,9 @@ public final class AppFrame extends JFrame implements ChangeListener {
 
   // Show the options dialog
   public final void showOptions() {
-    final OptionsDialog optionsDialog = new OptionsDialog();
+    final OptionsDialog optionsDialog =
+        new OptionsDialog(getSelectedProjectEditor());
+    addEscapeListener(optionsDialog);
     optionsDialog.setVisible(true);
   }
 

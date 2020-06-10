@@ -54,8 +54,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   private final AttributedString sEdgeCreationHint = new AttributedString("Select Target Node");
 
   
-  public WorkSpacePanel(ProjectEditor editor, EditorProject project) {
-    super(editor, project);
+  public WorkSpacePanel(ProjectEditor editor) {
+    super(editor);
     // Add the mouse listeners
     addMouseMotionListener(this);
     addMouseListener(this);
@@ -402,7 +402,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       increaseWorkSpaceLevel(clickedNode);
       return;
     }
-    // show context menu on right click
+    // show context menu on single right click
     if (event.getButton() == MouseEvent.BUTTON3 && event.getClickCount() == 1) {
       if (mSelectedNodes.size() > 1
           && mSelectedNodes.contains(clickedNode)) {

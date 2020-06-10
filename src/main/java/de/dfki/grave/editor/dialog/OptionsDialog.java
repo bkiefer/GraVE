@@ -11,10 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.AppFrame;
-import de.dfki.grave.editor.event.ProjectChangedEvent;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.project.EditorConfig;
 import de.dfki.grave.model.project.FontConfig;
-import de.dfki.grave.util.evt.EventDispatcher;
 import say.swing.JFontChooser;
 
 /**
@@ -25,17 +24,17 @@ import say.swing.JFontChooser;
 public class OptionsDialog extends JDialog {
 
   private final Logger mLogger = LoggerFactory.getLogger(OptionsDialog.class);;
-  private final AppFrame mEditor = AppFrame.getInstance();
+  private final AppFrame mApplication = AppFrame.getInstance();
 
+  private ProjectEditor mEditor;
+  
   private EditorConfig mCurrentConfig;
   private EditorConfig mEditorConfig;
 
-  public OptionsDialog() {
+  public OptionsDialog(ProjectEditor editor) {
     super(AppFrame.getInstance(), "Preferences", false);
-    AppFrame.getInstance();
-    AppFrame.addEscapeListener(this);
-    mEditorConfig = 
-        mEditor.getSelectedProjectEditor().getEditorProject().getEditorConfig();
+    mEditor = editor;
+    mEditorConfig = mEditor.getEditorProject().getEditorConfig();
     // to enable cancel 
     mCurrentConfig = mEditorConfig.copy();
     initComponents();
@@ -65,7 +64,7 @@ public class OptionsDialog extends JDialog {
     mCancelButton.addMouseListener(new java.awt.event.MouseAdapter() {
       @Override
       public void mouseClicked(java.awt.event.MouseEvent evt) {
-        mEditor.getSelectedProjectEditor().getEditorProject()
+        mApplication.getSelectedProjectEditor().getEditorProject()
           .setEditorConfig(mCurrentConfig);
         dispose();
       }
@@ -153,7 +152,7 @@ public class OptionsDialog extends JDialog {
     dicb.setOpaque(false);
     dicb.addItemListener((e) -> {
       mEditorConfig.sSHOWIDSOFNODES = (e.getStateChange() == ItemEvent.SELECTED);
-      mEditor.refresh();
+      mApplication.refresh();
     });
     c.gridy += 1;
     grpan.add(dicb, c);
@@ -162,7 +161,7 @@ public class OptionsDialog extends JDialog {
     sgcb.setOpaque(false);
     sgcb.addItemListener((e) -> {
       mEditorConfig.sSNAPTOGRID = (e.getStateChange() == ItemEvent.SELECTED);
-      mEditor.refresh();
+      mApplication.refresh();
     });
     c.gridy += 1;
     grpan.add(sgcb, c);
@@ -197,7 +196,7 @@ public class OptionsDialog extends JDialog {
           .getNumber().intValue();
       mEditorConfig.sNODEHEIGHT = ((SpinnerNumberModel) nsspin.getModel())
           .getNumber().intValue();
-      mEditor.refresh();
+      mApplication.refresh();
     });
     
     c.gridy += 1;
@@ -208,7 +207,7 @@ public class OptionsDialog extends JDialog {
           mEditorConfig.sGRID_SCALE = 
               ((SpinnerNumberModel) gsspin.getModel())
               .getNumber().floatValue();
-          mEditor.refresh();
+          mApplication.refresh();
         });
 
     c.gridy += 1;
@@ -219,7 +218,7 @@ public class OptionsDialog extends JDialog {
       mEditorConfig.sZOOM_INCREMENT = 1.0f + 
           ((SpinnerNumberModel) zispin.getModel())
           .getNumber().intValue() / 100.0f;
-      mEditor.refresh();
+      mApplication.refresh();
     });
     
     return grpan;
@@ -287,146 +286,10 @@ public class OptionsDialog extends JDialog {
   private void saveEditorConfig(boolean dispose) {
    
     AppFrame.getInstance().refresh();
-    EventDispatcher.getInstance().convey(new ProjectChangedEvent(this));
+    mEditor.getEditorProject().setDefinitelyChanged();
     if (dispose) {
       dispose();
     }
   }
-
-  
-  
-  /*
-  private void initGeneralPanel() {
-    mXMLNSLabel = new JLabel("Namespace:");
-    mXMLNSLabel.setMinimumSize(mLabelDimension);
-    mXMLNSLabel.setPreferredSize(mLabelDimension);
-    mXMLNSTextField = new JTextField();
-    mXMLNSTextField.setMinimumSize(textfieldSize);
-    mXMLNSTextField.setPreferredSize(textfieldSize);
-    mXMLInstanceLabel = new JLabel("Instance:");
-    mXMLInstanceLabel.setMinimumSize(mLabelDimension);
-    mXMLInstanceLabel.setPreferredSize(mLabelDimension);
-    mXMLInstanceTextField = new JTextField();
-    mXMLInstanceTextField.setMinimumSize(textfieldSize);
-    mXMLInstanceTextField.setPreferredSize(textfieldSize);
-    mXSDFileLabel = new JLabel("Location:");
-    mXSDFileLabel.setMinimumSize(mLabelDimension);
-    mXSDFileLabel.setPreferredSize(mLabelDimension);
-    mXSDFileTextField = new JTextField();
-    mXSDFileTextField.setMinimumSize(textfieldSize);
-    mXSDFileTextField.setPreferredSize(textfieldSize);
-    mXSDFileTextField.setEditable(false);
-    mXSDFileButton = new JButton(ResourceLoader.loadImageIcon("img/search_icon.png"));
-    mXSDFileButton.setRolloverIcon(ResourceLoader.loadImageIcon("img/search_icon_blue.png"));
-    mXSDFileButton.setOpaque(false);
-    mXSDFileButton.setContentAreaFilled(false);
-    mXSDFileButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        JFileChooser file = new JFileChooser(sUSER_DIR);
-
-        file.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        file.showDialog(AppFrame.getInstance(), "Select Sceneflow XSD");
-
-        if (file.getSelectedFile() != null) {
-          mXSDFileTextField.setText(file.getSelectedFile().getPath());
-        }
-      }
-    });
-
-    JPanel xmlNameSpace = new JPanel();
-
-    xmlNameSpace.setOpaque(false);
-    xmlNameSpace.setLayout(new BoxLayout(xmlNameSpace, BoxLayout.X_AXIS));
-    xmlNameSpace.add(Box.createRigidArea(new Dimension(5, 0)));
-    xmlNameSpace.add(mXMLNSLabel);
-    xmlNameSpace.add(Box.createHorizontalGlue());
-    xmlNameSpace.add(mXMLNSTextField);
-    xmlNameSpace.add(Box.createRigidArea(new Dimension(5, 0)));
-
-    JPanel xmlInstance = new JPanel();
-
-    xmlInstance.setOpaque(false);
-    xmlInstance.setLayout(new BoxLayout(xmlInstance, BoxLayout.X_AXIS));
-    xmlInstance.add(Box.createRigidArea(new Dimension(5, 0)));
-    xmlInstance.add(mXMLInstanceLabel);
-    xmlInstance.add(Box.createHorizontalGlue());
-    xmlInstance.add(mXMLInstanceTextField);
-    xmlInstance.add(Box.createRigidArea(new Dimension(5, 0)));
-
-    JPanel xsdFile = new JPanel();
-
-    xsdFile.setOpaque(false);
-    xsdFile.setLayout(new BoxLayout(xsdFile, BoxLayout.X_AXIS));
-    xsdFile.add(Box.createRigidArea(new Dimension(5, 0)));
-    xsdFile.add(mXSDFileLabel);
-    xsdFile.add(Box.createHorizontalGlue());
-    xsdFile.add(mXSDFileTextField);
-    xsdFile.add(Box.createRigidArea(new Dimension(5, 0)));
-    xsdFile.add(mXSDFileButton);
-    xsdFile.add(Box.createRigidArea(new Dimension(5, 0)));
-    mGeneralPanel = new JPanel();
-    mGeneralPanel.setLayout(new BoxLayout(mGeneralPanel, BoxLayout.Y_AXIS));
-    mGeneralPanel.setBackground(Color.white);
-    mGeneralPanel.setBorder(BorderFactory.createTitledBorder(" Sceneflow Syntax "));
-    mGeneralPanel.add(Box.createRigidArea(new Dimension(1, 20)));
-    mGeneralPanel.add(xmlNameSpace);
-    mGeneralPanel.add(Box.createRigidArea(new Dimension(1, 10)));
-    mGeneralPanel.add(xmlInstance);
-    mGeneralPanel.add(Box.createRigidArea(new Dimension(1, 10)));
-    mGeneralPanel.add(xsdFile);
-    mGeneralPanel.add(Box.createRigidArea(new Dimension(1, 20)));
-  }
-
-  private void initFileListPanel() {
-    mRecentFileList = new JList(new DefaultListModel());
-    mRecentFileList.setOpaque(false);
-    mRecentFileScrollPane = new JScrollPane(mRecentFileList);
-    mRecentFileScrollPane.setOpaque(false);
-    mRecentFileScrollPane.setBounds(140, 95, 230, 100);
-    mDeleteRecentFileButton = new JButton("Remove Item");
-    mDeleteRecentFileButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        int index = mRecentFileList.getSelectedIndex();
-
-        if (index >= 0) {
-          ((DefaultListModel) mRecentFileList.getModel()).remove(index);
-        }
-      }
-    });
-    mDeleteRecentFileListButton = new JButton("Delete List");
-    mDeleteRecentFileListButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        ((DefaultListModel) mRecentFileList.getModel()).clear();
-      }
-    });
-
-    // Do the layout - pack all stuff into little small cute boxes
-    JPanel fileList = new JPanel();
-
-    fileList.setOpaque(false);
-    fileList.setLayout(new BoxLayout(fileList, BoxLayout.X_AXIS));
-    fileList.add(Box.createRigidArea(new Dimension(5, 0)));
-    fileList.add(mRecentFileScrollPane);
-    fileList.add(Box.createRigidArea(new Dimension(5, 0)));
-
-    JPanel recentFileButtons = new JPanel();
-
-    recentFileButtons.setOpaque(false);
-    recentFileButtons.setLayout(new BoxLayout(recentFileButtons, BoxLayout.X_AXIS));
-    recentFileButtons.add(Box.createHorizontalGlue());
-    recentFileButtons.add(mDeleteRecentFileButton);
-    recentFileButtons.add(mDeleteRecentFileListButton);
-    recentFileButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-    mFileListPanel = new JPanel();
-    mFileListPanel.setBackground(Color.white);
-    mFileListPanel.setLayout(new BoxLayout(mFileListPanel, BoxLayout.Y_AXIS));
-    mFileListPanel.setBorder(BorderFactory.createTitledBorder(" Recently Edited Sceneflows "));
-    mFileListPanel.add(fileList);
-    mFileListPanel.add(recentFileButtons);
-  }
-  */
 
 }

@@ -1,6 +1,8 @@
 package de.dfki.grave.editor.action;
 
-import java.awt.Toolkit;
+import static de.dfki.grave.AppFrame.getAccel;
+import static java.awt.event.InputEvent.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.function.Supplier;
@@ -76,18 +78,13 @@ public class UndoRedoProvider {
   
   private UndoRedoProvider() {
     undoAction =
-      new UndoRedoAction("Undo",
-          KeyStroke.getKeyStroke(KeyEvent.VK_Z,
-              Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
+      new UndoRedoAction("Undo", getAccel(KeyEvent.VK_Z),
           (() -> getManager().getUndoPresentationName()),
           (() -> getManager().undo()),
           (() -> getManager().canUndo()));
 
     redoAction =
-      new UndoRedoAction("Redo",
-          KeyStroke.getKeyStroke(KeyEvent.VK_Z,
-              java.awt.event.InputEvent.SHIFT_DOWN_MASK
-              | Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()),
+      new UndoRedoAction("Redo", getAccel(KeyEvent.VK_Z, SHIFT_DOWN_MASK),
           (() -> getManager().getRedoPresentationName()),
           (() -> getManager().redo()),
           (() -> getManager().canRedo()));
