@@ -22,6 +22,7 @@ import de.dfki.grave.editor.CodeArea;
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
+import de.dfki.grave.editor.ProjectElement;
 import de.dfki.grave.editor.action.CompoundAction;
 import de.dfki.grave.editor.action.EditorAction;
 import de.dfki.grave.editor.action.MoveNodesAction;
@@ -39,8 +40,8 @@ import de.dfki.grave.util.evt.EventDispatcher;
 /**
  *
  * This is the View of the currently edited SuperNode, containing views for all
- * the SuperNodes contained nodes and the edges between them, and their
- * corresponding text badges.
+ * the SuperNode's contained nodes and the edges between them, and their
+ * corresponding text badges, as well as comments.
  *
  * This class is meant to be used *only* with WorkSpacePanel, which provides
  * the "interactive" functionality: Mouse Movements/Menus/Dragging/Keyboard
@@ -48,7 +49,7 @@ import de.dfki.grave.util.evt.EventDispatcher;
  * Adding / Removing / Moving
  */
 @SuppressWarnings("serial")
-public abstract class WorkSpace extends JPanel {
+public abstract class WorkSpace extends JPanel implements ProjectElement {
   private static final Logger logger = LoggerFactory.getLogger(WorkSpace.class);
 
   // The clipboard
@@ -156,16 +157,6 @@ public abstract class WorkSpace extends JPanel {
     }
   }
 
-  /**
-   *
-   */
-  protected void launchProjectChangedEvent() {
-    if (mProject.hasChanged()) {
-      ProjectChangedEvent ev = new ProjectChangedEvent(this);
-      EventDispatcher.getInstance().convey(ev);
-    }
-  }
-
   /** Return the SuperNode this WorkSpace currently displays */
   protected SuperNode getSuperNode() {
     return mEditor.getActiveSuperNode();
@@ -184,6 +175,10 @@ public abstract class WorkSpace extends JPanel {
     return mProject.getEditorConfig();
   }
 
+  public ProjectEditor getEditor() {
+    return mEditor;
+  }
+  
   /* ######################################################################
    * Zoom Methods, followed by Coordinate transformations
    * ###################################################################### */

@@ -274,7 +274,7 @@ public final class SceneFlowElementPanel extends JScrollPane {
             }
 
             if (path.getLastPathComponent() instanceof TreeEntry) {
-              launchTreeEntrySelectedEvent(
+              treeElementSelected(
                   (TreeEntry) path.getLastPathComponent());
             }
           } // test if the user clicked on exact function
@@ -290,10 +290,8 @@ public final class SceneFlowElementPanel extends JScrollPane {
           }
         }
 
-        private void launchTreeEntrySelectedEvent(TreeEntry entry) {
-          TreeEntrySelectedEvent ev = new TreeEntrySelectedEvent(this, entry);
+        private void treeElementSelected(TreeEntry entry) {
 
-          EventDispatcher.getInstance().convey(ev);
         }
 
       };

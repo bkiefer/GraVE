@@ -360,7 +360,6 @@ public class Edge extends EditorComponent {
   private Rectangle computeTextBoxBounds() {
     CodeArea c = getCodeArea();
     if (c == null) return null;
-    c.setDeselected();
     Dimension r = c.getSize();
     
     // center around middle of curve

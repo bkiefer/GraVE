@@ -34,7 +34,7 @@ public final class EditorMenuBar extends JMenuBar {
       KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9
   };
   
-  private final AppFrame mEditorInstance;
+  private final AppFrame mAppInstance;
 
   // File menu
   private JMenu mOpenRecentFileMenu;
@@ -57,13 +57,13 @@ public final class EditorMenuBar extends JMenuBar {
   // Construct the editor's menu bar
   public EditorMenuBar(final AppFrame editor) {
     // Initialize the parent editor
-    mEditorInstance = editor;
+    mAppInstance = editor;
     // Initialize the GUI components
     initComponents();
   }
 
   private WorkSpacePanel getCurrentWorkSpace() {
-    return mEditorInstance.getWorkSpace();
+    return mAppInstance.getWorkSpace();
   }
 
   private EditorConfig getEditorConfig() {
@@ -131,7 +131,7 @@ public final class EditorMenuBar extends JMenuBar {
           recentFileMenuItem.setAccelerator(getAccel(sDYNAMIC_KEYS[i++]));
           recentFileMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              mEditorInstance.openProject(projectDir.getPath());
+              mAppInstance.openProject(projectDir.getPath());
             }
           });
           mOpenRecentFileMenu.add(recentFileMenuItem);
@@ -144,7 +144,7 @@ public final class EditorMenuBar extends JMenuBar {
     if (hasEntries) {
       mOpenRecentFileMenu.add(new JSeparator());
       addItem(mOpenRecentFileMenu, "Clear List", null,
-          (e) -> mEditorInstance.clearRecentProjects());
+          (e) -> mAppInstance.clearRecentProjects());
     }
   }
 
@@ -161,9 +161,9 @@ public final class EditorMenuBar extends JMenuBar {
   private void initFileMenu() {
     JMenu fileMenu = new JMenu("File");
     addItem(fileMenu, "New Project...", getAccel(KeyEvent.VK_N),
-        (e) -> mEditorInstance.newProject());
+        (e) -> mAppInstance.newProject());
     addItem(fileMenu, "Open Project...", getAccel(KeyEvent.VK_O),
-        (e) -> mEditorInstance.openProject());
+        (e) -> mAppInstance.openProject());
     mOpenRecentFileMenu = new JMenu("Open Recent Project");
     fileMenu.add(mOpenRecentFileMenu);
     // mOpenRecentFileMenu.setIcon(new ImageIcon("data/img/recent.png"));
@@ -174,7 +174,7 @@ public final class EditorMenuBar extends JMenuBar {
     // someOpen
     mCloseFileMenuItem = addItem(fileMenu, "Close Project",
         getAccel(KeyEvent.VK_W),
-        (e) -> mEditorInstance.close(QuitDialog.CLOSE_PROJ_DIALOG));
+        (e) -> mAppInstance.close(QuitDialog.CLOSE_PROJ_DIALOG));
 
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
@@ -182,22 +182,22 @@ public final class EditorMenuBar extends JMenuBar {
 
     // someOpen && projectChanged
     mSaveFileMenuItem = addItem(fileMenu, "Save", getAccel(KeyEvent.VK_S),
-        (e) -> mEditorInstance.save());
+        (e) -> mAppInstance.save());
     // someOpen
     mSaveAsMenuItem = addItem(fileMenu, "Save As",
         getAccel(KeyEvent.VK_S, SHIFT_DOWN_MASK),
-        (e) -> mEditorInstance.saveAs());
+        (e) -> mAppInstance.saveAs());
     // mSaveAsMenuItem.setIcon(new ImageIcon("data/img/saveas.png"));
 
     // someOpen
     mSaveAllMenuItem = addItem(fileMenu, "Save All",
         getAccel(KeyEvent.VK_S, ALT_DOWN_MASK),
-        (e) -> mEditorInstance.saveAll());
+        (e) -> mAppInstance.saveAll());
     // mSaveAllMenuItem.setIcon(new ImageIcon("data/img/saveall.png"));
 
     fileMenu.add(new JSeparator());
     addItem(fileMenu, "Quit", getAccel(KeyEvent.VK_Q),
-        (e) -> mEditorInstance.closeAll());
+        (e) -> mAppInstance.closeAll());
     // mExitEditorMenuItem.setIcon(new ImageIcon("data/img/exit.png"));
 
     add(fileMenu);
@@ -262,7 +262,7 @@ public final class EditorMenuBar extends JMenuBar {
     // **************************OPTIONS*************************************
     mViewMenu.add(new JSeparator());
     addItem(mViewMenu, "Options", getAccel(KeyEvent.VK_COMMA),
-        (e) -> mEditorInstance.showOptions());
+        (e) -> mAppInstance.showOptions());
 
     add(mViewMenu);
   }
@@ -270,10 +270,10 @@ public final class EditorMenuBar extends JMenuBar {
   private void initHelpMenu() {
     JMenu helpMenu = new JMenu("Help");
     addItem(helpMenu, "Help", getAccel(KeyEvent.VK_H),
-        (e) -> mEditorInstance.showHelp());
+        (e) -> mAppInstance.showHelp());
     helpMenu.add(new JSeparator());
     addItem(helpMenu, "About", getAccel(KeyEvent.VK_I),
-        (e) -> mEditorInstance.showAbout());
+        (e) -> mAppInstance.showAbout());
     add(helpMenu);
   }
 }

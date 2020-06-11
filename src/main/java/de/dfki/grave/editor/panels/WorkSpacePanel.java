@@ -266,8 +266,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   }
 
   protected void clearCurrentWorkspace() {
-    super.clearCurrentWorkspace();
     deselectAll();
+    super.clearCurrentWorkspace();
   }
 
   /* ######################################################################
