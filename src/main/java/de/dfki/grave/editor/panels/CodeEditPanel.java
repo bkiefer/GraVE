@@ -52,6 +52,10 @@ public class CodeEditPanel extends JPanel {
     revalidate();
     repaint();
   }
+  
+  public EditorComponent getEditedObject() {
+    return editedObject;
+  }
 
   public void updateBorders(int x, int y, int w, int h) {
     //setBounds(x, y, w, h);

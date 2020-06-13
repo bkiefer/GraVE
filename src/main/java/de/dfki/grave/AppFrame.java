@@ -3,6 +3,7 @@ package de.dfki.grave;
 import static de.dfki.grave.Icons.*;
 import static de.dfki.grave.Preferences.*;
 import static de.dfki.grave.Constants.*;
+import static java.awt.event.InputEvent.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -18,6 +19,7 @@ import javax.swing.filechooser.FileView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.grave.editor.action.UndoRedoProvider;
 import de.dfki.grave.editor.dialog.AboutDialog;
 import de.dfki.grave.editor.dialog.NewProjectDialog;
 import de.dfki.grave.editor.dialog.OptionsDialog;
@@ -32,13 +34,17 @@ import de.dfki.grave.util.ResourceLoader;
 @SuppressWarnings("serial")
 public final class AppFrame extends JFrame implements ChangeListener {
   private static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
-
+  
   // The singelton editor instance
   public static AppFrame sInstance = null;
   // The editor's GUI components
   private final EditorMenuBar mEditorMenuBar;
   private final JTabbedPane mProjectEditors;
-
+  
+  // Global undo/redo for global menu
+  private final AbstractAction undoAction;
+  private final AbstractAction redoAction;
+  
   // Get the singelton editor instance
   public synchronized static AppFrame getInstance() {
     if (sInstance == null) {
@@ -93,6 +99,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
     public void componentHidden(ComponentEvent e) { }
   };
 
+  
   // Private construction of an editor
   private AppFrame() {
     configure();
@@ -109,6 +116,41 @@ public final class AppFrame extends JFrame implements ChangeListener {
     // SET BACKGROUNDS
     setUIBackgrounds();
 
+    undoAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ProjectEditor pe = getSelectedProjectEditor();
+        if (pe != null) {
+          UndoRedoProvider um = pe.getUndoManager();
+          if (um != null) {
+            um.doUndo(this, e);
+            refreshMenuBar();
+            pe.refreshToolBar();
+            //EventDispatcher.getInstance().convey(new ProjectChangedEvent(this));
+          }
+        }
+      }
+    };
+    undoAction.putValue(Action.ACCELERATOR_KEY, getAccel(KeyEvent.VK_Z));
+    undoAction.putValue(Action.NAME, "Undo");
+    redoAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ProjectEditor pe = getSelectedProjectEditor();
+        if (pe != null) {
+          UndoRedoProvider um = pe.getUndoManager();
+          if (um != null) {
+            um.doRedo(this, e);
+            refreshMenuBar();
+            pe.refreshToolBar();
+            //EventDispatcher.getInstance().convey(new ProjectChangedEvent(this));
+          }
+        }
+      }
+    };
+    redoAction.putValue(Action.ACCELERATOR_KEY, 
+        getAccel(KeyEvent.VK_Z, SHIFT_DOWN_MASK));
+    redoAction.putValue(Action.NAME, "Redo");
     // Init the menu bar
     mEditorMenuBar = new EditorMenuBar(this);
     // Hide the menu bar
@@ -152,6 +194,15 @@ public final class AppFrame extends JFrame implements ChangeListener {
     // handle resize and positioning
     this.addComponentListener(mComponentListener);
   }
+  
+  public void refreshUndoRedo(UndoRedoProvider.UndoRedoAction undo, 
+      UndoRedoProvider.UndoRedoAction redo) {
+    undo.refreshState(undoAction);
+    redo.refreshState(redoAction);
+  }
+  
+  public AbstractAction getUndoAction() { return undoAction; } 
+  public AbstractAction getRedoAction() { return redoAction; }
 
   private void setUIFonts() {
     Font uiFont = getPrefs().editorConfig.sUI_FONT.getFont();

@@ -120,6 +120,8 @@ public abstract class EditorComponent extends JComponent
   public void setSelected() {
     mSelected = true;
     EventDispatcher.getInstance().convey(new ElementSelectedEvent(this));
+    if (mDocument != null && mDocument.getLength() == 0)
+      mCodeArea.setSelected();
     repaint(100);
   }
 

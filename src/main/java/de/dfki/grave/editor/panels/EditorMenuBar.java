@@ -206,8 +206,8 @@ public final class EditorMenuBar extends JMenuBar {
   private void initEditMenu() {
     mEditMenu = new JMenu("Edit");
 
-    mEditMenu.add(UndoRedoProvider.getInstance().getUndoAction());
-    mEditMenu.add(UndoRedoProvider.getInstance().getRedoAction());
+    mEditMenu.add(mAppInstance.getUndoAction());
+    mEditMenu.add(mAppInstance.getRedoAction());
     mEditMenu.add(new JSeparator());
     // sth selected
     mCopyMenuItem = addItem(mEditMenu, "Copy", getAccel(KeyEvent.VK_C),

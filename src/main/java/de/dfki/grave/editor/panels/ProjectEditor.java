@@ -17,7 +17,6 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
-import javax.swing.undo.UndoManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.CodeArea;
 import de.dfki.grave.editor.Node;
+import de.dfki.grave.editor.action.UndoRedoProvider;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.editor.event.TreeEntrySelectedEvent;
@@ -49,7 +49,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   private EditorProject mEditorProject;
   
   // TODO: make undo manager *local* to this editor, instead of singleton!
-  private UndoManager mUndoManager = null;
+  private final UndoRedoProvider mUndoManager;
 
   /** The list of active supernodes from the Sceneflow to the currently
    *  displayed node
@@ -77,6 +77,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     // Initialize Code Editing Region
     mCodeEditor = //new CodeEditor(mEditorProject);
         new CodeEditPanel(mEditorProject.getEditorConfig().sCODE_FONT.getFont());
+    mUndoManager = new UndoRedoProvider();
     // Register at the event dispatcher
     mEventDispatcher.register(this);
     // Initialize the GUI components
@@ -133,7 +134,6 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
         };
       }
     });
-    mUndoManager = new UndoManager();
 
     mActiveSuperNodes = new LinkedList<SuperNode>();
 
@@ -297,7 +297,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     return mWorkSpacePanel;
   }
 
-  public UndoManager getUndoManager() {
+  public UndoRedoProvider getUndoManager() {
     return mUndoManager;
   }
 

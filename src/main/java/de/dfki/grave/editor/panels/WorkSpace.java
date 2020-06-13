@@ -630,8 +630,10 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
     // remove from Panel
     super.remove(e);
     CodeArea c = e.getCodeArea();
-    if (c != null)
+    if (c != null) {
+      c.clear();
       super.remove(c);
+    }
     mObservable.deleteObserver(e);
   }
 
@@ -657,6 +659,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
     super.remove(n);
     CodeArea c = n.getCodeArea();
     if (c != null)
+      c.clear();
       super.remove(c);
     mObservable.deleteObserver(n);
   }

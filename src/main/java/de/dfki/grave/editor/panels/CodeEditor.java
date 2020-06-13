@@ -110,7 +110,7 @@ public class CodeEditor extends JPanel {
     mEditorProject.getEditorConfig().sAUTOHIDE_BOTTOMPANEL = pinPricked;
     if (state) {
       // pin was pricked, thus clone right code editor to the left
-      mLeftTextArea.setEditedObject(mRightTextArea.editedObject);
+      mLeftTextArea.setEditedObject(mRightTextArea.getEditedObject());
     } else {
       // TODO: clear if pin unpricked?
     }
@@ -125,7 +125,7 @@ public class CodeEditor extends JPanel {
   }
 
   public void setEditedNodeOrEdge(EditorComponent n) {
-    if (mRightTextArea.editedObject == n) return; // may be due to FocusGained
+    if (mRightTextArea.getEditedObject() == n) return; // may be due to FocusGained
     // update text area with current code & object
     mRightTextArea.setEditedObject(n);
   }

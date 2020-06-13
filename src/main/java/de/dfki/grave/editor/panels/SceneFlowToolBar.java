@@ -241,20 +241,20 @@ public class SceneFlowToolBar extends JToolBar {
     add(createSeparator());
 
     //Undo last action
-    JButton mUndo = add(UndoRedoProvider.getInstance().getUndoAction());
-    mUndo.setIcon(ICON_UNDO_STANDARD);
-    mUndo.setRolloverIcon(ICON_UNDO_ROLLOVER);
-    mUndo.setDisabledIcon(ICON_UNDO_DISABLED);
-    mUndo.setToolTipText("Undo last action");
-    sanitizeButton(mUndo, tinyButtonDim);
+    JButton undo = add(AppFrame.getInstance().getUndoAction());
+    undo.setIcon(ICON_UNDO_STANDARD);
+    undo.setRolloverIcon(ICON_UNDO_ROLLOVER);
+    undo.setDisabledIcon(ICON_UNDO_DISABLED);
+    undo.setToolTipText("Undo last action");
+    sanitizeButton(undo, tinyButtonDim);
 
     //Redo last action
-    JButton mRedo = add(UndoRedoProvider.getInstance().getRedoAction());
-    mRedo.setIcon(ICON_REDO_STANDARD);
-    mRedo.setRolloverIcon(ICON_REDO_ROLLOVER);
-    mRedo.setDisabledIcon(ICON_REDO_DISABLED);
-    mRedo.setToolTipText("Redo last action");
-    sanitizeButton(mRedo, tinyButtonDim);
+    JButton redo = add(AppFrame.getInstance().getRedoAction());
+    redo.setIcon(ICON_REDO_STANDARD);
+    redo.setRolloverIcon(ICON_REDO_ROLLOVER);
+    redo.setDisabledIcon(ICON_REDO_DISABLED);
+    redo.setToolTipText("Redo last action");
+    sanitizeButton(redo, tinyButtonDim);
     //******************************************************************************************************
 
     //******************************************************************************************************

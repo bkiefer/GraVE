@@ -82,6 +82,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     actionMap.put(vkDel, new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent actionEvt) {
+        deselectAll();
         if (mSelectedEdge != null) {
           new RemoveEdgeAction(WorkSpacePanel.this, mSelectedEdge.getDataEdge()).run();
         }
@@ -93,7 +94,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         if (mSelectedComment != null) {
           new RemoveCommentAction(WorkSpacePanel.this, mSelectedComment).run();
         }
-        deselectAll();
       }
     });
   }
