@@ -131,7 +131,7 @@ public final class EditorMenuBar extends JMenuBar {
           recentFileMenuItem.setAccelerator(getAccel(sDYNAMIC_KEYS[i++]));
           recentFileMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              mAppInstance.openProject(projectDir.getPath());
+              mAppInstance.openProject(projectDir);
             }
           });
           mOpenRecentFileMenu.add(recentFileMenuItem);

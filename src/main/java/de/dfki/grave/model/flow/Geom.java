@@ -92,6 +92,7 @@ public class Geom {
       if (! taken.get(angle2num[k])) break;
       k = ((d & 1) != 0) ? k + d/2 + 1 : k - d/2;
       if (k < 0) k += angle2num.length;
+      if (k >= angle2num.length) k -= angle2num.length;
       ++d;
     } while (d < 2 * angle2num.length);
     return angle2num[k];

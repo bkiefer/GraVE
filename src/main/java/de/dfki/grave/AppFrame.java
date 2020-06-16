@@ -376,7 +376,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
       // Get the chooser's selected file
       final File file = chooser.getSelectedFile();
       // And try to open the file then
-      return openProject(file.getPath());
+      return openProject(file);
     } else {
       // Print an error message
       mLogger.warn("Warning: Canceled opening of a project file");
@@ -418,13 +418,13 @@ public final class AppFrame extends JFrame implements ChangeListener {
   }
   */
 
-  public final boolean openProject(String path) {
+  public final boolean openProject(File path) {
     if (path == null) {
       mLogger.error("Error: Cannot open editor project from a bad Stream");
       // And return failure here
       return false;
     }
-    final EditorProject project = EditorProject.load(new File(path));
+    final EditorProject project = EditorProject.load(path);
     // Try to loadRunTimePlugins it from the file
     if (project != null) {
       // Toggle the editor main screen
