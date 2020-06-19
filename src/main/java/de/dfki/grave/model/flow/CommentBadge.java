@@ -15,11 +15,21 @@ import de.dfki.grave.util.Copyable;
 @XmlAccessorType(XmlAccessType.NONE)
 public class CommentBadge implements ContentHolder, Copyable {
 
+  protected SuperNode mParentNode = null;
+  
   @XmlElement(name="Text")
   private String text = "";
   @XmlElement(name="Boundary")
   private Boundary mBoundary;
 
+  public static CommentBadge createComment(SuperNode parent, Boundary b) {
+    CommentBadge c = new CommentBadge();
+    c.mBoundary = b;
+    c.mParentNode = parent;
+    c.mParentNode.addComment(c);
+    return c;
+  }
+  
   public String getContent() {
     return text;
   }
@@ -36,6 +46,10 @@ public class CommentBadge implements ContentHolder, Copyable {
     mBoundary = value;
   }
 
+  public SuperNode getParentNode() {
+    return mParentNode;
+  }
+  
   @Override
   public CommentBadge deepCopy() {
     CommentBadge result = new CommentBadge();

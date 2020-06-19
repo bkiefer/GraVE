@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.editor.panels.IDManager;
 import de.dfki.grave.util.Pair;
 
 /**
@@ -40,9 +39,10 @@ public class SuperNode extends BasicNode {
   }
 
   /** Create a SuperNode from an existing BasicNode: Node Type Change */
-  public SuperNode(IDManager mgr, final BasicNode node) {
+  public SuperNode(final BasicNode node) {
+    IDManager mgr = node.getRoot().getIDManager();
     mNodeId = mgr.getNextFreeID(this);
-    copyBasicFields(node);
+    this.copyBasicFields(node);
   }
 
   public boolean isBasic() { return false; }
@@ -267,8 +267,9 @@ public class SuperNode extends BasicNode {
    *  The copied node models will be subnodes of this SuperNode.
    */
   public Pair<Collection<BasicNode>, List<AbstractEdge>> copySubgraph(
-      IDManager mgr, List<BasicNode> nodes, List<AbstractEdge> edges) {
+      Collection<BasicNode> nodes, Collection<AbstractEdge> edges) {
     Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
+    IDManager mgr = getRoot().getIDManager(); 
     for (BasicNode n : nodes) {
       BasicNode cpy = n.deepCopy(mgr, this);
       orig2copy.put(n, cpy);

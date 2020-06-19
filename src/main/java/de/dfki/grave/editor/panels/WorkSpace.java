@@ -74,7 +74,6 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   private final EditorProject mProject;
 
   private final SceneFlow mSceneFlow;
-  private final IDManager mIDManager; // manages new IDs for the SceneFlow
 
   public float mZoomFactor = 1.0f;
   public int mNodeWidth, mNodeHeight;
@@ -91,7 +90,6 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
     mProject = editor.getEditorProject();
     mSceneFlow = mProject.getSceneFlow();
     mEditor.addActiveSuperNode(mSceneFlow);
-    mIDManager = new IDManager(mSceneFlow);
     mGridManager = new GridManager(this);
     mZoomFactor = getEditorConfig().sZOOM_FACTOR;
     mNodeWidth = getEditorConfig().sNODEWIDTH;
@@ -795,7 +793,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
     if (getEditorConfig().sSNAPTOGRID) {
       p = mGridManager.getNodeLocation(p);
     }
-    return model.createNode(mIDManager, p, getSuperNode());
+    return model.createNode(p, getSuperNode());
   }
 
   private Node getSourceNode(Edge e) {

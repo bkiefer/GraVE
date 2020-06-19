@@ -33,15 +33,23 @@ public final class SceneFlow extends SuperNode {
   protected String mContextClass = new String();
 
   protected String mContextCode = new String();
+  
+  @XmlTransient
+  private IDManager mIDMananger;
 
   protected ArrayList<String> mClassPathList = new ArrayList<String>();
   @XmlAttribute(name="modifDate")
   protected String mModifDate = new String();
 
   public SceneFlow() {
-    mPosition = new Position(0,0);
+    mPosition = new Position(0,0); 
   }
 
+  /** To be called when the whole graph has been read */
+  public void init() {
+    mIDMananger = new IDManager(this);
+  }
+  
   @XmlTransient
   public String getContextCode() {
     return mContextCode;
@@ -60,6 +68,11 @@ public final class SceneFlow extends SuperNode {
     mContextClass = value;
   }
 
+  @XmlTransient
+  public IDManager getIDManager() {
+    return mIDMananger;
+  }
+  
   @XmlAttribute(name="package")
   public String getPackageName() {
     return mPackageName;

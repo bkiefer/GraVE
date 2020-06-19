@@ -152,14 +152,16 @@ public final class AppFrame extends JFrame implements ChangeListener {
         getAccel(KeyEvent.VK_Z, SHIFT_DOWN_MASK));
     redoAction.putValue(Action.NAME, "Redo");
     // Init the menu bar
-    mEditorMenuBar = new EditorMenuBar(this);
-    // Hide the menu bar
-    mEditorMenuBar.setVisible(true);
 
     // Init the project editor list
     mProjectEditors = new JTabbedPane(
             JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
     //mObservable.addObserver(mProjectEditors);
+    
+    mEditorMenuBar = new EditorMenuBar(this);
+    // Hide the menu bar
+    mEditorMenuBar.setVisible(true);
+
 
     setIconImage(ResourceLoader.loadImageIcon("img/dociconsmall.png").getImage());
     setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);

@@ -53,6 +53,7 @@ public class EditorProject {
     // create a new editor config with default settings (user or system)
     mEditorConfig = Preferences.getPrefs().editorConfig.copy();
     mSceneFlow = new SceneFlow();
+    mSceneFlow.init();
     mSceneFlow.setName(name);
   }
 
@@ -69,6 +70,7 @@ public class EditorProject {
     SceneFlow sc = SceneFlow.load(new File(base, SCENEFLOW_NAME));
     if (sc == null)
       return null;
+    sc.init();
     ProjectConfig pc = ProjectConfig.load(new File(base, PROJECT_CONFIG_NAME));
     String name;
     EditorConfig ec;
