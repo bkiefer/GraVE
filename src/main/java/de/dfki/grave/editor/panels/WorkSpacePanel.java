@@ -12,8 +12,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.text.AttributedString;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.swing.*;
 
@@ -41,11 +39,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
   private Point mLastMousePos = null;
 
-  private Edge mSelectedEdge = null;
-  private Comment mSelectedComment = null;
   private Rectangle2D.Double mAreaSelection = null;
-  private boolean mDoAreaSelection = false;
-  protected Set<Node> mSelectedNodes = new HashSet<>();
 
   private AbstractEdge mEdgeInProgress = null;
   private Node mEdgeSourceNode = null;
@@ -87,7 +81,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         }
 
         if (!mSelectedNodes.isEmpty()) {
-          new RemoveNodesAction(getEditor(), nodeModels(mSelectedNodes), false).run();
+          new RemoveNodesAction(getEditor(), getSelectedNodes(), false).run();
         }
 
         if (mSelectedComment != null) {
@@ -179,88 +173,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     mDropTarget = new DropTarget(this, mDropTargetListener);
   }
 
-  /** */
-  private void deselectAllNodes() {
-    for (Node node : mSelectedNodes) {
-      node.setDeselected();
-    }
-    mSelectedNodes.clear();
-    repaint(100);
-  }
-
-  private void deselectAll() {
-    deselectEdge();
-    deselectComment();
-    deselectAllNodes();
-  }
-
-  private void selectComment(Comment e) {
-    deselectAll();
-    mSelectedComment = e;
-    e.setSelected();
-  }
-
-  private void deselectComment() {
-    if (mSelectedComment != null) {
-      mSelectedComment.setDeselected();
-      mSelectedComment = null;
-    }
-  }
-
-  private void selectEdge(Edge e) {
-    deselectAll();
-    mSelectedEdge = e;
-    e.setSelected();
-  }
-
-  private void deselectEdge() {
-    if (mSelectedEdge != null) {
-      mSelectedEdge.setDeselected();
-      mSelectedEdge = null;
-    }
-  }
-
-  /** Select a single node, leave all other selected nodes selected */
-  private void selectNode(Node n) {
-    deselectEdge();
-    deselectComment();
-    mSelectedNodes.add(n);
-    n.setSelected();
-  }
-
-  /** Deselect a single node, leave all other selected nodes selected */
-  private void deselectNode(Node n) {
-    mSelectedNodes.remove(n);
-    n.setDeselected();
-  }
-
-  private void selectSingleNode(Node n) {
-    mDoAreaSelection = false;
-    deselectAllNodes();
-    selectNode(n);
-  }
-
-  /** Select all nodes intersecting the given area */
-  private void selectNodesInArea(Rectangle2D area) {
-    deselectAllNodes();
-    for (Node node : mNodeSet.values()) {
-      // add node only if it is not a history node
-      if (node.getBounds().intersects(area)) {
-        node.setSelected();
-        mSelectedNodes.add(node);
-      }
-    }
-  }
-
-  public void selectNodes(Collection<BasicNode> nodes) {
-    deselectAllNodes();
-    for (BasicNode node : nodes) {
-      Node vn = mNodeSet.get(node);
-      vn.setSelected();
-      mSelectedNodes.add(vn);
-    }
-    repaint(100);
-  }
 
   protected void clearCurrentWorkspace() {
     deselectAll();
@@ -272,13 +184,13 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
    * ###################################################################### */
 
   // TODO: MAYBE ADD THIS TO EDITORACTION
-  private void actionMessage(String act) {
+  protected void actionMessage(String act) {
     String what= (mSelectedNodes.size() > 1) ? " Nodes " : " Node ";
     setMessageLabelText(mSelectedNodes.size() + what + act);
   }
 
   public Collection<BasicNode> getSelectedNodes() {
-    return nodeModels(mSelectedNodes);
+    return nodeModels(mSelectedNodes.keySet());
   }
   
   /* ######################################################################
@@ -297,12 +209,12 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     JPopupMenu pop = new JPopupMenu();
     // copy is not undoable
     addItem(pop, "Copy Nodes", 
-        new CopyNodesAction(getEditor(), nodeModels(mSelectedNodes)));
+        new CopyNodesAction(getEditor(), getSelectedNodes()));
     addItem(pop, "Cut Nodes",
-        new RemoveNodesAction(getEditor(), nodeModels(mSelectedNodes), true));
+        new RemoveNodesAction(getEditor(), getSelectedNodes(), true));
     pop.add(new JSeparator());
     addItem(pop, "Delete Nodes",
-        new RemoveNodesAction(getEditor(), nodeModels(mSelectedNodes), false));
+        new RemoveNodesAction(getEditor(), getSelectedNodes(), false));
     pop.show(this, node.getX() + node.getWidth(), node.getY());
   }
 
@@ -365,7 +277,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     // show context menu on single right click
     if (event.getButton() == MouseEvent.BUTTON3 && event.getClickCount() == 1) {
       if (mSelectedNodes.size() > 1
-          && mSelectedNodes.contains(clickedNode)) {
+          && mSelectedNodes.containsKey(clickedNode)) {
         multipleNodesContextMenu(event, clickedNode);
       } else {
         selectSingleNode(clickedNode);
@@ -376,7 +288,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     // add/remove node from selected with CTRL-Click
     if (event.getButton() == MouseEvent.BUTTON1
         && (event.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0) {
-      if (mSelectedNodes.contains(clickedNode)) {
+      if (mSelectedNodes.containsKey(clickedNode)) {
         deselectNode(clickedNode);
       } else {
         if (! mSelectedNodes.isEmpty()) {
@@ -528,7 +440,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       if (event.getButton() == MouseEvent.BUTTON1
           && (event.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == 0) {
         mDoAreaSelection = false;
-        if (!mSelectedNodes.contains(node)) {
+        if (!mSelectedNodes.containsKey(node)) {
           selectSingleNode(node);
         }
       }
@@ -616,7 +528,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
       Point currentMousePosition = event.getPoint();
       Point delta = new Point(currentMousePosition.x - mLastMousePos.x,
               currentMousePosition.y - mLastMousePos.y);
-      if (dragNodes(mSelectedNodes, delta)) {
+      if (dragNodes(mSelectedNodes.keySet(), delta)) {
         revalidate();
         repaint(100);
       }

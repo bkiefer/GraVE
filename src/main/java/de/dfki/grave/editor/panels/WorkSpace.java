@@ -13,13 +13,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.awt.geom.Rectangle2D;
+import java.util.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -59,6 +54,12 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   private final Map<CommentBadge, Comment> mCmtSet = new IdentityHashMap<>();
   private final Map<AbstractEdge, Edge> mEdges = new IdentityHashMap<>();
 
+  // Selected Elements
+  protected Edge mSelectedEdge = null;
+  protected Comment mSelectedComment = null;
+  protected Map<Node,Node> mSelectedNodes = new IdentityHashMap<>();
+  protected boolean mDoAreaSelection = false;
+  
   // Snap to grid support: TODO: MOVE TO MODEL
   private GridManager mGridManager = null;
 
@@ -497,6 +498,92 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
       notifyObservers(obj);
     }
   }
+  // #########################################################################
+  // Element Selection
+  // #########################################################################
+  
+  /** */
+  protected void deselectAllNodes() {
+    for (Node node : mSelectedNodes.keySet()) {
+      node.setDeselected();
+    }
+    mSelectedNodes.clear();
+    repaint(100);
+  }
+
+  protected void deselectAll() {
+    deselectEdge();
+    deselectComment();
+    deselectAllNodes();
+  }
+
+  protected void selectComment(Comment e) {
+    deselectAll();
+    mSelectedComment = e;
+    e.setSelected();
+  }
+
+  protected void deselectComment() {
+    if (mSelectedComment != null) {
+      mSelectedComment.setDeselected();
+      mSelectedComment = null;
+    }
+  }
+
+  protected void selectEdge(Edge e) {
+    deselectAll();
+    mSelectedEdge = e;
+    e.setSelected();
+  }
+
+  protected void deselectEdge() {
+    if (mSelectedEdge != null) {
+      mSelectedEdge.setDeselected();
+      mSelectedEdge = null;
+    }
+  }
+
+  /** Select a single node, leave all other selected nodes selected */
+  protected void selectNode(Node n) {
+    deselectEdge();
+    deselectComment();
+    mSelectedNodes.put(n, n);
+    n.setSelected();
+  }
+
+  /** Deselect a single node, leave all other selected nodes selected */
+  protected void deselectNode(Node n) {
+    mSelectedNodes.remove(n);
+    n.setDeselected();
+  }
+
+  protected void selectSingleNode(Node n) {
+    mDoAreaSelection = false;
+    deselectAllNodes();
+    selectNode(n);
+  }
+
+  /** Select all nodes intersecting the given area */
+  protected void selectNodesInArea(Rectangle2D area) {
+    deselectAllNodes();
+    for (Node node : mNodeSet.values()) {
+      // add node only if it is not a history node
+      if (node.getBounds().intersects(area)) {
+        node.setSelected();
+        mSelectedNodes.put(node, node);
+      }
+    }
+  }
+
+  public void selectNodes(Collection<BasicNode> nodes) {
+    deselectAllNodes();
+    for (BasicNode node : nodes) {
+      Node vn = mNodeSet.get(node);
+      vn.setSelected();
+      mSelectedNodes.put(vn, vn);
+    }
+    repaint(100);
+  }
 
   // ######################################################################
   // Helper functions for undoable actions for nodes and edges
@@ -504,6 +591,8 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
 
   /** Removes view edge from workspace, no change in model */
   private void removeFromWorkSpace(Edge e) {
+    if (mSelectedEdge != null && mSelectedEdge == mEdges.get(e))
+      deselectEdge();
     // Free the docking points on source and target node
     e.disconnect();
     mEdges.remove(e.getDataEdge());
@@ -532,6 +621,8 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
 
   /** Removes node view from workspace, no change in model */
   private void removeFromWorkSpace(Node n) {
+    if (mSelectedNodes.containsKey(n))
+      deselectNode(n);
     mNodeSet.remove(n.getDataNode());
     if (getEditorConfig().sSNAPTOGRID)
       mGridManager.releaseGridPosition(n.getDataNode());
@@ -560,6 +651,8 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
 
   /** Remove comment view from workspace, no change in model */
   private void removeFromWorkSpace(Comment c) {
+    if (mSelectedComment == c)
+      deselectComment();
     mCmtSet.remove(c.getData());
     super.remove(c);
     mObservable.deleteObserver(c);
@@ -690,15 +783,15 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   // actions for comments
   // ######################################################################
 
-  /** Add a new comment */
+  /** Add a new comment view */
   public void addComment(CommentBadge comment) {
-    if (comment.getParentNode() == this.getSuperNode())
-      addToWorkSpace(new Comment(this, comment));
+    addToWorkSpace(new Comment(this, comment));
   }
 
-  /** Remove comment from WorkSpace and Model, for RemoveCommentAction */
+  /** Remove comment from WorkSpace for RemoveCommentAction */
   public void removeComment(CommentBadge comment) {
-    if (mCmtSet.containsKey(comment))
+    if (mCmtSet.containsKey(comment)) {
       removeFromWorkSpace(mCmtSet.get(comment));
+    }
   }
 }
