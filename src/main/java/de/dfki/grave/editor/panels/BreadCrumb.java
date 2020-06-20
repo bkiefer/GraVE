@@ -29,11 +29,11 @@ public class BreadCrumb extends JPanel {
     setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
     inner = new JPanel();
     inner.setLayout(new BoxLayout(inner, BoxLayout.X_AXIS));
-    inner.setMinimumSize(new Dimension(500, 22));
+    inner.setMinimumSize(new Dimension(500, 20));
 
     JScrollPane pane = new JScrollPane(inner);
     pane.setViewportBorder(BorderFactory.createLineBorder(Color.gray));
-    pane.setMaximumSize(new Dimension(7000, 40));
+    pane.setMaximumSize(new Dimension(7000, 30));
     pane.setMinimumSize(new Dimension(300, 30));
     pane.setPreferredSize(new Dimension(400, 30));
     pane.setBorder(BorderFactory.createEmptyBorder());

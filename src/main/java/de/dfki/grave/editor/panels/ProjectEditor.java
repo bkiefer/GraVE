@@ -104,7 +104,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     // To edit node names
     mNameEditor = new NameEditor(this);
     // left element in the mSplitPane
-    mNewElementDisplay = newElementDisplay(mNameEditor, mDynamicElementsPanel,
+    mNewElementDisplay = newElementDisplay(
         mEditorProject.getEditorConfig().sSHOW_ELEMENTS);
     // prepare the vertical split region (now used as code editor)
     mSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -129,13 +129,13 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     mEditorProject = null;
   }
 
-  private static JPanel newElementDisplay(Component nameEditor, 
-      Component dynamicElements, boolean visible) {
+  private JPanel newElementDisplay(boolean visible) {
     JPanel result = new JPanel();
     result.setLayout(new BoxLayout(result, BoxLayout.Y_AXIS));
-    result.add(nameEditor);
+    result.add(Box.createVerticalStrut(10));
+    result.add(mNameEditor);
     result.add(new SceneFlowPalettePanel());
-    result.add(dynamicElements);
+    result.add(mDynamicElementsPanel);
     // PG 17.12.13 - FUTURE FEATURE! result.add(new EdgeTypeSelection(), BorderLayout.NORTH);
     result.setVisible(visible);
     return result;

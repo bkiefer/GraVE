@@ -1,6 +1,7 @@
 package de.dfki.grave.editor.panels;
 
 import static de.dfki.grave.Preferences.getPrefs;
+import static de.dfki.grave.editor.panels.Icons.*;
 
 import java.awt.Dimension;
 import java.awt.datatransfer.Clipboard;
@@ -11,82 +12,12 @@ import javax.swing.*;
 import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.dialog.SaveFileDialog;
 import de.dfki.grave.model.flow.SuperNode;
-import de.dfki.grave.util.ResourceLoader;
 
 /**
  * @author Gregor Mehlmann
  */
 @SuppressWarnings({ "serial" })
 public class SceneFlowToolBar extends JToolBar {
-
-  /**
-   * ************************************************************************************************************************
-   * ICONS INITIALIZATION
-   * *************************************************************************************************************************
-   */
-  private final ImageIcon ICON_PLAY_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/play.png");
-  private final ImageIcon ICON_PLAY_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/play_blue.png");
-  private final ImageIcon ICON_PLAY_DISABLED = ResourceLoader.loadImageIcon("img/toolbar_icons/play_disabled.png");
-
-  private final ImageIcon ICON_STOP_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/stop.png");
-  private final ImageIcon ICON_STOP_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/stop_blue.png");
-  private final ImageIcon ICON_STOP_DISABLED = ResourceLoader.loadImageIcon("img/toolbar_icons/stop_disabled.png");
-
-  private final ImageIcon ICON_PAUSE_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/pause.png");
-  private final ImageIcon ICON_PAUSE_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/pause_blue.png");
-
-  private final ImageIcon ICON_MORE_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/more.png");
-  private final ImageIcon ICON_MORE_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/more_blue.png");
-
-  private final ImageIcon ICON_LESS_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/less.png");
-  private final ImageIcon ICON_LESS_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/less_blue.png");
-
-  private final ImageIcon ICON_SAVE_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/save_icon.png");
-  private final ImageIcon ICON_SAVE_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/save_icon_blue.png");
-  private final ImageIcon ICON_SAVE_DISABLED = ResourceLoader.loadImageIcon("img/toolbar_icons/save_icon_disable.png");
-
-  private final ImageIcon ICON_UNDO_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/undo_icon.png");
-  private final ImageIcon ICON_UNDO_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/undo_icon_blue.png");
-  private final ImageIcon ICON_UNDO_DISABLED = ResourceLoader.loadImageIcon("img/toolbar_icons/undo_icon_disabled.png");
-
-  private final ImageIcon ICON_REDO_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/redo_icon.png");
-  private final ImageIcon ICON_REDO_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/redo_icon_blue.png");
-  private final ImageIcon ICON_REDO_DISABLED = ResourceLoader.loadImageIcon("img/toolbar_icons/redo_icon_disabled.png");
-
-  private final ImageIcon ICON_NORMALIZE_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/normalize_edges_gray.png");
-  private final ImageIcon ICON_NORMALIZE_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/normalize_edges_blue.png");
-
-  private final ImageIcon ICON_STRAIGHTEN_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/straighten_gray.png");
-  private final ImageIcon ICON_STRAIGHTEN_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/straighten_blue.png");
-
-  private final ImageIcon ICON_VARS_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/var.png");
-  private final ImageIcon ICON_VARS_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/var_blue.png");
-  private final ImageIcon ICON_VARS_HIDDEN_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/var_hidden.png");
-  private final ImageIcon ICON_VARS_HIDDEN_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/var_hidden_blue.png");
-
-  private final ImageIcon ICON_STACK_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/stack_icon.png");
-  private final ImageIcon ICON_STACK_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/stack_icon_blue.png");
-
-  private final ImageIcon ICON_UP_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/up.png");
-  private final ImageIcon ICON_UP_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/up_blue.png");
-
-  private final ImageIcon ICON_SCREENSHOT_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/screenshot.png");
-  private final ImageIcon ICON_SCREENSHOT_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/screenshot_blue.png");
-
-  private final ImageIcon ICON_NOZOOM_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/nozoom.png");
-  private final ImageIcon ICON_NOZOOM_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/nozoom_blue.png");
-
-  private final ImageIcon ICON_ZOOMIN_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/zoomin.png");
-  private final ImageIcon ICON_ZOOMIN_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/zoomin_blue.png");
-
-  private final ImageIcon ICON_ZOOMOUT_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/zoomout.png");
-  private final ImageIcon ICON_ZOOMOUT_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/zoomout_blue.png");
-
-  private final ImageIcon ICON_SETTINGS_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/settings.png");
-  private final ImageIcon ICON_SETTINGS_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/settings_blue.png");
-
-  private final ImageIcon ICON_PROJECT_SETTINGS_STANDARD = ResourceLoader.loadImageIcon("img/toolbar_icons/project_config.png");
-  private final ImageIcon ICON_PROJECT_SETTINGS_ROLLOVER = ResourceLoader.loadImageIcon("img/toolbar_icons/project_config_blue.png");
 
   /**
    * ***********************************************************************************************************************
@@ -99,16 +30,16 @@ public class SceneFlowToolBar extends JToolBar {
   // The button GUI components
   private JButton mTogglePalette;
   //private JButton mToggleElementEditor;
-  private JButton mPlayButton;
-  private JButton mStopButton;
+  //private JButton mPlayButton;
+  //private JButton mStopButton;
   //private JButton mShowVarButton;
   private JButton mSaveProject;
   private JButton mPreferences;
-  private JButton mProjectSettings;
+  //private JButton mProjectSettings;
 
   //Dimension for buttons
-  private Dimension tinyButtonDim = new Dimension(40, 40);
-  private Dimension smallButtonDim = new Dimension(50, 40);
+  private Dimension tinyButtonDim = new Dimension(35, 35);
+  private Dimension smallButtonDim = new Dimension(40, 35);
 
   // Path Display GUI Components
   private BreadCrumb mBreadCrumb; 
@@ -126,7 +57,7 @@ public class SceneFlowToolBar extends JToolBar {
     // Initialize the GUI components
     setRollover(true);
     setFloatable(false);
-    setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
+    setBorder(BorderFactory.createEmptyBorder(1, 0, 1, 0));
     initComponents();
   }
 
@@ -148,9 +79,9 @@ public class SceneFlowToolBar extends JToolBar {
 
   private JSeparator createSeparator() {
     JSeparator js = new JSeparator(SwingConstants.VERTICAL);
-    js.setPreferredSize(new Dimension(10, 30));
-    js.setMinimumSize(new Dimension(10, 30));
-    js.setMaximumSize(new Dimension(10, 30));
+    js.setPreferredSize(new Dimension(5, 30));
+    js.setMinimumSize(new Dimension(5, 30));
+    js.setMaximumSize(new Dimension(5, 30));
     return js;
   }
 
@@ -183,8 +114,9 @@ public class SceneFlowToolBar extends JToolBar {
             : ICON_LESS_ROLLOVER);
     sanitizeButton(mTogglePalette, tinyButtonDim);
     //add(Box.createHorizontalGlue());
-    add(Box.createHorizontalStrut(200));
-
+    //add(Box.createHorizontalStrut(200));
+    add(createSeparator());
+    
     //EDIT PROJECT SECTION
     //Save project
     mSaveProject = add(new AbstractAction("ACTION_SAVEPROJECT", ICON_SAVE_STANDARD) {
@@ -192,7 +124,7 @@ public class SceneFlowToolBar extends JToolBar {
       public void actionPerformed(ActionEvent e) {
         AppFrame.getInstance().save();
         mSaveProject.setEnabled(false);
-        mProjectSettings.setEnabled(true);
+        //mProjectSettings.setEnabled(true);
       }
     });
     mSaveProject.setRolloverIcon(ICON_SAVE_ROLLOVER);
@@ -210,16 +142,18 @@ public class SceneFlowToolBar extends JToolBar {
     });
     mPreferences.setRolloverIcon(ICON_SETTINGS_ROLLOVER);
     mPreferences.setToolTipText("Project Preferences");
+    sanitizeButton(mPreferences, tinyButtonDim);
+    add(Box.createHorizontalStrut(5));
+    add(createSeparator());
 
+    /*
     mProjectSettings = add(new AbstractAction("ACTION_SHOW_OPTIONS", ICON_PROJECT_SETTINGS_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (! mEditor.getEditorProject().isNew()) {
-          /*
-          PropertyManagerGUI gui = new PropertyManagerGUI();
-          gui.init(mEditorProject);
-          gui.setVisible(true);
-          */
+          //PropertyManagerGUI gui = new PropertyManagerGUI();
+          //gui.init(mEditorProject);
+          //gui.setVisible(true);
         } else {
           mProjectSettings.setEnabled(false);
         }
@@ -235,7 +169,7 @@ public class SceneFlowToolBar extends JToolBar {
     sanitizeButton(mProjectSettings, tinyButtonDim);
 
     add(Box.createHorizontalStrut(20));
-    add(createSeparator());
+    */
 
     //Undo last action
     JButton undo = add(AppFrame.getInstance().getUndoAction());
@@ -266,6 +200,7 @@ public class SceneFlowToolBar extends JToolBar {
     mNormalize.setRolloverIcon(ICON_NORMALIZE_ROLLOVER);
     mNormalize.setToolTipText("Normalize all edges");
     sanitizeButton(mNormalize, tinyButtonDim);
+    /*
     // Button to straighten all edeges
     JButton mStraighten = add(new AbstractAction("ACTION_STRAIGHTEN", ICON_STRAIGHTEN_STANDARD) {
       @Override
@@ -291,9 +226,10 @@ public class SceneFlowToolBar extends JToolBar {
     // Format The Button As Tiny
     sanitizeButton(mShowVarButton, tinyButtonDim);
     */
-    add(Box.createHorizontalStrut(10));
+    add(Box.createHorizontalStrut(5));
     add(createSeparator());
-    add(Box.createHorizontalStrut(10));
+    add(Box.createHorizontalStrut(5));
+    /*
     // The Play SceneFlow Button
     mPlayButton = add(new AbstractAction() {
       @Override
@@ -334,14 +270,46 @@ public class SceneFlowToolBar extends JToolBar {
         add(Box.createHorizontalStrut(10));
         add(createSeparator());
      */
-    //******************************************************************************************************
-    // CONTROL OF NODES
-    // Add Some Horizontal Space
-    mBreadCrumb = new BreadCrumb(mEditor);
-    add(mBreadCrumb);
+
+    //***********************************************************************
+    // Zoom Control
+    JButton b;
+    
+//  ZOOM IN BUTTON
+    b = add(new AbstractAction("ACTION_ZOOM_IN", ICON_ZOOMIN_STANDARD) {
+      @Override
+      public void actionPerformed(ActionEvent evt) { mEditor.zoomIn(); }
+    });
+    b.setToolTipText("Zoom In");
+    b.setRolloverIcon(ICON_ZOOMIN_ROLLOVER);
+
+    //ZOOM ORIGINAL SIZE BUTTON
+    sanitizeButton(b, tinyButtonDim);
+    b = add(new AbstractAction("ACTION_ZOOM_ORIG", ICON_NOZOOM_STANDARD) {
+      @Override
+      public void actionPerformed(ActionEvent evt) { mEditor.nozoom(); }
+    });
+    b.setToolTipText("Zoom 100%");
+    b.setRolloverIcon(ICON_NOZOOM_ROLLOVER);
+
+    //ZOOM OUT BUTTON
+    sanitizeButton(b, tinyButtonDim);
+    b = add(new AbstractAction("ACTION_ZOOM_OUT", ICON_ZOOMOUT_STANDARD) {
+      @Override
+      public void actionPerformed(ActionEvent evt) { mEditor.zoomOut(); }
+    });
+    b.setToolTipText("Zoom Out");
+    b.setRolloverIcon(ICON_ZOOMOUT_ROLLOVER);
+    sanitizeButton(b, tinyButtonDim);
+  
+    add(Box.createHorizontalStrut(10));
+    add(createSeparator());
+    
+    //***********************************************************************
+    // CONTROL OF ACTIVE SUPERNODES
 
     //UP TO PARENT NODE
-    JButton b = add(new AbstractAction("ACTION_LEVEL_UP", ICON_UP_STANDARD) {
+    b = add(new AbstractAction("ACTION_LEVEL_UP", ICON_UP_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
         mEditor.decreaseWorkSpaceLevel();
@@ -350,10 +318,14 @@ public class SceneFlowToolBar extends JToolBar {
     b.setToolTipText("Up to parent node");
     b.setRolloverIcon(ICON_UP_ROLLOVER);
     sanitizeButton(b, tinyButtonDim);
+    add(Box.createHorizontalStrut(5));
+    
+    mBreadCrumb = new BreadCrumb(mEditor);
+    add(mBreadCrumb);
+
     add(Box.createHorizontalStrut(10));
     add(createSeparator());
-    //******************************************************************************************************
-    // SCREEN CONTROL
+
     //SCREENSHOT BUTTON
     Action action = new AbstractAction("ACTION_SCREEN_SHOT", ICON_SCREENSHOT_STANDARD) {
       @Override
@@ -369,38 +341,13 @@ public class SceneFlowToolBar extends JToolBar {
         }
       }
     };
-    action.putValue(Action.SHORT_DESCRIPTION, "Add/Remove window");
+    action.putValue(Action.SHORT_DESCRIPTION, "Screenshot");
     b = add(action);
     b.setToolTipText("Take a screenshot");
     b.setRolloverIcon(ICON_SCREENSHOT_ROLLOVER);
+    sanitizeButton(b, smallButtonDim);
+    b.setEnabled(false);
 
-    //ZOOM IN BUTTON
-    sanitizeButton(b, smallButtonDim);
-    b = add(new AbstractAction("ACTION_ZOOM_IN", ICON_ZOOMIN_STANDARD) {
-      @Override
-      public void actionPerformed(ActionEvent evt) { mEditor.zoomIn(); }
-    });
-    b.setToolTipText("Zoom In");
-    b.setRolloverIcon(ICON_ZOOMIN_ROLLOVER);
-
-    //ZOOM ORIGINAL SIZE BUTTON
-    sanitizeButton(b, smallButtonDim);
-    b = add(new AbstractAction("ACTION_ZOOM_ORIG", ICON_NOZOOM_STANDARD) {
-      @Override
-      public void actionPerformed(ActionEvent evt) { mEditor.nozoom(); }
-    });
-    b.setToolTipText("Zoom 100%");
-    b.setRolloverIcon(ICON_NOZOOM_ROLLOVER);
-
-    //ZOOM OUT BUTTON
-    sanitizeButton(b, smallButtonDim);
-    b = add(new AbstractAction("ACTION_ZOOM_OUT", ICON_ZOOMOUT_STANDARD) {
-      @Override
-      public void actionPerformed(ActionEvent evt) { mEditor.zoomOut(); }
-    });
-    b.setToolTipText("Zoom Out");
-    b.setRolloverIcon(ICON_ZOOMOUT_ROLLOVER);
-    sanitizeButton(b, smallButtonDim);
   }
 
   ////////////////////////////////////////////////////////////////////////////

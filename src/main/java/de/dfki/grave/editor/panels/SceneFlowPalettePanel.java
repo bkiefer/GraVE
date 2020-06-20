@@ -21,6 +21,8 @@ import de.dfki.grave.model.flow.*;
 /**
  * @author Sergio Soto
  * @author Gregor Mehlmann
+ * 
+ * Provides graphical elements to create new objects in the workspace
  */
 @SuppressWarnings("serial")
 public class SceneFlowPalettePanel extends JPanel {
