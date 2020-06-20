@@ -24,7 +24,7 @@ public class PasteNodesAction extends EditorAction {
   protected void doIt() {
     ClipBoard cb = mEditor.mClipboard;
     Collection<BasicNode> nodes = cb.getNodes();
-    if (cb.needsCopy()) {
+    if (cb.needsCopy(mEditor)) {
       Collection<BasicNode> toAdd = mSuperNode.copyNodeSet(nodes);
       if (mMousePosition != null) {
         // snap to grid: currently not.

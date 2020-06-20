@@ -752,6 +752,11 @@ public final class AppFrame extends JFrame implements ChangeListener {
     // set status of file menu
     mEditorMenuBar.someProjectOpen(
         mProjectEditors.getTabCount() > 0, hasChanged);
+    if (editor != null)
+      mEditorMenuBar.somethingSelected(
+          editor.getWorkSpace().isSomethingSelected(),
+          ! ClipBoard.getInstance().isEmpty()
+          );
     
     mEditorMenuBar.refreshViewOptions();
   }

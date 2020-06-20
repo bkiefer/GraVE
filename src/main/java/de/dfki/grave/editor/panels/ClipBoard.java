@@ -7,6 +7,7 @@ import java.util.List;
 
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.flow.CommentBadge;
 
 /**
  * Created by alvaro on 7/18/16.
@@ -27,31 +28,34 @@ public class ClipBoard {
 
   private List<BasicNode> mNodes = new ArrayList<>();
   private List<AbstractEdge> mEdges = new ArrayList<>();
+  private List<CommentBadge> mComments = new ArrayList<>();
 
   private boolean needsCopy = true;
   private ProjectEditor origin;
 
   public void clear() {
-    mNodes.clear(); mEdges.clear();
+    mNodes.clear(); mEdges.clear(); mComments.clear();
   }
 
   private void set(ProjectEditor editor, Collection<BasicNode> nodes,
-      Collection<AbstractEdge> edges, boolean copy) {
+      Collection<AbstractEdge> edges, Collection<CommentBadge> comments, 
+      boolean copy) {
     clear();
     origin = editor;
     needsCopy = copy;
     mNodes.addAll(nodes);
     mEdges.addAll(edges);
+    mComments.addAll(comments);
   }
 
   public void setToCopy(ProjectEditor editor, Collection<BasicNode> nodes,
-      Collection<AbstractEdge> edges) {
-    set(editor, nodes, edges, true);
+      Collection<AbstractEdge> edges, Collection<CommentBadge> comments) {
+    set(editor, nodes, edges, comments, true);
   }
 
   public void set(ProjectEditor editor, Collection<BasicNode> nodes,
-      Collection<AbstractEdge> edges) {
-    set(editor, nodes, edges, false);
+      Collection<AbstractEdge> edges, Collection<CommentBadge> comments) {
+    set(editor, nodes, edges, comments, false);
   }
 
   public List<BasicNode> getNodes() {
@@ -62,12 +66,12 @@ public class ClipBoard {
     return Collections.unmodifiableList(mEdges);
   }
 
-  public boolean isEmpty() {
-    return mNodes.isEmpty() && mEdges.isEmpty();
+  public List<CommentBadge> getComments() {
+    return Collections.unmodifiableList(mComments);
   }
 
-  public boolean needsCopy() {
-    return needsCopy;
+  public boolean isEmpty() {
+    return mNodes.isEmpty() && mEdges.isEmpty() && mComments.isEmpty();
   }
   
   public boolean needsCopy(ProjectEditor editor) {

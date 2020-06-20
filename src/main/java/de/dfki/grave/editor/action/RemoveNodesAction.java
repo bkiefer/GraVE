@@ -35,8 +35,8 @@ public class RemoveNodesAction extends EditorAction {
     // affected edges: emerging, internal, incoming to the set of mNodes
     mAffected = mSuperNode.removeNodes(mNodes);
     if (isCutOperation) {
-      mEditor.mClipboard.set(mEditor, mNodes, //mAffected[1]
-          Collections.emptyList());
+      mEditor.mClipboard.set(mEditor, mNodes,
+          Collections.emptyList(), Collections.emptyList());
     }   
     if (onActiveWorkSpace())
       getWorkSpace().removeNodes(mNodes, mAffected);

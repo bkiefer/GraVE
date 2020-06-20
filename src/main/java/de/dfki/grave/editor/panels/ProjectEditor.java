@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 //import org.fife.ui.autocomplete.AutoCompletion;
 
+import de.dfki.grave.AppFrame;
 import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.EditorComponent;
@@ -330,7 +331,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
    */
   public void copyNodes(Collection<BasicNode> nodes) {
     mClipboard.setToCopy(this, nodes, //BasicNode.computeInnerEdges(nodes));
-        Collections.emptyList());
+        Collections.emptyList(), Collections.emptyList());
   }
 
   // TODO: adding not explicit but via refresh method
@@ -594,6 +595,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       } else {
         mNameEditor.setNode(null);
       }
+      AppFrame.getInstance().refreshMenuBar();
     } else if (event instanceof ProjectChangedEvent) {
       refreshToolBar();
     }

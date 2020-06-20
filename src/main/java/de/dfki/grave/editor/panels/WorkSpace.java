@@ -502,6 +502,12 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   // Element Selection
   // #########################################################################
   
+  /** Return true if something on the workspace is selected */
+  public boolean isSomethingSelected() {
+    return ! mSelectedNodes.isEmpty() || mSelectedEdge != null
+        || mSelectedComment != null;
+  }
+  
   /** */
   protected void deselectAllNodes() {
     for (Node node : mSelectedNodes.keySet()) {
@@ -567,7 +573,6 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   protected void selectNodesInArea(Rectangle2D area) {
     deselectAllNodes();
     for (Node node : mNodeSet.values()) {
-      // add node only if it is not a history node
       if (node.getBounds().intersects(area)) {
         node.setSelected();
         mSelectedNodes.put(node, node);
