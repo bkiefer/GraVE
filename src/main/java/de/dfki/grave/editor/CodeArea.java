@@ -155,7 +155,7 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
   void setSelected() {
     if (! mComponent.isSelected())
       mComponent.setSelected();
-    EventDispatcher.getInstance().convey(new ElementSelectedEvent(CodeArea.this));
+    //EventDispatcher.getInstance().convey(new ElementSelectedEvent(CodeArea.this));
     setBackground(activeColour);
     getEditor().getUndoManager().startTextMode();
     setEnabled(true);
