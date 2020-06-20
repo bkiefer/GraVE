@@ -6,7 +6,7 @@
  */
 package de.dfki.grave.editor.action;
 
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.flow.AbstractEdge;
 
 /**
@@ -17,12 +17,16 @@ import de.dfki.grave.model.flow.AbstractEdge;
  */
 public class ShortestEdgeAction extends ReshapeEdgeAction {
 
-  public ShortestEdgeAction(WorkSpace workSpace, AbstractEdge edge) {
-    super(workSpace, edge);
+  public ShortestEdgeAction(ProjectEditor editor, AbstractEdge edge) {
+    super(editor, edge);
   }
 
   @Override
-  protected void reshape() { mWorkSpace.rebuildEdgeNicely(mEdge); }
+  protected void reshape() {
+    mEdge.straightenEdge(mEditor.getEditorProject().getEditorConfig().sNODEWIDTH);
+    if (onActiveWorkSpace())
+      getWorkSpace().updateView(mEdge); 
+  }
 
 
   @Override

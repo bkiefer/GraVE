@@ -1,6 +1,6 @@
 package de.dfki.grave.editor.action;
 
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
 import de.dfki.grave.model.flow.Position;
@@ -25,8 +25,8 @@ public abstract class ModifyEdgeAction extends EditorAction {
   protected int[] mOldDocks;
   protected BasicNode[] mOldNodes;
 
-  public ModifyEdgeAction(WorkSpace workSpace, AbstractEdge e) {
-    mWorkSpace = workSpace;
+  public ModifyEdgeAction(ProjectEditor editor, AbstractEdge e) {
+    super(editor);
     mEdge = e;
     mOldDocks = new int[]{ e.getSourceDock(), e.getTargetDock() };
     mOldCtrls = new Position[] { e.getSourceCtrlPoint(),
@@ -41,11 +41,11 @@ public abstract class ModifyEdgeAction extends EditorAction {
   }
 
   protected void undoIt() {
-    mWorkSpace.modifyEdge(mEdge, mOldNodes, mOldDocks, mOldCtrls);
+    mEdge.modifyEdge(mOldNodes, mOldDocks, mOldCtrls);
   }
 
   protected void doIt() {
-    mWorkSpace.modifyEdge(mEdge, mNewNodes, mNewDocks, mNewCtrls);
+    mEdge.modifyEdge(mNewNodes, mNewDocks, mNewCtrls);
   }
 
 }

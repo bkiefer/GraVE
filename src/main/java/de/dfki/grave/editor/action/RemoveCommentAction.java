@@ -1,25 +1,29 @@
 package de.dfki.grave.editor.action;
 
-import de.dfki.grave.editor.Comment;
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
+import de.dfki.grave.model.flow.CommentBadge;
 
 /**
  * @author Patrick Gebhard
  */
 public class RemoveCommentAction extends EditorAction {
-  private Comment mGUIComment;
+  private CommentBadge mComment;
 
-  public RemoveCommentAction(WorkSpace ws, Comment c) {
-    mWorkSpace = ws;
-    mGUIComment = c;
+  public RemoveCommentAction(ProjectEditor editor, CommentBadge c) {
+    super(editor);
+    mComment = c;
   }
 
-  public void doIt() {
-    mWorkSpace.removeComment(mGUIComment);
+  protected void doIt() {
+    mSuperNode.removeComment(mComment);
+    if (onActiveWorkSpace())
+      mEditor.getWorkSpace().removeComment(mComment);
   }
 
-  public void undoIt() {
-    mWorkSpace.addComment(mGUIComment);
+  protected void undoIt() {
+    mSuperNode.addComment(mComment);
+    if (onActiveWorkSpace())
+      mEditor.getWorkSpace().addComment(mComment);
   }
 
   public String msg() { return "Deletion of Comment"; }

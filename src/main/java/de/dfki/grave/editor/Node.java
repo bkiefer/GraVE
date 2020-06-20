@@ -5,10 +5,12 @@ import static de.dfki.grave.editor.panels.WorkSpacePanel.addItem;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.*;
 
+import javax.swing.AbstractAction;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
@@ -80,12 +82,9 @@ public final class Node extends EditorComponent {
   }
 
   /** newNode is only non-null if it's an undo */
-  public BasicNode changeType(IDManager mgr, BasicNode newNode) throws Exception {
-    BasicNode oldNode = mDataNode;
-    newNode = oldNode.changeType(mgr, newNode);
+  public void setModel(BasicNode newNode) {
     mDataNode = newNode;
     update();
-    return oldNode;
   }
 
   @Override
@@ -93,16 +92,13 @@ public final class Node extends EditorComponent {
     update();
   }
 
+  /*
   public void issueChangeName(String newName) {
     if (! mDataNode.getName().equals(newName)) {
       new ChangeNodeNameAction(mWorkSpace, mDataNode, newName).run();
     }
   }
-
-  public void changeName(String newName) {
-    mDataNode.setName(newName);
-    update();
-  }
+  */
   
   /*
   public void setText(String text) {
@@ -128,7 +124,7 @@ public final class Node extends EditorComponent {
     }
   }
 
-  protected void update() {
+  public void update() {
     setFont(getEditorConfig().sNODE_FONT.getFont());
 
     //setToolTipText(mDataNode.getId()); overrides any MouseListener!!!
@@ -152,6 +148,7 @@ public final class Node extends EditorComponent {
           break;
         }
       }
+      // TODO: should this be reactivated?
       mDisplayName = mDataNode.getName();//prefix + "...";
     } else {
       mDisplayName = mDataNode.getName();
@@ -203,6 +200,11 @@ public final class Node extends EditorComponent {
             mOutEdges.iterator(), mInEdges.iterator());
       };
     };
+  }
+  
+  /** Return an Iterable over all outgoing edges */
+  public Iterable<Edge> getOutgoingEdges() {
+    return mOutEdges;
   }
 
   public boolean isEdgeAllowed(AbstractEdge e) {
@@ -280,24 +282,24 @@ public final class Node extends EditorComponent {
     if (! isBasic()) {
       SuperNode n = (SuperNode)getDataNode();
       if (n.getNodeSize() == 0) {
-        addItem(pop, "To BasicNode", new ChangeNodeTypeAction(mWorkSpace, mDataNode));
+        addItem(pop, "To BasicNode", new ChangeNodeTypeAction(getEditor(), mDataNode));
         pop.add(new JSeparator());
       }
     } else {
       // Only BasicNodes can become start nodes
       if (! mDataNode.isStartNode()) {
         addItem(pop, "Set Start",
-            new ToggleStartNodeAction(mWorkSpace, this.getDataNode()));
-        addItem(pop, "To Supernode", new ChangeNodeTypeAction(mWorkSpace, mDataNode));
+            new ToggleStartNodeAction(mWorkSpace.getEditor(), this.getDataNode()));
+        addItem(pop, "To Supernode", new ChangeNodeTypeAction(getEditor(), mDataNode));
         pop.add(new JSeparator());
       }
     }
     
-    addItem(pop, "Copy", new CopyNodesAction(mWorkSpace, mDataNode));
+    addItem(pop, "Copy", new CopyNodesAction(getEditor(), mDataNode));
     if (! mDataNode.isStartNode()) {
-      addItem(pop, "Cut", new RemoveNodesAction(mWorkSpace, mDataNode, true));
+      addItem(pop, "Cut", new RemoveNodesAction(getEditor(), mDataNode, true));
       pop.add(new JSeparator());
-      addItem(pop, "Delete", new RemoveNodesAction(mWorkSpace, mDataNode, false));
+      addItem(pop, "Delete", new RemoveNodesAction(getEditor(), mDataNode, false));
     }
     pop.show(this, getWidth(), 0);
   }

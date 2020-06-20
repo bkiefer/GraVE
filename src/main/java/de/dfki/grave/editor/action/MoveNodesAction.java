@@ -3,7 +3,7 @@ package de.dfki.grave.editor.action;
 //~--- JDK imports ------------------------------------------------------------
 import java.util.Map;
 
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.flow.BasicNode;
 import de.dfki.grave.model.flow.Position;
 
@@ -15,16 +15,16 @@ public class MoveNodesAction extends EditorAction {
 
   private Map<BasicNode, Position> mOldLocations, mNewLocations;
 
-  public MoveNodesAction(WorkSpace workSpace, Map<BasicNode, Position> orig,
+  public MoveNodesAction(ProjectEditor editor, Map<BasicNode, Position> orig,
       Map<BasicNode, Position> newlocs) {
-    mWorkSpace = workSpace;
+    super(editor);
     mNewLocations = newlocs;
     mOldLocations = orig;
   }
 
   private void setNodeLocations(Map<BasicNode, Position> map) {
     for (Map.Entry<BasicNode, Position> e : map.entrySet()) {
-      mWorkSpace.moveTo(e.getKey(), e.getValue());
+      e.getKey().setPosition(e.getValue());
     }
   }
 

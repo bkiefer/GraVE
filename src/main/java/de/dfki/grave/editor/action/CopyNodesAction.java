@@ -3,9 +3,9 @@ package de.dfki.grave.editor.action;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
-import de.dfki.grave.editor.panels.WorkSpacePanel;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.flow.BasicNode;
 
 /**
@@ -16,27 +16,23 @@ import de.dfki.grave.model.flow.BasicNode;
  */
 public class CopyNodesAction implements ActionListener {
 
-  private final WorkSpacePanel mWorkSpace;
-  private final BasicNode mNode;
+  private final ProjectEditor mEditor;
+  private final Collection<BasicNode> mNodes;
   
-  public CopyNodesAction(WorkSpacePanel workSpace) {
-    mWorkSpace = workSpace;
-    mNode = null;
+  public CopyNodesAction(ProjectEditor editor, Collection<BasicNode> selected) {
+    mEditor = editor;
+    mNodes = selected;
   }
   
-  public CopyNodesAction(WorkSpacePanel workSpace, BasicNode n) {
-    mWorkSpace = workSpace;
-    mNode = n;
+  public CopyNodesAction(ProjectEditor editor, BasicNode n) {
+    mEditor = editor;
+    mNodes = new ArrayList<BasicNode>(); mNodes.add(n);
   }
 
-  @SuppressWarnings("serial")
   @Override
   public void actionPerformed(ActionEvent e) {
-    if (mNode != null) {
-      List<BasicNode> l = new ArrayList<BasicNode>() {{ add(mNode); }};
-      mWorkSpace.copyNodes(l);
-    } else {
-      mWorkSpace.copySelected();    
+    if (! mNodes.isEmpty()) {
+      mEditor.copyNodes(mNodes);
     }
   }
 }

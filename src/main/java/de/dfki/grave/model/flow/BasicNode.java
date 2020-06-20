@@ -403,7 +403,9 @@ public class BasicNode implements ContentHolder {
     mIsEndNode = b.mIsEndNode;
   }
 
-  /** Deep copy, without edges, only used by SuperNode.copySubgraph */
+  /** Deep copy, without edges, only used by SuperNode.copySubgraph and
+   *  SuperNode.deepCopy
+   */
   protected BasicNode deepCopy(IDManager mgr, SuperNode parentCopy) {
     BasicNode copy = new BasicNode();
     copy.copyFieldsFrom(this);

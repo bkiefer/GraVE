@@ -16,8 +16,9 @@ import javax.swing.*;
 
 import de.dfki.grave.AppFrame;
 import de.dfki.grave.RecentProject;
-import de.dfki.grave.editor.action.UndoRedoProvider;
+import de.dfki.grave.editor.action.PasteNodesAction;
 import de.dfki.grave.editor.dialog.QuitDialog;
+import de.dfki.grave.model.flow.Position;
 import de.dfki.grave.model.project.EditorConfig;
 
 /**
@@ -66,10 +67,26 @@ public final class EditorMenuBar extends JMenuBar {
     return mAppInstance.getWorkSpace();
   }
 
+  private ProjectEditor getActiveEditor() {
+    return mAppInstance.getSelectedProjectEditor();
+  }
+
   private EditorConfig getEditorConfig() {
     return getCurrentWorkSpace().getEditorConfig();
   }
 
+  private void setShowGrid(boolean flag) {
+    getEditorConfig().sSHOWGRID = flag;
+  }
+  
+  private void setShowNodeIds(boolean flag) {
+    getEditorConfig().sSHOWIDSOFNODES = flag;
+  }
+  
+  private void setSnapToGrid(boolean flag) {
+    getEditorConfig().sSNAPTOGRID = flag;
+  }
+  
   // Refresh the state of all items
   public final void refreshViewOptions() {
     // View Menu
@@ -211,26 +228,26 @@ public final class EditorMenuBar extends JMenuBar {
     mEditMenu.add(new JSeparator());
     // sth selected
     mCopyMenuItem = addItem(mEditMenu, "Copy", getAccel(KeyEvent.VK_C),
-        (e) -> getCurrentWorkSpace().copySelected());
+        (e) -> getActiveEditor().copySelected());
     // sth selected
     mCutMenuItem = addItem(mEditMenu, "Cut", getAccel(KeyEvent.VK_X),
-        (e) -> getCurrentWorkSpace().cutSelected());
+        (e) -> getActiveEditor().cutSelected());
 
     // sth on clipboard
     mPasteMenuItem = addItem(mEditMenu, "Paste", getAccel(KeyEvent.VK_V),
-        (e) -> getCurrentWorkSpace().pasteClipboard());
+        (e) -> new PasteNodesAction(getActiveEditor(), new Position(0, 0)));
     // sth selected TODO: MISSING
     mDeleteMenuItem = addItem(mEditMenu, "Delete", getAccel(KeyEvent.VK_DELETE),
-        (e) -> getCurrentWorkSpace().deleteSelected()
-    );
+        (e) -> getActiveEditor().deleteSelected());
+
     mEditMenu.add(new JSeparator());
     // always
     addItem(mEditMenu, "Normalize all Edges",
         getAccel(KeyEvent.VK_N, ALT_DOWN_MASK),
-        (e) -> getCurrentWorkSpace().normalizeAllEdges());
+        (e) -> getActiveEditor().normalizeAllEdges());
     addItem(mEditMenu, "Straighen all Edges",
         getAccel(KeyEvent.VK_B, ALT_DOWN_MASK),
-        (e) -> getCurrentWorkSpace().straightenAllEdges());
+        (e) -> getActiveEditor().straightenAllEdges());
     add(mEditMenu);
   }
 
@@ -239,23 +256,20 @@ public final class EditorMenuBar extends JMenuBar {
 
     mShowGridMenuItem = new JCheckBoxMenuItem("Show Grid");
     mShowGridMenuItem.addActionListener((e) -> {
-      getCurrentWorkSpace()
-          .setShowGrid(((JCheckBoxMenuItem) e.getSource()).getState());
+      setShowGrid(((JCheckBoxMenuItem) e.getSource()).getState());
     });
 
     mViewMenu.add(mShowGridMenuItem);
 
     mShowIdMenuItem = new JCheckBoxMenuItem("Show Node IDs");
     mShowIdMenuItem.addActionListener((e) -> {
-      getCurrentWorkSpace()
-          .setShowNodeIds(((JCheckBoxMenuItem) e.getSource()).getState());
+      setShowNodeIds(((JCheckBoxMenuItem) e.getSource()).getState());
     });
     mViewMenu.add(mShowIdMenuItem);
 
     mSnapToGridMenuItem = new JCheckBoxMenuItem("Snap to Grid");
     mSnapToGridMenuItem.addActionListener((e) -> {
-      getCurrentWorkSpace()
-          .setSnapToGrid(((JCheckBoxMenuItem) e.getSource()).getState());
+      setSnapToGrid(((JCheckBoxMenuItem) e.getSource()).getState());
     });
     mViewMenu.add(mSnapToGridMenuItem);
 

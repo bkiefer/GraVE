@@ -139,7 +139,8 @@ implements DocumentContainer, Observer, ProjectElement {
   /** Show the context menu for a comment  */
   public void showContextMenu(MouseEvent evt, Comment comment) {
     JPopupMenu pop = new JPopupMenu();
-    addItem(pop, "Delete", new RemoveCommentAction(mWorkSpace, comment));
+    addItem(pop, "Delete", 
+        new RemoveCommentAction(mWorkSpace.getEditor(), comment.getData()));
     Rectangle r = comment.getBounds();
     pop.show(this, r.width, evt.getY());
   }
@@ -159,7 +160,7 @@ implements DocumentContainer, Observer, ProjectElement {
       getEditor().getUndoManager().endTextMode();
       mEditMode = false;
       if (mDocument.contentChanged())
-        new EditContentAction(mWorkSpace, mDocument).run();
+        new EditContentAction(mWorkSpace.getEditor(), mDocument).run();
     }
     update();
     setBackground(inactiveColor);
@@ -219,7 +220,8 @@ implements DocumentContainer, Observer, ProjectElement {
     @Override
     public void mouseReleased(MouseEvent e) {
       if (mCommentStartBounds != null) {
-        new MoveCommentAction(mWorkSpace, Comment.this, mCommentStartBounds)
+        new MoveCommentAction(mWorkSpace.getEditor(), Comment.this.getData(),
+            mWorkSpace.toModelBoundary(mCommentStartBounds))
             .run();
         mCommentStartBounds = null;
         mResizing = false;

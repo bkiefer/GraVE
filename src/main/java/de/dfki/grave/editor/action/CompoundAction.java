@@ -8,7 +8,7 @@ package de.dfki.grave.editor.action;
 
 import java.util.List;
 
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
 
 /**
  * @author Bernd Kiefer
@@ -21,9 +21,9 @@ public class CompoundAction extends EditorAction {
   List<EditorAction> actions;
   String message;
 
-  public CompoundAction(WorkSpace workSpace, List<EditorAction> acts,
+  public CompoundAction(ProjectEditor editor, List<EditorAction> acts,
       String msg) {
-    mWorkSpace = workSpace;
+    super(editor);
     actions = acts;
     message = msg;
   }

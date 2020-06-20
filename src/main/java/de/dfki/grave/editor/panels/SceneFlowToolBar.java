@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.*;
 
 import de.dfki.grave.AppFrame;
-import de.dfki.grave.editor.action.UndoRedoProvider;
 import de.dfki.grave.editor.dialog.SaveFileDialog;
 import de.dfki.grave.model.flow.SuperNode;
 import de.dfki.grave.util.ResourceLoader;
@@ -92,8 +91,6 @@ public class SceneFlowToolBar extends JToolBar {
   /**
    * ***********************************************************************************************************************
    */
-  // The singleton app instance
-  private final AppFrame mEditorInstance = AppFrame.getInstance();
   // The singleton system clipboard
   private final Clipboard mSystemClipBoard = getToolkit().getSystemClipboard();
   // The parent sceneflow editor
@@ -193,7 +190,7 @@ public class SceneFlowToolBar extends JToolBar {
     mSaveProject = add(new AbstractAction("ACTION_SAVEPROJECT", ICON_SAVE_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        mEditorInstance.save();
+        AppFrame.getInstance().save();
         mSaveProject.setEnabled(false);
         mProjectSettings.setEnabled(true);
       }
@@ -208,7 +205,7 @@ public class SceneFlowToolBar extends JToolBar {
     mPreferences = add(new AbstractAction("ACTION_SHOW_OPTIONS", ICON_SETTINGS_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        mEditorInstance.showOptions();
+        AppFrame.getInstance().showOptions();
       }
     });
     mPreferences.setRolloverIcon(ICON_SETTINGS_ROLLOVER);
@@ -263,7 +260,7 @@ public class SceneFlowToolBar extends JToolBar {
     JButton mNormalize = add(new AbstractAction("ACTION_NORMALIZE", ICON_NORMALIZE_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        getWorkSpace().normalizeAllEdges();
+        mEditor.normalizeAllEdges();
       }
     });
     mNormalize.setRolloverIcon(ICON_NORMALIZE_ROLLOVER);
@@ -273,7 +270,7 @@ public class SceneFlowToolBar extends JToolBar {
     JButton mStraighten = add(new AbstractAction("ACTION_STRAIGHTEN", ICON_STRAIGHTEN_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        getWorkSpace().straightenAllEdges();
+        mEditor.straightenAllEdges();
       }
     });
     mStraighten.setRolloverIcon(ICON_STRAIGHTEN_ROLLOVER);
@@ -301,7 +298,7 @@ public class SceneFlowToolBar extends JToolBar {
     mPlayButton = add(new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        mEditorInstance.save();
+        AppFrame.getInstance().save();
         mStopButton.setEnabled(true);
       }
     });
@@ -340,14 +337,14 @@ public class SceneFlowToolBar extends JToolBar {
     //******************************************************************************************************
     // CONTROL OF NODES
     // Add Some Horizontal Space
-    mBreadCrumb = new BreadCrumb();
+    mBreadCrumb = new BreadCrumb(mEditor);
     add(mBreadCrumb);
 
     //UP TO PARENT NODE
     JButton b = add(new AbstractAction("ACTION_LEVEL_UP", ICON_UP_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        getWorkSpace().decreaseWorkSpaceLevel();
+        mEditor.decreaseWorkSpaceLevel();
       }
     });
     b.setToolTipText("Up to parent node");
@@ -381,9 +378,7 @@ public class SceneFlowToolBar extends JToolBar {
     sanitizeButton(b, smallButtonDim);
     b = add(new AbstractAction("ACTION_ZOOM_IN", ICON_ZOOMIN_STANDARD) {
       @Override
-      public void actionPerformed(ActionEvent evt) {
-        getWorkSpace().zoomIn();
-      }
+      public void actionPerformed(ActionEvent evt) { mEditor.zoomIn(); }
     });
     b.setToolTipText("Zoom In");
     b.setRolloverIcon(ICON_ZOOMIN_ROLLOVER);
@@ -392,9 +387,7 @@ public class SceneFlowToolBar extends JToolBar {
     sanitizeButton(b, smallButtonDim);
     b = add(new AbstractAction("ACTION_ZOOM_ORIG", ICON_NOZOOM_STANDARD) {
       @Override
-      public void actionPerformed(ActionEvent evt) {
-        getWorkSpace().nozoom();
-      }
+      public void actionPerformed(ActionEvent evt) { mEditor.nozoom(); }
     });
     b.setToolTipText("Zoom 100%");
     b.setRolloverIcon(ICON_NOZOOM_ROLLOVER);
@@ -403,9 +396,7 @@ public class SceneFlowToolBar extends JToolBar {
     sanitizeButton(b, smallButtonDim);
     b = add(new AbstractAction("ACTION_ZOOM_OUT", ICON_ZOOMOUT_STANDARD) {
       @Override
-      public void actionPerformed(ActionEvent evt) {
-        getWorkSpace().zoomOut();
-      }
+      public void actionPerformed(ActionEvent evt) { mEditor.zoomOut(); }
     });
     b.setToolTipText("Zoom Out");
     b.setRolloverIcon(ICON_ZOOMOUT_ROLLOVER);
@@ -454,5 +445,5 @@ public class SceneFlowToolBar extends JToolBar {
     refreshButtons();
     mBreadCrumb.refreshDisplay();
   }
-
+ 
 }

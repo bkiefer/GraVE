@@ -3,7 +3,7 @@ package de.dfki.grave.editor.action;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.flow.BasicNode;
 
 /**
@@ -14,17 +14,20 @@ public class CreateNodeAction extends EditorAction {
 
   private List<BasicNode> mNode = new ArrayList<BasicNode>();
 
-  public CreateNodeAction(WorkSpace workSpace, BasicNode node) {
-    mWorkSpace = workSpace;
+  public CreateNodeAction(ProjectEditor editor, BasicNode node) {
+    super(editor);
     mNode.add(node);
   }
 
-  protected void undoIt() {
-    mWorkSpace.removeNodes(false, mNode);
+  protected void doIt() {
+    if (onActiveWorkSpace()) 
+      getWorkSpace().addNodeView(mNode.get(0));
   }
 
-  protected void doIt() {
-    mWorkSpace.addNode(mNode.get(0));
+  protected void undoIt() {
+    Object[] edgeLists = mSuperNode.removeNodes(mNode);
+    if (onActiveWorkSpace()) 
+      getWorkSpace().removeNodes(mNode, edgeLists);
   }
 
   protected String msg() { return "Creation Of Node"; }

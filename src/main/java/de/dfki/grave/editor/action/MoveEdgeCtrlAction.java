@@ -1,6 +1,6 @@
 package de.dfki.grave.editor.action;
 
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.Position;
 
@@ -11,10 +11,9 @@ import de.dfki.grave.model.flow.Position;
 public class MoveEdgeCtrlAction extends ModifyEdgeAction {
 
   /** to must be in *MODEL* coordinates */
-  public MoveEdgeCtrlAction(WorkSpace workSpace, AbstractEdge e, 
+  public MoveEdgeCtrlAction(ProjectEditor editor, AbstractEdge e, 
       boolean startCtrl, Position to) {
-    super(workSpace, e);
-    mWorkSpace = workSpace;
+    super(editor, e);
     mEdge = e;
     mNewCtrls[startCtrl ? 0 : 1] = to;
   }

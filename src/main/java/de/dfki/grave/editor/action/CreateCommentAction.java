@@ -1,10 +1,9 @@
 package de.dfki.grave.editor.action;
 
-//~--- JDK imports ------------------------------------------------------------
-import java.awt.Point;
-
-import de.dfki.grave.editor.Comment;
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
+import de.dfki.grave.model.flow.Boundary;
+import de.dfki.grave.model.flow.CommentBadge;
+import de.dfki.grave.model.flow.Position;
 
 /**
  * @author Gregor Mehlmann
@@ -12,23 +11,28 @@ import de.dfki.grave.editor.panels.WorkSpace;
  */
 public class CreateCommentAction extends EditorAction {
 
-  private Comment mGUIComment;
-  private Point mCoord;
+  private CommentBadge mComment;
+  private Position mCoord;
 
-  public CreateCommentAction(WorkSpace workSpace, Point coordinate) {
-    mWorkSpace = workSpace;
+  public CreateCommentAction(ProjectEditor editor, Position coordinate) {
+    super(editor);
     mCoord = coordinate;
   }
 
-  protected void undoIt() {
-    mWorkSpace.removeComment(mGUIComment);
+  protected void doIt() {
+    if (mComment == null) {
+      mComment = CommentBadge.createComment(mSuperNode,
+          new Boundary(mCoord.getXPos(), mCoord.getYPos(),
+              100, 100));
+    }
+    if (onActiveWorkSpace()) 
+      getWorkSpace().addComment(mComment);
   }
 
-  protected void doIt() {
-    if (mGUIComment == null) {
-      mGUIComment = mWorkSpace.createComment(mCoord);
-    }
-    mWorkSpace.addComment(mGUIComment);
+  protected void undoIt() {
+    mSuperNode.removeComment(mComment);
+    if (onActiveWorkSpace()) 
+      getWorkSpace().removeComment(mComment);
   }
 
   protected String msg() { return "Creation Of Comment"; }

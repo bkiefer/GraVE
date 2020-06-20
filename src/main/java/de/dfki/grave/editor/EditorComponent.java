@@ -114,7 +114,7 @@ public abstract class EditorComponent extends JComponent
   /* project change via action */
   public void checkDocumentChange() {
     if (mDocument.contentChanged())
-      new EditContentAction(mWorkSpace, mDocument).run();
+      new EditContentAction(getEditor(), mDocument).run();
   }
   
   public void setSelected() {
