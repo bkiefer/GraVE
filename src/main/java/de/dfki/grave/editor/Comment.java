@@ -22,11 +22,13 @@ import javax.swing.event.UndoableEditListener;
 import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.action.EditContentAction;
 import de.dfki.grave.editor.action.MoveCommentAction;
-import de.dfki.grave.editor.action.RemoveCommentAction;
+import de.dfki.grave.editor.action.RemoveCommentsAction;
+import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.Boundary;
 import de.dfki.grave.model.flow.CommentBadge;
+import de.dfki.grave.util.evt.EventDispatcher;
 
 /** A class for Comment Text Bubbles
  *  .----.
@@ -140,7 +142,7 @@ implements DocumentContainer, Observer, ProjectElement {
   public void showContextMenu(MouseEvent evt, Comment comment) {
     JPopupMenu pop = new JPopupMenu();
     addItem(pop, "Delete", 
-        new RemoveCommentAction(mWorkSpace.getEditor(), comment.getData()));
+        new RemoveCommentsAction(mWorkSpace.getEditor(), comment.getData()));
     Rectangle r = comment.getBounds();
     pop.show(this, r.width, evt.getY());
   }
@@ -151,6 +153,7 @@ implements DocumentContainer, Observer, ProjectElement {
     mEditMode = true;
     setEditable(true);
     setEnabled(true);
+    EventDispatcher.getInstance().convey(new ElementSelectedEvent(this));
     requestFocus();
   };
 

@@ -11,7 +11,6 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.text.AttributedString;
-import java.util.Collection;
 
 import javax.swing.*;
 
@@ -56,7 +55,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     // Init the drag & drop support
     initDnDSupport();
     mSelectedEdge = null;
-    mSelectedComment = null;
   }
 
   /**
@@ -84,8 +82,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
           new RemoveNodesAction(getEditor(), getSelectedNodes(), false).run();
         }
 
-        if (mSelectedComment != null) {
-          new RemoveCommentAction(getEditor(), mSelectedComment.getData()).run();
+        if (!mSelectedComments.isEmpty()) {
+          new RemoveCommentsAction(getEditor(), getSelectedComments(), false).run();
         }
       }
     });
@@ -178,24 +176,6 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     deselectAll();
     super.clearCurrentWorkspace();
   }
-
-  /* ######################################################################
-   * Provide functionality for the global menu bar
-   * ###################################################################### */
-
-  // TODO: MAYBE ADD THIS TO EDITORACTION
-  protected void actionMessage(String act) {
-    String what= (mSelectedNodes.size() > 1) ? " Nodes " : " Node ";
-    setMessageLabelText(mSelectedNodes.size() + what + act);
-  }
-
-  public Collection<BasicNode> getSelectedNodes() {
-    return nodeModels(mSelectedNodes.keySet());
-  }
-  
-  /* ######################################################################
-   * End provide functionality for the global menu bar
-   * ###################################################################### */
 
   /** Add an item with name and action a to the menu m */
   public static void addItem(JPopupMenu m, String name, ActionListener a) {
@@ -310,16 +290,12 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   }
 
   private void commentClicked(MouseEvent event, Comment comment) {
-    if (mSelectedComment == null || mSelectedComment != comment) {
+    if (! mSelectedComments.containsKey(comment)) {
       selectComment(comment);
     }
   }
 
   private Comment findCommentAt(Point p) {
-    // We'll try the selected comment first
-    if (mSelectedComment != null && mSelectedComment.containsPoint(p)) {
-      return mSelectedComment;
-    }
     // look if mouse click was on a edge
     for (Comment c : getComments().values()) {
       if (c.containsPoint(p)) {
@@ -343,9 +319,8 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     return null;
   }
 
-  boolean somethingSelected() {
-    return mSelectedEdge != null || mSelectedComment != null
-        || ! mSelectedNodes.isEmpty() || mAreaSelection != null;
+  private boolean somethingSelected() {
+    return isSomethingSelected() || mAreaSelection != null;
   }
 
   /**

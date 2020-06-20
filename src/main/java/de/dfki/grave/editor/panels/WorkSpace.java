@@ -56,7 +56,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
 
   // Selected Elements
   protected Edge mSelectedEdge = null;
-  protected Comment mSelectedComment = null;
+  protected Map<Comment, Comment> mSelectedComments = new IdentityHashMap<>();
   protected Map<Node,Node> mSelectedNodes = new IdentityHashMap<>();
   protected boolean mDoAreaSelection = false;
   
@@ -505,7 +505,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   /** Return true if something on the workspace is selected */
   public boolean isSomethingSelected() {
     return ! mSelectedNodes.isEmpty() || mSelectedEdge != null
-        || mSelectedComment != null;
+        || ! mSelectedComments.isEmpty();
   }
   
   /** */
@@ -519,21 +519,27 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
 
   protected void deselectAll() {
     deselectEdge();
-    deselectComment();
+    deselectAllComments();
     deselectAllNodes();
   }
 
   protected void selectComment(Comment e) {
     deselectAll();
-    mSelectedComment = e;
+    mSelectedComments.put(e, e);
     e.setSelected();
   }
 
-  protected void deselectComment() {
-    if (mSelectedComment != null) {
-      mSelectedComment.setDeselected();
-      mSelectedComment = null;
+  /** Deselect a single comment, leave all other selected comments selected */
+  protected void deselectComment(Comment n) {
+    mSelectedComments.remove(n);
+    n.setDeselected();
+  }
+
+  protected void deselectAllComments() {
+    for (Comment c : mSelectedComments.keySet()) {
+      c.setDeselected();
     }
+    mSelectedComments.clear();
   }
 
   protected void selectEdge(Edge e) {
@@ -552,7 +558,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   /** Select a single node, leave all other selected nodes selected */
   protected void selectNode(Node n) {
     deselectEdge();
-    deselectComment();
+    deselectAllComments();
     mSelectedNodes.put(n, n);
     n.setSelected();
   }
@@ -590,13 +596,25 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
     repaint(100);
   }
 
+  public Collection<BasicNode> getSelectedNodes() {
+    return nodeModels(mSelectedNodes.keySet());
+  }
+
+  public Collection<CommentBadge> getSelectedComments() {
+    return commentModels(mSelectedComments.keySet());
+  }
+  
+  public AbstractEdge getSelectedEdge() {
+    return (mSelectedEdge == null) ? null : mSelectedEdge.getDataEdge();
+  }
+  
   // ######################################################################
   // Helper functions for undoable actions for nodes and edges
   // ######################################################################
 
   /** Removes view edge from workspace, no change in model */
   private void removeFromWorkSpace(Edge e) {
-    if (mSelectedEdge != null && mSelectedEdge == mEdges.get(e))
+    if (mSelectedEdge != null && mSelectedEdge == e)
       deselectEdge();
     // Free the docking points on source and target node
     e.disconnect();
@@ -656,8 +674,8 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
 
   /** Remove comment view from workspace, no change in model */
   private void removeFromWorkSpace(Comment c) {
-    if (mSelectedComment == c)
-      deselectComment();
+    if (mSelectedComments.containsKey(c))
+      deselectComment(c);
     mCmtSet.remove(c.getData());
     super.remove(c);
     mObservable.deleteObserver(c);
@@ -761,6 +779,12 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   protected List<BasicNode> nodeModels(Collection<Node> l) {
     List<BasicNode> result = new ArrayList<>(l.size());
     for (Node n: l) result.add(n.getDataNode());
+    return result;
+  } 
+  
+  protected List<CommentBadge> commentModels(Collection<Comment> l) {
+    List<CommentBadge> result = new ArrayList<>(l.size());
+    for (Comment n: l) result.add(n.getData());
     return result;
   }
   

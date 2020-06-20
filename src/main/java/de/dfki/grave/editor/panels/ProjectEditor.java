@@ -36,6 +36,7 @@ import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.editor.event.TreeEntrySelectedEvent;
 import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.flow.CommentBadge;
 import de.dfki.grave.model.flow.Position;
 import de.dfki.grave.model.flow.SceneFlow;
 import de.dfki.grave.model.flow.SuperNode;
@@ -427,6 +428,12 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     String what= (sel.size() > 1) ? " Nodes " : " Node ";
     setMessageLabelText(sel.size() + what + act);
   }
+  
+  // TODO: MAYBE ADD THIS TO EDITORACTION
+  private void actionMessage(int size, String act) {
+    String what= (size > 1) ? " Elements " : " Element ";
+    setMessageLabelText(size + what + act);
+  }
 
   /** Copy the selected nodes to the clipboard, if any */
   public void copySelected() {
@@ -454,10 +461,31 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   }
   
   public void deleteSelected() {
+    int elements = 0;
+    List<EditorAction> actions = new ArrayList<>();
     Collection<BasicNode> sel = mWorkSpacePanel.getSelectedNodes();
-    if (sel.isEmpty()) return;
-    RemoveNodesAction action = new RemoveNodesAction(this, sel, false);
-    actionMessage(sel, "deleted");
+    if (! sel.isEmpty()) {
+      actions.add(new RemoveNodesAction(this, sel, false));
+      elements += sel.size();
+    }
+    Collection<CommentBadge> cmt = mWorkSpacePanel.getSelectedComments();
+    if (! cmt.isEmpty()) {
+      actions.add(new RemoveCommentsAction(this, cmt, false));
+      elements += cmt.size();
+    }
+    if (mWorkSpacePanel.getSelectedEdge() != null) {
+      actions.add(new RemoveEdgeAction(this, mWorkSpacePanel.getSelectedEdge()));
+      elements += 1;
+    }
+    if (actions.isEmpty()) return;
+    EditorAction action;
+    if (actions.size() > 1) {
+      action = new CompoundAction(this, actions, "Delete");
+    } else {
+      action = actions.get(0);
+    }
+      
+    actionMessage(elements, "deleted");
     action.run();
   }
   
