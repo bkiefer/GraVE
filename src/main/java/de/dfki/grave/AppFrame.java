@@ -3,6 +3,7 @@ package de.dfki.grave;
 import static de.dfki.grave.Icons.*;
 import static de.dfki.grave.Preferences.*;
 import static de.dfki.grave.Constants.*;
+import static java.awt.event.InputEvent.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -18,6 +19,7 @@ import javax.swing.filechooser.FileView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.grave.editor.action.UndoRedoProvider;
 import de.dfki.grave.editor.dialog.AboutDialog;
 import de.dfki.grave.editor.dialog.NewProjectDialog;
 import de.dfki.grave.editor.dialog.OptionsDialog;
@@ -32,13 +34,17 @@ import de.dfki.grave.util.ResourceLoader;
 @SuppressWarnings("serial")
 public final class AppFrame extends JFrame implements ChangeListener {
   private static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
-
+  
   // The singelton editor instance
   public static AppFrame sInstance = null;
   // The editor's GUI components
   private final EditorMenuBar mEditorMenuBar;
   private final JTabbedPane mProjectEditors;
-
+  
+  // Global undo/redo for global menu
+  private final AbstractAction undoAction;
+  private final AbstractAction redoAction;
+  
   // Get the singelton editor instance
   public synchronized static AppFrame getInstance() {
     if (sInstance == null) {
@@ -65,11 +71,11 @@ public final class AppFrame extends JFrame implements ChangeListener {
     if (projectEditor != null) {
       /** ClipBoard is a singleton
       if (previousCB != null) {
-        ClipBoard currentCB = projectEditor.getSceneFlowEditor().getWorkSpace().getClipBoard();
+        ClipBoard currentCB = projectEditor.getWorkSpace().getClipBoard();
         currentCB.set(previousCB.get());
       }
 
-      previousCB = projectEditor.getSceneFlowEditor().getWorkSpace().getClipBoard();
+      previousCB = projectEditor.getWorkSpace().getClipBoard();
       */
     }
   }
@@ -93,6 +99,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
     public void componentHidden(ComponentEvent e) { }
   };
 
+  
   // Private construction of an editor
   private AppFrame() {
     configure();
@@ -109,15 +116,52 @@ public final class AppFrame extends JFrame implements ChangeListener {
     // SET BACKGROUNDS
     setUIBackgrounds();
 
+    undoAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ProjectEditor pe = getSelectedProjectEditor();
+        if (pe != null) {
+          UndoRedoProvider um = pe.getUndoManager();
+          if (um != null) {
+            um.doUndo(this, e);
+            refreshMenuBar();
+            pe.refreshToolBar();
+            //EventDispatcher.getInstance().convey(new ProjectChangedEvent(this));
+          }
+        }
+      }
+    };
+    undoAction.putValue(Action.ACCELERATOR_KEY, getAccel(KeyEvent.VK_Z));
+    undoAction.putValue(Action.NAME, "Undo");
+    redoAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        ProjectEditor pe = getSelectedProjectEditor();
+        if (pe != null) {
+          UndoRedoProvider um = pe.getUndoManager();
+          if (um != null) {
+            um.doRedo(this, e);
+            refreshMenuBar();
+            pe.refreshToolBar();
+            //EventDispatcher.getInstance().convey(new ProjectChangedEvent(this));
+          }
+        }
+      }
+    };
+    redoAction.putValue(Action.ACCELERATOR_KEY, 
+        getAccel(KeyEvent.VK_Z, SHIFT_DOWN_MASK));
+    redoAction.putValue(Action.NAME, "Redo");
     // Init the menu bar
-    mEditorMenuBar = new EditorMenuBar(this);
-    // Hide the menu bar
-    mEditorMenuBar.setVisible(true);
 
     // Init the project editor list
     mProjectEditors = new JTabbedPane(
             JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
     //mObservable.addObserver(mProjectEditors);
+    
+    mEditorMenuBar = new EditorMenuBar(this);
+    // Hide the menu bar
+    mEditorMenuBar.setVisible(true);
+
 
     setIconImage(ResourceLoader.loadImageIcon("img/dociconsmall.png").getImage());
     setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -152,6 +196,15 @@ public final class AppFrame extends JFrame implements ChangeListener {
     // handle resize and positioning
     this.addComponentListener(mComponentListener);
   }
+  
+  public void refreshUndoRedo(UndoRedoProvider.UndoRedoAction undo, 
+      UndoRedoProvider.UndoRedoAction redo) {
+    undo.refreshState(undoAction);
+    redo.refreshState(redoAction);
+  }
+  
+  public AbstractAction getUndoAction() { return undoAction; } 
+  public AbstractAction getRedoAction() { return redoAction; }
 
   private void setUIFonts() {
     Font uiFont = getPrefs().editorConfig.sUI_FONT.getFont();
@@ -262,7 +315,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
   public final WorkSpacePanel getWorkSpace() {
     ProjectEditor pe = getSelectedProjectEditor();
     if (pe == null) return null;
-    return pe.getSceneFlowEditor().getWorkSpace();
+    return pe.getWorkSpace();
   }
   
   public final boolean newProject() {
@@ -325,7 +378,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
       // Get the chooser's selected file
       final File file = chooser.getSelectedFile();
       // And try to open the file then
-      return openProject(file.getPath());
+      return openProject(file);
     } else {
       // Print an error message
       mLogger.warn("Warning: Canceled opening of a project file");
@@ -367,13 +420,13 @@ public final class AppFrame extends JFrame implements ChangeListener {
   }
   */
 
-  public final boolean openProject(String path) {
+  public final boolean openProject(File path) {
     if (path == null) {
       mLogger.error("Error: Cannot open editor project from a bad Stream");
       // And return failure here
       return false;
     }
-    final EditorProject project = EditorProject.load(new File(path));
+    final EditorProject project = EditorProject.load(path);
     // Try to loadRunTimePlugins it from the file
     if (project != null) {
       // Toggle the editor main screen
@@ -626,6 +679,15 @@ public final class AppFrame extends JFrame implements ChangeListener {
     System.exit(0);
   }
 
+  public static KeyStroke getAccel(int code, int mask) {
+    return KeyStroke.getKeyStroke(code,
+        mask | Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+  }
+
+  public static KeyStroke getAccel(int code) {
+    return getAccel(code, 0);
+  }
+
   //ESCAPE LISTENER- Closes dialog with escape key
   public static void addEscapeListener(final JDialog dialog) {
     ActionListener escListner = new ActionListener() {
@@ -651,7 +713,9 @@ public final class AppFrame extends JFrame implements ChangeListener {
 
   // Show the options dialog
   public final void showOptions() {
-    final OptionsDialog optionsDialog = new OptionsDialog();
+    final OptionsDialog optionsDialog =
+        new OptionsDialog(getSelectedProjectEditor());
+    addEscapeListener(optionsDialog);
     optionsDialog.setVisible(true);
   }
 

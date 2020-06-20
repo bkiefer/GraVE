@@ -181,29 +181,6 @@ public class Edge extends EditorComponent {
     mArrow.computeCurve(getStart(), getStartCtrl(), getEndCtrl(), getEnd());
     computeBounds();
   }
-  
-  /*
-   * Take input value of mValueEditor and set it as value of the edge
-   * EDGE MODIFICATION  
-   *
-  void updateFromTextEditor() {
-    if (mCodeArea == null) return;
-    String input = mCodeArea.getText();
-    if (mDataEdge != null) {
-      try {
-        mDataEdge.setContent(input);
-      }
-      catch (NumberFormatException ex) {
-        mWorkSpace.getSceneFlowEditor().setMessageLabelText(
-            "Not a number: " + input);
-      }
-      catch (Exception ex) {
-        mWorkSpace.getSceneFlowEditor().setMessageLabelText(
-            "Something wrong here: " + input);
-      }
-    }
-    EditorInstance.getInstance().refresh();
-  }*/
 
   public void setSelected() {
     mArrow.showControlPoints();
@@ -225,10 +202,10 @@ public class Edge extends EditorComponent {
     JPopupMenu pop = new JPopupMenu();
     AbstractEdge model = edge.getDataEdge();
     //addItem(pop, "Modify", new ModifyEdgeAction(edge, this));
-    addItem(pop, "Delete", new RemoveEdgeAction(mWorkSpace, model));
-    addItem(pop, "Shortest Path", new ShortestEdgeAction(mWorkSpace, model));
-    addItem(pop, "Straighten", new StraightenEdgeAction(mWorkSpace, model));
-    addItem(pop, "Smart Path", new NormalizeEdgeAction(mWorkSpace, model));
+    addItem(pop, "Delete", new RemoveEdgeAction(getEditor(), model));
+    addItem(pop, "Shortest Path", new ShortestEdgeAction(getEditor(), model));
+    addItem(pop, "Straighten", new StraightenEdgeAction(getEditor(), model));
+    addItem(pop, "Smart Path", new NormalizeEdgeAction(getEditor(), model));
     pop.show(mWorkSpace, evt.getX(), evt.getY());
   }
 
@@ -279,7 +256,7 @@ public class Edge extends EditorComponent {
       Node newNode = mWorkSpace.findNodeAtPoint(p);
       if (canDeflect(newNode, isSource ? mSourceNode : mTargetNode)) {
         int dock = newNode.getNearestFreeDock(p, isSource);
-        new MoveEdgeEndPointAction(mWorkSpace, getDataEdge(), isSource, dock,
+        new MoveEdgeEndPointAction(getEditor(), getDataEdge(), isSource, dock,
             newNode.getDataNode()).run();
       } else {
         update(); // put arrow back into old position
@@ -295,7 +272,7 @@ public class Edge extends EditorComponent {
           : mTargetNode.getDockPoint(mDataEdge.getTargetDock());
       p.translate(-dock.x, -dock.y);
       // All actions use Positions (model coordinates)
-      new MoveEdgeCtrlAction(mWorkSpace, getDataEdge(), isSource, toModelPos(p)).run();
+      new MoveEdgeCtrlAction(getEditor(), getDataEdge(), isSource, toModelPos(p)).run();
       break;
     }
     }
@@ -339,7 +316,7 @@ public class Edge extends EditorComponent {
    */
   public void modifyEdge(Node newStart, Node newEnd,
       BasicNode[] nodes, int[] docks, Position[] controls) {
-    getDataEdge().modifyEdge(nodes, docks, controls);
+    //getDataEdge().modifyEdge(nodes, docks, controls);
     deflectSource(newStart);
     deflectTarget(newEnd);
   }
@@ -383,7 +360,6 @@ public class Edge extends EditorComponent {
   private Rectangle computeTextBoxBounds() {
     CodeArea c = getCodeArea();
     if (c == null) return null;
-    c.setDeselected();
     Dimension r = c.getSize();
     
     // center around middle of curve

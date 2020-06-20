@@ -34,7 +34,7 @@ public final class MainGrave {
             sLogger.info("Starting editor with file '{}'", file);
             final AppFrame sEditor = AppFrame.getInstance();
             // Get an editor project from file
-            sEditor.openProject(file.getPath());
+            sEditor.openProject(file);
             // Show the singelton editor instance
             sEditor.setVisible(true);
           } else {

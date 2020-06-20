@@ -1,6 +1,7 @@
 package de.dfki.grave.editor;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -11,6 +12,7 @@ import javax.swing.JComponent;
 
 import de.dfki.grave.editor.action.EditContentAction;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.ContentHolder;
 import de.dfki.grave.model.flow.Position;
@@ -19,9 +21,8 @@ import de.dfki.grave.util.evt.EventDispatcher;
 
 @SuppressWarnings("serial")
 public abstract class EditorComponent extends JComponent
-  implements MouseListener, Observer, DocumentContainer {
-  private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
-  
+  implements MouseListener, Observer, DocumentContainer, ProjectElement {
+    
   protected WorkSpace mWorkSpace;
   
   private CodeArea mCodeArea = null;
@@ -110,17 +111,17 @@ public abstract class EditorComponent extends JComponent
     return mDocument;
   }
   
+  /* project change via action */
   public void checkDocumentChange() {
     if (mDocument.contentChanged())
-      new EditContentAction(mWorkSpace, mDocument).run();
+      new EditContentAction(getEditor(), mDocument).run();
   }
   
   public void setSelected() {
     mSelected = true;
-    if (mCodeArea != null) {
+    EventDispatcher.getInstance().convey(new ElementSelectedEvent(this));
+    if (mDocument != null && mDocument.getLength() == 0)
       mCodeArea.setSelected();
-    }      
-    mDispatcher.convey(new ElementSelectedEvent(this));
     repaint(100);
   }
 
@@ -130,5 +131,17 @@ public abstract class EditorComponent extends JComponent
     }
     mSelected = false;
     repaint(100);
+  }
+  
+  public boolean isSelected() {
+    return mSelected;
+  }
+  
+  public ProjectEditor getEditor() {
+    Container p = this;
+    while (! (p instanceof ProjectEditor)) {
+      p = p.getParent();
+    }
+    return (ProjectEditor)p;
   }
 }

@@ -6,7 +6,7 @@
  */
 package de.dfki.grave.editor.action;
 
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.flow.AbstractEdge;
 
 /**
@@ -24,12 +24,12 @@ public class NormalizeEdgeAction extends ReshapeEdgeAction {
   protected Point mTargetGUINodeDockPoint = null;
   */
 
-  public NormalizeEdgeAction(WorkSpace workSpace, AbstractEdge edge) {
-    super(workSpace, edge);
+  public NormalizeEdgeAction(ProjectEditor editor, AbstractEdge edge) {
+    super(editor, edge);
   }
 
   protected void reshape() {
-    mWorkSpace.normalizeEdge(mEdge);
+    mEdge.straightenEdge(mEditor.getEditorProject().getEditorConfig().sNODEWIDTH);
   }
 
   /*

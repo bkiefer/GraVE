@@ -1,7 +1,7 @@
 package de.dfki.grave.editor.action;
 
 import de.dfki.grave.editor.ObserverDocument;
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
 
 /**
  * @author kiefer
@@ -12,15 +12,15 @@ public class EditContentAction extends EditorAction {
   
   String old, newContent;
 
-  public EditContentAction(WorkSpace workSpace, ObserverDocument c) {
-    mWorkSpace = workSpace;
+  public EditContentAction(ProjectEditor editor, ObserverDocument c) {
+    super(editor);
     mDocument = c;
     old = c.getInitialContent();
     newContent = c.getCurrentContent();
   }
   
   @Override
-  public void doIt() {
+  protected void doIt() {
     mDocument.updateModel(newContent);
   }
 

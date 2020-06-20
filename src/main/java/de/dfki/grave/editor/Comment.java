@@ -4,6 +4,7 @@ import static de.dfki.grave.editor.panels.WorkSpacePanel.addItem;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -22,7 +23,7 @@ import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.action.EditContentAction;
 import de.dfki.grave.editor.action.MoveCommentAction;
 import de.dfki.grave.editor.action.RemoveCommentAction;
-import de.dfki.grave.editor.action.UndoRedoProvider;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.model.flow.Boundary;
 import de.dfki.grave.model.flow.CommentBadge;
@@ -37,7 +38,8 @@ import de.dfki.grave.model.flow.CommentBadge;
  *
  */
 @SuppressWarnings("serial")
-public class Comment extends JTextArea implements DocumentContainer, Observer {
+public class Comment extends JTextArea 
+implements DocumentContainer, Observer, ProjectElement {
 
   private ObserverDocument mDocument;
   private CommentBadge mDataComment;
@@ -62,7 +64,7 @@ public class Comment extends JTextArea implements DocumentContainer, Observer {
     mDocument.addUndoableEditListener(
         new UndoableEditListener() {
           public void undoableEditHappened(UndoableEditEvent e) {
-            UndoRedoProvider.getInstance().addTextEdit(e.getEdit());
+            getEditor().getUndoManager().addTextEdit(e.getEdit());
           }
         });
     // font setup
@@ -137,14 +139,15 @@ public class Comment extends JTextArea implements DocumentContainer, Observer {
   /** Show the context menu for a comment  */
   public void showContextMenu(MouseEvent evt, Comment comment) {
     JPopupMenu pop = new JPopupMenu();
-    addItem(pop, "Delete", new RemoveCommentAction(mWorkSpace, comment));
+    addItem(pop, "Delete", 
+        new RemoveCommentAction(mWorkSpace.getEditor(), comment.getData()));
     Rectangle r = comment.getBounds();
     pop.show(this, r.width, evt.getY());
   }
 
   public void setSelected() {
     setBackground(activeColor);
-    UndoRedoProvider.getInstance().startTextMode();
+    getEditor().getUndoManager().startTextMode();
     mEditMode = true;
     setEditable(true);
     setEnabled(true);
@@ -153,11 +156,11 @@ public class Comment extends JTextArea implements DocumentContainer, Observer {
 
   /** Resets the comment to its default visual behavior */
   public void setDeselected() {
-    UndoRedoProvider.getInstance().endTextMode();
     if (mEditMode) {
+      getEditor().getUndoManager().endTextMode();
       mEditMode = false;
       if (mDocument.contentChanged())
-        new EditContentAction(mWorkSpace, mDocument).run();
+        new EditContentAction(mWorkSpace.getEditor(), mDocument).run();
     }
     update();
     setBackground(inactiveColor);
@@ -217,7 +220,8 @@ public class Comment extends JTextArea implements DocumentContainer, Observer {
     @Override
     public void mouseReleased(MouseEvent e) {
       if (mCommentStartBounds != null) {
-        new MoveCommentAction(mWorkSpace, Comment.this, mCommentStartBounds)
+        new MoveCommentAction(mWorkSpace.getEditor(), Comment.this.getData(),
+            mWorkSpace.toModelBoundary(mCommentStartBounds))
             .run();
         mCommentStartBounds = null;
         mResizing = false;
@@ -258,5 +262,13 @@ public class Comment extends JTextArea implements DocumentContainer, Observer {
       // update model boundary
       setBoundary(getBounds());
     }
+  }
+    
+  public ProjectEditor getEditor() {
+    Container p = this;
+    while (! (p instanceof ProjectEditor)) {
+      p = p.getParent();
+    }
+    return (ProjectEditor)p;
   }
 }

@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.editor.panels.IDManager;
 import de.dfki.grave.util.Pair;
 
 /**
@@ -40,9 +39,10 @@ public class SuperNode extends BasicNode {
   }
 
   /** Create a SuperNode from an existing BasicNode: Node Type Change */
-  public SuperNode(IDManager mgr, final BasicNode node) {
+  public SuperNode(final BasicNode node) {
+    IDManager mgr = node.getRoot().getIDManager();
     mNodeId = mgr.getNextFreeID(this);
-    copyBasicFields(node);
+    this.copyBasicFields(node);
   }
 
   public boolean isBasic() { return false; }
@@ -238,16 +238,16 @@ public class SuperNode extends BasicNode {
    *  edges starting at this node.
    */
   protected BasicNode deepCopy(IDManager mgr, SuperNode newParent) {
-    SuperNode copy = new SuperNode();
-    copy.copyFieldsFrom(this);
-    copy.mNodeId = mgr.getNextFreeID(this);
-    copy.mParentNode = newParent;
+    SuperNode superCopy = new SuperNode();
+    superCopy.copyFieldsFrom(this);
+    superCopy.mNodeId = mgr.getNextFreeID(this);
+    superCopy.mParentNode = newParent;
     Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
     // copy all subnodes in this SuperNode
-    for (BasicNode n : getNodes()) {
-      BasicNode nCopy = n.deepCopy(mgr, copy);
-      orig2copy.put(n, nCopy);
-      copy.mNodeList.add(nCopy);
+    for (BasicNode orig : getNodes()) {
+      BasicNode copy = orig.deepCopy(mgr, superCopy);
+      orig2copy.put(orig, copy);
+      superCopy.mNodeList.add(copy);
     }
     // copy all edges between nodes inside this SuperNode
     for (BasicNode n : getNodes()) {
@@ -256,37 +256,118 @@ public class SuperNode extends BasicNode {
       }
     }
 
-    return copy;
+    return superCopy;
   }
 
-  /** This copies some subset of node and edge models. One basic assumption is
-   *  that there are no "dangling" edges which either start or end at a node
-   *  outside the given node set, i.e., the `edges' list contains of inner
-   *  edges (between nodes in the nodes list) only.
+  /** This is a specialised deep copy operation, where only a *subset* of this
+   *  SuperNode's nodes and all *internal* edges (i.e., edges start start *and*
+   *  end in the set) are copied. All node copies of the set will be deep copies.
    *
    *  The copied node models will be subnodes of this SuperNode.
+   *  @return a pair containing the copied nodes and inner edges of the set
+   *          (only on this level, not the deeper SuperNodes)
    */
-  public Pair<Collection<BasicNode>, List<AbstractEdge>> copySubgraph(
-      IDManager mgr, List<BasicNode> nodes, List<AbstractEdge> edges) {
+  public Collection<BasicNode> copyNodeSet(Collection<BasicNode> nodes) {
     Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
-    for (BasicNode n : nodes) {
-      BasicNode cpy = n.deepCopy(mgr, this);
-      orig2copy.put(n, cpy);
+    IDManager mgr = getRoot().getIDManager(); 
+    for (BasicNode orig : nodes) {
+      BasicNode copy = orig.deepCopy(mgr, this);
+      orig2copy.put(orig, copy);
     }
 
     List<AbstractEdge> newEdges = new ArrayList<>();
-    for (AbstractEdge edge: edges) {
-      AbstractEdge e = edge.deepCopy(orig2copy);
-      newEdges.add(e);
+    // copy all edges between nodes inside this node set
+    for (BasicNode n : nodes) {
+      for (AbstractEdge e: n.getEdgeList()) {
+        if (nodes.contains(e.getTargetNode()))
+          newEdges.add(e.deepCopy(orig2copy));
+      }
     }
-    return new Pair<Collection<BasicNode>, List<AbstractEdge>>(
-        orig2copy.values(), newEdges);
+    return orig2copy.values();    
+  }
+  
+  /** Remove the nodes in the given collection.
+   *  This is only legal if none of the selected nodes is a start node!
+   *
+   *  This collects three types of edges: internal, incoming, and outgoing
+   *  edges, which is defined relative to the set of nodes given as input.
+   *  Incoming edges have to be removed and saved for undo, the rest disappears
+   *  anyway when the nodes are removed from the graph
+   *
+   *  @return a triple emerging, internal, incoming edges
+   */
+  @SuppressWarnings("unchecked")
+  public Collection<AbstractEdge>[] removeNodes(Collection<BasicNode> nodes) {
+    // Edges pointin.getDataNodeg from the set to the outside
+    List<AbstractEdge> emergingEdges = new ArrayList<>();
+    // Edges between nodes in the set
+    List<AbstractEdge> internalEdges = new ArrayList<>();
+    // Edges pointing from the outside into the set
+    List<AbstractEdge> incomingEdges = new ArrayList<>();
+
+    for (BasicNode n : nodes) {
+      // remove node with attached edges from this SuperNode, must be UNDOne
+      removeNode(n);
+      // collect internal and outgoing edges
+      for(AbstractEdge e : n.getEdgeList()) {
+        if (nodes.contains(e.getTargetNode())) {
+          internalEdges.add(e);
+        } else {
+          emergingEdges.add(e);
+        }
+      }
+    }
+    // This results in quadratic complexity, but we currently don't have 
+    // and incoming edge list in the model graph
+    for (BasicNode n : mNodeList) {
+      // for all nodes not in the set
+      if (!nodes.contains(n)) {
+        for(AbstractEdge e : n.getEdgeList()) {
+          if (nodes.contains(e.getTargetNode())) {
+            // incoming edge (not in set) --> (in set), must be removed later
+            // because of ConcurrentOperationException
+            incomingEdges.add(e);
+          } 
+        }
+      }
+    }
+    // remove incoming edges from model, this destructively changes the source
+    // node of the edge, which must be UNDOne
+    for (AbstractEdge e : incomingEdges) {
+      e.getSourceNode().removeEdge(e);
+    }
+    Collection<AbstractEdge>[] result =
+        new Collection[]{ emergingEdges, internalEdges, incomingEdges };
+    return result;
+  }
+  
+  /** Add a set of edges. Prerequisite: the node models and the
+   *  edges and their respective models exist, and were not modified in a way
+   *  which interferes with, e.g., the docking points, or the positions.
+   */
+  public void addEdges(Collection<AbstractEdge> edges) {
+    for (AbstractEdge e: edges) {
+      e.getSourceNode().addEdge(e);
+    }
+  }
+  
+  /** Add the given nodes and edges of a disconnected subgraph of nodes as is
+   *  to the view and model. This is used if re-inserted after a cut operation,
+   *  or as part of an undo. The nodes are just added, without further 
+   *  modifications.
+   */
+  public void addNodes(Collection<BasicNode> nodes) {
+    // first add all nodes, so they exist when adding edges
+    for (BasicNode n : nodes) {
+      addNode(n);
+    }
   }
   
   /*************************************************************************/
   /********************* MISC. PUBLIC ACCESS METHODS ***********************/
   /*************************************************************************/
   
+  /*
   @Override
   public int hashCode() {
     int hash = 5;
@@ -297,6 +378,7 @@ public class SuperNode extends BasicNode {
     hash = 53 * hash + Boolean.hashCode(this.mHideGlobalVarBadge);
     return hash;
   }
+  */
 
   /** Dock point for square, returns a fresh Point2D for the given dock, which 
    *  still must be translated by the center point of the node */

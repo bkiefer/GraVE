@@ -21,11 +21,8 @@ import javax.swing.tree.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.TreeEntry;
-import de.dfki.grave.editor.event.TreeEntrySelectedEvent;
 import de.dfki.grave.model.project.EditorProject;
-import de.dfki.grave.util.evt.EventDispatcher;
 
 /**
  * @author Gregor Mehlmann
@@ -60,9 +57,6 @@ public final class SceneFlowElementPanel extends JScrollPane {
     private final JMenuItem functionsAdd = new JMenuItem("Add...");
     private final JMenuItem functionModify = new JMenuItem("Modify...");
     private final JMenuItem functionRemove = new JMenuItem("Remove");
-
-    //
-    private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
     // Drag & Drop support
     private DragSource mDragSource;
@@ -277,7 +271,7 @@ public final class SceneFlowElementPanel extends JScrollPane {
             }
 
             if (path.getLastPathComponent() instanceof TreeEntry) {
-              launchTreeEntrySelectedEvent(
+              treeElementSelected(
                   (TreeEntry) path.getLastPathComponent());
             }
           } // test if the user clicked on exact function
@@ -293,10 +287,8 @@ public final class SceneFlowElementPanel extends JScrollPane {
           }
         }
 
-        private void launchTreeEntrySelectedEvent(TreeEntry entry) {
-          TreeEntrySelectedEvent ev = new TreeEntrySelectedEvent(this, entry);
+        private void treeElementSelected(TreeEntry entry) {
 
-          mEventCaster.convey(ev);
         }
 
       };

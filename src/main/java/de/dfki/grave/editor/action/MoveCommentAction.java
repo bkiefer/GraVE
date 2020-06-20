@@ -1,9 +1,8 @@
 package de.dfki.grave.editor.action;
 
-import java.awt.Rectangle;
-
-import de.dfki.grave.editor.Comment;
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
+import de.dfki.grave.model.flow.Boundary;
+import de.dfki.grave.model.flow.CommentBadge;
 
 /**
  * @author Gregor Mehlmann
@@ -11,22 +10,23 @@ import de.dfki.grave.editor.panels.WorkSpace;
  */
 public class MoveCommentAction extends EditorAction {
 
-  private Comment mComment;
-  private Rectangle mOldBounds, mNewBounds;
+  private CommentBadge mComment;
+  private Boundary mOldBounds, mNewBounds;
 
-  public MoveCommentAction(WorkSpace workSpace, Comment c, Rectangle oldBounds){
-    mWorkSpace = workSpace;
+  public MoveCommentAction(ProjectEditor editor, CommentBadge c, Boundary oldBounds){
+    super(editor);
     mComment = c;
     mOldBounds = oldBounds;
-    mNewBounds = c.getBounds();
+    mNewBounds = c.getBoundary();
   }
 
   protected void undoIt() {
-    mComment.moveOrResize(mOldBounds);
+    mComment.setBoundary(mOldBounds);
   }
 
   protected void doIt() {
-    mComment.moveOrResize(mNewBounds);
+    mComment.setBoundary(mNewBounds);
+
   }
 
   protected String msg() {

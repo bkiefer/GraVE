@@ -1,6 +1,5 @@
 package de.dfki.grave.model.flow;
 
-import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.*;
 
@@ -11,7 +10,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.editor.panels.IDManager;
 import de.dfki.grave.util.ChainedIterator;
 
 /**
@@ -96,7 +94,7 @@ public class BasicNode implements ContentHolder {
    *  Exploits the fact that the node and edge views can be perfectly
    *  reconstructed from the models, and only models are handled internally
    */
-  public static void translateNodes(Collection<BasicNode> nodes, Point p) {
+  public static void translateNodes(Collection<BasicNode> nodes, Position p) {
     int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE,
         maxX = 0, maxY = 0;
     // compute the covered area
@@ -107,8 +105,8 @@ public class BasicNode implements ContentHolder {
       maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
     }
     // translate such that the center of the area is on p
-    int translateX = Math.max(p.x - (maxX + minX) / 2, -minX);
-    int translateY = Math.max(p.y - (maxY + minY) / 2, -minY);
+    int translateX = Math.max(p.getXPos() - (maxX + minX) / 2, -minX);
+    int translateY = Math.max(p.getYPos() - (maxY + minY) / 2, -minY);
     // will move the edges, too
     for (BasicNode n : nodes) {
       n.translate(translateX, translateY);
@@ -136,7 +134,8 @@ public class BasicNode implements ContentHolder {
    *  graph beyond the node being added to the super node s, and it being the
    *  start node in case it's the first node added to s.
    */
-  public BasicNode createNode(IDManager mgr, Position p, SuperNode s) {
+  public BasicNode createNode(Position p, SuperNode s) {
+    IDManager mgr = s.getRoot().getIDManager();
     return new BasicNode().init(mgr.getNextFreeID(this), p, s);
   }
 
@@ -156,10 +155,11 @@ public class BasicNode implements ContentHolder {
   /** Create a BasicNode from an existing SuperNode: Node Type Change, only
    *  valid if the subnode list of the supernode is empty
    */
-  public BasicNode(IDManager mgr, final SuperNode node) {
+  BasicNode(final SuperNode node) {
+    IDManager mgr = node.getRoot().getIDManager();
     assert(node.mNodeList.isEmpty());
     mNodeId = mgr.getNextFreeID(this);
-    copyBasicFields(node);
+    this.copyBasicFields(node);
   }
 
   public Code getCode() {
@@ -193,8 +193,13 @@ public class BasicNode implements ContentHolder {
   }
 
   /** NODE MODIFICATION, ONLY THROUGH ACTION! 
-   * @throws Exception */
-  public BasicNode changeType(IDManager mgr, BasicNode newNode) throws Exception {
+   * @param newNode if null, a new node of the opposite type will be created
+   *        otherwise, this is used in an undo operation and the edges from
+   *        and to the old node will be now go to/from the new one
+   * @return a new node with the other type
+   * @throws Exception when the change is not legal
+   */
+  public BasicNode changeType(BasicNode newNode) throws Exception {
     // adapt node lists of parent SuperNode
     SuperNode s = getParentNode();
     Collection<AbstractEdge> incoming = s.computeIncomingEdges(this); 
@@ -205,12 +210,12 @@ public class BasicNode implements ContentHolder {
           // complain: this operation can not be done, SuperNode has subnodes
           throw new Exception("SuperNode contains Nodes: Type change not possible");
         }
-        newNode = new BasicNode(mgr, n);
+        newNode = new BasicNode(n);
       } else {
         if (getContent() != null && ! getContent().trim().isEmpty())  {
           throw new Exception("BasicNode with Code: Type change not possible");
         }
-        newNode = new SuperNode(mgr, this);
+        newNode = new SuperNode(this);
         // adapt node lists of parent SuperNode
       }
     }
@@ -294,6 +299,14 @@ public class BasicNode implements ContentHolder {
     return mParentNode;
   }
 
+  public SceneFlow getRoot() {
+    BasicNode curr = this;
+    while (! (curr instanceof SceneFlow)) {
+      curr = curr.getParentNode();
+    }
+    return (SceneFlow) curr;
+  }
+  
   /* not used
   public boolean isDockTaken(int which) {
     return mDocksTaken.get(which);
@@ -390,7 +403,9 @@ public class BasicNode implements ContentHolder {
     mIsEndNode = b.mIsEndNode;
   }
 
-  /** Deep copy, without edges, only used by SuperNode.copySubgraph */
+  /** Deep copy, without edges, only used by SuperNode.copySubgraph and
+   *  SuperNode.deepCopy
+   */
   protected BasicNode deepCopy(IDManager mgr, SuperNode parentCopy) {
     BasicNode copy = new BasicNode();
     copy.copyFieldsFrom(this);

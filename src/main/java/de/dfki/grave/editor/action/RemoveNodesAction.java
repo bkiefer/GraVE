@@ -1,14 +1,14 @@
 package de.dfki.grave.editor.action;
 
 import java.util.Collection;
+import java.util.Collections;
 //~--- JDK imports ------------------------------------------------------------
 import java.util.HashSet;
 import java.util.Set;
 
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.util.Triple;
 
 /**
  * @author Patrick Gebhard
@@ -17,28 +17,39 @@ public class RemoveNodesAction extends EditorAction {
 
   private Set<BasicNode> mNodes = null;
   private boolean isCutOperation;
-  private Triple<Collection<AbstractEdge>, Collection<BasicNode>, Collection<AbstractEdge>> mAffected;
+  private Collection<AbstractEdge>[] mAffected;
 
-
-  public RemoveNodesAction(WorkSpace workSpace, Collection<BasicNode> mSelectedNodes,
+  public RemoveNodesAction(ProjectEditor editor, Collection<BasicNode> mSelectedNodes,
       boolean toClipboard) {
-    mWorkSpace = workSpace;
+    super(editor);
     mNodes = new HashSet<BasicNode>(mSelectedNodes);
     isCutOperation = toClipboard;
   }
 
   @SuppressWarnings("serial")
-  public RemoveNodesAction(WorkSpace workSpace, BasicNode node, boolean toClipboard) {
-    this(workSpace, new HashSet<BasicNode>(){{ add(node); }}, toClipboard);
+  public RemoveNodesAction(ProjectEditor editor, BasicNode node, boolean toClipboard) {
+    this(editor, new HashSet<BasicNode>(){{ add(node); }}, toClipboard);
   }
 
   protected void doIt() {
-    mAffected = mWorkSpace.removeNodes(isCutOperation, mNodes);
+    // affected edges: emerging, internal, incoming to the set of mNodes
+    mAffected = mSuperNode.removeNodes(mNodes);
+    if (isCutOperation) {
+      mEditor.mClipboard.set(mEditor, mNodes, //mAffected[1]
+          Collections.emptyList());
+    }   
+    if (onActiveWorkSpace())
+      getWorkSpace().removeNodes(mNodes, mAffected);
   }
 
   protected void undoIt() {
-    mWorkSpace.pasteNodesAndEdges(mAffected.getSecond(), mAffected.getThird());
-    mWorkSpace.addEdges(mAffected.getFirst());
+    // add nodes (will also add internal and outgoing edges) and incoming edges
+    mSuperNode.addNodes(mNodes);
+    mSuperNode.addEdges(mAffected[2]);
+    if (onActiveWorkSpace()) {
+      getWorkSpace().addNodes(mNodes);
+      getWorkSpace().addEdges(mAffected[2]);
+    }
   }
 
   @Override

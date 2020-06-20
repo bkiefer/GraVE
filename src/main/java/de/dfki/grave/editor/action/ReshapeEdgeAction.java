@@ -6,7 +6,7 @@
  */
 package de.dfki.grave.editor.action;
 
-import de.dfki.grave.editor.panels.WorkSpace;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.Position;
 
@@ -20,8 +20,8 @@ public abstract class ReshapeEdgeAction extends ModifyEdgeAction {
 
   private boolean done = false;
 
-  public ReshapeEdgeAction(WorkSpace workSpace, AbstractEdge edge) {
-    super(workSpace, edge);
+  public ReshapeEdgeAction(ProjectEditor editor, AbstractEdge edge) {
+    super(editor, edge);
   }
 
   protected abstract void reshape();

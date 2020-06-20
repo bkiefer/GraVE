@@ -10,12 +10,13 @@ import java.util.LinkedList;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 
-import de.dfki.grave.AppFrame;
 import de.dfki.grave.model.flow.SuperNode;
 
 /** A breadcrumb panel for the current path of supernodes */
 @SuppressWarnings("serial")
 public class BreadCrumb extends JPanel {
+  
+  private final ProjectEditor mEditor;
   
   // The supernodes of the path display
   private final LinkedList<JButton> mPathComponents = new LinkedList<>();
@@ -23,7 +24,8 @@ public class BreadCrumb extends JPanel {
   private JScrollBar mPathScrollBar;
   private JPanel inner;
   
-  public BreadCrumb() {
+  public BreadCrumb(ProjectEditor editor) {
+    mEditor = editor;
     setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
     inner = new JPanel();
     inner.setLayout(new BoxLayout(inner, BoxLayout.X_AXIS));
@@ -47,8 +49,7 @@ public class BreadCrumb extends JPanel {
     final Action action = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        AppFrame.getInstance().getSelectedProjectEditor().getSceneFlowEditor()
-        .getWorkSpace().selectNewWorkSpaceLevel(supernode);
+        mEditor.selectNewWorkSpaceLevel(supernode);
       }
     };
     action.putValue(Action.NAME, supernode.getName());

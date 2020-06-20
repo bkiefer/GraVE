@@ -3,15 +3,13 @@ package de.dfki.grave.editor.panels;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
-
-import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import de.dfki.grave.editor.EditorComponent;
 import de.dfki.grave.model.project.EditorProject;
@@ -23,8 +21,8 @@ import de.dfki.grave.util.ResourceLoader;
 @SuppressWarnings("serial")
 public class CodeEditor extends JPanel {
 
-  private final EditCodeArea mRightTextArea;
-  private final EditCodeArea mLeftTextArea;
+  private final CodeEditPanel mRightTextArea;
+  private final CodeEditPanel mLeftTextArea;
   private final JButton mPinButton;
   private JSplitPane splitPane;
   //PIN icons
@@ -75,12 +73,10 @@ public class CodeEditor extends JPanel {
     splitPane.setDividerSize(10);
     splitPane.setDividerLocation(.5);
     flattenJSplitPane(splitPane);
-    
-    mRightTextArea = new EditCodeArea(
-              mEditorProject.getEditorConfig().sCODE_DIVIDER_LOCATION);
+    Font font = project.getEditorConfig().sCODE_FONT.getFont();
+    mRightTextArea = new CodeEditPanel(font);
     mRightTextArea.setBorder(BorderFactory.createLineBorder(Color.gray));
-    mLeftTextArea = new EditCodeArea(
-              mEditorProject.getEditorConfig().sCODE_DIVIDER_LOCATION);
+    mLeftTextArea = new CodeEditPanel(font);
     mLeftTextArea.setBorder(BorderFactory.createLineBorder(Color.gray));
     
     mPinButton = new JButton();
@@ -101,49 +97,6 @@ public class CodeEditor extends JPanel {
     add(splitPane, BorderLayout.CENTER);
   }
 
-  private class EditCodeArea extends JPanel {
-    RSyntaxTextArea textArea;
-    EditorComponent editedObject;
-
-    // make this jpane, with scrollpane, and textarea
-    public EditCodeArea(int dividerLocation) {
-      super(new BorderLayout());
-      textArea = new RSyntaxTextArea();
-      textArea.setCodeFoldingEnabled(true);
-      textArea.setLineWrap(true);
-      textArea.setWrapStyleWord(true);
-      textArea.setVisible(true);
-
-      // Get rid of annoying yellow line
-      textArea.setHighlightCurrentLine(false);
-      textArea.setHighlightSecondaryLanguages(false);
-      JScrollPane s = new JScrollPane();
-      s.add(textArea);
-      add(s, BorderLayout.CENTER);
-    }
-
-    public void setEditedObject(EditorComponent n) {
-      if (editedObject != null
-          && editedObject.getDoc().contentChanged()) {
-        editedObject.checkDocumentChange();
-      }
-      editedObject = null;
-      if (n == null || n.getDoc() == null) {
-        textArea.setDocument(new RSyntaxDocument(""));
-        return;
-      }
-      editedObject = n;
-      textArea.setDocument(n.getDoc());
-    }
-
-    public void updateBorders(int x, int y, int w, int h) {
-      //setBounds(x, y, w, h);
-      //s.setBounds(x, y, w, h);
-      textArea.setBounds(x, y, w, h);
-    }
-
-  }
-
   public void updateBorders(){
     mRightTextArea.updateBorders(0, 0, splitPane.getDividerLocation(), this.getSize().height);
     mLeftTextArea.updateBorders(0, 0, splitPane.getDividerLocation(), this.getSize().height);
@@ -157,7 +110,7 @@ public class CodeEditor extends JPanel {
     mEditorProject.getEditorConfig().sAUTOHIDE_BOTTOMPANEL = pinPricked;
     if (state) {
       // pin was pricked, thus clone right code editor to the left
-      mLeftTextArea.setEditedObject(mRightTextArea.editedObject);
+      mLeftTextArea.setEditedObject(mRightTextArea.getEditedObject());
     } else {
       // TODO: clear if pin unpricked?
     }
@@ -172,7 +125,7 @@ public class CodeEditor extends JPanel {
   }
 
   public void setEditedNodeOrEdge(EditorComponent n) {
-    if (mRightTextArea.editedObject == n) return; // may be due to FocusGained
+    if (mRightTextArea.getEditedObject() == n) return; // may be due to FocusGained
     // update text area with current code & object
     mRightTextArea.setEditedObject(n);
   }

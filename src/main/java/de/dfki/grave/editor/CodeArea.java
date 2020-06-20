@@ -3,10 +3,10 @@ package de.dfki.grave.editor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -22,22 +22,23 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
-import de.dfki.grave.editor.action.UndoRedoProvider;
+import de.dfki.grave.editor.event.ElementSelectedEvent;
+import de.dfki.grave.editor.panels.ProjectEditor;
+import de.dfki.grave.util.evt.EventDispatcher;
 
 /**
  * @author Gregor Mehlmann
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public class CodeArea extends RSyntaxTextArea {
-
-  //
-  //private final EventDispatcher mDispatcher = EventDispatcher.getInstance();
+public class CodeArea extends RSyntaxTextArea implements ProjectElement {
   
   /** This MouseListener guarantees that we can select components behind this
-   *  disabled code area
+   *  disabled code area, and handles click events at the code area in case
+   *  it's not selected
    * @author kiefer
    *
    */
@@ -62,10 +63,20 @@ public class CodeArea extends RSyntaxTextArea {
         parent.dispatchEvent( parentMouseEvent);
       }
     }
+    
+    public void mouseClicked(MouseEvent ev) {
+      if (! CodeArea.this.isEnabled() && ev.getButton() == MouseEvent.BUTTON1)
+        if ((ev.getClickCount() == 1 && mComponent.isSelected())
+            || (ev.getClickCount() == 2)) {
+          setSelected();
+        }
+    }
   }
   
   // The node to which the badge is connected
   protected final EditorComponent mComponent;
+  
+  private final UndoableEditListener mUndoListener;
 
   // TODO: put into preferences
   private final int maxWidth = 800;
@@ -91,12 +102,6 @@ public class CodeArea extends RSyntaxTextArea {
     setHighlightCurrentLine(false);
     setHighlightSecondaryLanguages(false);
 
-    /*
-    addFocusListener(new FocusListener() {
-      public void focusGained(FocusEvent e) { setSelected(); }
-      public void focusLost(FocusEvent e) { setDeselected(); }
-    });
-    */
     addMouseListener(new MyMouseListener());
     mComponent = compo;
     setFont(font);
@@ -128,32 +133,43 @@ public class CodeArea extends RSyntaxTextArea {
       }
     });
     d.addUndoableEditListener(
-        new UndoableEditListener() {
+        mUndoListener = new UndoableEditListener() {
           public void undoableEditHappened(UndoableEditEvent e) {
-            UndoRedoProvider.getInstance().addTextEdit(e.getEdit());
+            getEditor().getUndoManager().addTextEdit(e.getEdit());
           }
         });
     update();
     setEnabled(false);
   }
 
-  public void setSelected() {
+  public EditorComponent getEditorComponent() {
+    return mComponent;
+  }
+
+  /** remove undo listener and document */
+  public void clear() {
+    this.getDocument().removeUndoableEditListener(mUndoListener);
+    this.setDocument(new RSyntaxDocument(""));
+  }
+  
+  void setSelected() {
+    if (! mComponent.isSelected())
+      mComponent.setSelected();
+    EventDispatcher.getInstance().convey(new ElementSelectedEvent(CodeArea.this));
     setBackground(activeColour);
-    //mDispatcher.convey(new ElementSelectedEvent(mComponent));
-    UndoRedoProvider.getInstance().startTextMode();
+    getEditor().getUndoManager().startTextMode();
     setEnabled(true);
   }
 
   public synchronized void setDeselected() {
     setBackground(inactiveColour);
-    UndoRedoProvider.getInstance().endTextMode();
+    getEditor().getUndoManager().endTextMode();
     mComponent.checkDocumentChange();
-    //mDispatcher.convey(new ProjectChangedEvent(this));
-    //mDispatcher.convey(new ElementSelectedEvent(mComponent));
     update();
     setEnabled(false);
   }
 
+  /*
   public void translate(Point vector) {
     Point p = getLocation();
     p.translate(vector.x, vector.y);
@@ -163,6 +179,7 @@ public class CodeArea extends RSyntaxTextArea {
   public boolean containsPoint(int x, int y) {
     return getBounds().contains(x, y);
   }
+  */
 
   public void update() {
     String text = getText();
@@ -171,7 +188,6 @@ public class CodeArea extends RSyntaxTextArea {
       return;
     }
     setVisible(true);
-    //int lines = (int) getText().chars().filter(x -> x == '\n').count() + 1;
     int lines = getLineCount();
     setRows(lines);
     int newHeight = lines * this.getLineHeight();
@@ -180,17 +196,6 @@ public class CodeArea extends RSyntaxTextArea {
     FontMetrics fm = getFontMetrics(getFont());
     Optional<Integer> longestLine = Arrays.asList(text.split("\n")).stream()
         .map(s -> fm.stringWidth(s)).max(Comparator.naturalOrder());
-    /** This is a lot of handwaving ...
-    String longestLine = Arrays.asList(text.split("\n")).stream()
-        .max(Comparator.comparingInt(String::length)).get();
-    setColumns(longestLine.length() + 1);
-    FontMetrics fm = getFontMetrics(getFont());
-    //int newHeight = fm.getHeight() * lines;
-    // font is monospaced, so this always works
-    int newWidth = fm.stringWidth("p") * longestLine.length();
-    //int newWidth = getColumns() * getColumnWidth();
-    newWidth = newWidth > maxWidth? maxWidth : newWidth;
-    */
     // No idea why i have to add 2 here
     int newWidth = longestLine.isPresent() ? longestLine.get() + 2: 0;
     
@@ -200,5 +205,13 @@ public class CodeArea extends RSyntaxTextArea {
 
   void setLocation() {
     setLocation(mComponent.getCodeAreaLocation(getSize()));
+  }    
+  
+  public ProjectEditor getEditor() {
+    Container p = this;
+    while (! (p instanceof ProjectEditor)) {
+      p = p.getParent();
+    }
+    return (ProjectEditor)p;
   }
 }
