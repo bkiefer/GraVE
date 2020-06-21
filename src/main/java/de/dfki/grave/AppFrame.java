@@ -33,7 +33,7 @@ import de.dfki.grave.util.ResourceLoader;
  */
 @SuppressWarnings("serial")
 public final class AppFrame extends JFrame implements ChangeListener {
-  private static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
+  public static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
   
   // The singelton editor instance
   public static AppFrame sInstance = null;

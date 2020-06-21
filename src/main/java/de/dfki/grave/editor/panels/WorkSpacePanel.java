@@ -289,7 +289,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     mSelectedEdge.mouseClicked(event);
   }
 
-  private void commentClicked(MouseEvent event, Comment comment) {
+  private void commentClicked(Comment comment) {
     if (! mSelectedComments.containsKey(comment)) {
       selectComment(comment);
     }
@@ -347,8 +347,11 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
         this, current.x, current.y);
     if (o instanceof Node) {
       nodeClicked(event, (Node)o);
-    } else if (o instanceof Comment) {
-      commentClicked(event, (Comment)o);
+    } else if (o instanceof JTextArea) {
+      Comment c;
+      if ((c = findCommentAt(event.getPoint())) != null) {
+        commentClicked(c);
+      }
     } else {
       deselectAll();
       mAreaSelection = null;
