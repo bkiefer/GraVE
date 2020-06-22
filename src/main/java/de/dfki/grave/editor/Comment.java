@@ -48,6 +48,7 @@ implements DocumentContainer, Observer, ProjectElement {
   // in edit, or not
   private boolean mEditMode = false;
   
+  private final static Color TRANSPARENT =  new Color(0,0,0,0);
   private final Color activeColor, inactiveColor;
 
   /** Constructor for prototype in the "Create item" area */
@@ -81,7 +82,7 @@ implements DocumentContainer, Observer, ProjectElement {
     mTextField.setDisabledTextColor(Color.gray);
     Border border = new TextBubbleBorder(Color.gray, 3, 7, 9, Color.black, 10);
     setBorder(border);
-    setBackground(new Color(0,0,0,0)); // transparent background
+    setBackground(TRANSPARENT); // transparent background
     // size setup
     update();
 
@@ -237,6 +238,7 @@ implements DocumentContainer, Observer, ProjectElement {
             .run();
         mCommentStartBounds = null;
         mResizing = false;
+        setBackground(TRANSPARENT);
       }
     }
     
@@ -257,6 +259,7 @@ implements DocumentContainer, Observer, ProjectElement {
       int dy = currentMousePosition.y - mPressedLocation.y;
       
       if (mResizing) {
+        setBackground(Color.white);
         // Change the size of a comment with the mouse
         Dimension d = getSize();
         d.width = Math.max(mWorkSpace.toViewXPos(50), d.width + dx);
