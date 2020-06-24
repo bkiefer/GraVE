@@ -79,9 +79,14 @@ public final class CommentBoundary implements ModelObject {
 
     @Override
     public final void parseXML(final Element element) throws XMLParseError {
+      if (! element.getAttribute("xPos").isEmpty()) {
         mXPos = Integer.valueOf(element.getAttribute("xPos"));
         mYPos = Integer.valueOf(element.getAttribute("yPos"));
-        mWidth = Integer.valueOf(element.getAttribute("width"));
-        mHeight = Integer.valueOf(element.getAttribute("height"));
+      } else {
+        mXPos = Integer.valueOf(element.getAttribute("x-pos"));
+        mYPos = Integer.valueOf(element.getAttribute("y-pos"));
+      }
+      mWidth = Integer.valueOf(element.getAttribute("width"));
+      mHeight = Integer.valueOf(element.getAttribute("height"));
     }
 }

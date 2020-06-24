@@ -50,5 +50,11 @@ public final class CommentGraphics implements ModelObject {
                 mRectangle.parseXML(element);
             }
         });
+        XMLParseAction.processChildNodes(element, "Rect", new XMLParseAction() {
+          @Override
+          public void run(final Element element) throws XMLParseError {
+              mRectangle.parseXML(element);
+          }
+        });
     }
 }
