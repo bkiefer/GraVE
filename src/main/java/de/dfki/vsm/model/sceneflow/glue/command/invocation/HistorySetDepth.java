@@ -31,23 +31,8 @@ public final class HistorySetDepth extends Invocation {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "HistorySetDepth(" + mState + ", " + mDepth + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return "HistorySetDepth(" + mState + ", " + mDepth + ")";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#p#HistorySetDepth(" + "#c#" + mState + ", " + "#c#" + mDepth + ")";
-    }
-
-    @Override
-    public final HistorySetDepth getCopy() {
-        return new HistorySetDepth(mState, mDepth);
     }
 
     @Override

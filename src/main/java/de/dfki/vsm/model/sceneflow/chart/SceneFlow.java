@@ -1,23 +1,21 @@
 package de.dfki.vsm.model.sceneflow.chart;
 
-import de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge;
-import de.dfki.vsm.model.sceneflow.chart.badge.VariableBadge;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.w3c.dom.Element;
+
 import de.dfki.vsm.Preferences;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.model.sceneflow.glue.command.definition.FunctionDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.ArgumentDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.VariableDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.DataTypeDefinition;
-import de.dfki.vsm.util.cpy.CopyTool;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
 import de.dfki.vsm.util.xml.XMLWriteError;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.w3c.dom.Element;
 
 /**
  * @author Gregor Mehlmann
@@ -99,34 +97,12 @@ public final class SceneFlow extends SuperNode {
         return mUserCmdDefMap.remove(key);
     }
 
-    // TODO:
-    public HashMap<String, FunctionDefinition> getCopyOfUserCmdDefMap() {
-        HashMap<String, FunctionDefinition> copy = new HashMap<String, FunctionDefinition>();
-        Iterator it = mUserCmdDefMap.entrySet().iterator();
-
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            String userCommandName = (String) pairs.getKey();
-            FunctionDefinition userCommand = (FunctionDefinition) pairs.getValue();
-            FunctionDefinition userCommandCopy = userCommand.getCopy();
-
-            copy.put(userCommandCopy.getName(), userCommandCopy);
-        }
-
-        return copy;
-    }
-
     public FunctionDefinition getUserCommandDefinitionAt(String key) {
         return mUserCmdDefMap.get(key);
     }
 
     public void setUserCommandDefinitionAt(String key, FunctionDefinition value) {
         mUserCmdDefMap.put(key, value);
-    }
-
-    @Override
-    public SceneFlow getCopy() {
-        return (SceneFlow) CopyTool.copy(this);
     }
 
     protected void writeCommands(IOSIndentWriter out) throws XMLWriteError {
@@ -244,81 +220,5 @@ public final class SceneFlow extends SuperNode {
         });
     }
 
-    @Override
-    public int getHashCode() {
-
-        // Add hash of General Attributes
-        int hashCode = ((mNodeName == null)
-                ? 0
-                : mNodeName.hashCode()) + ((mComment == null)
-                ? 0
-                : mComment.hashCode()) + ((mGraphics == null)
-                ? 0
-                : mGraphics.hashCode()) + ((mParentNode == null)
-                ? 0
-                : mParentNode.hashCode()) + ((mHistoryNode == null)
-                ? 0
-                : mHistoryNode.hashCode()) + ((mStartNodeMap == null)
-                ? 0
-                : mStartNodeMap.hashCode()) + ((mIsHistoryNode == true)
-                ? 1
-                : 0) + ((mLocalVariableBadge == null)
-                ? 0
-                : mLocalVariableBadge.hashCode()) + ((mGlobalVariableBadge == null)
-                ? 0
-                : mGlobalVariableBadge.hashCode()) + ((mHideLocalVarBadge == true)
-                ? 1
-                : 0) + ((mHideGlobalVarBadge == true)
-                ? 1
-                : 0);
-
-
-        // Add hash of existing user commands
-        for (FunctionDefinition fundDef : mUserCmdDefMap.values()) {
-            hashCode += fundDef.getName().hashCode() + fundDef.getClassName().hashCode()
-                    + fundDef.getMethod().hashCode();
-                    for(ArgumentDefinition var: fundDef.getParamList()){ //Otherwise the hascode was not unique
-                        hashCode+= var.getName().hashCode();
-                        hashCode+= var.getType().hashCode();
-                    }
-                    //+ fundDef.getParamList().hashCode();
-        }
-
-        // Add hash of all nodes on workspace
-        for (int cntNode = 0; cntNode < mNodeList.size(); cntNode++) {
-            hashCode += getNodeAt(cntNode).getHashCode();
-        }
-
-        // Add hash of all superNodes on workspace
-        for (int cntSNode = 0; cntSNode < mSuperNodeList.size(); cntSNode++) {
-            hashCode += getSuperNodeAt(cntSNode).getHashCode();
-        }
-
-        // Add hash of all commands on workspace
-        for (int cntCommand = 0; cntCommand < getSizeOfCmdList(); cntCommand++) {
-            hashCode += mCmdList.get(cntCommand).hashCode();
-        }
-
-         // Add hash of all TypeDef on workspace
-        for (int cntType = 0; cntType < getSizeOfTypeDefList(); cntType++) {
-            hashCode += mTypeDefList.get(cntType).hashCode() + mTypeDefList.get(cntType).getName().hashCode()
-                    + mTypeDefList.get(cntType).toString().hashCode();
-        }
-
-        // Add hash of VarDef on workspace
-        for (int cntVar = 0; cntVar < getVarDefList().size(); cntVar++) {
-            hashCode += getVarDefList().get(cntVar).getName().hashCode()
-                    + getVarDefList().get(cntVar).getType().hashCode()
-                    + getVarDefList().get(cntVar).toString().hashCode();
-        }
-
-        // Add hash of all comments on workspace
-        for (int cntComment = 0; cntComment < getCommentList().size(); cntComment++) {
-            hashCode += mCommentList.get(cntComment).getGraphics().getRectangle().hashCode();
-            hashCode += mCommentList.get(cntComment).getHTMLText().hashCode();
-        }
-
-
-        return hashCode;
-    }
+   
 }

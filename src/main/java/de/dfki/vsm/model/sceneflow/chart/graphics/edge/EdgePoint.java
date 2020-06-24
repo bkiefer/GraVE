@@ -21,50 +21,6 @@ public final class EdgePoint implements ModelObject {
         mCtrlYPos = Integer.MIN_VALUE;
     }
 
-    public EdgePoint(int xPos, int ctrlXPos, int yPos, int ctrlYPos) {
-        mXPpos = xPos;
-        mYPos = yPos;
-        mCtrlXPos = ctrlXPos;
-        mCtrlYPos = ctrlYPos;
-    }
-
-    public final int getXPos() {
-        return mXPpos;
-    }
-
-    public final void setXPos(final int value) {
-        mXPpos = value;
-    }
-
-    public final int getCtrlXPos() {
-        return mCtrlXPos;
-    }
-
-    public final void setCtrlXPos(final int value) {
-        mCtrlXPos = value;
-    }
-
-    public final int getYPos() {
-        return mYPos;
-    }
-
-    public final void setYPos(final int value) {
-        mYPos = value;
-    }
-
-    public final int getCtrlYPos() {
-        return mCtrlYPos;
-    }
-
-    public final void setCtrlYPos(final int value) {
-        mCtrlYPos = value;
-    }
-
-    @Override
-    public final EdgePoint getCopy() {
-        return new EdgePoint(mXPpos, mCtrlXPos, mYPos, mCtrlYPos);
-    }
-
     @Override
     public final void writeXML(final IOSIndentWriter out) {
         out.println("<ControlPoint "

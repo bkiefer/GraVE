@@ -27,23 +27,8 @@ public final class PrologQuery extends Expression {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "PrologQuery(" + mExpression.getAbstractSyntax() + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return "?- " + mExpression.getConcreteSyntax() + ".";
-    }
-
-    @Override
-    public String getFormattedSyntax() {
-        return "#p#?- " + mExpression.getFormattedSyntax() + " .";
-    }
-
-    @Override
-    public final PrologQuery getCopy() {
-        return new PrologQuery(mExpression.getCopy());
     }
 
     @Override

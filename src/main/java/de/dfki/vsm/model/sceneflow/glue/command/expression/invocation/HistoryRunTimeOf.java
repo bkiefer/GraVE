@@ -31,27 +31,10 @@ public class HistoryRunTimeOf extends Expression {
     public int getDepth() {
         return mDepth;
     }
-
-
+    
     @Override
-    public String getAbstractSyntax() {
-        return "HistoryRunTimeOf( " + mNode + " , " + mDepth + " )";
-    }
-
-    @Override
-
     public String getConcreteSyntax() {
         return "HistoryRunTimeOf( " + mNode + " , " + mDepth + " )";
-    }
-
-    @Override
-    public String getFormattedSyntax() {
-        return "#p#HistoryRunTimeOf ( " + "#c#" + mNode + " , " + "#c#" + mDepth + " ) ";
-    }
-
-    @Override
-    public HistoryRunTimeOf getCopy() {
-        return new HistoryRunTimeOf(mNode, mDepth);
     }
 
     @Override

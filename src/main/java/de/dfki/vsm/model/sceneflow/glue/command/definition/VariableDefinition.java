@@ -52,25 +52,11 @@ public final class VariableDefinition extends Definition {
     public final Expression getExp() {
         return mExp;
     }
-
-    @Override
-    public final String getAbstractSyntax() {
-        return "VariableDefinition(" + mType + "," + mName + "," + ((mExp != null)
-                ? mExp.getAbstractSyntax()
-                : "") + ")";
-    }
-
+    
     @Override
     public final String getConcreteSyntax() {
         return mType + " " + mName + " = " + ((mExp != null)
                 ? mExp.getConcreteSyntax()
-                : "");
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#r#" + mType + " " + "" + mName + " = " + ((mExp != null)
-                ? mExp.getFormattedSyntax()
                 : "");
     }
 
@@ -93,13 +79,6 @@ public final class VariableDefinition extends Definition {
                 mExp = Expression.parse(element);
             }
         });
-    }
-
-    @Override
-    public final VariableDefinition getCopy() {
-        return new VariableDefinition(mName, mType, ((mExp != null)
-                ? mExp.getCopy()
-                : null));
     }
 
     /*

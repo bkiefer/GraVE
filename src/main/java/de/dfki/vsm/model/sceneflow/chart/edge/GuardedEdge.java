@@ -56,12 +56,6 @@ public class GuardedEdge extends AbstractEdge {
         return null;
     }
 
-    // TODO:
-    public GuardedEdge getCopy() {
-        return new GuardedEdge(mTargetUnid, mSourceUnid, mTargetNode, mSourceNode, mGraphics.getCopy(), getCopyOfCmdList(),
-                getCopyOfAltStartNodeMap(), mCondition.getCopy());
-    }
-
     public void writeXML(de.dfki.vsm.util.ios.IOSIndentWriter out) throws XMLWriteError {
         String start = "";
         Iterator it = mAltMap.entrySet().iterator();

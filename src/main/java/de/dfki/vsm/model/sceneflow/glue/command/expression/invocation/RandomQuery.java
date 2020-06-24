@@ -27,23 +27,8 @@ public final class RandomQuery extends Expression {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "RandomValue(" + mExpression.getAbstractSyntax() + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return "Random(" + mExpression.getConcreteSyntax() + ")";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#p#Random ( " + "#c#" + mExpression.getConcreteSyntax() + " ) ";
-    }
-
-    @Override
-    public final RandomQuery getCopy() {
-        return new RandomQuery(mExpression.getCopy());
     }
 
     @Override

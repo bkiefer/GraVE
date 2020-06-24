@@ -81,12 +81,6 @@ public class TimeoutEdge extends AbstractEdge {
         return null;
     }
 
-    // TODO:
-    public TimeoutEdge getCopy() {
-        return new TimeoutEdge(mTargetUnid, mSourceUnid, mTargetNode, mSourceNode, mGraphics.getCopy(), getCopyOfCmdList(),
-                         getCopyOfAltStartNodeMap(), mTimeout);
-    }
-
     public void writeXML(de.dfki.vsm.util.ios.IOSIndentWriter out) throws XMLWriteError {
         String   start = "";
         Iterator it    = mAltMap.entrySet().iterator();

@@ -18,22 +18,6 @@ public final class CommentGraphics implements ModelObject {
         mRectangle = new CommentBoundary();
     }
 
-    public CommentGraphics(final CommentBoundary rectangle) {
-        mRectangle = rectangle;
-    }
-
-    public final void setRectangle(final CommentBoundary value) {
-        mRectangle = value;
-    }
-
-    public final CommentBoundary getRectangle() {
-        return mRectangle;
-    }
-
-    @Override
-    public final CommentGraphics getCopy() {
-        return new CommentGraphics(mRectangle.getCopy());
-    }
 
     @Override
     public final void writeXML(final IOSIndentWriter out) {

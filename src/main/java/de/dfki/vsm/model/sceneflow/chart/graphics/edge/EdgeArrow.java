@@ -20,36 +20,6 @@ public class EdgeArrow implements ModelObject {
         mPointList = new ArrayList();
     }
 
-    // Create the connection
-    public EdgeArrow(final ArrayList pointList) {
-        mPointList = pointList;
-    }
-
-    // Set the point list
-    public void setPointList(final ArrayList<EdgePoint> value) {
-        mPointList = value;
-    }
-
-    // Get the point list
-    public final ArrayList<EdgePoint> getPointList() {
-        return mPointList;
-    }
-
-    // Copy the point list
-    public final ArrayList<EdgePoint> getCopyOfPointList() {
-        final ArrayList<EdgePoint> copy = new ArrayList();
-        for (final EdgePoint point : mPointList) {
-            copy.add(point.getCopy());
-        }
-        return copy;
-    }
-
-    // Copy the connection
-    @Override
-    public final EdgeArrow getCopy() {
-        return new EdgeArrow(getCopyOfPointList());
-    }
-
     // Write the connection
     @Override
     public final void writeXML(final IOSIndentWriter out) {

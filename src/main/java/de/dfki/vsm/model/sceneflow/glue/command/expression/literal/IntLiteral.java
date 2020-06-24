@@ -28,23 +28,8 @@ public final class IntLiteral extends LiteralExpression {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "IntLiteral(" + getConcreteSyntax() + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return Integer.toString(mValue);
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#c#" + Integer.toString(mValue);
-    }
-
-    @Override
-    public final IntLiteral getCopy() {
-        return new IntLiteral(mValue);
     }
 
     @Override

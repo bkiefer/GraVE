@@ -28,23 +28,8 @@ public final class FloatLiteral extends LiteralExpression {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "FloatLiteral(" + getConcreteSyntax() + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return Float.toString(mValue);
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#c#" + Float.toString(mValue);
-    }
-
-    @Override
-    public final FloatLiteral getCopy() {
-        return new FloatLiteral(mValue);
     }
 
     @Override

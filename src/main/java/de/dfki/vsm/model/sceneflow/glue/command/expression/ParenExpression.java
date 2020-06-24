@@ -30,25 +30,9 @@ public final class ParenExpression extends Expression {
         return mExp;
     }
 
-
-    @Override
-    public final String getAbstractSyntax() {
-        return "ParenExpression( " + mExp.getAbstractSyntax() + " )";
-    }
-
     @Override
     public final String getConcreteSyntax() {
         return "( " + mExp.getConcreteSyntax() + " )";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "( " + mExp.getFormattedSyntax() + " )";
-    }
-
-    @Override
-    public final ParenExpression getCopy() {
-        return new ParenExpression(mExp.getCopy());
     }
 
     @Override

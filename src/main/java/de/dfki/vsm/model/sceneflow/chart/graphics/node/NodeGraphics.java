@@ -22,37 +22,6 @@ public final class NodeGraphics implements ModelObject {
         mPosition = new NodePosition();
     }
 
-    // Create the position
-    public NodeGraphics(final NodePosition position) {
-        mPosition = position;
-    }
-
-    // Create the position
-    public NodeGraphics(final int xPos, final int yPos) {
-        mPosition = new NodePosition(xPos, yPos);
-    }
-
-    // Get the position
-    public final NodePosition getPosition() {
-        return mPosition;
-    }
-
-    // Set te position
-    public final void setPosition(final NodePosition value) {
-        mPosition = value;
-    }
-
-    // Set the position
-    public final void setPosition(final int xpos, final int ypos) {
-        mPosition.setXPos(xpos);
-        mPosition.setYPos(ypos);
-    }
-
-    @Override
-    public final NodeGraphics getCopy() {
-        return new NodeGraphics(mPosition.getCopy());
-    }
-
     @Override
     public final void writeXML(IOSIndentWriter out) {
         if (!Command.convertToVOnDA) out.println("<Graphics>").push();

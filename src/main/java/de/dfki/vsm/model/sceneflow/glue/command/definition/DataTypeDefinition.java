@@ -27,9 +27,6 @@ public abstract class DataTypeDefinition extends Definition {
 
     public abstract Flavour getFlavour();
 
-    @Override
-    public abstract DataTypeDefinition getCopy();
-
     public static DataTypeDefinition parse(final Element element) throws XMLParseError {
         DataTypeDefinition def;
         final String tag = element.getTagName();

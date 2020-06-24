@@ -28,23 +28,8 @@ public final class UnblockSceneScript extends Invocation {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "UnblockSceneScript(" + mNonAbstract + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return "UnblockSceneScript(" + mNonAbstract + ")";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#p#UnblockSceneScript ( " + "#r#" + mNonAbstract + " ) ";
-    }
-
-    @Override
-    public final UnblockSceneScript getCopy() {
-        return new UnblockSceneScript(mNonAbstract);
     }
 
     @Override

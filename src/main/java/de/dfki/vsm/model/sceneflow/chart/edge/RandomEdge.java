@@ -59,12 +59,6 @@ public class RandomEdge extends AbstractEdge {
         return null;
     }
 
-    // TODO:
-    public RandomEdge getCopy() {
-        return new RandomEdge(mTargetUnid, mSourceUnid, mTargetNode, mSourceNode, mGraphics.getCopy(), getCopyOfCmdList(),
-                         getCopyOfAltStartNodeMap(), mProbability);
-    }
-
     public void writeXML(IOSIndentWriter out) throws XMLWriteError {
         String   start = "";
         Iterator it    = mAltMap.entrySet().iterator();

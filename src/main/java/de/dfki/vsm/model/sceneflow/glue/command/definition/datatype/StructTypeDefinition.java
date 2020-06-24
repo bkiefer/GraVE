@@ -53,32 +53,9 @@ public final class StructTypeDefinition extends DataTypeDefinition {
         return mMemberList;
     }
 
-    public final ArrayList getCopyOfParamList() {
-        final ArrayList copy = new ArrayList();
-        for (MemberDefinition def : mMemberList) {
-            copy.add(def.getCopy());
-        }
-        return copy;
-    }
-
-    @Override
-    public final String getAbstractSyntax() {
-        return "StructTypeDefinition(" + mName + ")";
-    }
-
     @Override
     public final String getConcreteSyntax() {
         return "StructTypeDefinition(" + mName + ")";//mName;
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "StructTypeDefinition(" + mName + ")";//mName;
-    }
-
-    @Override
-    public final StructTypeDefinition getCopy() {
-        return new StructTypeDefinition(mName, getCopyOfParamList());
     }
 
     @Override

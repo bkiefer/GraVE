@@ -47,15 +47,6 @@ public final class UnaryExpression extends Expression {
     }
 
     @Override
-    public String getAbstractSyntax() {
-        return "UnaryExp( " + ((mOperator != null)
-                ? mOperator.name()
-                : "") + " , " + ((mExp != null)
-                        ? mExp.getAbstractSyntax()
-                        : "") + " )";
-    }
-
-    @Override
     public String getConcreteSyntax() {
         String op = "";
         String exp = (mExp != null)
@@ -82,40 +73,6 @@ public final class UnaryExpression extends Expression {
                 break;
         }
         return op;
-    }
-
-    @Override
-    public String getFormattedSyntax() {
-        String op = "";
-        String exp = (mExp != null)
-                ? mExp.getFormattedSyntax()
-                : "";
-        if (mOperator == null) {
-            return "";
-        }
-        switch (mOperator) {
-            case Neg:
-                op = "- " + exp;
-                break;
-            case Not:
-                op = "! " + exp;
-                break;
-            case Lnot:
-                op = "~ " + exp;
-                break;
-            case Inc:
-                op = "++ " + exp;
-                break;
-            case Dec:
-                op = "-- " + exp;
-                break;
-        }
-        return op;
-    }
-
-    @Override
-    public UnaryExpression getCopy() {
-        return new UnaryExpression(mExp.getCopy(), mOperator);
     }
 
     @Override

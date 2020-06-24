@@ -28,23 +28,8 @@ public final class TimeoutQuery extends Expression {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "TimeoutCond(" + mExpression.getAbstractSyntax() + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return "Timeout(" + mExpression.getConcreteSyntax() + ")";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#p#Timeout ( " + "#c#" + mExpression.getConcreteSyntax() + " ) ";
-    }
-
-    @Override
-    public final TimeoutQuery getCopy() {
-        return new TimeoutQuery(mExpression.getCopy());
     }
 
     @Override

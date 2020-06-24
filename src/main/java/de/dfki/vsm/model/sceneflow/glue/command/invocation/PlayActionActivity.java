@@ -62,26 +62,6 @@ public final class PlayActionActivity extends Invocation {
         mArgList = value;
     }
 
-    public final ArrayList<Expression> getCopyOfArgList() {
-        final ArrayList<Expression> copy = new ArrayList();
-        for (final Expression exp : mArgList) {
-            copy.add(exp.getCopy());
-        }
-        return copy;
-    }
-
-    @Override
-    public final String getAbstractSyntax() {
-        String desc = "PlayAction(";
-        desc += ((mCommand != null)
-                ? mCommand.getAbstractSyntax()
-                : "");
-        for (int i = 0; i < mArgList.size(); i++) {
-            desc += ", " + mArgList.get(i).getAbstractSyntax();
-        }
-        return desc + ")";
-    }
-
     @Override
     public final String getConcreteSyntax() {
 
@@ -95,26 +75,6 @@ public final class PlayActionActivity extends Invocation {
         }
          return desc + (mMode == PlayMode.Default ? ")"
                 : (mMode == PlayMode.Sequential ? "." : "."));
-    }
-
-    // TODO: Check the mode for syntax here
-    @Override
-    public final String getFormattedSyntax() {
-        String desc = "#p#" + (mMode == PlayMode.Default ? "PlayAction ( "
-                : (mMode == PlayMode.Sequential ? "!- " : "!= "));
-        desc += ((mCommand != null)
-                ? mCommand.getFormattedSyntax()
-                : "");
-        for (int i = 0; i < mArgList.size(); i++) {
-            desc += " , " + mArgList.get(i).getFormattedSyntax();
-        }
-        return desc + (mMode == PlayMode.Default ? " ) "
-                : (mMode == PlayMode.Sequential ? " ." : " ."));
-    }
-
-    @Override
-    public final PlayActionActivity getCopy() {
-        return new PlayActionActivity(mCommand.getCopy(), getCopyOfArgList(), mMode);
     }
 
     @Override

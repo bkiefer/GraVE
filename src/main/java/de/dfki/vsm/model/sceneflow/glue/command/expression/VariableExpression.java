@@ -13,9 +13,6 @@ import org.w3c.dom.Element;
  */
 public abstract class VariableExpression extends Expression {
 
-    @Override
-    public abstract VariableExpression getCopy();
-
     public static VariableExpression parse(final Element element) throws XMLParseError {
         VariableExpression variable;
         final String tag = element.getTagName();

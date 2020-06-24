@@ -47,12 +47,6 @@ public class EpsilonEdge extends AbstractEdge {
         return null;
     }
 
-    // TODO:
-    public EpsilonEdge getCopy() {
-        return new EpsilonEdge(mTargetUnid, mSourceUnid, mTargetNode, mSourceNode, mGraphics.getCopy(), getCopyOfCmdList(),
-                         getCopyOfAltStartNodeMap());
-    }
-
     public void writeXML(IOSIndentWriter out) throws XMLWriteError {
         String   start = "";
         Iterator it    = mAltMap.entrySet().iterator();

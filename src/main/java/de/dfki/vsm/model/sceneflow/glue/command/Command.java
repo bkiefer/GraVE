@@ -16,8 +16,6 @@ public abstract class Command extends SyntaxObject {
 
     public static boolean convertToVOnDA = false;
 
-    @Override
-    public abstract Command getCopy();
 
     public static Command parse(final Element element) throws XMLParseError {
         // The command to parse

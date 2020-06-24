@@ -24,23 +24,8 @@ public final class InStateQuery extends Expression {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "InStateQuery(" + mState + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return "In (" + mState + ")";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#p#In ( " + "#c#" + mState + " ) ";
-    }
-
-    @Override
-    public final InStateQuery getCopy() {
-        return new InStateQuery(mState);
     }
 
     @Override

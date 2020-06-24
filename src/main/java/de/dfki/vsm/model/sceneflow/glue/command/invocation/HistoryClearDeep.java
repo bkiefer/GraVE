@@ -23,23 +23,8 @@ public final class HistoryClearDeep extends Invocation {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "HistoryClearDeep(" + mState + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return "HistoryClearDeep(" + mState + ")";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#p#HistoryClearDeep(" + "#c#" + mState + ")";
-    }
-
-    @Override
-    public final HistoryClearDeep getCopy() {
-        return new HistoryClearDeep(mState);
     }
 
     @Override

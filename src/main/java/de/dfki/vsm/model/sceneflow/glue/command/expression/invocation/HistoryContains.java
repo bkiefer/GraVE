@@ -42,23 +42,8 @@ public class HistoryContains extends Expression {
     }
 
     @Override
-    public String getAbstractSyntax() {
-        return "HistoryContains(" + mState + "," + mSubState + "," + mDepth + ")";
-    }
-
-    @Override
     public String getConcreteSyntax() {
         return "HistoryContains(" + mState + "," + mSubState + "," + mDepth + ")";
-    }
-
-    @Override
-    public String getFormattedSyntax() {
-        return "#p#HistoryContains ( " + mState + "," + mSubState + "," + mDepth + " ) ";
-    }
-
-    @Override
-    public HistoryContains getCopy() {
-        return new HistoryContains(mState, mSubState, mDepth);
     }
 
     @Override

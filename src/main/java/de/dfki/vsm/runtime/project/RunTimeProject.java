@@ -1,9 +1,14 @@
 package de.dfki.vsm.runtime.project;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 import de.dfki.vsm.model.project.ProjectConfig;
 import de.dfki.vsm.model.sceneflow.chart.SceneFlow;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
 import de.dfki.vsm.util.log.LOGDefaultLogger;
 import de.dfki.vsm.util.xml.XMLUtilities;
 
@@ -29,46 +34,6 @@ public class RunTimeProject {
         // Do nothing
     }
 
-    // Construct a project from a directory
-    public RunTimeProject(final File file) {
-        // Remember Path
-        mProjectPath = file.getPath();
-        // Call the local parsing method
-        parse(mProjectPath);
-    }
-
-    public boolean isNewProject() {
-        return isNewProject;
-    }
-
-    // Get the path of the project (added PG 11.4.2016)
-    public final String getProjectPath() {
-        return mProjectPath;
-    }
-
-    public void setProjectPath(String s) {
-        mProjectPath = s;
-    }
-
-    // Get the name of the project's configuration
-    public final String getProjectName() {
-        return mProjectConfig.getProjectName();
-    }
-
-    // Set the name in the project's configuration
-    public final void setProjectName(final String name) {
-        mProjectConfig.setProjectName(name);
-    }
-
-    // Get the sceneflow of the project
-    public final SceneFlow getSceneFlow() {
-        return mSceneFlow;
-    }
-
-    // Get the project configuration (added PG 15.4.2016)
-    public final ProjectConfig getProjectConfig() {
-        return mProjectConfig;
-    }
 
     public boolean parse(final String file) {
         // Check if the file is null
@@ -92,24 +57,6 @@ public class RunTimeProject {
             return false;
         }
 
-    }
-
-    // First attempt to parse Visual SceneMaker project files for information only
-    // added PG 14.4.2016
-    public boolean parseForInformation(final String file) {
-        // Check if the file is null
-        if (file == null) {
-            // Print an error message
-            mLogger.failure("Error: Cannot parse for information a runtime project from a bad file");
-            // Return false at error
-            return false;
-        }
-        // remember Path (e.g. EditorProject calls this without instantiation of
-        // the RunTimeProject class, so mProjectPath is (re)set her (PG 11.4.2016)
-        mProjectPath = file;
-
-        // Parse the project from file
-        return (parseProjectConfig(file) && parseSceneFlow(file) );
     }
 
     // Write the project data to a directory
@@ -138,8 +85,9 @@ public class RunTimeProject {
         if(mProjectPath.equals("")){
             mProjectPath = file.getPath();
         }
-        // Save the project to the base directory
-        return (writeProjectConfig(base) && writeSceneFlow(base));
+        // Save the project to the base directory (without config for VOnDA)
+        return ((Command.convertToVOnDA || writeProjectConfig(base)) 
+            && writeSceneFlow(base));
     }
 
     // Load the executors of the project
@@ -180,15 +128,6 @@ public class RunTimeProject {
         return true;
     }
 
-    public boolean parseProjectConfigFromString(String xml) {
-        //Parse the config file for project from a string
-        InputStream stream = new ByteArrayInputStream(xml.getBytes());
-        if (!XMLUtilities.parseFromXMLStream(mProjectConfig, stream)) {
-            mLogger.failure("Error: Cannot parse agent");
-            return false;
-        }
-        return true;
-    }
 
     private boolean writeProjectConfig(final File base) {
         // Create the project configuration file
@@ -294,16 +233,4 @@ public class RunTimeProject {
         return true;
     }
 
-
-    // Get the hash code of the project
-    protected synchronized int getHashCode() {
-        int hashCode = ((mSceneFlow == null)
-                ? 0
-                : mSceneFlow.getHashCode());
-        // TODO: Why Is The Hash Computed
-        // Only Based On The SceneFlow's
-        // Hash And Not Based Also On The
-        // Other Project Data Structures?
-        return hashCode;
-    }
 }

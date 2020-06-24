@@ -35,24 +35,10 @@ public final class ArrayVariable extends VariableExpression {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "ArrayVariable(" + mName + ", " + mIndex.getAbstractSyntax() + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return mName + "[" + mIndex.getConcreteSyntax() + "]";
     }
 
-    @Override
-    public final String getFormattedSyntax() {
-        return mName + " [ " + mIndex.getFormattedSyntax() + " ] ";
-    }
-
-    @Override
-    public final VariableExpression getCopy() {
-        return new ArrayVariable(mName, mIndex.getCopy());
-    }
 
     @Override
     public final void parseXML(final Element element) throws XMLParseError {

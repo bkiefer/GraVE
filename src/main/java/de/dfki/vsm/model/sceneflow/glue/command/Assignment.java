@@ -21,61 +21,15 @@ public final class Assignment extends Command {
         mInitExpression = null;
     }
 
-    public Assignment(final VariableExpression lExp, final Expression iExp) {
-        mLeftExpression = lExp;
-        mInitExpression = iExp;
-    }
-
-    public final VariableExpression getLeftExpression() {
-        return mLeftExpression;
-    }
-
-    public final void setLeftExpression(final VariableExpression value) {
-        mLeftExpression = value;
-    }
-
-    public final Expression getInitExpression() {
-        return mInitExpression;
-    }
-
-    public void setInitExpression(final Expression iExp) {
-        mInitExpression = iExp;
-    }
-
-    @Override
-    public final String getAbstractSyntax() {
-        return "Assignment(" + ((mLeftExpression != null)
-                ? mLeftExpression.getAbstractSyntax()
-                : "") + " = " + ((mInitExpression != null)
-                        ? mInitExpression.getAbstractSyntax()
-                        : "") + ")";
-    }
-
     @Override
     public final String getConcreteSyntax() {
-        return ((mLeftExpression != null)
-                ? mLeftExpression.getConcreteSyntax()
-                : "") + " = " + ((mInitExpression != null)
-                        ? mInitExpression.getConcreteSyntax()
-                        : "");
+      return ((mLeftExpression != null)
+          ? mLeftExpression.getConcreteSyntax()
+              : "") + " = " + ((mInitExpression != null)
+                  ? mInitExpression.getConcreteSyntax()
+                      : "");
     }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return ((mLeftExpression != null)
-                ? mLeftExpression.getFormattedSyntax()
-                : "") + " = " + ((mInitExpression != null)
-                        ? mInitExpression.getFormattedSyntax()
-                        : "");
-    }
-
-    @Override
-    public final Assignment getCopy() {
-        return new Assignment(
-                mLeftExpression.getCopy(),
-                mInitExpression.getCopy());
-    }
-
+    
     @Override
     public void writeXML(final IOSIndentWriter out) throws XMLWriteError {
         out.println("<Assignment>").push();

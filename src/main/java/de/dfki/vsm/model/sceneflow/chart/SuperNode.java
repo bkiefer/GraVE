@@ -1,29 +1,21 @@
 package de.dfki.vsm.model.sceneflow.chart;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.w3c.dom.Element;
+
 import de.dfki.vsm.model.sceneflow.chart.badge.CommentBadge;
 import de.dfki.vsm.model.sceneflow.chart.badge.VariableBadge;
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.EpsilonEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
 import de.dfki.vsm.model.sceneflow.glue.command.Command;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.VariableDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.DataTypeDefinition;
-import de.dfki.vsm.model.sceneflow.chart.graphics.node.NodeGraphics;
-import de.dfki.vsm.util.cpy.CopyTool;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.tpl.TPLTuple;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
 import de.dfki.vsm.util.xml.XMLWriteError;
-import java.util.ArrayList;
-import org.w3c.dom.Element;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * @author Gregor Mehlmann
@@ -144,16 +136,6 @@ public class SuperNode extends BasicNode {
         return mSuperNodeList;
     }
 
-    public ArrayList<SuperNode> getCopyOfSuperNodeList() {
-        ArrayList<SuperNode> copy = new ArrayList<SuperNode>();
-
-        for (SuperNode node : mSuperNodeList) {
-            copy.add(node.getCopy());
-        }
-
-        return copy;
-    }
-
     public void addNode(BasicNode value) {
         mNodeList.add(value);
     }
@@ -170,15 +152,6 @@ public class SuperNode extends BasicNode {
         return mNodeList;
     }
 
-    public ArrayList<BasicNode> getCopyOfNodeList() {
-        ArrayList<BasicNode> copy = new ArrayList<BasicNode>();
-
-        for (BasicNode node : mNodeList) {
-            copy.add(node.getCopy());
-        }
-
-        return copy;
-    }
 
     public ArrayList<BasicNode> getNodeAndSuperNodeList() {
         ArrayList<BasicNode> list = new ArrayList<BasicNode>();
@@ -194,19 +167,6 @@ public class SuperNode extends BasicNode {
         return list;
     }
 
-    public ArrayList<BasicNode> getCopyOfNodeAndSuperNodeList() {
-        ArrayList<BasicNode> copy = new ArrayList<BasicNode>();
-
-        for (BasicNode n : mNodeList) {
-            copy.add(n.getCopy());
-        }
-
-        for (SuperNode sn : mSuperNodeList) {
-            copy.add(sn.getCopy());
-        }
-
-        return copy;
-    }
 
     public BasicNode getChildNodeById(String id) {
         for (BasicNode node : getNodeAndSuperNodeList()) {
@@ -277,11 +237,6 @@ public class SuperNode extends BasicNode {
                 }
             }
         }
-    }
-
-    @Override
-    public SuperNode getCopy() {
-        return (SuperNode) CopyTool.copy(this);
     }
 
 
@@ -396,96 +351,4 @@ public class SuperNode extends BasicNode {
         });
     }
 
-    @Override
-    public int getHashCode() {
-
-        // Add hash of General Attributes
-        int hashCode = ((mNodeName == null) ? 0 : mNodeName.hashCode())
-                + ((mComment == null) ? 0 : mComment.hashCode())
-                + ((mGraphics == null) ? 0 : mGraphics.toString().hashCode())
-                + ((mHistoryNode == null) ? 0 : mHistoryNode.hashCode())
-                + ((mLocalVariableBadge == null) ? 0 : mLocalVariableBadge.hashCode())
-                + ((mGlobalVariableBadge == null) ? 0 : mGlobalVariableBadge.hashCode())
-                + ((mHideLocalVarBadge == true) ? 1 : 0) + ((mHideGlobalVarBadge == true) ? 1 : 0);
-
-        // Add hash of all commands inside SuperNode
-        for (int cntCommand = 0; cntCommand < getSizeOfCmdList(); cntCommand++) {
-            hashCode += mCmdList.get(cntCommand).hashCode();
-        }
-
-        // Add hash of all TypeDef inside SuperNode
-        for (int cntType = 0; cntType < getSizeOfTypeDefList(); cntType++) {
-            hashCode += mTypeDefList.get(cntType).hashCode() + mTypeDefList.get(cntType).getName().hashCode()
-                    + mTypeDefList.get(cntType).toString().hashCode();
-        }
-
-        // Add hash of all VarDef inside SuperNode
-        for (int cntVar = 0; cntVar < getVarDefList().size(); cntVar++) {
-            hashCode += getVarDefList().get(cntVar).getName().hashCode()
-                    + getVarDefList().get(cntVar).getType().hashCode()
-                    + getVarDefList().get(cntVar).toString().hashCode();
-        }
-
-        // Add hash of all Nodes inside SuperNode
-        for (int cntNode = 0; cntNode < mNodeList.size(); cntNode++) {
-            hashCode += getNodeAt(cntNode).getHashCode();
-        }
-
-        // Epsilon and Time Edges
-        for (int cntEdge = 0; cntEdge < getEdgeList().size(); cntEdge++) {
-            hashCode += getEdgeList().get(cntEdge).hashCode() + getEdgeList().get(cntEdge).getGraphics().getHashCode();
-
-            // TODO: find a way to parse the TEDGE mDEGE to take timeout into accout
-        }
-
-        // Add hash of all Conditional Edges
-        for (int cntEdge = 0; cntEdge < getSizeOfCEdgeList(); cntEdge++) {
-
-            hashCode += mCEdgeList.get(cntEdge).hashCode()
-                    + mCEdgeList.get(cntEdge).getGraphics().getHashCode()
-                    + mCEdgeList.get(cntEdge).getCondition().hashCode()
-                    + mCEdgeList.get(cntEdge).getSourceUnid().hashCode()
-                    + mCEdgeList.get(cntEdge).getTargetUnid().hashCode();
-        }
-        // Add hash of all Probability Edges
-        for (int cntEdge = 0; cntEdge < getSizeOfPEdgeList(); cntEdge++) {
-
-            hashCode += mPEdgeList.get(cntEdge).hashCode()
-                    + mPEdgeList.get(cntEdge).getGraphics().getHashCode()
-                    + mPEdgeList.get(cntEdge).getProbability()
-                    + mPEdgeList.get(cntEdge).getSourceUnid().hashCode()
-                    + mPEdgeList.get(cntEdge).getTargetUnid().hashCode();
-        }
-
-        // Add hash of all Fork Edges
-        for (int cntEdge = 0; cntEdge < mFEdgeList.size(); cntEdge++) {
-
-            hashCode += mFEdgeList.get(cntEdge).hashCode()
-                    + mFEdgeList.get(cntEdge).getGraphics().getHashCode()
-                    + mFEdgeList.get(cntEdge).getSourceUnid().hashCode()
-                    + mFEdgeList.get(cntEdge).getTargetUnid().hashCode();
-        }
-
-        // Add hash of all Interruptive Edges
-        for (int cntEdge = 0; cntEdge < getSizeOfIEdgeList(); cntEdge++) {
-            hashCode += mIEdgeList.get(cntEdge).hashCode()
-                    + mIEdgeList.get(cntEdge).getGraphics().getHashCode()
-                    + mIEdgeList.get(cntEdge).getCondition().hashCode()
-                    + mIEdgeList.get(cntEdge).getSourceUnid().hashCode()
-                    + mIEdgeList.get(cntEdge).getTargetUnid().hashCode();
-        }
-
-        // Check existing SuperNodes inside of this SuperNode
-        for (int cntSNode = 0; cntSNode < mSuperNodeList.size(); cntSNode++) {
-            hashCode += getSuperNodeAt(cntSNode).getHashCode();
-        }
-
-        // Add hash of all comments on workspace
-        for (int cntComment = 0; cntComment < getCommentList().size(); cntComment++) {
-            hashCode += mCommentList.get(cntComment).getGraphics().getRectangle().hashCode();
-            //hashCode += mCommentList.get(cntComment).getHTMLText().hashCode();
-        }
-
-        return hashCode;
-    }
 }

@@ -35,23 +35,8 @@ public final class ContainsList extends Expression {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "ContainsList(" + mListExp.getAbstractSyntax() + ", " + mItemExp.getAbstractSyntax() + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return "Contains(" + mListExp.getConcreteSyntax() + ", " + mItemExp.getConcreteSyntax() + ")";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#p#Contains ( " + "#c#" + mListExp.getConcreteSyntax() + ", " + "#c#" + mItemExp.getConcreteSyntax() + " ) ";
-    }
-
-    @Override
-    public final ContainsList getCopy() {
-        return new ContainsList(mListExp.getCopy(), mItemExp.getCopy());
     }
 
     @Override

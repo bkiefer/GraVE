@@ -1,6 +1,5 @@
 package de.dfki.vsm.util.log;
 
-import de.dfki.vsm.Preferences;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;

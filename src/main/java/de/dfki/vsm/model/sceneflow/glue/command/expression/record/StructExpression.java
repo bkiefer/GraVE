@@ -28,27 +28,6 @@ public final class StructExpression extends Expression {
         return mExpList;
     }
 
-    public ArrayList<Assignment> getCopyOfExpList() {
-        final ArrayList<Assignment> copy = new ArrayList();
-        for (final Assignment exp : mExpList) {
-            copy.add(exp.getCopy());
-        }
-        return copy;
-    }
-
-    @Override
-    public final String getAbstractSyntax() {
-        String desc = "";
-        for (int i = 0; i < mExpList.size(); i++) {
-            desc += mExpList.get(i).getConcreteSyntax();
-
-            if (i != mExpList.size() - 1) {
-                desc += " , ";
-            }
-        }
-        return "Struct(" + desc + ")";
-    }
-
     @Override
     public final String getConcreteSyntax() {
         String desc = "{ ";
@@ -62,23 +41,6 @@ public final class StructExpression extends Expression {
         return desc + " }";
     }
 
-    @Override
-    public final String getFormattedSyntax() {
-        String desc = "{ ";
-        for (int i = 0; i < mExpList.size(); i++) {
-            desc += mExpList.get(i).getFormattedSyntax();
-
-            if (i != mExpList.size() - 1) {
-                desc += " , ";
-            }
-        }
-        return desc + " }";
-    }
-
-    @Override
-    public final StructExpression getCopy() {
-        return new StructExpression(getCopyOfExpList());
-    }
 
     @Override
     public final void writeXML(final IOSIndentWriter out) throws XMLWriteError {

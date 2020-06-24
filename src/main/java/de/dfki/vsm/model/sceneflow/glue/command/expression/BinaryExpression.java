@@ -94,17 +94,6 @@ public final class BinaryExpression extends Expression {
     }
 
     @Override
-    public String getAbstractSyntax() {
-        return "BinaryExp(" + ((mOperator != null)
-                ? mOperator.name()
-                : "") + "(" + ((mLeftExp != null)
-                        ? mLeftExp.getAbstractSyntax()
-                        : "") + "," + ((mRightExp != null)
-                        ? mRightExp.getAbstractSyntax()
-                        : "") + "))";
-    }
-
-    @Override
     public String getConcreteSyntax() {
         String op = "";
         String left = (mLeftExp != null)
@@ -169,77 +158,6 @@ public final class BinaryExpression extends Expression {
         return op;
     }
 
-    @Override
-    public String getFormattedSyntax() {
-        String op = "";
-        String left = (mLeftExp != null)
-                ? mLeftExp.getFormattedSyntax()
-                : "";
-        String right = (mRightExp != null)
-                ? mRightExp.getFormattedSyntax()
-                : "";
-
-        if (mOperator == null) {
-            return "";
-        }
-        switch (mOperator) {
-            case AndAnd:
-                op = left + " && " + right;
-                break;
-            case OrOr:
-                op = left + " || " + right;
-                break;
-            case And:
-                op = left + " & " + right;
-                break;
-            case Or:
-                op = left + " | " + right;
-                break;
-            case Xor:
-                op = left + " ^ " + right;
-                break;
-            case Add:
-                op = left + " + " + right;
-                break;
-            case Sub:
-                op = left + " - " + right;
-                break;
-            case Mul:
-                op = left + " * " + right;
-                break;
-            case Div:
-                op = left + " / " + right;
-                break;
-            case Mod:
-                op = left + " % " + right;
-                break;
-            case Eq:
-                op = left + " == " + right;
-                break;
-            case Neq:
-                op = left + " != " + right;
-                break;
-            case Ge:
-                op = left + " >= " + right;
-                break;
-            case Gt:
-                op = left + " > " + right;
-                break;
-            case Le:
-                op = left + " <= " + right;
-                break;
-            case Lt:
-                op = left + " < " + right;
-                break;
-        }
-        return op;
-    }
-
-    @Override
-    public final BinaryExpression getCopy() {
-        return new BinaryExpression(
-                mLeftExp.getCopy(), mOperator, mRightExp.getCopy());
-    }
 
     @Override
     public final void writeXML(final IOSIndentWriter out) throws XMLWriteError {

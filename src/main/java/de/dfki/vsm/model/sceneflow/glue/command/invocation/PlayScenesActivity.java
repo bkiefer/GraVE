@@ -48,26 +48,6 @@ public final class PlayScenesActivity extends Invocation {
         mArgList = value;
     }
 
-    public final ArrayList<Expression> getCopyOfArgList() {
-        ArrayList<Expression> copy = new ArrayList();
-        for (final Expression exp : mArgList) {
-            copy.add(exp.getCopy());
-        }
-        return copy;
-    }
-
-    @Override
-    public final String getAbstractSyntax() {
-        String desc = "PlayScene(";
-        desc += ((mArgument != null)
-                ? mArgument.getAbstractSyntax()
-                : "");
-        for (int i = 0; i < mArgList.size(); i++) {
-            desc += ", " + mArgList.get(i).getAbstractSyntax();
-        }
-        return desc + ")";
-    }
-
     @Override
     public final String getConcreteSyntax() {
         String desc = "PlayScene(";
@@ -78,23 +58,6 @@ public final class PlayScenesActivity extends Invocation {
             desc += ", " + mArgList.get(i).getConcreteSyntax();
         }
         return desc + ")";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        String desc = "#p#PlayScene ( ";
-        desc += ((mArgument != null)
-                ? mArgument.getFormattedSyntax()
-                : "");
-        for (int i = 0; i < mArgList.size(); i++) {
-            desc += " , " + mArgList.get(i).getFormattedSyntax();
-        }
-        return desc + " ) ";
-    }
-
-    @Override
-    public final PlayScenesActivity getCopy() {
-        return new PlayScenesActivity(mArgument.getCopy(), getCopyOfArgList());
     }
 
     @Override

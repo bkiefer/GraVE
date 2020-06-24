@@ -26,31 +26,6 @@ public final class NodePosition implements ModelObject {
         mYPos = yPos;
     }
 
-    // Set the X coordinate
-    public final void setXPos(final int value) {
-        mXPos = value;
-    }
-
-    // Get the X coordinate
-    public final int getXPos() {
-        return mXPos;
-    }
-
-    // Set the Y coordinate
-    public final void setYPos(final int value) {
-        mYPos = value;
-    }
-
-    // Get the Y coordinate
-    public final int getYPos() {
-        return mYPos;
-    }
-
-    @Override
-    public final NodePosition getCopy() {
-        return new NodePosition(mXPos, mYPos);
-    }
-
     @Override
     public final void writeXML(IOSIndentWriter out) {
         out.println("<Position xPos=\"" + mXPos + "\" yPos=\"" + mYPos + "\"/>");

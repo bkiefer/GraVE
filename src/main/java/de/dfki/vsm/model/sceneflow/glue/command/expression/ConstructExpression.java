@@ -51,14 +51,6 @@ public final class ConstructExpression extends Expression {
         return mArgList.size();
     }
 
-    public final ArrayList<Expression> getCopyOfArgList() {
-        final ArrayList<Expression> copy = new ArrayList();
-        for (Expression exp : mArgList) {
-            copy.add(exp.getCopy());
-        }
-        return copy;
-    }
-
     public final boolean addArg(final Expression value) {
         return mArgList.add(value);
     }
@@ -67,17 +59,6 @@ public final class ConstructExpression extends Expression {
         return mArgList.get(index);
     }
 
-    @Override
-    public final String getAbstractSyntax() {
-        String desc = "ConstructExpression( " + mName + "( ";
-        for (int i = 0; i < mArgList.size(); i++) {
-            desc += mArgList.get(i).getAbstractSyntax();
-            if (i != mArgList.size() - 1) {
-                desc += ", ";
-            }
-        }
-        return desc + "))";
-    }
 
     @Override
     public final String getConcreteSyntax() {
@@ -89,23 +70,6 @@ public final class ConstructExpression extends Expression {
             }
         }
         return desc + " )";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        String desc = "#r#new " + "#b#" + mName + " ( ";
-        for (int i = 0; i < mArgList.size(); i++) {
-            desc += mArgList.get(i).getFormattedSyntax();
-            if (i != mArgList.size() - 1) {
-                desc += " , ";
-            }
-        }
-        return desc + " ) ";
-    }
-
-    @Override
-    public final ConstructExpression getCopy() {
-        return new ConstructExpression(mName, getCopyOfArgList());
     }
 
     @Override

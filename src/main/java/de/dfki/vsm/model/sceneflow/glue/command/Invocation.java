@@ -17,9 +17,6 @@ import org.w3c.dom.Element;
  */
 public abstract class Invocation extends Command {
 
-    @Override
-    public abstract Invocation getCopy();
-
     public static Invocation parse(final Element element) throws XMLParseError {
         Invocation invocation;
         final String tag = element.getTagName();

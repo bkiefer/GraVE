@@ -53,17 +53,6 @@ public final class TernaryExpression extends Expression {
     }
 
     @Override
-    public String getAbstractSyntax() {
-        return "TernaryExpression( " + ((mCondition != null)
-                ? mCondition.getAbstractSyntax()
-                : "") + " , " + ((mThenExp != null)
-                        ? mThenExp.getAbstractSyntax()
-                        : "") + " , " + ((mElseExp != null)
-                        ? mElseExp.getAbstractSyntax()
-                        : "") + " )";
-    }
-
-    @Override
     public String getConcreteSyntax() {
         return "( " + ((mCondition != null)
                 ? mCondition.getConcreteSyntax()
@@ -72,21 +61,6 @@ public final class TernaryExpression extends Expression {
                         : "") + " : " + ((mElseExp != null)
                         ? mElseExp.getConcreteSyntax()
                         : "") + " )";
-    }
-
-    public String getFormattedSyntax() {
-        return "( " + ((mCondition != null)
-                ? mCondition.getFormattedSyntax()
-                : "") + " ? " + ((mThenExp != null)
-                        ? mThenExp.getFormattedSyntax()
-                        : "") + " : " + ((mElseExp != null)
-                        ? mElseExp.getFormattedSyntax()
-                        : "") + " )";
-    }
-
-    @Override
-    public TernaryExpression getCopy() {
-        return new TernaryExpression(mCondition.getCopy(), mThenExp.getCopy(), mElseExp.getCopy());
     }
 
     @Override

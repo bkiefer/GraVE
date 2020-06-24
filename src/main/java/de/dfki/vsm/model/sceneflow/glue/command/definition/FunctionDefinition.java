@@ -84,37 +84,12 @@ public class FunctionDefinition extends Definition implements  Comparable<Functi
         return mParamList.size();
     }
 
-    public ArrayList<ArgumentDefinition> getCopyOfParamList() {
-        ArrayList<ArgumentDefinition> copy = new ArrayList<ArgumentDefinition>();
-
-        for (ArgumentDefinition param : mParamList) {
-            copy.add(param.getCopy());
-        }
-
-        return copy;
-    }
-
     public boolean addParam(ArgumentDefinition value) {
         return mParamList.add(value);
     }
 
     public ArgumentDefinition getParamAt(int index) {
         return mParamList.get(index);
-    }
-
-    @Override
-    public String getAbstractSyntax() {
-        String desc = "";
-
-        for (int i = 0; i < mParamList.size(); i++) {
-            desc += mParamList.get(i).getAbstractSyntax();
-
-            if (i != mParamList.size() - 1) {
-                desc += ",";
-            }
-        }
-
-        return "UsrCmdDef(" + mName + "(" + desc + "):" + mClassName + "." + mMethod + ")";
     }
 
     @Override
@@ -130,16 +105,6 @@ public class FunctionDefinition extends Definition implements  Comparable<Functi
         }
 
         return mName + "( " + desc + " ):" + mClassName + "." + mMethod;
-    }
-
-    @Override
-    public String getFormattedSyntax() {
-        return "";
-    }
-
-    @Override
-    public FunctionDefinition getCopy() {
-        return new FunctionDefinition(mName, mClassName, mMethod, getCopyOfParamList());
     }
 
     @Override

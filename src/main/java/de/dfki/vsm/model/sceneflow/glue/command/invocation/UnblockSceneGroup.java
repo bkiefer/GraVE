@@ -32,29 +32,10 @@ public final class UnblockSceneGroup extends Invocation {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "UnblockSceneGroup(" + ((mArgument != null)
-                ? mArgument.getAbstractSyntax()
-                : "") + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return "UnblockSceneGroup(" + ((mArgument != null)
                 ? mArgument.getConcreteSyntax()
                 : "") + ")";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#p#UnblockSceneGroup ( " + ((mArgument != null)
-                ? mArgument.getFormattedSyntax()
-                : "") + " ) ";
-    }
-
-    @Override
-    public final UnblockSceneGroup getCopy() {
-        return new UnblockSceneGroup(mArgument.getCopy());
     }
 
     @Override

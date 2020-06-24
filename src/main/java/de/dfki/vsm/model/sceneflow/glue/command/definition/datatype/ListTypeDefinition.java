@@ -42,23 +42,8 @@ public final class ListTypeDefinition extends DataTypeDefinition {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "ListTypeDefinition(" + mType + ", " + mName + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return "ListTypeDefinition(" + mType + ", " + mName + ")";//mType + " " + mName;
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "ListTypeDefinition(" + mType + ", " + mName + ")";//mType + " " + mName;
-    }
-
-    @Override
-    public ListTypeDefinition getCopy() {
-        return new ListTypeDefinition(mName, mType);
     }
 
     @Override

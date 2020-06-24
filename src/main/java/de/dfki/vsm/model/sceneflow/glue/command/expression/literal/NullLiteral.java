@@ -12,24 +12,10 @@ public final class NullLiteral extends LiteralExpression {
     public NullLiteral() {
     }
 
-    @Override
-    public final String getAbstractSyntax() {
-        return "NullLiteral()";
-    }
 
     @Override
     public final String getConcreteSyntax() {
         return "null";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#c#" + "null";
-    }
-
-    @Override
-    public final NullLiteral getCopy() {
-        return new NullLiteral();
     }
 
     @Override

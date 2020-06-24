@@ -22,51 +22,6 @@ public final class CommentBoundary implements ModelObject {
         mHeight = Integer.MIN_VALUE;
     }
 
-    public CommentBoundary(
-            final int xPos, final int yPos,
-            final int width, final int height) {
-        mXPos = xPos;
-        mYPos = yPos;
-        mWidth = width;
-        mHeight = height;
-    }
-
-    public final void setXPos(final int value) {
-        mXPos = value;
-    }
-
-    public final int getXPos() {
-        return mXPos;
-    }
-
-    public final void setYPos(final int value) {
-        mYPos = value;
-    }
-
-    public final int getYPos() {
-        return mYPos;
-    }
-
-    public final void setWidth(final int value) {
-        mWidth = value;
-    }
-
-    public final int getWidth() {
-        return mWidth;
-    }
-
-    public final void setHeight(final int value) {
-        mHeight = value;
-    }
-
-    public final int getHeight() {
-        return mHeight;
-    }
-
-    @Override
-    public final CommentBoundary getCopy() {
-        return new CommentBoundary(mXPos, mYPos, mWidth, mHeight);
-    }
 
     @Override
     public final void writeXML(final IOSIndentWriter out) {

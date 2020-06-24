@@ -28,23 +28,8 @@ public final class BoolLiteral extends LiteralExpression {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "BoolLiteral(" + getConcreteSyntax() + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return Boolean.toString(mValue);
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#c#" + Boolean.toString(mValue);
-    }
-
-    @Override
-    public final BoolLiteral getCopy() {
-        return new BoolLiteral(mValue);
     }
 
     @Override

@@ -7,11 +7,7 @@ import de.dfki.vsm.model.ModelObject;
  */
 public abstract class SyntaxObject implements ModelObject {
 
-    public abstract String getAbstractSyntax();
-
     public abstract String getConcreteSyntax();
-
-    public abstract String getFormattedSyntax();
 
     @Override
     public final String toString() {

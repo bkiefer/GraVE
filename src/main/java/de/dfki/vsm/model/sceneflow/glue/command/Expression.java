@@ -26,9 +26,6 @@ import org.w3c.dom.Element;
  */
 public abstract class Expression extends Command {
 
-    @Override
-    public abstract Expression getCopy();
-
     public static Expression parse(final Element element) throws XMLParseError {
         // The expression to parse
         Expression exp;

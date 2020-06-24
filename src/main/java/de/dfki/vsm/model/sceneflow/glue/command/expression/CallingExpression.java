@@ -51,16 +51,6 @@ public final class CallingExpression extends Expression {
         return mArgList.size();
     }
 
-    public final ArrayList<Expression> getCopyOfArgList() {
-        ArrayList<Expression> copy = new ArrayList<Expression>();
-
-        for (Expression exp : mArgList) {
-            copy.add(exp.getCopy());
-        }
-
-        return copy;
-    }
-
     public final boolean addArg(final Expression value) {
         return mArgList.add(value);
     }
@@ -69,18 +59,7 @@ public final class CallingExpression extends Expression {
         return mArgList.get(index);
     }
 
-    @Override
-    public final String getAbstractSyntax() {
-        String desc = "CallingExpression( " + mName + "( ";
-        for (int i = 0; i < mArgList.size(); i++) {
-            desc += mArgList.get(i).getAbstractSyntax();
 
-            if (i != mArgList.size() - 1) {
-                desc += " , ";
-            }
-        }
-        return desc + " ) )";
-    }
 
     @Override
     public final String getConcreteSyntax() {
@@ -93,24 +72,6 @@ public final class CallingExpression extends Expression {
             }
         }
         return desc + " )";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        String desc = "#b#" + mName + " ( ";
-        for (int i = 0; i < mArgList.size(); i++) {
-            desc += mArgList.get(i).getFormattedSyntax();
-
-            if (i != mArgList.size() - 1) {
-                desc += " , ";
-            }
-        }
-        return desc + " ) ";
-    }
-
-    @Override
-    public final CallingExpression getCopy() {
-        return new CallingExpression(mName, getCopyOfArgList());
     }
 
     @Override

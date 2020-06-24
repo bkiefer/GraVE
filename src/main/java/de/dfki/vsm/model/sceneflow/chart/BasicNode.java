@@ -1,24 +1,25 @@
 package de.dfki.vsm.model.sceneflow.chart;
 
-import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
-import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
+import java.util.ArrayList;
+
+import org.w3c.dom.Element;
+
+import de.dfki.vsm.model.ModelObject;
 import de.dfki.vsm.model.sceneflow.chart.edge.AbstractEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.EpsilonEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.ForkingEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.GuardedEdge;
 import de.dfki.vsm.model.sceneflow.chart.edge.InterruptEdge;
-import de.dfki.vsm.model.ModelObject;
-import de.dfki.vsm.model.sceneflow.glue.command.Command;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.VariableDefinition;
-import de.dfki.vsm.model.sceneflow.glue.command.definition.DataTypeDefinition;
+import de.dfki.vsm.model.sceneflow.chart.edge.RandomEdge;
+import de.dfki.vsm.model.sceneflow.chart.edge.TimeoutEdge;
 import de.dfki.vsm.model.sceneflow.chart.graphics.node.NodeGraphics;
-import de.dfki.vsm.util.cpy.CopyTool;
+import de.dfki.vsm.model.sceneflow.glue.command.Command;
+import de.dfki.vsm.model.sceneflow.glue.command.definition.DataTypeDefinition;
+import de.dfki.vsm.model.sceneflow.glue.command.definition.VariableDefinition;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.xml.XMLParseAction;
 import de.dfki.vsm.util.xml.XMLParseError;
 import de.dfki.vsm.util.xml.XMLWriteError;
-import java.util.ArrayList;
-import org.w3c.dom.Element;
 
 /**
  * @author Gregor Mehlmann
@@ -276,14 +277,6 @@ public class BasicNode implements ModelObject {
         return mVarDefList;
     }
 
-    public ArrayList<VariableDefinition> getCopyOfVarDefList() {
-        ArrayList<VariableDefinition> copy = new ArrayList<VariableDefinition>();
-        for (VariableDefinition varDef : mVarDefList) {
-            copy.add(varDef.getCopy());
-        }
-        return copy;
-    }
-
     public void addCmd(Command value) {
         mCmdList.add(value);
     }
@@ -312,15 +305,6 @@ public class BasicNode implements ModelObject {
         return mCmdList.size();
     }
 
-    public ArrayList<Command> getCopyOfCmdList() {
-        ArrayList<Command> copy = new ArrayList<Command>();
-
-        for (Command cmd : mCmdList) {
-            copy.add(cmd.getCopy());
-        }
-
-        return copy;
-    }
 
     public void addTypeDef(DataTypeDefinition value) {
         mTypeDefList.add(value);
@@ -350,15 +334,6 @@ public class BasicNode implements ModelObject {
         return mTypeDefList.size();
     }
 
-    public ArrayList<DataTypeDefinition> getCopyOfTypeDefList() {
-        final ArrayList<DataTypeDefinition> copy = new ArrayList();
-        for (final DataTypeDefinition def : mTypeDefList) {
-            copy.add(def.getCopy());
-        }
-
-        return copy;
-    }
-
     public void addCEdge(GuardedEdge value) {
         mCEdgeList.add(value);
     }
@@ -381,16 +356,6 @@ public class BasicNode implements ModelObject {
 
     public ArrayList<GuardedEdge> getCEdgeList() {
         return mCEdgeList;
-    }
-
-    public ArrayList<GuardedEdge> getCopyOfCEdgeList() {
-        ArrayList<GuardedEdge> copy = new ArrayList<GuardedEdge>();
-
-        for (GuardedEdge edge : mCEdgeList) {
-            copy.add(edge.getCopy());
-        }
-
-        return copy;
     }
 
     public void addFEdge(ForkingEdge value) {
@@ -433,16 +398,6 @@ public class BasicNode implements ModelObject {
         return mPEdgeList;
     }
 
-    public ArrayList<RandomEdge> getCopyOfPEdgeList() {
-        ArrayList<RandomEdge> copy = new ArrayList<RandomEdge>();
-
-        for (RandomEdge edge : mPEdgeList) {
-            copy.add(edge.getCopy());
-        }
-
-        return copy;
-    }
-
     public void addIEdge(InterruptEdge value) {
         mIEdgeList.add(value);
     }
@@ -465,16 +420,6 @@ public class BasicNode implements ModelObject {
 
     public ArrayList<InterruptEdge> getIEdgeList() {
         return mIEdgeList;
-    }
-
-    public ArrayList<InterruptEdge> getCopyOfIEdgeList() {
-        ArrayList<InterruptEdge> copy = new ArrayList<InterruptEdge>();
-
-        for (InterruptEdge edge : mIEdgeList) {
-            copy.add(edge.getCopy());
-        }
-
-        return copy;
     }
 
     public ArrayList<AbstractEdge> getEdgeList() {
@@ -541,9 +486,7 @@ public class BasicNode implements ModelObject {
         return null;
     }
 
-    public BasicNode getCopy() {
-        return (BasicNode) CopyTool.copy(this);
-    }
+ 
 
     protected void writeCommands(IOSIndentWriter out) throws XMLWriteError {
       if (Command.convertToVOnDA) {
@@ -693,71 +636,5 @@ public class BasicNode implements ModelObject {
         });
     }
 
-    public int getHashCode() {
-
-        // Add hash of General Attributes
-        int hashCode = ((mNodeName == null)
-                ? 0
-                : mNodeName.hashCode()) + ((mComment == null)
-                ? 0
-                : mComment.hashCode()) + ((mGraphics == null)
-                ? 0
-                : mGraphics.getPosition().hashCode());
-
-        // Add hash of all commands inside BasicNode
-        for (int cntCommand = 0; cntCommand < mCmdList.size(); cntCommand++) {
-            hashCode += mCmdList.get(cntCommand).hashCode();
-        }
-
-        // Add hash of all TypeDef inside BasicNode
-        for (int cntType = 0; cntType < mTypeDefList.size(); cntType++) {
-            hashCode += mTypeDefList.get(cntType).hashCode() + mTypeDefList.get(cntType).getName().hashCode()
-                    + mTypeDefList.get(cntType).toString().hashCode();
-        }
-
-        // Add hash of all Vars inside BasicNode
-        for (int cntVar = 0; cntVar < mVarDefList.size(); cntVar++) {
-            hashCode += ((mVarDefList.get(cntVar).getName() == null)
-                    ? 0
-                    : mVarDefList.get(cntVar).getName().hashCode()) + ((mVarDefList.get(cntVar).getType() == null)
-                    ? 0
-                    : mVarDefList.get(cntVar).getType().hashCode()) + ((mVarDefList.get(cntVar).toString() == null)
-                    ? 0
-                    : mVarDefList.get(cntVar).toString().hashCode());
-        }
-
-        // Epsilon and Time Edges
-        for (int cntEdge = 0; cntEdge < getEdgeList().size(); cntEdge++) {
-            hashCode += getEdgeList().get(cntEdge).hashCode() + getEdgeList().get(cntEdge).getGraphics().getHashCode();
-
-            // TODO: find a way to parse the TEDGE mDEGE to take timeout into accout
-        }
-
-        // Add hash of all Conditional Edges
-        for (int cntEdge = 0; cntEdge < getSizeOfCEdgeList(); cntEdge++) {
-            hashCode += mCEdgeList.get(cntEdge).hashCode()
-                    + mCEdgeList.get(cntEdge).getGraphics().getHashCode()
-                    + mCEdgeList.get(cntEdge).getCondition().hashCode()
-                    + mCEdgeList.get(cntEdge).getSourceUnid().hashCode()
-                    + mCEdgeList.get(cntEdge).getTargetUnid().hashCode();
-        }
-
-        // Add hash of all Probability Edges
-        for (int cntEdge = 0; cntEdge < getSizeOfPEdgeList(); cntEdge++) {
-
-            hashCode += mPEdgeList.get(cntEdge).hashCode()
-                    + mPEdgeList.get(cntEdge).getGraphics().getHashCode()
-                    + mPEdgeList.get(cntEdge).getProbability()
-                    + mPEdgeList.get(cntEdge).getSourceUnid().hashCode()
-                    + mPEdgeList.get(cntEdge).getTargetUnid().hashCode();
-        }
-
-        // Add hash of all Fork Edges
-        for (int cntEdge = 0; cntEdge < mFEdgeList.size(); cntEdge++) {
-            hashCode += mFEdgeList.get(cntEdge).hashCode() + mFEdgeList.get(cntEdge).getGraphics().getHashCode()
-                    + mFEdgeList.get(cntEdge).getSourceUnid().hashCode() + mFEdgeList.get(cntEdge).getTargetUnid().hashCode();
-        }
-
-        return hashCode;
-    }
+    
 }

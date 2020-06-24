@@ -27,30 +27,6 @@ public final class ArrayExpression extends Expression {
         return mExpList;
     }
 
-//    public final void setExpList(ArrayList expList) {
-//        mExpList = expList;
-//    }
-
-    public final ArrayList<Expression> getCopyOfExpList() {
-        final ArrayList<Expression> copy = new ArrayList();
-        for (final Expression exp : mExpList) {
-            copy.add(exp.getCopy());
-        }
-        return copy;
-    }
-
-    @Override
-    public final String getAbstractSyntax() {
-        String desc = "";
-        for (int i = 0; i < mExpList.size(); i++) {
-            desc += mExpList.get(i).getConcreteSyntax();
-
-            if (i != mExpList.size() - 1) {
-                desc += " , ";
-            }
-        }
-        return "List(" + desc + ")";
-    }
 
     @Override
     public final String getConcreteSyntax() {
@@ -63,24 +39,6 @@ public final class ArrayExpression extends Expression {
             }
         }
         return desc + " ]";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        String desc = /* mType + */ "[ ";
-        for (int i = 0; i < mExpList.size(); i++) {
-            desc += mExpList.get(i).getFormattedSyntax();
-
-            if (i != mExpList.size() - 1) {
-                desc += " , ";
-            }
-        }
-        return desc + " ]";
-    }
-
-    @Override
-    public final ArrayExpression getCopy() {
-        return new ArrayExpression(getCopyOfExpList());
     }
 
     @Override

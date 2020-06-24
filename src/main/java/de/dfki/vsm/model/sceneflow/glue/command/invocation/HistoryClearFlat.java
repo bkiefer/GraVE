@@ -22,25 +22,9 @@ public final class HistoryClearFlat extends Invocation {
         return mState;
     }
 
-   
-    @Override
-    public final String getAbstractSyntax() {
-        return "HistoryClearFlat(" + mState + ")";
-    }
-
     @Override
     public final String getConcreteSyntax() {
         return "HistoryClearFlat(" + mState + ")";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "#p#HistoryClearFlat(" + "#c#" + mState + ")";
-    }
-
-    @Override
-    public final HistoryClearFlat getCopy() {
-        return new HistoryClearFlat(mState);
     }
 
     @Override

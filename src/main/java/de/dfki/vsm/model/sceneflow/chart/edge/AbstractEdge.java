@@ -106,14 +106,6 @@ public abstract class AbstractEdge implements ModelObject {
         mCmdList = value;
     }
 
-    public final ArrayList<Command> getCopyOfCmdList() {
-        final ArrayList<Command> copy = new ArrayList();
-        for (Command cmd : mCmdList) {
-            copy.add(cmd.getCopy());
-        }
-        return copy;
-    }
-
     /*
     public final ArrayList<BasicNode> getAltList() {
         final ArrayList<BasicNode> altList = new ArrayList();
@@ -130,26 +122,6 @@ public abstract class AbstractEdge implements ModelObject {
 
     public final void setAltMap(final HashMap value) {
         mAltMap = value;
-    }
-
-    // TODO: This is not yet a deep copy
-    public HashMap<TPLTuple<String, BasicNode>, TPLTuple<String, BasicNode>> getCopyOfAltStartNodeMap() {
-        HashMap<TPLTuple<String, BasicNode>, TPLTuple<String, BasicNode>> copy = new HashMap<TPLTuple<String, BasicNode>, TPLTuple<String, BasicNode>>();
-        Iterator it = mAltMap.entrySet().iterator();
-
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            TPLTuple<String, BasicNode> startNodePair = (TPLTuple<String, BasicNode>) pairs.getKey();
-            TPLTuple<String, BasicNode> altStartNodePair = (TPLTuple<String, BasicNode>) pairs.getValue();
-            TPLTuple<String, BasicNode> startNodePairCopy = new TPLTuple<String, BasicNode>(startNodePair.getFirst(),
-                    startNodePair.getSecond());
-            TPLTuple<String, BasicNode> altStartNodePairCopy = new TPLTuple<String, BasicNode>(altStartNodePair.getFirst(),
-                    altStartNodePair.getSecond());
-
-            copy.put(startNodePairCopy, altStartNodePairCopy);
-        }
-
-        return copy;
     }
 
     // TODO: do this over the list of strings
@@ -169,9 +141,6 @@ public abstract class AbstractEdge implements ModelObject {
     }
 
     public abstract EdgeType getEdgeType();
-
-    @Override
-    public abstract AbstractEdge getCopy();
 
     public void writeXML(IOSIndentWriter out) throws XMLWriteError {
       if (mGraphics != null) {

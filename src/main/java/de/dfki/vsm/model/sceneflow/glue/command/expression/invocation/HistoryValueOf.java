@@ -42,23 +42,8 @@ public class HistoryValueOf extends Expression {
     }
 
     @Override
-    public String getAbstractSyntax() {
-        return "HistoryValueOf( " + mNode + " , " + mVariable + " , " + mDepth + " )";
-    }
-
-    @Override
     public String getConcreteSyntax() {
         return "HistoryValueOf( " + mNode + " , " + mVariable + " , " + mDepth + " )";
-    }
-
-    @Override
-    public String getFormattedSyntax() {
-        return "#p#HistoryValueOf ( " + "#c#" + mNode + " , " + mVariable + " , " + "#c#" + mDepth + " ) ";
-    }
-
-    @Override
-    public HistoryValueOf getCopy() {
-        return new HistoryValueOf(mNode, mVariable, mDepth);
     }
 
     @Override

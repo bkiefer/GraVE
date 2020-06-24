@@ -32,23 +32,8 @@ public class MemberVariable extends VariableExpression {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "MemberVariable(" + mName + "," + mMember + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return mName + "." + mMember;
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return mName + "." + mMember;
-    }
-
-    @Override
-    public final MemberVariable getCopy() {
-        return new MemberVariable(mName, mMember);
     }
 
     @Override

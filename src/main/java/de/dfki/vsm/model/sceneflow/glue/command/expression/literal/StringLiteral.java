@@ -2,7 +2,6 @@ package de.dfki.vsm.model.sceneflow.glue.command.expression.literal;
 
 
 import de.dfki.vsm.model.sceneflow.glue.command.expression.LiteralExpression;
-import de.dfki.vsm.util.TextFormat;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import org.w3c.dom.Element;
 
@@ -29,24 +28,10 @@ public final class StringLiteral extends LiteralExpression {
         mValue = value;
     }
 
-    @Override
-    public final String getAbstractSyntax() {
-        return "StringLiteral(" + getConcreteSyntax() + ")";
-    }
 
     @Override
     public final String getConcreteSyntax() {
         return "\"" + mValue + "\"";
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return TextFormat.formatConstantStringLiteral("\"" + mValue + "\"");
-    }
-
-    @Override
-    public final StringLiteral getCopy() {
-        return new StringLiteral(mValue);
     }
 
     @Override

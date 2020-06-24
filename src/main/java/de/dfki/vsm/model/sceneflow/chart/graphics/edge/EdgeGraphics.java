@@ -18,26 +18,6 @@ public final class EdgeGraphics implements ModelObject {
         mConnection = new EdgeArrow();
     }
 
-    // Create the graphics
-    public EdgeGraphics(final EdgeArrow connection) {
-        mConnection = connection;
-    }
-
-    // Set the connection
-    public void setConnection(final EdgeArrow value) {
-        mConnection = value;
-    }
-
-    // Get the connection
-    public EdgeArrow getConnection() {
-        return mConnection;
-    }
-
-    @Override
-    public final EdgeGraphics getCopy() {
-        return new EdgeGraphics(mConnection.getCopy());
-    }
-
     @Override
     public final void writeXML(IOSIndentWriter out) {
         if (!Command.convertToVOnDA) out.println("<Graphics>").push();
@@ -62,14 +42,4 @@ public final class EdgeGraphics implements ModelObject {
       });
     }
 
-    public final int getHashCode() {
-        int hashCode = 0;
-
-        for (EdgePoint a : mConnection.getPointList()) {
-            hashCode += a.getCtrlXPos();
-            hashCode += a.getCtrlYPos();
-        }
-
-        return hashCode;
-    }
 }

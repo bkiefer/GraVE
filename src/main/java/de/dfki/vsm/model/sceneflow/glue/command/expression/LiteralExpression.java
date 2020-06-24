@@ -14,8 +14,6 @@ import org.w3c.dom.Element;
  */
 public abstract class LiteralExpression extends Expression {
 
-    @Override
-    public abstract LiteralExpression getCopy();
 
     public static LiteralExpression parse(final Element element) throws XMLParseError {
         LiteralExpression literal;

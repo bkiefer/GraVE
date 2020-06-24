@@ -40,23 +40,8 @@ public final class MemberDefinition extends SyntaxObject {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "MemberDefinition(" + mName + ", " + mType + ")";
-    }
-
-    @Override
     public String getConcreteSyntax() {
         return mName + " : " + mType;
-    }
-
-    @Override
-    public String getFormattedSyntax() {
-        return mName + " : #r#" + mType;
-    }
-
-    @Override
-    public MemberDefinition getCopy() {
-        return new MemberDefinition(mName, mType);
     }
 
     @Override

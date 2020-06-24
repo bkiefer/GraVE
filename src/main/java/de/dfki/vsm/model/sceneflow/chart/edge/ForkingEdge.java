@@ -47,11 +47,6 @@ public class ForkingEdge extends AbstractEdge {
         return null;
     }
 
-    // TODO:
-    public ForkingEdge getCopy() {
-        return new ForkingEdge(mTargetUnid, mSourceUnid, mTargetNode, mSourceNode, mGraphics.getCopy(), getCopyOfCmdList(),
-                         getCopyOfAltStartNodeMap());
-    }
 
     public void writeXML(IOSIndentWriter out) throws XMLWriteError {
         String   start = "";

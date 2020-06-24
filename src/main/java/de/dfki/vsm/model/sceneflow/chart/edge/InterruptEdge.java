@@ -61,12 +61,6 @@ public class InterruptEdge extends AbstractEdge {
         return null;
     }
 
-    // TODO:
-    @Override
-    public InterruptEdge getCopy() {
-        return new InterruptEdge(mTargetUnid, mSourceUnid, mTargetNode, mSourceNode, mGraphics.getCopy(), getCopyOfCmdList(),
-                         getCopyOfAltStartNodeMap(), mCondition.getCopy());
-    }
 
     @Override
     public void writeXML(IOSIndentWriter out) throws XMLWriteError {

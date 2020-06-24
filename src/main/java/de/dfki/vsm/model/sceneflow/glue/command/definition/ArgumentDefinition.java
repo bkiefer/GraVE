@@ -39,18 +39,8 @@ public final class ArgumentDefinition extends SyntaxObject {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "ArgumentDefinition(" + mType + " " + mName + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return "ArgumentDefinition(" + mType + " " + mName + ")";//getAbstractSyntax();
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return "ArgumentDefinition(" + mType + " " + mName + ")";//
     }
 
     @Override
@@ -64,12 +54,6 @@ public final class ArgumentDefinition extends SyntaxObject {
         mType = element.getAttribute("type");
     }
 
-    @Override
-    public final ArgumentDefinition getCopy() {
-        return new ArgumentDefinition(mName, mType);
-    }
-
-    
     public final String getPrettyType() {
         String pretty = mType;
 

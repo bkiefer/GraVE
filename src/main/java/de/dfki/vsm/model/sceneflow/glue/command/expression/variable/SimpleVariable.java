@@ -24,23 +24,8 @@ public final class SimpleVariable extends VariableExpression {
     }
 
     @Override
-    public final String getAbstractSyntax() {
-        return "SimpleVariable(" + mName + ")";
-    }
-
-    @Override
     public final String getConcreteSyntax() {
         return mName;
-    }
-
-    @Override
-    public final String getFormattedSyntax() {
-        return mName;
-    }
-
-    @Override
-    public final SimpleVariable getCopy() {
-        return new SimpleVariable(mName);
     }
 
     @Override
