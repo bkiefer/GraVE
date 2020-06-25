@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.*;
@@ -14,9 +13,6 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.dfki.grave.model.flow.geom.ControlPoint;
-import de.dfki.grave.model.flow.geom.EdgeArrow;
 
 /**
  * @author Gregor Mehlmann
@@ -67,12 +63,7 @@ public abstract class AbstractEdge implements ContentHolder {
   protected Position mSourceCtrlPoint; // relative, not absolute
   @XmlElement(name="TargetCtrl")
   protected Position mTargetCtrlPoint; // relative, not absolute
-  /**/
 
-  // DEPRECATED
-  @Deprecated
-  protected EdgeArrow mArrow = null;
-  
   @XmlElement(name="Commands")
   protected String mCmdList = null;
 
@@ -164,51 +155,7 @@ public abstract class AbstractEdge implements ContentHolder {
     mTargetNode = target;
     mTargetUnid = target.getId();
   }
-
-  /* TODO: DROP AFTER REVAMP */
-  @XmlElement(name="Connection")
-  public final EdgeArrow getArrow() {
-    return mArrow;
-  }
-
-  /* TODO: DROP AFTER REVAMP */
-  public final void setArrow(final EdgeArrow value) {
-    mArrow = value;
-  }
-
-  /* TODO: DROP AFTER REVAMP: Only keep dock occupation at the beginning */
-  public final void arrowToDock() {
-    if (mSourceCtrlPoint != null) {
-      // only occupy docks
-      getSourceNode().occupyDock(mSourceDock);
-      getTargetNode().occupyDock(mTargetDock);
-      return;
-    }
-    EdgeArrow arr = getArrow();
-    List<ControlPoint> pl = arr.getPointList();
-    // For start and target node:
-    // a) find a dock close to the dock point
-    // b) turn the absolute control point into a relative control point
-    mSourceDock = getSourceNode().getNearestFreeDock(pl.get(0).getPoint(), true);
-    mTargetDock = getTargetNode().getNearestFreeDock(pl.get(1).getPoint(), false);
-    getSourceNode().occupyDock(mSourceDock);
-    getTargetNode().occupyDock(mTargetDock);
-    Position cp = pl.get(0).getCtrlPoint();
-    cp.translate(-pl.get(0).getXPos(), -pl.get(0).getYPos());
-    mSourceCtrlPoint = new Position(cp.getXPos(), cp.getYPos());
-    cp = pl.get(1).getCtrlPoint();
-    cp.translate(-pl.get(1).getXPos(), -pl.get(1).getYPos());
-    mTargetCtrlPoint = new Position(cp.getXPos(), cp.getYPos());
-  }
-
-  // TODO: DROP AFTER REVAMP
-  public void translate(int deltaX, int deltaY) {
-    for (ControlPoint cp : mArrow.getPointList()) {
-      cp.setCtrlXPos(cp.getCtrlXPos() + deltaX);
-      cp.setCtrlYPos(cp.getCtrlYPos() + deltaY);
-    }
-  }
-
+  
   @XmlTransient
   public final String getCmdList() {
     return mCmdList;
@@ -314,13 +261,14 @@ public abstract class AbstractEdge implements ContentHolder {
   /******************** READING THE GRAPH FROM FILE **********************/
   /***********************************************************************/
   
-  /** Only for establishTargetNodes. TODO: should go */
+  /** Only for establishTargetNodes! */
   final void setNodes(BasicNode source, BasicNode target) {
     mSourceNode = source;
     mSourceUnid = source.getId();
     mTargetNode = target;
-    //mTargetUnid = target.getId(); // already set
-    arrowToDock();
+    // occupy docks
+    getSourceNode().occupyDock(mSourceDock);
+    getTargetNode().occupyDock(mTargetDock);
   }
 
   /*********************************************************************/
@@ -345,7 +293,6 @@ public abstract class AbstractEdge implements ContentHolder {
     BasicNode targetCopy = orig2copy.get(mTargetNode);
     edgeCopy.connect(sourceCopy, targetCopy);
     sourceCopy.addEdge(edgeCopy);
-    if (mArrow != null) edgeCopy.mArrow = mArrow.deepCopy();
     edgeCopy.mCmdList = mCmdList;
     return edgeCopy;
   }
@@ -392,11 +339,6 @@ public abstract class AbstractEdge implements ContentHolder {
     if (getClass() != obj.getClass())
       return false;
     AbstractEdge other = (AbstractEdge) obj;
-    if (mArrow == null) {
-      if (other.mArrow != null)
-        return false;
-    } else if (!mArrow.equals(other.mArrow))
-      return false;
     if (mCmdList == null) {
       if (other.mCmdList != null)
         return false;
@@ -420,7 +362,6 @@ public abstract class AbstractEdge implements ContentHolder {
     int hash = 3;
     hash = mTargetUnid != null? 31 * hash + this.mTargetUnid.hashCode() : hash;
     hash = mSourceUnid != null? 31 * hash + this.mSourceUnid.hashCode() : hash;
-    hash = mArrow != null? 31 * hash + this.mArrow.hashCode() : hash;
     hash = mCmdList != null? 31 * hash + this.mCmdList.hashCode() : hash;
     return hash;
   }
