@@ -1,10 +1,12 @@
 package de.dfki.vsm.runtime.project;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import de.dfki.vsm.model.project.ProjectConfig;
 import de.dfki.vsm.model.sceneflow.chart.SceneFlow;
@@ -89,7 +91,19 @@ public class RunTimeProject {
         return ((Command.convertToVOnDA || writeProjectConfig(base)) 
             && writeSceneFlow(base));
     }
-
+    
+    // Write the project data to a directory
+    public String writeToString() {
+      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+      // 
+      if (!XMLUtilities.writeToXMLStream(mSceneFlow, stream)) {
+        // Print an error message in this case
+        mLogger.failure("Error: Cannot write sceneflow to stream.");
+        // Return failure if it does not exist
+        return null;
+      }
+      return stream.toString(Charset.forName("UTF-8"));
+    }
     // Load the executors of the project
 
     // TODO: Load Plugins and call methods on them via the evaluator in the interpreter
@@ -123,7 +137,7 @@ public class RunTimeProject {
             return false;
         }
 
-        mLogger.message("Loaded project from path '" + path + "':\n" + mProjectConfig);
+        mLogger.message("Loaded project from path '" + path + "'");
         // Return success if the project was loaded
         return true;
     }
@@ -158,7 +172,7 @@ public class RunTimeProject {
             return false;
         }
         // Print an information message in this case
-        mLogger.message("Saved project configuration file '" + file + "':\n" + mProjectConfig);
+        //mLogger.message("Saved project configuration file '" + file + "':\n" + mProjectConfig);
         // Return success if the project was saved
         return true;
     }
