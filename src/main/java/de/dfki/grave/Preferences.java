@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.UIManager;
@@ -235,8 +234,7 @@ public final class Preferences {
     
     int si = recentProjects.size();
     while (si > sMAX_RECENT_PROJECTS) {
-      recentProjects.remove(si);
-      --si;
+      recentProjects.remove(--si);
     }
     savePrefs();
   }
