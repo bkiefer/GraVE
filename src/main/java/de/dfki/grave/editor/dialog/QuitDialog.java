@@ -17,6 +17,7 @@ import de.dfki.grave.util.ResourceLoader;
  * This Dialog is open when closing a project or the system itself
  * and one or more projects have not been saved
  */
+@SuppressWarnings("serial")
 public class QuitDialog extends JDialog {
 
   // Singelton instance
@@ -49,7 +50,7 @@ public class QuitDialog extends JDialog {
   // Construction
   public QuitDialog(int quitType) {
     super(AppFrame.getInstance(), "Quit", false);
-    AppFrame.getInstance().addEscapeListener(this);
+    AppFrame.addEscapeListener(this);
     if (quitType == EXIT_DIALOG) {
       exitMessage = "<html><body>This Project has been modified but not saved. <br> Do you want to save before quitting?</body></html>";
       yesButtonMessage = "Save";

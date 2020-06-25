@@ -384,7 +384,7 @@ public class SImageView extends ImageView implements ImageObserver, MouseListene
 
       if (align.equals(TOP) || align.equals(TEXTTOP)) {
         return 0.0f;
-      } else if (align.equals(this.CENTER) || align.equals(MIDDLE) || align.equals(ABSMIDDLE)) {
+      } else if (align.equals(CENTER) || align.equals(MIDDLE) || align.equals(ABSMIDDLE)) {
         return 0.5f;
       }
     }

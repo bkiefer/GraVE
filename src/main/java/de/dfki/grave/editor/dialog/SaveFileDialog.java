@@ -23,6 +23,7 @@ import de.dfki.grave.editor.panels.SceneFlowToolBar;
  *
  * @author mfallas
  */
+@SuppressWarnings("serial")
 public class SaveFileDialog extends JFileChooser {
 
   public SaveFileDialog() {

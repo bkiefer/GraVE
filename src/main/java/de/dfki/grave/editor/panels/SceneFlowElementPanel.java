@@ -405,10 +405,7 @@ public final class SceneFlowElementPanel extends JScrollPane {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-      // TODO Auto-generated method stub
-
-    }
+    public void actionPerformed(ActionEvent e) { }
   }
 
   // The element tree of this panel

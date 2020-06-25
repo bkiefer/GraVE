@@ -12,16 +12,13 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.dfki.grave.AppFrame;
 
 /**
  * @author Sergio Soto
  * 
- * TODO: REVAMP COMPLETELY
  */
+@SuppressWarnings("serial")
 public class NewProjectDialog extends JDialog {
 
   // panels
@@ -42,13 +39,10 @@ public class NewProjectDialog extends JDialog {
   
   private String[] name;
 
-  // logger
-  private final Logger mLogger = LoggerFactory.getLogger(NewProjectDialog.class);;
-
   public NewProjectDialog(String[] newName) {
     super(AppFrame.getInstance(), "New Project", true);
     name = newName;
-    AppFrame.getInstance().addEscapeListener(this);
+    AppFrame.addEscapeListener(this);
     initComponents();
     setVisible(true);
   }
@@ -145,7 +139,6 @@ public class NewProjectDialog extends JDialog {
 
       @Override
       public boolean dispatchKeyEvent(KeyEvent ke) {
-        //boolean keyHandled = false;
         if (ke.getID() == KeyEvent.KEY_PRESSED) {
           if (!mNameTextField.hasFocus()) {
             mNameTextField.setText(mNameTextField.getText() + ke.getKeyChar());
@@ -181,8 +174,6 @@ public class NewProjectDialog extends JDialog {
 
   protected void okActionPerformed() {
     if (validateValues()) {
-      
-      //AppFrame.getInstance().newProject(mNameTextField.getText());
       dispose();
     }
   }

@@ -5,12 +5,10 @@ import static de.dfki.grave.editor.panels.WorkSpacePanel.addItem;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.*;
 
-import javax.swing.AbstractAction;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
@@ -42,7 +40,6 @@ public final class Node extends EditorComponent {
   private String mDisplayName;
 
   // The color of the node
-  // TODO: eventually move computation of color to paint component
   private Color mColor;
 
   /**
@@ -327,12 +324,10 @@ public final class Node extends EditorComponent {
     int nodeWidth = getWidth();
     int nodeHeight = getHeight();
 
-    // TODO move to update
     // Compute the font metrics and the correction offsets
     final FontMetrics fontMetrics = getFontMetrics(getFont());
     final int hOffset = (fontMetrics.getAscent() - fontMetrics.getDescent()) / 2;
     final int wIdOffset = fontMetrics.stringWidth("[" + mDataNode.getId() + "]") / 2;
-    //final int wNameOffset = fontMetrics.stringWidth(mDisplayName) / 2;
 
     // Compute the border which is relative to a nodes size.
     // It is used for visualising an end nodes and node selection
@@ -344,11 +339,7 @@ public final class Node extends EditorComponent {
     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
     // Set the color to gray while pressed
-    if (mPressed) {
-      g2d.setColor(Color.GRAY);
-    } else {
-      g2d.setColor(mColor);
-    }
+    g2d.setColor(mPressed ? Color.GRAY : mColor);
 
     int nw = nodeWidth - borderOffset * 2;
     int nh = nodeHeight - borderOffset * 2;

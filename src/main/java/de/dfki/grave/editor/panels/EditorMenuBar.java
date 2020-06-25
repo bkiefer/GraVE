@@ -1,7 +1,7 @@
 package de.dfki.grave.editor.panels;
 
-import static de.dfki.grave.Preferences.getPrefs;
 import static de.dfki.grave.AppFrame.getAccel;
+import static de.dfki.grave.Preferences.getPrefs;
 import static java.awt.event.InputEvent.*;
 
 import java.awt.Color;
@@ -236,7 +236,7 @@ public final class EditorMenuBar extends JMenuBar {
     // sth on clipboard
     mPasteMenuItem = addItem(mEditMenu, "Paste", getAccel(KeyEvent.VK_V),
         (e) -> new PasteNodesAction(getActiveEditor(), new Position(0, 0)));
-    // sth selected TODO: MISSING
+    // sth selected
     mDeleteMenuItem = addItem(mEditMenu, "Delete", getAccel(KeyEvent.VK_DELETE),
         (e) -> getActiveEditor().deleteSelected());
 

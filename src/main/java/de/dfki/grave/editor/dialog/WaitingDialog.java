@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 /**
  * Created by alvaro on 5/28/16.
  */
+@SuppressWarnings("serial")
 public class WaitingDialog extends JDialog implements Observer {
 
   private JLabel messageLabel = new JLabel("Loading...");

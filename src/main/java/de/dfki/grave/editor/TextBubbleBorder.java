@@ -2,7 +2,6 @@ package de.dfki.grave.editor;
 
 import java.awt.*;
 import java.awt.geom.Area;
-import java.awt.geom.PathIterator;
 import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.border.AbstractBorder;

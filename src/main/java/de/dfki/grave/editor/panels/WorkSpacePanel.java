@@ -14,9 +14,6 @@ import java.text.AttributedString;
 
 import javax.swing.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
@@ -27,8 +24,6 @@ import de.dfki.grave.model.flow.BasicNode;
 
 @SuppressWarnings("serial")
 public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMotionListener {
-
-  private static final Logger logger = LoggerFactory.getLogger(WorkSpacePanel.class);
 
   // Drag & Drop support
   @SuppressWarnings("unused")

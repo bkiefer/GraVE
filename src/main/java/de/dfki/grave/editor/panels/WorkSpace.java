@@ -47,7 +47,7 @@ import de.dfki.grave.util.evt.EventDispatcher;
  */
 @SuppressWarnings("serial")
 public abstract class WorkSpace extends JPanel implements ProjectElement {
-  private static final Logger logger = LoggerFactory.getLogger(WorkSpace.class);
+  protected static final Logger logger = LoggerFactory.getLogger(WorkSpace.class);
 
   // Elements to draw
   protected final Map<BasicNode, Node> mNodeSet = new IdentityHashMap<>();

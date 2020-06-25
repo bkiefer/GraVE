@@ -25,9 +25,8 @@ import javax.swing.event.UndoableEditListener;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
-import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.util.evt.EventDispatcher;
+
 
 /**
  * @author Gregor Mehlmann

@@ -1,7 +1,7 @@
 package de.dfki.grave.editor.dialog;
 
-import static de.dfki.grave.Icons.ICON_LOGO;
 import static de.dfki.grave.Constants.*;
+import static de.dfki.grave.Icons.ICON_LOGO;
 import static de.dfki.grave.editor.dialog.Dialog.getFillerBox;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -29,6 +29,7 @@ import de.dfki.grave.Preferences;
  * @author Patrick Gebhard
  * @author Gregor Mehlmann
  */
+@SuppressWarnings("serial")
 public class AboutDialog extends JDialog {
 
   // Singelton instance
@@ -67,7 +68,7 @@ public class AboutDialog extends JDialog {
   // Construction
   private AboutDialog() {
     super(AppFrame.getInstance(), "About", false);
-    AppFrame.getInstance().addEscapeListener(this);
+    AppFrame.addEscapeListener(this);
     // Init close operation
     setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
     addWindowListener(new WindowAdapter() {
@@ -164,7 +165,6 @@ public class AboutDialog extends JDialog {
     return sInstance;
   }
 
-  @SuppressWarnings("serial")
   class MyEditorPane extends JEditorPane {
 
     public MyEditorPane() {
@@ -211,8 +211,8 @@ public class AboutDialog extends JDialog {
         // fViewPort.setScrollMode(JViewport.BLIT_SCROLL_MODE);
         Rectangle viewRect = fViewPort.getViewRect();
 
-        xPos = new Double(viewRect.getX()).intValue();
-        yPos = new Double(viewRect.getY()).intValue();
+        xPos = ((Double)viewRect.getX()).intValue();
+        yPos = ((Double)viewRect.getY()).intValue();
         initialYPos = yPos;
         height = mAboutPane.getSize().height;
         configured = true;

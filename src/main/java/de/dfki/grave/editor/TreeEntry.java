@@ -10,6 +10,7 @@ import javax.swing.Icon;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 // TODO: move to util package
+@SuppressWarnings("serial")
 public final class TreeEntry extends DefaultMutableTreeNode implements Transferable {
 
   private final String mText;

@@ -63,6 +63,7 @@ public class BreadCrumb extends JPanel {
     pathElement.setBackground(new Color(255, 255, 255));
     pathElement.addMouseMotionListener(new MouseMotionAdapter() {
       // TODO: Does not work smoothly, revise
+      // TODO: DOES IT WORK AT ALL??
       @Override
       public void mouseDragged(MouseEvent e) {
         int dir = e.getX();

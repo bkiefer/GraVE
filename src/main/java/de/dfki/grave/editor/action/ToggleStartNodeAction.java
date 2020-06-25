@@ -21,14 +21,12 @@ public class ToggleStartNodeAction extends EditorAction {
   protected void doIt() {
     BasicNode mDataNode = mNode;
     mDataNode.getParentNode().setStartNode(mDataNode);
-    // TODO: maybe refresh view
   }
 
   @Override
   public void undoIt() {
     BasicNode mDataNode = mNode;
     mDataNode.getParentNode().setStartNode(oldStartNode);
-    // TODO: maybe refresh view
   }
 
   @Override

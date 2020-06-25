@@ -17,8 +17,6 @@ import de.dfki.grave.model.flow.SuperNode;
  */
 public abstract class EditorAction implements ActionListener, UndoableEdit {
 
-  //protected WorkSpace mWorkSpace;
-  
   protected ProjectEditor mEditor;
   protected SuperNode mSuperNode;
 
@@ -29,7 +27,7 @@ public abstract class EditorAction implements ActionListener, UndoableEdit {
 
   protected void refresh() {
     //mWorkSpace.revalidate(); mWorkSpace.repaint(100);
-    // TODO: WHY DOES THIS WORK, BUT NOT THE ABOVE?
+    // WHY DOES THIS WORK, BUT NOT THE ABOVE?
     // because it updates all elements of the workspace using the observer 
     // update
     if (onActiveWorkSpace())

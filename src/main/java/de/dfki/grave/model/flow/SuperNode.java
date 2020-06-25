@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.util.Pair;
-
 /**
  * @author Gregor Mehlmann
  */
