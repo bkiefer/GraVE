@@ -126,6 +126,7 @@ public abstract class EditorComponent extends JComponent
   }
 
   public void setDeselected() {
+    EventDispatcher.getInstance().convey(new ElementSelectedEvent(null));
     if (mCodeArea != null && mSelected) {
       mCodeArea.setDeselected();
     }
