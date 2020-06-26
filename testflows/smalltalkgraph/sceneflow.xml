@@ -1,0 +1,5817 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SceneFlow id="DefaultSceneFlow" name="DefaultSceneFlow" comment="" exhaustive="false" preserving="false" start="N33;" context="" package="" xmlns="xml.sceneflow.dfki.de" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="xml.sceneflow.dfki.de data/xsd/sceneflow.xsd">
+  <Define>
+    <StructType name="Meaning">
+      <Member type="String" name ="dialogAct"/>
+      <Member type="String" name ="topicObject"/>
+      <Member type="String" name ="domain"/>
+      <Member type="String" name ="mtype"/>
+    </StructType>
+  </Define>
+  <Declare>
+    <Variable type="Meaning" name ="meaning">
+      <Struct>
+        <Assign>
+          <Variable name="dialogAct"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <String value="TASK"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="topicObject"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="mtype"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Struct>
+    </Variable>
+    <Variable type="String" name ="agentId">
+      <String value=""/>
+    </Variable>
+    <Variable type="Bool" name ="timeout">
+      <Bool value="true"/>
+    </Variable>
+    <Variable type="String" name ="input">
+      <String value="null"/>
+    </Variable>
+    <Variable type="String" name ="dialogact">
+      <String value=""/>
+    </Variable>
+    <Variable type="Bool" name ="script">
+      <Bool value="false"/>
+    </Variable>
+    <Variable type="String" name ="key">
+      <String value="null"/>
+    </Variable>
+    <Variable type="String" name ="proposedTopic">
+      <String value=""/>
+    </Variable>
+  </Declare>
+  <Commands>
+  </Commands>
+  <VariableBadge>
+    <Position x-pos="1" y-pos="4"/>
+  </VariableBadge>
+  <Node id="N33" name="N33" exhaustive="false" preserving="false" history="false">
+    <Define>
+    </Define>
+    <Declare>
+    </Declare>
+    <Commands>
+      <UserCommand name="println">
+        <String value="Waiting for agentId"/>
+      </UserCommand>
+    </Commands>
+    <CEdge target="N9" start="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="300" y-pos="435" control-x-pos="502" control-y-pos="435"/>
+          <Point x-pos="750" y-pos="435" control-x-pos="547" control-y-pos="435"/>
+        </Arrow>
+      </Graphics>
+      <Neq>
+        <Variable name="agentId"/>
+        <String value=""/>
+      </Neq>
+    </CEdge>
+    <TEdge target="N33" start="" timeout="100000">
+    <Graphics>
+      <Arrow>
+        <Point x-pos="267" y-pos="392" control-x-pos="291" control-y-pos="306"/>
+        <Point x-pos="294" y-pos="412" control-x-pos="372" control-y-pos="366"/>
+      </Arrow>
+    </Graphics>
+    </TEdge>
+    <Graphics>
+      <Position x-pos="210" y-pos="390"/>
+    </Graphics>
+  </Node>
+  <Node id="N9" name="Distributor" exhaustive="false" preserving="false" history="false">
+    <Define>
+    </Define>
+    <Declare>
+    </Declare>
+    <Commands>
+      <UserCommand name="println">
+        <String value="Distributor!"/>
+      </UserCommand>
+      <Assign>
+        <Variable name="key"/>
+        <Expression>
+          <UserCommand name="selectConversationThread">
+            <Variable name="agentId"/>
+          </UserCommand>
+        </Expression>
+      </Assign>
+      <Assign>
+        <Variable name="domain"/>
+        <Expression>
+          <String value="UNSET"/>
+        </Expression>
+      </Assign>
+      <UserCommand name="println">
+        <Add>
+          <String value="Distributor: key is: "/>
+          <Variable name="key"/>
+        </Add>
+      </UserCommand>
+    </Commands>
+    <CEdge target="S6" start="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="752" y-pos="423" control-x-pos="680" control-y-pos="403"/>
+          <Point x-pos="570" y-pos="357" control-x-pos="644" control-y-pos="376"/>
+        </Arrow>
+      </Graphics>
+      <Eq>
+        <Variable name="key"/>
+        <String value="Farewell"/>
+      </Eq>
+    </CEdge>
+    <CEdge target="S8" start="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="795" y-pos="480" control-x-pos="796" control-y-pos="574"/>
+          <Point x-pos="807" y-pos="660" control-x-pos="790" control-y-pos="634"/>
+        </Arrow>
+      </Graphics>
+      <Eq>
+        <Variable name="key"/>
+        <String value="Compliment"/>
+      </Eq>
+    </CEdge>
+    <CEdge target="S10" start="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="783" y-pos="392" control-x-pos="763" control-y-pos="320"/>
+          <Point x-pos="731" y-pos="210" control-x-pos="774" control-y-pos="284"/>
+        </Arrow>
+      </Graphics>
+      <Eq>
+        <Variable name="key"/>
+        <String value="Clarify"/>
+      </Eq>
+    </CEdge>
+    <CEdge target="S12" start="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="763" y-pos="467" control-x-pos="695" control-y-pos="534"/>
+          <Point x-pos="570" y-pos="589" control-x-pos="664" control-y-pos="534"/>
+        </Arrow>
+      </Graphics>
+      <Eq>
+        <Variable name="key"/>
+        <String value="Wait"/>
+      </Eq>
+    </CEdge>
+    <CEdge target="S14" start="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="838" y-pos="423" control-x-pos="1005" control-y-pos="376"/>
+          <Point x-pos="1200" y-pos="281" control-x-pos="1025" control-y-pos="382"/>
+        </Arrow>
+      </Graphics>
+      <Eq>
+        <Variable name="key"/>
+        <String value="RI_You"/>
+      </Eq>
+    </CEdge>
+    <CEdge target="S15" start="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="840" y-pos="435" control-x-pos="1001" control-y-pos="435"/>
+          <Point x-pos="1200" y-pos="499" control-x-pos="1038" control-y-pos="405"/>
+        </Arrow>
+      </Graphics>
+      <Eq>
+        <Variable name="key"/>
+        <String value="PI_Me"/>
+      </Eq>
+    </CEdge>
+    <CEdge target="S17" start="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="807" y-pos="392" control-x-pos="838" control-y-pos="279"/>
+          <Point x-pos="885" y-pos="120" control-x-pos="885" control-y-pos="238"/>
+        </Arrow>
+      </Graphics>
+      <Eq>
+        <Variable name="key"/>
+        <String value="PI_ME_System"/>
+      </Eq>
+    </CEdge>
+    <CEdge target="S18" start="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="817" y-pos="396" control-x-pos="894" control-y-pos="259"/>
+          <Point x-pos="1020" y-pos="120" control-x-pos="862" control-y-pos="277"/>
+        </Arrow>
+      </Graphics>
+      <Eq>
+        <Variable name="key"/>
+        <String value="RI_YOU_System"/>
+      </Eq>
+    </CEdge>
+    <CEdge target="S19" start="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="817" y-pos="474" control-x-pos="863" control-y-pos="556"/>
+          <Point x-pos="930" y-pos="660" control-x-pos="835" control-y-pos="565"/>
+        </Arrow>
+      </Graphics>
+      <Eq>
+        <Variable name="key"/>
+        <String value="COMPLIMENT_System"/>
+      </Eq>
+    </CEdge>
+    <Graphics>
+      <Position x-pos="750" y-pos="390"/>
+    </Graphics>
+  </Node>
+  <SuperNode id="S6" name="Farewell" comment="" exhaustive="false" preserving="false" start="N68;">
+    <Define>
+    </Define>
+    <Declare>
+    </Declare>
+    <Commands>
+    </Commands>
+    <Graphics>
+      <Position x-pos="480" y-pos="300"/>
+    </Graphics>
+    <VariableBadge>
+      <Position x-pos="10" y-pos="10"/>
+    </VariableBadge>
+    <Node id="N45" name="History" exhaustive="false" preserving="false" history="true">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="120" y-pos="30"/>
+      </Graphics>
+    </Node>
+    <Node id="N68" name="Exit" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <String value=""/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="dialogPartner"/>
+          <Expression>
+            <String value=""/>
+          </Expression>
+        </Assign>
+        <UserCommand name="deliverMeaning">
+          <Variable name="agentId"/>
+          <String value="FAREWELL"/>
+          <String value=""/>
+        </UserCommand>
+      </Commands>
+      <Graphics>
+        <Position x-pos="120" y-pos="390"/>
+      </Graphics>
+    </Node>
+  </SuperNode>
+  <SuperNode id="S10" name="Clarify" comment="" exhaustive="false" preserving="false" start="N15;">
+    <Define>
+    </Define>
+    <Declare>
+      <Variable type="Int" name ="lastSystemTurn">
+        <Int value="0"/>
+      </Variable>
+    </Declare>
+    <Commands>
+    </Commands>
+    <EEdge target="N9" start ="">
+    <Graphics>
+      <Arrow>
+        <Point x-pos="717" y-pos="210" control-x-pos="736" control-y-pos="284"/>
+        <Point x-pos="773" y-pos="396" control-x-pos="736" control-y-pos="331"/>
+      </Arrow>
+    </Graphics>
+    </EEdge>
+    <Graphics>
+      <Position x-pos="660" y-pos="120"/>
+    </Graphics>
+    <VariableBadge>
+      <Position x-pos="10" y-pos="10"/>
+    </VariableBadge>
+    <Node id="N14" name="History" exhaustive="false" preserving="false" history="true">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="30" y-pos="300"/>
+      </Graphics>
+    </Node>
+    <Node id="N15" name="N15" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="CLARIFY"/>
+              <String value=""/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N16" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="390" y-pos="435" control-x-pos="457" control-y-pos="435"/>
+            <Point x-pos="570" y-pos="435" control-x-pos="502" control-y-pos="435"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N219" start="" timeout="5000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="388" y-pos="423" control-x-pos="459" control-y-pos="403"/>
+          <Point x-pos="572" y-pos="357" control-x-pos="500" control-y-pos="376"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="300" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N16" name="N16" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <Member name="meaning" member="domain">
+            </Member>
+          </Expression>
+        </Assign>
+      </Commands>
+      <Graphics>
+        <Position x-pos="570" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N219" name="N219" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="570" y-pos="300"/>
+      </Graphics>
+    </Node>
+  </SuperNode>
+  <SuperNode id="S12" name="Wait" comment="" exhaustive="false" preserving="false" start="N27;">
+    <Define>
+    </Define>
+    <Declare>
+    </Declare>
+    <Commands>
+    </Commands>
+    <EEdge target="N9" start ="">
+    <Graphics>
+      <Arrow>
+        <Point x-pos="570" y-pos="570" control-x-pos="664" control-y-pos="475"/>
+        <Point x-pos="756" y-pos="457" control-x-pos="673" control-y-pos="503"/>
+      </Arrow>
+    </Graphics>
+    </EEdge>
+    <Graphics>
+      <Position x-pos="480" y-pos="570"/>
+    </Graphics>
+    <VariableBadge>
+      <Position x-pos="10" y-pos="10"/>
+    </VariableBadge>
+    <Node id="N28" name="History" exhaustive="false" preserving="false" history="true">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="30" y-pos="30"/>
+      </Graphics>
+    </Node>
+    <Node id="N27" name="N27" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <CEdge target="N29" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="390" y-pos="435" control-x-pos="457" control-y-pos="435"/>
+            <Point x-pos="660" y-pos="435" control-x-pos="592" control-y-pos="435"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N195" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="388" y-pos="423" control-x-pos="459" control-y-pos="403"/>
+          <Point x-pos="572" y-pos="357" control-x-pos="500" control-y-pos="376"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="300" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N29" name="Analyse" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <Member name="meaning" member="domain">
+            </Member>
+          </Expression>
+        </Assign>
+      </Commands>
+      <Graphics>
+        <Position x-pos="660" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N195" name="N195" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="570" y-pos="300"/>
+      </Graphics>
+    </Node>
+  </SuperNode>
+  <SuperNode id="S13" name="Greet" comment="" exhaustive="false" preserving="false" start="N32;">
+    <Define>
+    </Define>
+    <Declare>
+      <Variable type="Int" name ="lastSystemTurn">
+        <Neg>
+          <Int value="1"/>
+        </Neg>
+      </Variable>
+    </Declare>
+    <Commands>
+    </Commands>
+    <EEdge target="N9" start ="">
+    <Graphics>
+      <Arrow>
+        <Point x-pos="570" y-pos="281" control-x-pos="664" control-y-pos="335"/>
+        <Point x-pos="756" y-pos="412" control-x-pos="673" control-y-pos="363"/>
+      </Arrow>
+    </Graphics>
+    </EEdge>
+    <Graphics>
+      <Position x-pos="480" y-pos="210"/>
+    </Graphics>
+    <VariableBadge>
+      <Position x-pos="21" y-pos="37"/>
+    </VariableBadge>
+    <Node id="N5" name="History" exhaustive="false" preserving="false" history="true">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="30" y-pos="480"/>
+      </Graphics>
+    </Node>
+    <Node id="N30" name="Greet" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="GREETING"/>
+              <String value=""/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <Graphics>
+        <Position x-pos="750" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N31" name="Wait" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <CEdge target="N30" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="827" y-pos="287" control-x-pos="898" control-y-pos="320"/>
+            <Point x-pos="840" y-pos="435" control-x-pos="898" control-y-pos="425"/>
+          </Arrow>
+        </Graphics>
+        <Not>
+          <Eq>
+            <Variable name="input"/>
+            <String value="null"/>
+          </Eq>
+        </Not>
+      </CEdge>
+      <TEdge target="N31" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="827" y-pos="287" control-x-pos="1018" control-y-pos="305"/>
+          <Point x-pos="840" y-pos="255" control-x-pos="968" control-y-pos="200"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="210"/>
+      </Graphics>
+    </Node>
+    <Node id="N32" name="Start" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="println">
+          <Add>
+            <String value="Graph said Starting with Agent id "/>
+            <Variable name="agentId"/>
+          </Add>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N31" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="838" y-pos="87" control-x-pos="898" control-y-pos="110"/>
+          <Point x-pos="838" y-pos="243" control-x-pos="898" control-y-pos="215"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="30"/>
+      </Graphics>
+    </Node>
+  </SuperNode>
+  <SuperNode id="S8" name="Compliment" comment="" exhaustive="false" preserving="false" start="N17;">
+    <Define>
+    </Define>
+    <Declare>
+      <Variable type="String" name ="ID">
+        <String value=""/>
+      </Variable>
+      <Variable type="Int" name ="lastSystemTurn">
+        <Neg>
+          <Int value="1"/>
+        </Neg>
+      </Variable>
+      <Variable type="String" name ="threadTopic">
+        <String value="null"/>
+      </Variable>
+      <Variable type="Bool" name ="awaitResponse">
+        <Bool value="false"/>
+      </Variable>
+      <Variable type="String" name ="threadDomain">
+        <String value="COMPLIMENT"/>
+      </Variable>
+    </Declare>
+    <Commands>
+    </Commands>
+    <EEdge target="N9" start ="">
+    <Graphics>
+      <Arrow>
+        <Point x-pos="795" y-pos="660" control-x-pos="795" control-y-pos="592"/>
+        <Point x-pos="807" y-pos="478" control-x-pos="825" control-y-pos="542"/>
+      </Arrow>
+    </Graphics>
+    </EEdge>
+    <Graphics>
+      <Position x-pos="750" y-pos="660"/>
+    </Graphics>
+    <VariableBadge>
+      <Position x-pos="10" y-pos="10"/>
+    </VariableBadge>
+    <Node id="N10" name="History" exhaustive="false" preserving="false" history="true">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="30" y-pos="300"/>
+      </Graphics>
+    </Node>
+    <Node id="N17" name="N17" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="println">
+          <String value="N17: Compliment Subgraph!"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="threadTopic"/>
+          <Expression>
+            <Member name="meaning" member="topicObject">
+            </Member>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <PEdge target="N18" start="" probability="50">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="208" y-pos="423" control-x-pos="239" control-y-pos="414"/>
+            <Point x-pos="396" y-pos="367" control-x-pos="367" control-y-pos="383"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N19" start="" probability="30">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="204" y-pos="458" control-x-pos="232" control-y-pos="474"/>
+            <Point x-pos="396" y-pos="502" control-x-pos="367" control-y-pos="485"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N20" start="" probability="20">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="187" y-pos="396" control-x-pos="233" control-y-pos="313"/>
+            <Point x-pos="413" y-pos="204" control-x-pos="366" control-y-pos="286"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="120" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N18" name="N18" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="THANK"/>
+              <String value=""/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <Graphics>
+        <Position x-pos="390" y-pos="300"/>
+      </Graphics>
+    </Node>
+    <Node id="N19" name="N19" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="DOUBT"/>
+              <String value="compliment"/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N23" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="478" y-pos="513" control-x-pos="590" control-y-pos="481"/>
+            <Point x-pos="752" y-pos="447" control-x-pos="639" control-y-pos="478"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N24" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="480" y-pos="525" control-x-pos="730" control-y-pos="525"/>
+          <Point x-pos="1022" y-pos="537" control-x-pos="782" control-y-pos="603"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="390" y-pos="480"/>
+      </Graphics>
+    </Node>
+    <Node id="N20" name="N20" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="THANK"/>
+              <String value="compliment"/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N21" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="478" y-pos="153" control-x-pos="585" control-y-pos="123"/>
+            <Point x-pos="750" y-pos="165" control-x-pos="637" control-y-pos="165"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N22" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="478" y-pos="153" control-x-pos="714" control-y-pos="87"/>
+          <Point x-pos="1020" y-pos="75" control-x-pos="772" control-y-pos="75"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="390" y-pos="120"/>
+      </Graphics>
+    </Node>
+    <Node id="N21" name="Analyse" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <Member name="meaning" member="domain">
+            </Member>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N22" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="840" y-pos="165" control-x-pos="907" control-y-pos="165"/>
+            <Point x-pos="1022" y-pos="87" control-x-pos="957" control-y-pos="105"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="WEL"/>
+        </Eq>
+      </CEdge>
+      <EEdge target="N38" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="838" y-pos="177" control-x-pos="909" control-y-pos="196"/>
+          <Point x-pos="1022" y-pos="243" control-x-pos="950" control-y-pos="223"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="120"/>
+      </Graphics>
+    </Node>
+    <Node id="N22" name="N22" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1020" y-pos="30"/>
+      </Graphics>
+    </Node>
+    <Node id="N23" name="Analyse" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <Member name="meaning" member="domain">
+            </Member>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N24" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="840" y-pos="435" control-x-pos="907" control-y-pos="435"/>
+            <Point x-pos="1020" y-pos="525" control-x-pos="952" control-y-pos="525"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="ACCEPT"/>
+        </Eq>
+      </CEdge>
+      <EEdge target="N41" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="834" y-pos="412" control-x-pos="862" control-y-pos="395"/>
+          <Point x-pos="936" y-pos="367" control-x-pos="907" control-y-pos="383"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N24" name="N24" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="THANK"/>
+              <String value="compliment"/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1020" y-pos="480"/>
+      </Graphics>
+    </Node>
+    <Node id="N38" name="N38" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1020" y-pos="210"/>
+      </Graphics>
+    </Node>
+    <Node id="N41" name="N41" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="930" y-pos="300"/>
+      </Graphics>
+    </Node>
+  </SuperNode>
+  <TemplateSuperNode id="S19" name="Compliment_System" comment="" exhaustive="false" preserving="false" start="N172;">
+    <EntranceEdge type="CEdge" source="N9">
+      <CEdge target="" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="0" y-pos="0" control-x-pos="0" control-y-pos="0"/>
+            <Point x-pos="0" y-pos="0" control-x-pos="0" control-y-pos="0"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="key"/>
+          <Variable name="ID"/>
+        </Eq>
+      </CEdge>
+    </EntranceEdge>
+    <Define>
+    </Define>
+    <Declare>
+      <Variable type="String" name ="ID">
+        <String value=""/>
+      </Variable>
+      <Variable type="Int" name ="lastSystemTurn">
+        <Neg>
+          <Int value="1"/>
+        </Neg>
+      </Variable>
+      <Variable type="String" name ="threadTopic">
+        <String value="null"/>
+      </Variable>
+      <Variable type="Bool" name ="awaitResponse">
+        <Bool value="false"/>
+      </Variable>
+      <Variable type="String" name ="threadDomain">
+        <String value="COMPLIMENT"/>
+      </Variable>
+    </Declare>
+    <Commands>
+    </Commands>
+    <EEdge target="N9" start ="">
+    <Graphics>
+      <Arrow>
+        <Point x-pos="949" y-pos="660" control-x-pos="894" control-y-pos="565"/>
+        <Point x-pos="827" y-pos="467" control-x-pos="894" control-y-pos="534"/>
+      </Arrow>
+    </Graphics>
+    </EEdge>
+    <Graphics>
+      <Position x-pos="930" y-pos="660"/>
+    </Graphics>
+    <VariableBadge>
+      <Position x-pos="10" y-pos="10"/>
+    </VariableBadge>
+    <Node id="N171" name="History" exhaustive="false" preserving="false" history="true">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="30" y-pos="300"/>
+      </Graphics>
+    </Node>
+    <Node id="N172" name="N17" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="threadTopic"/>
+          <Expression>
+            <Variable name="proposedTopic"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="COMPLIMENT"/>
+              <Variable name="threadTopic"/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="false"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N177" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="390" y-pos="435" control-x-pos="457" control-y-pos="435"/>
+            <Point x-pos="570" y-pos="435" control-x-pos="502" control-y-pos="435"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N180" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="388" y-pos="423" control-x-pos="459" control-y-pos="403"/>
+          <Point x-pos="572" y-pos="357" control-x-pos="500" control-y-pos="376"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="300" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N177" name="N19" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N189" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="660" y-pos="435" control-x-pos="682" control-y-pos="435"/>
+          <Point x-pos="750" y-pos="435" control-x-pos="727" control-y-pos="435"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="570" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N189" name="Analyse" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <Member name="meaning" member="domain">
+            </Member>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N190" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="838" y-pos="423" control-x-pos="950" control-y-pos="391"/>
+            <Point x-pos="1112" y-pos="357" control-x-pos="999" control-y-pos="388"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="THANK"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N175" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="838" y-pos="447" control-x-pos="950" control-y-pos="478"/>
+            <Point x-pos="1112" y-pos="513" control-x-pos="999" control-y-pos="481"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="DOUBT"/>
+        </Eq>
+      </CEdge>
+      <EEdge target="N196" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="840" y-pos="435" control-x-pos="1042" control-y-pos="435"/>
+          <Point x-pos="1290" y-pos="435" control-x-pos="1087" control-y-pos="435"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N190" name="N24" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="WEL"/>
+              <Variable name="threadTopic"/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N196" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1194" y-pos="368" control-x-pos="1222" control-y-pos="384"/>
+          <Point x-pos="1296" y-pos="412" control-x-pos="1267" control-y-pos="395"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1110" y-pos="300"/>
+      </Graphics>
+    </Node>
+    <Node id="N196" name="N41" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1290" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N175" name="N175" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="deliverMeaning">
+          <Variable name="agentId"/>
+          <String value="REASS"/>
+          <Variable name="threadtopic"/>
+        </UserCommand>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N196" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1194" y-pos="502" control-x-pos="1222" control-y-pos="485"/>
+          <Point x-pos="1296" y-pos="457" control-x-pos="1267" control-y-pos="473"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1110" y-pos="480"/>
+      </Graphics>
+    </Node>
+    <Node id="N180" name="N180" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="570" y-pos="300"/>
+      </Graphics>
+    </Node>
+  </TemplateSuperNode>
+  <TemplateSuperNode id="S18" name="Request_Info_You_System" comment="" exhaustive="false" preserving="false" start="N155;">
+    <EntranceEdge type="CEdge" source="N9">
+      <CEdge target="" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="0" y-pos="0" control-x-pos="0" control-y-pos="0"/>
+            <Point x-pos="0" y-pos="0" control-x-pos="0" control-y-pos="0"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="key"/>
+          <Variable name="ID"/>
+        </Eq>
+      </CEdge>
+    </EntranceEdge>
+    <Define>
+    </Define>
+    <Declare>
+      <Variable type="String" name ="ID">
+        <String value="null"/>
+      </Variable>
+      <Variable type="Bool" name ="awaitResponse">
+        <Bool value="false"/>
+      </Variable>
+      <Variable type="String" name ="threadDomain">
+        <String value="SMALLTALK"/>
+      </Variable>
+      <Variable type="Int" name ="lastSystemTurn">
+        <Neg>
+          <Int value="1"/>
+        </Neg>
+      </Variable>
+      <Variable type="String" name ="threadTopic">
+        <String value="null"/>
+      </Variable>
+      <Variable type="Int" name ="importance">
+        <Int value="1"/>
+      </Variable>
+    </Declare>
+    <Commands>
+    </Commands>
+    <EEdge target="N9" start ="">
+    <Graphics>
+      <Arrow>
+        <Point x-pos="1039" y-pos="120" control-x-pos="948" control-y-pos="277"/>
+        <Point x-pos="827" y-pos="403" control-x-pos="939" control-y-pos="291"/>
+      </Arrow>
+    </Graphics>
+    </EEdge>
+    <Graphics>
+      <Position x-pos="1020" y-pos="30"/>
+    </Graphics>
+    <VariableBadge>
+      <Position x-pos="10" y-pos="10"/>
+    </VariableBadge>
+    <Node id="N154" name="History" exhaustive="false" preserving="false" history="true">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="30" y-pos="30"/>
+      </Graphics>
+    </Node>
+    <Node id="N155" name="S:RI_YOU" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="threadTopic"/>
+          <Expression>
+            <Variable name="proposedTopic"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="REQUEST_INFO_YOU"/>
+              <Variable name="threadTopic"/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="false"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N156" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="390" y-pos="435" control-x-pos="412" control-y-pos="435"/>
+            <Point x-pos="660" y-pos="435" control-x-pos="637" control-y-pos="435"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N164" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="345" y-pos="390" control-x-pos="345" control-y-pos="367"/>
+          <Point x-pos="345" y-pos="300" control-x-pos="345" control-y-pos="322"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="300" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N156" name="analyse()" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N157" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="750" y-pos="435" control-x-pos="817" control-y-pos="435"/>
+          <Point x-pos="840" y-pos="435" control-x-pos="772" control-y-pos="435"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="660" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N157" name="Analyse" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <Member name="meaning" member="domain">
+            </Member>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N165" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="917" y-pos="403" control-x-pos="959" control-y-pos="360"/>
+            <Point x-pos="1123" y-pos="287" control-x-pos="1080" control-y-pos="329"/>
+          </Arrow>
+        </Graphics>
+        <Or>
+          <Eq>
+            <Variable name="dialogact"/>
+            <String value="ACCEPT"/>
+          </Eq>
+          <Eq>
+            <Variable name="dialogact"/>
+            <String value="IF_P"/>
+          </Eq>
+        </Or>
+      </CEdge>
+      <CEdge target="N167" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="930" y-pos="435" control-x-pos="952" control-y-pos="435"/>
+            <Point x-pos="1110" y-pos="435" control-x-pos="1087" control-y-pos="435"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="REJECT"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N210" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="928" y-pos="447" control-x-pos="999" control-y-pos="466"/>
+            <Point x-pos="1112" y-pos="603" control-x-pos="1040" control-y-pos="583"/>
+          </Arrow>
+        </Graphics>
+        <Or>
+          <Eq>
+            <Variable name="dialogact"/>
+            <String value="PROVIDE_INFO_ME"/>
+          </Eq>
+          <Eq>
+            <Variable name="dialogact"/>
+            <String value="PROVIDE_INFO"/>
+          </Eq>
+        </Or>
+      </CEdge>
+      <EEdge target="N169" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="885" y-pos="390" control-x-pos="885" control-y-pos="367"/>
+          <Point x-pos="885" y-pos="300" control-x-pos="885" control-y-pos="322"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="840" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N164" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="300" y-pos="210"/>
+      </Graphics>
+    </Node>
+    <Node id="N165" name="U:ACC" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1110" y-pos="210"/>
+      </Graphics>
+    </Node>
+    <Node id="N167" name="U:REJ" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1162" y-pos="389"/>
+      </Graphics>
+    </Node>
+    <Node id="N168" name="U:PI_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_P"/>
+              <Variable name="threadTopic"/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N209" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1380" y-pos="615" control-x-pos="1447" control-y-pos="615"/>
+          <Point x-pos="1470" y-pos="615" control-x-pos="1402" control-y-pos="615"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1290" y-pos="570"/>
+      </Graphics>
+    </Node>
+    <Node id="N169" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="840" y-pos="210"/>
+      </Graphics>
+    </Node>
+    <Node id="N209" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1470" y-pos="570"/>
+      </Graphics>
+    </Node>
+    <Node id="N210" name="N210" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <PEdge target="N168" start="" probability="50">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1200" y-pos="615" control-x-pos="1222" control-y-pos="615"/>
+            <Point x-pos="1290" y-pos="615" control-x-pos="1267" control-y-pos="615"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N215" start="" probability="50">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1194" y-pos="592" control-x-pos="1222" control-y-pos="575"/>
+            <Point x-pos="1296" y-pos="457" control-x-pos="1267" control-y-pos="473"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="1110" y-pos="570"/>
+      </Graphics>
+    </Node>
+    <Node id="N215" name="N215" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO_ME"/>
+              <Variable name="threadTopic"/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N209" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1367" y-pos="467" control-x-pos="1409" control-y-pos="509"/>
+          <Point x-pos="1483" y-pos="583" control-x-pos="1440" control-y-pos="540"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1290" y-pos="390"/>
+      </Graphics>
+    </Node>
+  </TemplateSuperNode>
+  <TemplateSuperNode id="S17" name="Provide_Info_Me_System" comment="" exhaustive="false" preserving="false" start="N108;">
+    <EntranceEdge type="CEdge" source="N9">
+      <CEdge target="" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="0" y-pos="0" control-x-pos="0" control-y-pos="0"/>
+            <Point x-pos="0" y-pos="0" control-x-pos="0" control-y-pos="0"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="key"/>
+          <Variable name="ID"/>
+        </Eq>
+      </CEdge>
+    </EntranceEdge>
+    <Define>
+    </Define>
+    <Declare>
+      <Variable type="String" name ="ID">
+        <String value="null"/>
+      </Variable>
+      <Variable type="Bool" name ="awaitResponse">
+        <Bool value="false"/>
+      </Variable>
+      <Variable type="String" name ="threadDomain">
+        <String value="SMALLTALK"/>
+      </Variable>
+      <Variable type="Int" name ="lastSystemTurn">
+        <Neg>
+          <Int value="1"/>
+        </Neg>
+      </Variable>
+      <Variable type="String" name ="threadTopic">
+        <String value="null"/>
+      </Variable>
+      <Variable type="Int" name ="importance">
+        <Int value="1"/>
+      </Variable>
+    </Declare>
+    <Commands>
+    </Commands>
+    <EEdge target="N9" start ="">
+    <Graphics>
+      <Arrow>
+        <Point x-pos="873" y-pos="120" control-x-pos="841" control-y-pos="238"/>
+        <Point x-pos="795" y-pos="390" control-x-pos="795" control-y-pos="271"/>
+      </Arrow>
+    </Graphics>
+    </EEdge>
+    <Graphics>
+      <Position x-pos="840" y-pos="30"/>
+    </Graphics>
+    <VariableBadge>
+      <Position x-pos="1" y-pos="5"/>
+    </VariableBadge>
+    <Comment>
+      <Graphics>
+        <Rect x-pos="192" y-pos="399" width="100" height="100"/>
+      </Graphics>
+      <Text>
+        <html>
+          <head>
+            <style type="text/css">
+              <!--
+                body { font-family: SansSerif; font-size: 11pt }
+              -->
+            </style>
+            
+          </head>
+          <body>
+            The proposed Topic must be set from outside, before we initialise this 
+            thread!!!
+          </body>
+        </html>
+      </Text>
+    </Comment>
+    <Node id="N102" name="History" exhaustive="false" preserving="false" history="true">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="660" y-pos="30"/>
+      </Graphics>
+    </Node>
+    <Node id="N105" name="U:IF" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N116" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1020" y-pos="525" control-x-pos="1177" control-y-pos="525"/>
+          <Point x-pos="1380" y-pos="525" control-x-pos="1222" control-y-pos="525"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="930" y-pos="480"/>
+      </Graphics>
+    </Node>
+    <Node id="N107" name="S:ACCEPT" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="REASS"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N115" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1290" y-pos="345" control-x-pos="1357" control-y-pos="345"/>
+          <Point x-pos="1470" y-pos="345" control-x-pos="1402" control-y-pos="345"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1200" y-pos="300"/>
+      </Graphics>
+    </Node>
+    <Node id="N108" name="S:PROVIDE_INFO_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="threadTopic"/>
+          <Expression>
+            <Variable name="proposedTopic"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO_ME"/>
+              <Variable name="threadTopic"/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="false"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N117" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="388" y-pos="423" control-x-pos="459" control-y-pos="403"/>
+            <Point x-pos="572" y-pos="357" control-x-pos="500" control-y-pos="376"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N110" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="345" y-pos="390" control-x-pos="345" control-y-pos="367"/>
+          <Point x-pos="345" y-pos="300" control-x-pos="345" control-y-pos="322"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="300" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N110" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="println">
+          <String value="We already waited too long for an answer - select new thread "/>
+        </UserCommand>
+      </Commands>
+      <Graphics>
+        <Position x-pos="300" y-pos="210"/>
+      </Graphics>
+    </Node>
+    <Node id="N111" name="Analyse" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <Member name="meaning" member="domain">
+            </Member>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N105" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="834" y-pos="458" control-x-pos="862" control-y-pos="474"/>
+            <Point x-pos="936" y-pos="502" control-x-pos="907" control-y-pos="485"/>
+          </Arrow>
+        </Graphics>
+        <Or>
+          <Or>
+            <Or>
+              <Or>
+                <Eq>
+                  <Variable name="dialogact"/>
+                  <String value="IF_N"/>
+                </Eq>
+                <Eq>
+                  <Variable name="dialogact"/>
+                  <String value="IF_S"/>
+                </Eq>
+              </Or>
+              <Eq>
+                <Variable name="dialogact"/>
+                <String value="IF_P"/>
+              </Eq>
+            </Or>
+            <Eq>
+              <Variable name="dialogact"/>
+              <String value="IF_AGR"/>
+            </Eq>
+          </Or>
+          <Eq>
+            <Variable name="dialogact"/>
+            <String value="ACCEPT"/>
+          </Eq>
+        </Or>
+      </CEdge>
+      <CEdge target="N114" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="827" y-pos="403" control-x-pos="869" control-y-pos="360"/>
+            <Point x-pos="943" y-pos="287" control-x-pos="900" control-y-pos="329"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="DOUBT"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N123" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="817" y-pos="474" control-x-pos="863" control-y-pos="556"/>
+            <Point x-pos="953" y-pos="666" control-x-pos="906" control-y-pos="583"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="PROVIDE_INFO_ME"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N125" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="817" y-pos="396" control-x-pos="863" control-y-pos="313"/>
+            <Point x-pos="953" y-pos="114" control-x-pos="906" control-y-pos="196"/>
+          </Arrow>
+        </Graphics>
+        <Or>
+          <Eq>
+            <Variable name="dialogact"/>
+            <String value="Request_Info"/>
+          </Eq>
+          <Eq>
+            <Variable name="dialogact"/>
+            <String value="REQUEST_INFO_YOU"/>
+          </Eq>
+        </Or>
+      </CEdge>
+      <EEdge target="N124" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="795" y-pos="480" control-x-pos="795" control-y-pos="502"/>
+          <Point x-pos="795" y-pos="570" control-x-pos="795" control-y-pos="547"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N112" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1560" y-pos="480"/>
+      </Graphics>
+    </Node>
+    <Node id="N114" name="U:DOUBT" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <PEdge target="N107" start="" probability="100">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1018" y-pos="267" control-x-pos="1089" control-y-pos="286"/>
+            <Point x-pos="1202" y-pos="333" control-x-pos="1130" control-y-pos="313"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="930" y-pos="210"/>
+      </Graphics>
+    </Node>
+    <Node id="N115" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1470" y-pos="300"/>
+      </Graphics>
+    </Node>
+    <Node id="N116" name="S:IF" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_AGR"/>
+              <String value=""/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N112" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1470" y-pos="525" control-x-pos="1492" control-y-pos="525"/>
+          <Point x-pos="1560" y-pos="525" control-x-pos="1537" control-y-pos="525"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1380" y-pos="480"/>
+      </Graphics>
+    </Node>
+    <Node id="N117" name="analyse()" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N111" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="654" y-pos="368" control-x-pos="682" control-y-pos="384"/>
+          <Point x-pos="756" y-pos="412" control-x-pos="727" control-y-pos="395"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="570" y-pos="300"/>
+      </Graphics>
+    </Node>
+    <Node id="N123" name="U:PI_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N116" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1018" y-pos="693" control-x-pos="1185" control-y-pos="646"/>
+          <Point x-pos="1382" y-pos="537" control-x-pos="1214" control-y-pos="583"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="930" y-pos="660"/>
+      </Graphics>
+    </Node>
+    <Node id="N124" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="750" y-pos="570"/>
+      </Graphics>
+    </Node>
+    <Node id="N125" name="U:RI_YOU" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N126" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1020" y-pos="75" control-x-pos="1087" control-y-pos="75"/>
+          <Point x-pos="1200" y-pos="75" control-x-pos="1132" control-y-pos="75"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="930" y-pos="30"/>
+      </Graphics>
+    </Node>
+    <Node id="N126" name="S:PI_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="ACCEPT"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N127" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1290" y-pos="75" control-x-pos="1357" control-y-pos="75"/>
+          <Point x-pos="1470" y-pos="75" control-x-pos="1402" control-y-pos="75"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1200" y-pos="30"/>
+      </Graphics>
+    </Node>
+    <Node id="N127" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1470" y-pos="30"/>
+      </Graphics>
+    </Node>
+  </TemplateSuperNode>
+  <TemplateSuperNode id="S14" name="REQUEST_INFO_YOU" comment="" exhaustive="false" preserving="false" start="N49;">
+    <EntranceEdge type="CEdge" source="N9">
+      <CEdge target="" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="0" y-pos="0" control-x-pos="0" control-y-pos="0"/>
+            <Point x-pos="0" y-pos="0" control-x-pos="0" control-y-pos="0"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="key"/>
+          <Variable name="ID"/>
+        </Eq>
+      </CEdge>
+    </EntranceEdge>
+    <Define>
+    </Define>
+    <Declare>
+      <Variable type="String" name ="ID">
+        <String value="null"/>
+      </Variable>
+      <Variable type="Bool" name ="awaitResponse">
+        <Bool value="false"/>
+      </Variable>
+      <Variable type="String" name ="threadDomain">
+        <String value="SMALLTALK"/>
+      </Variable>
+      <Variable type="Int" name ="lastSystemTurn">
+        <Neg>
+          <Int value="1"/>
+        </Neg>
+      </Variable>
+      <Variable type="String" name ="threadTopic">
+        <String value="null"/>
+      </Variable>
+      <Variable type="Int" name ="importance">
+        <Int value="1"/>
+      </Variable>
+    </Declare>
+    <Commands>
+    </Commands>
+    <EEdge target="N9" start ="">
+    <Graphics>
+      <Arrow>
+        <Point x-pos="1200" y-pos="255" control-x-pos="1025" control-y-pos="255"/>
+        <Point x-pos="838" y-pos="423" control-x-pos="1005" control-y-pos="376"/>
+      </Arrow>
+    </Graphics>
+    </EEdge>
+    <PAEdge target="N9" start="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1200" y-pos="267" control-x-pos="1025" control-y-pos="313"/>
+          <Point x-pos="834" y-pos="412" control-x-pos="985" control-y-pos="322"/>
+        </Arrow>
+      </Graphics>
+      <And>
+        <And>
+          <Neq>
+            <Variable name="domain"/>
+            <String value="SMALLTALK"/>
+          </Neq>
+          <Neq>
+            <Variable name="domain"/>
+            <String value="GENERAL"/>
+          </Neq>
+        </And>
+        <Neq>
+          <Variable name="domain"/>
+          <String value="UNSET"/>
+        </Neq>
+      </And>
+    </PAEdge>
+    <Graphics>
+      <Position x-pos="1200" y-pos="210"/>
+    </Graphics>
+    <VariableBadge>
+      <Position x-pos="10" y-pos="10"/>
+    </VariableBadge>
+    <Comment>
+      <Graphics>
+        <Rect x-pos="1651" y-pos="1651" width="103" height="70"/>
+      </Graphics>
+      <Text>
+        <html>
+          <head>
+            <style type="text/css">
+              <!--
+                body { font-family: SansSerif; font-size: 11pt }
+              -->
+            </style>
+            
+          </head>
+          <body>
+            Nach einem ACCEPT muss keine Antwort kommen
+          </body>
+        </html>
+      </Text>
+    </Comment>
+    <Node id="N47" name="History" exhaustive="false" preserving="false" history="true">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="println">
+          <String value="Request Info You Graph History."/>
+        </UserCommand>
+      </Commands>
+      <CEdge target="N90" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="294" y-pos="458" control-x-pos="532" control-y-pos="598"/>
+            <Point x-pos="842" y-pos="693" control-x-pos="579" control-y-pos="619"/>
+          </Arrow>
+        </Graphics>
+        <And>
+          <HistoryContainsState state="ID" substate="IDN150" depth="0"/>
+          <Neq>
+            <Variable name="input"/>
+            <String value="null"/>
+          </Neq>
+        </And>
+      </CEdge>
+      <CEdge target="N150" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="298" y-pos="447" control-x-pos="641" control-y-pos="542"/>
+            <Point x-pos="1022" y-pos="693" control-x-pos="678" control-y-pos="597"/>
+          </Arrow>
+        </Graphics>
+        <And>
+          <HistoryContainsState state="ID" substate="IDN150" depth="0"/>
+          <Neq>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+            <String value="null"/>
+          </Neq>
+        </And>
+      </CEdge>
+      <TEdge target="N47" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="267" y-pos="392" control-x-pos="291" control-y-pos="306"/>
+          <Point x-pos="294" y-pos="412" control-x-pos="372" control-y-pos="366"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="210" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N49" name="init" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="threadTopic"/>
+          <Expression>
+            <Member name="meaning" member="topicObject">
+            </Member>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N56" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="153" y-pos="1832" control-x-pos="301" control-y-pos="1632"/>
+            <Point x-pos="323" y-pos="1374" control-x-pos="208" control-y-pos="1577"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Member name="meaning" member="mtype">
+          </Member>
+          <String value="WHQUESTION"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N55" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="165" y-pos="1920" control-x-pos="279" control-y-pos="1906"/>
+            <Point x-pos="302" y-pos="1953" control-x-pos="230" control-y-pos="1933"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Member name="meaning" member="mtype">
+          </Member>
+          <String value="YESNOQUESTION"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N94" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="197" y-pos="1843" control-x-pos="239" control-y-pos="1800"/>
+            <Point x-pos="313" y-pos="1727" control-x-pos="270" control-y-pos="1769"/>
+          </Arrow>
+        </Graphics>
+        <And>
+          <Neq>
+            <Member name="meaning" member="mtype">
+            </Member>
+            <String value="WHQUESTION"/>
+          </Neq>
+          <Neq>
+            <Member name="meaning" member="mtype">
+            </Member>
+            <String value="YESNOQUESTION"/>
+          </Neq>
+        </And>
+      </CEdge>
+      <Graphics>
+        <Position x-pos="120" y-pos="1830"/>
+      </Graphics>
+    </Node>
+    <Node id="N74" name="S:REJECT+REGRET" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="REJECT"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="REGRET"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N75" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="840" y-pos="1875" control-x-pos="907" control-y-pos="1875"/>
+          <Point x-pos="1020" y-pos="1875" control-x-pos="952" control-y-pos="1875"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="1830"/>
+      </Graphics>
+    </Node>
+    <Node id="N75" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1020" y-pos="1830"/>
+      </Graphics>
+    </Node>
+    <Node id="N76" name="S:ACCEPT" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="ACCEPT"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N79" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="840" y-pos="1695" control-x-pos="907" control-y-pos="1695"/>
+            <Point x-pos="1020" y-pos="1695" control-x-pos="952" control-y-pos="1695"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N77" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="838" y-pos="1707" control-x-pos="909" control-y-pos="1726"/>
+          <Point x-pos="1022" y-pos="1773" control-x-pos="950" control-y-pos="1753"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="1650"/>
+      </Graphics>
+    </Node>
+    <Node id="N77" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1020" y-pos="1740"/>
+      </Graphics>
+    </Node>
+    <Node id="N78" name="U:IF_S" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N80" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1560" y-pos="1695" control-x-pos="1672" control-y-pos="1695"/>
+          <Point x-pos="1830" y-pos="1695" control-x-pos="1717" control-y-pos="1695"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1470" y-pos="1650"/>
+      </Graphics>
+    </Node>
+    <Node id="N79" name="Analysis" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N78" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1110" y-pos="1695" control-x-pos="1267" control-y-pos="1695"/>
+            <Point x-pos="1470" y-pos="1695" control-x-pos="1312" control-y-pos="1695"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="IF_S"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N81" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1104" y-pos="1718" control-x-pos="1255" control-y-pos="1807"/>
+            <Point x-pos="1472" y-pos="1863" control-x-pos="1304" control-y-pos="1816"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="PROVIDE_INFO_ME"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N83" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1108" y-pos="1707" control-x-pos="1262" control-y-pos="1750"/>
+            <Point x-pos="1472" y-pos="1773" control-x-pos="1317" control-y-pos="1729"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="IF_P"/>
+        </Eq>
+      </CEdge>
+      <EEdge target="N72" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1108" y-pos="1683" control-x-pos="1262" control-y-pos="1639"/>
+          <Point x-pos="1472" y-pos="1617" control-x-pos="1317" control-y-pos="1660"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1020" y-pos="1650"/>
+      </Graphics>
+    </Node>
+    <Node id="N80" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1830" y-pos="1650"/>
+      </Graphics>
+    </Node>
+    <Node id="N81" name="U:PROVIDE_INFO_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N82" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1560" y-pos="1875" control-x-pos="1672" control-y-pos="1875"/>
+          <Point x-pos="1830" y-pos="1875" control-x-pos="1717" control-y-pos="1875"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1470" y-pos="1830"/>
+      </Graphics>
+    </Node>
+    <Node id="N82" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1830" y-pos="1830"/>
+      </Graphics>
+    </Node>
+    <Node id="N83" name="U:IF_P" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N84" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1560" y-pos="1785" control-x-pos="1672" control-y-pos="1785"/>
+          <Point x-pos="1830" y-pos="1785" control-x-pos="1717" control-y-pos="1785"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1470" y-pos="1740"/>
+      </Graphics>
+    </Node>
+    <Node id="N84" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1830" y-pos="1740"/>
+      </Graphics>
+    </Node>
+    <Node id="N93" name="S:REGRET+PROVIDE_INFO_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="REGRET"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO_ME"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N73" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="834" y-pos="1492" control-x-pos="916" control-y-pos="1443"/>
+            <Point x-pos="1026" y-pos="1357" control-x-pos="943" control-y-pos="1403"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N42" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="840" y-pos="1515" control-x-pos="907" control-y-pos="1515"/>
+          <Point x-pos="1020" y-pos="1515" control-x-pos="952" control-y-pos="1515"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="1470"/>
+      </Graphics>
+    </Node>
+    <Node id="N106" name="S:PROVIDE_INFO_ME+REQUEST_INFO_YOU" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO_ME"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="REQUEST_INFO_YOU"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="true"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N90" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="737" y-pos="853" control-x-pos="779" control-y-pos="810"/>
+            <Point x-pos="853" y-pos="737" control-x-pos="810" control-y-pos="779"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N106" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="717" y-pos="842" control-x-pos="741" control-y-pos="756"/>
+          <Point x-pos="744" y-pos="862" control-x-pos="822" control-y-pos="816"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="660" y-pos="840"/>
+      </Graphics>
+    </Node>
+    <Node id="N109" name="S:IF_P" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_P"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N63" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="2100" y-pos="1065" control-x-pos="2122" control-y-pos="1065"/>
+          <Point x-pos="2190" y-pos="1065" control-x-pos="2167" control-y-pos="1065"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="2010" y-pos="1020"/>
+      </Graphics>
+    </Node>
+    <Node id="N113" name="S:REJECT+PROVIDE_INFO_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="REJECT"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO_ME"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N120" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="840" y-pos="2055" control-x-pos="907" control-y-pos="2055"/>
+          <Point x-pos="1020" y-pos="2055" control-x-pos="952" control-y-pos="2055"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="2010"/>
+      </Graphics>
+    </Node>
+    <Node id="N120" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1020" y-pos="2010"/>
+      </Graphics>
+    </Node>
+    <Node id="N118" name="S:ACCEPT+PROVIDE_INFO_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="ACCEPT"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO_ME"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N119" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="840" y-pos="2235" control-x-pos="907" control-y-pos="2235"/>
+          <Point x-pos="1020" y-pos="2235" control-x-pos="952" control-y-pos="2235"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="2190"/>
+      </Graphics>
+    </Node>
+    <Node id="N119" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1020" y-pos="2190"/>
+      </Graphics>
+    </Node>
+    <Node id="N128" name="S:REJECT" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="REJECT"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N131" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="840" y-pos="2325" control-x-pos="1042" control-y-pos="2325"/>
+            <Point x-pos="1290" y-pos="2325" control-x-pos="1142" control-y-pos="2455"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N129" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="838" y-pos="2313" control-x-pos="902" control-y-pos="2295"/>
+          <Point x-pos="1110" y-pos="2325" control-x-pos="1042" control-y-pos="2325"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="2280"/>
+      </Graphics>
+    </Node>
+    <Node id="N129" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1119" y-pos="2268"/>
+      </Graphics>
+    </Node>
+    <Node id="N130" name="U:REQUEST_INFO_YOU" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <PEdge target="N132" start="" probability="100">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1740" y-pos="2325" control-x-pos="1852" control-y-pos="2325"/>
+            <Point x-pos="2010" y-pos="2325" control-x-pos="1897" control-y-pos="2325"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="1650" y-pos="2280"/>
+      </Graphics>
+    </Node>
+    <Node id="N131" name="Analysis" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N130" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1380" y-pos="2325" control-x-pos="1492" control-y-pos="2325"/>
+            <Point x-pos="1650" y-pos="2325" control-x-pos="1537" control-y-pos="2325"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="REQUEST_INFO_YOU"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N137" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1378" y-pos="2337" control-x-pos="1505" control-y-pos="2372"/>
+            <Point x-pos="1656" y-pos="2482" control-x-pos="1540" control-y-pos="2413"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="REQUEST_EXPL"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N142" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1378" y-pos="2313" control-x-pos="1490" control-y-pos="2281"/>
+            <Point x-pos="1652" y-pos="2247" control-x-pos="1539" control-y-pos="2278"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="PROVIDE_INFO_ME"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N145" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1374" y-pos="2348" control-x-pos="1510" control-y-pos="2428"/>
+            <Point x-pos="1656" y-pos="2572" control-x-pos="1519" control-y-pos="2491"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="IF_N"/>
+        </Eq>
+      </CEdge>
+      <Graphics>
+        <Position x-pos="1290" y-pos="2280"/>
+      </Graphics>
+    </Node>
+    <Node id="N132" name="S:PROVIDE_INFO_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO_ME"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N134" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="2100" y-pos="2325" control-x-pos="2167" control-y-pos="2325"/>
+            <Point x-pos="2280" y-pos="2325" control-x-pos="2212" control-y-pos="2325"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N91" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="2098" y-pos="2313" control-x-pos="2169" control-y-pos="2293"/>
+          <Point x-pos="2282" y-pos="2247" control-x-pos="2210" control-y-pos="2266"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="2010" y-pos="2280"/>
+      </Graphics>
+    </Node>
+    <Node id="N133" name="U:REQUEST_INFO" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <PEdge target="N135" start="" probability="100">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="2640" y-pos="2325" control-x-pos="2707" control-y-pos="2325"/>
+            <Point x-pos="2820" y-pos="2325" control-x-pos="2752" control-y-pos="2325"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="2550" y-pos="2280"/>
+      </Graphics>
+    </Node>
+    <Node id="N134" name="Analysis" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N133" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="2370" y-pos="2325" control-x-pos="2437" control-y-pos="2325"/>
+            <Point x-pos="2550" y-pos="2325" control-x-pos="2482" control-y-pos="2325"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="REQUEST_INFO"/>
+        </Eq>
+      </CEdge>
+      <Graphics>
+        <Position x-pos="2280" y-pos="2280"/>
+      </Graphics>
+    </Node>
+    <Node id="N135" name="S:PROVIDE_INFO" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N136" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="2910" y-pos="2325" control-x-pos="2977" control-y-pos="2325"/>
+          <Point x-pos="3090" y-pos="2325" control-x-pos="3022" control-y-pos="2325"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="2820" y-pos="2280"/>
+      </Graphics>
+    </Node>
+    <Node id="N136" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="3090" y-pos="2280"/>
+      </Graphics>
+    </Node>
+    <Node id="N137" name="U:REQUEST_EXPL" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <PEdge target="N138" start="" probability="100">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1740" y-pos="2505" control-x-pos="1852" control-y-pos="2505"/>
+            <Point x-pos="2010" y-pos="2505" control-x-pos="1897" control-y-pos="2505"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="1650" y-pos="2460"/>
+      </Graphics>
+    </Node>
+    <Node id="N138" name="S:PROVIDE_INFO_ME+PROVIDE_INFO_ME+PROVIDE_INFO_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO_ME"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N140" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="2100" y-pos="2505" control-x-pos="2167" control-y-pos="2505"/>
+            <Point x-pos="2280" y-pos="2505" control-x-pos="2212" control-y-pos="2505"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N92" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="2098" y-pos="2493" control-x-pos="2169" control-y-pos="2473"/>
+          <Point x-pos="2282" y-pos="2427" control-x-pos="2210" control-y-pos="2446"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="2010" y-pos="2460"/>
+      </Graphics>
+    </Node>
+    <Node id="N139" name="U:ST_OP_N" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N141" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="2640" y-pos="2505" control-x-pos="2707" control-y-pos="2505"/>
+          <Point x-pos="2820" y-pos="2505" control-x-pos="2752" control-y-pos="2505"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="2550" y-pos="2460"/>
+      </Graphics>
+    </Node>
+    <Node id="N140" name="Analysis" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N139" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="2370" y-pos="2505" control-x-pos="2437" control-y-pos="2505"/>
+            <Point x-pos="2550" y-pos="2505" control-x-pos="2482" control-y-pos="2505"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="ST_OP_N"/>
+        </Eq>
+      </CEdge>
+      <Graphics>
+        <Position x-pos="2280" y-pos="2460"/>
+      </Graphics>
+    </Node>
+    <Node id="N141" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2820" y-pos="2460"/>
+      </Graphics>
+    </Node>
+    <Node id="N142" name="U:PROVIDE_INFO_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <PEdge target="N143" start="" probability="100">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1740" y-pos="2235" control-x-pos="1852" control-y-pos="2235"/>
+            <Point x-pos="2010" y-pos="2235" control-x-pos="1897" control-y-pos="2235"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="1650" y-pos="2190"/>
+      </Graphics>
+    </Node>
+    <Node id="N143" name="S:ST_OP_P" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="ST_OP_P"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N144" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="2098" y-pos="2223" control-x-pos="2169" control-y-pos="2203"/>
+          <Point x-pos="2282" y-pos="2157" control-x-pos="2210" control-y-pos="2176"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="2010" y-pos="2190"/>
+      </Graphics>
+    </Node>
+    <Node id="N144" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2280" y-pos="2100"/>
+      </Graphics>
+    </Node>
+    <Node id="N145" name="U:IF_N" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N146" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1740" y-pos="2595" control-x-pos="1852" control-y-pos="2595"/>
+          <Point x-pos="2010" y-pos="2595" control-x-pos="1897" control-y-pos="2595"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1650" y-pos="2550"/>
+      </Graphics>
+    </Node>
+    <Node id="N146" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2010" y-pos="2550"/>
+      </Graphics>
+    </Node>
+    <Node id="N147" name="S:PROVIDE_INFO_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO_ME"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="false"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N73" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="750" y-pos="1335" control-x-pos="862" control-y-pos="1335"/>
+            <Point x-pos="1020" y-pos="1335" control-x-pos="907" control-y-pos="1335"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N148" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="744" y-pos="1312" control-x-pos="772" control-y-pos="1295"/>
+          <Point x-pos="846" y-pos="1267" control-x-pos="817" control-y-pos="1283"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="660" y-pos="1290"/>
+      </Graphics>
+    </Node>
+    <Node id="N148" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="840" y-pos="1200"/>
+      </Graphics>
+    </Node>
+    <Node id="N149" name="U:ST_OP" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N151" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1650" y-pos="255" control-x-pos="1661" control-y-pos="255"/>
+          <Point x-pos="1830" y-pos="255" control-x-pos="1818" control-y-pos="255"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1560" y-pos="210"/>
+      </Graphics>
+    </Node>
+    <Node id="N150" name="" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <Member name="meaning" member="domain">
+            </Member>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N149" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1097" y-pos="673" control-x-pos="1279" control-y-pos="490"/>
+            <Point x-pos="1566" y-pos="277" control-x-pos="1343" control-y-pos="402"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="ST_OP"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N152" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1104" y-pos="682" control-x-pos="1307" control-y-pos="562"/>
+            <Point x-pos="1566" y-pos="457" control-x-pos="1362" control-y-pos="571"/>
+          </Arrow>
+        </Graphics>
+        <Or>
+          <Or>
+            <Or>
+              <Eq>
+                <Variable name="dialogact"/>
+                <String value="IF_AGR"/>
+              </Eq>
+              <Eq>
+                <Variable name="dialogact"/>
+                <String value="IF_N"/>
+              </Eq>
+            </Or>
+            <Eq>
+              <Variable name="dialogact"/>
+              <String value="IF_P"/>
+            </Eq>
+          </Or>
+          <Eq>
+            <Variable name="dialogact"/>
+            <String value="IF_S"/>
+          </Eq>
+        </Or>
+      </CEdge>
+      <CEdge target="N158" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1108" y-pos="693" control-x-pos="1305" control-y-pos="638"/>
+            <Point x-pos="1562" y-pos="627" control-x-pos="1364" control-y-pos="681"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="DOUBT"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N161" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1108" y-pos="717" control-x-pos="1305" control-y-pos="771"/>
+            <Point x-pos="1562" y-pos="783" control-x-pos="1364" control-y-pos="728"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="REQUEST_INFO_YOU"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N166" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1104" y-pos="728" control-x-pos="1307" control-y-pos="847"/>
+            <Point x-pos="1566" y-pos="952" control-x-pos="1362" control-y-pos="832"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="PROVIDE_INFO_ME"/>
+        </Eq>
+      </CEdge>
+      <Graphics>
+        <Position x-pos="1020" y-pos="660"/>
+      </Graphics>
+    </Node>
+    <Node id="N151" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1830" y-pos="210"/>
+      </Graphics>
+    </Node>
+    <Node id="N152" name="U:IF_AGR" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="false"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <PEdge target="N62" start="" probability="50">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1644" y-pos="412" control-x-pos="1672" control-y-pos="395"/>
+            <Point x-pos="1836" y-pos="367" control-x-pos="1807" control-y-pos="383"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N153" start="" probability="50">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1650" y-pos="435" control-x-pos="1717" control-y-pos="435"/>
+            <Point x-pos="1830" y-pos="435" control-x-pos="1762" control-y-pos="435"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="1560" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N153" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1830" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N158" name="U:DOUBT" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="false"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <PEdge target="N159" start="" probability="100">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1650" y-pos="615" control-x-pos="1717" control-y-pos="615"/>
+            <Point x-pos="1830" y-pos="615" control-x-pos="1762" control-y-pos="615"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="1560" y-pos="570"/>
+      </Graphics>
+    </Node>
+    <Node id="N159" name="S:ACCEPT" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="ACCEPT"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N160" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1920" y-pos="615" control-x-pos="1987" control-y-pos="615"/>
+          <Point x-pos="2100" y-pos="615" control-x-pos="2032" control-y-pos="615"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1830" y-pos="570"/>
+      </Graphics>
+    </Node>
+    <Node id="N160" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2100" y-pos="570"/>
+      </Graphics>
+    </Node>
+    <Node id="N161" name="U:REQUEST_INFO_YOU" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="false"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <PEdge target="N162" start="" probability="100">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1650" y-pos="795" control-x-pos="1717" control-y-pos="795"/>
+            <Point x-pos="1830" y-pos="795" control-x-pos="1762" control-y-pos="795"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="1560" y-pos="750"/>
+      </Graphics>
+    </Node>
+    <Node id="N162" name="S:PROVIDE_INFO_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO_ME"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N163" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1920" y-pos="795" control-x-pos="1987" control-y-pos="795"/>
+          <Point x-pos="2100" y-pos="795" control-x-pos="2032" control-y-pos="795"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1830" y-pos="750"/>
+      </Graphics>
+    </Node>
+    <Node id="N163" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2100" y-pos="750"/>
+      </Graphics>
+    </Node>
+    <Node id="N166" name="U:PROVIDE_INFO_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="false"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <PEdge target="N109" start="" probability="100">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1648" y-pos="987" control-x-pos="1802" control-y-pos="1030"/>
+            <Point x-pos="2012" y-pos="1053" control-x-pos="1857" control-y-pos="1009"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="1560" y-pos="930"/>
+      </Graphics>
+    </Node>
+    <Node id="N55" name="YESNO" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <PEdge target="N113" start="" probability="7">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="388" y-pos="1977" control-x-pos="542" control-y-pos="2020"/>
+            <Point x-pos="752" y-pos="2043" control-x-pos="597" control-y-pos="1999"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N118" start="" probability="20">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="384" y-pos="1988" control-x-pos="552" control-y-pos="2087"/>
+            <Point x-pos="756" y-pos="2212" control-x-pos="587" control-y-pos="2112"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N128" start="" probability="8">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="377" y-pos="1997" control-x-pos="533" control-y-pos="2153"/>
+            <Point x-pos="763" y-pos="2293" control-x-pos="606" control-y-pos="2136"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N74" start="" probability="10">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="388" y-pos="1953" control-x-pos="542" control-y-pos="1909"/>
+            <Point x-pos="752" y-pos="1887" control-x-pos="597" control-y-pos="1930"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N76" start="" probability="26">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="384" y-pos="1942" control-x-pos="552" control-y-pos="1842"/>
+            <Point x-pos="756" y-pos="1717" control-x-pos="587" control-y-pos="1812"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N93" start="" probability="10">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="377" y-pos="1933" control-x-pos="555" control-y-pos="1754"/>
+            <Point x-pos="763" y-pos="1547" control-x-pos="584" control-y-pos="1725"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="300" y-pos="1920"/>
+      </Graphics>
+    </Node>
+    <Node id="N56" name="WH" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <PEdge target="N106" start="" probability="95">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="377" y-pos="1303" control-x-pos="533" control-y-pos="1146"/>
+            <Point x-pos="673" y-pos="917" control-x-pos="516" control-y-pos="1073"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N147" start="" probability="5">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="390" y-pos="1335" control-x-pos="502" control-y-pos="1335"/>
+            <Point x-pos="660" y-pos="1335" control-x-pos="547" control-y-pos="1335"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="300" y-pos="1290"/>
+      </Graphics>
+    </Node>
+    <Node id="N62" name="S:IF" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="ACCEPT"/>
+              <String value=""/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1830" y-pos="300"/>
+      </Graphics>
+    </Node>
+    <Node id="N42" name="N42" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1020" y-pos="1470"/>
+      </Graphics>
+    </Node>
+    <Node id="N63" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2190" y-pos="1020"/>
+      </Graphics>
+    </Node>
+    <Node id="N73" name="Analyse" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <Member name="meaning" member="domain">
+            </Member>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N85" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1108" y-pos="1347" control-x-pos="1262" control-y-pos="1390"/>
+            <Point x-pos="1472" y-pos="1413" control-x-pos="1317" control-y-pos="1369"/>
+          </Arrow>
+        </Graphics>
+        <Or>
+          <Or>
+            <Or>
+              <Eq>
+                <Variable name="dialogact"/>
+                <String value="IF_N"/>
+              </Eq>
+              <Eq>
+                <Variable name="dialogact"/>
+                <String value="IF_S"/>
+              </Eq>
+            </Or>
+            <Eq>
+              <Variable name="dialogact"/>
+              <String value="IF_P"/>
+            </Eq>
+          </Or>
+          <Eq>
+            <Variable name="dialogact"/>
+            <String value="IF_AGR"/>
+          </Eq>
+        </Or>
+      </CEdge>
+      <CEdge target="N86" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1108" y-pos="1323" control-x-pos="1179" control-y-pos="1303"/>
+            <Point x-pos="1292" y-pos="1257" control-x-pos="1220" control-y-pos="1276"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="DOUBT"/>
+        </Eq>
+      </CEdge>
+      <EEdge target="N42" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1065" y-pos="1380" control-x-pos="1065" control-y-pos="1402"/>
+          <Point x-pos="1065" y-pos="1470" control-x-pos="1065" control-y-pos="1447"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1020" y-pos="1290"/>
+      </Graphics>
+    </Node>
+    <Node id="N85" name="U:IF" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N89" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1560" y-pos="1425" control-x-pos="1582" control-y-pos="1425"/>
+          <Point x-pos="1650" y-pos="1425" control-x-pos="1627" control-y-pos="1425"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1470" y-pos="1380"/>
+      </Graphics>
+    </Node>
+    <Node id="N86" name="U:DOUBT" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <PEdge target="N88" start="" probability="100">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1380" y-pos="1245" control-x-pos="1492" control-y-pos="1245"/>
+            <Point x-pos="1650" y-pos="1245" control-x-pos="1537" control-y-pos="1245"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="1290" y-pos="1200"/>
+      </Graphics>
+    </Node>
+    <Node id="N87" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1920" y-pos="1200"/>
+      </Graphics>
+    </Node>
+    <Node id="N88" name="S:ACCEPT" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="ACCEPT"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N87" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1740" y-pos="1245" control-x-pos="1807" control-y-pos="1245"/>
+          <Point x-pos="1920" y-pos="1245" control-x-pos="1852" control-y-pos="1245"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1650" y-pos="1200"/>
+      </Graphics>
+    </Node>
+    <Node id="N89" name="S:IF" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_AGR"/>
+              <String value=""/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N99" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1740" y-pos="1425" control-x-pos="1762" control-y-pos="1425"/>
+          <Point x-pos="1830" y-pos="1425" control-x-pos="1807" control-y-pos="1425"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1650" y-pos="1380"/>
+      </Graphics>
+    </Node>
+    <Node id="N90" name="Analysis" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N150" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="930" y-pos="705" control-x-pos="952" control-y-pos="705"/>
+          <Point x-pos="1020" y-pos="705" control-x-pos="997" control-y-pos="705"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="840" y-pos="660"/>
+      </Graphics>
+    </Node>
+    <Node id="N72" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1470" y-pos="1560"/>
+      </Graphics>
+    </Node>
+    <Node id="N91" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2280" y-pos="2190"/>
+      </Graphics>
+    </Node>
+    <Node id="N92" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2280" y-pos="2370"/>
+      </Graphics>
+    </Node>
+    <Node id="N94" name="N94" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <EEdge target="N147" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="377" y-pos="1663" control-x-pos="510" control-y-pos="1529"/>
+          <Point x-pos="673" y-pos="1367" control-x-pos="539" control-y-pos="1500"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="300" y-pos="1650"/>
+      </Graphics>
+    </Node>
+    <Node id="N99" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1830" y-pos="1380"/>
+      </Graphics>
+    </Node>
+  </TemplateSuperNode>
+  <TemplateSuperNode id="S15" name="PROVIDE_INFO_ME" comment="" exhaustive="false" preserving="false" start="N174;">
+    <EntranceEdge type="CEdge" source="N9">
+      <CEdge target="" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="0" y-pos="0" control-x-pos="0" control-y-pos="0"/>
+            <Point x-pos="0" y-pos="0" control-x-pos="0" control-y-pos="0"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="key"/>
+          <Variable name="ID"/>
+        </Eq>
+      </CEdge>
+    </EntranceEdge>
+    <Define>
+    </Define>
+    <Declare>
+      <Variable type="Bool" name ="awaitResponse">
+        <Bool value="false"/>
+      </Variable>
+      <Variable type="String" name ="threadDomain">
+        <String value="SMALLTALK"/>
+      </Variable>
+      <Variable type="Int" name ="lastSystemTurn">
+        <Neg>
+          <Int value="1"/>
+        </Neg>
+      </Variable>
+      <Variable type="String" name ="ID">
+        <String value="null"/>
+      </Variable>
+      <Variable type="String" name ="threadTopic">
+        <String value="null"/>
+      </Variable>
+    </Declare>
+    <Commands>
+    </Commands>
+    <EEdge target="N9" start ="">
+    <Graphics>
+      <Arrow>
+        <Point x-pos="1200" y-pos="513" control-x-pos="1038" control-y-pos="469"/>
+        <Point x-pos="838" y-pos="447" control-x-pos="992" control-y-pos="490"/>
+      </Arrow>
+    </Graphics>
+    </EEdge>
+    <PAEdge target="N9" start="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1200" y-pos="525" control-x-pos="1038" control-y-pos="525"/>
+          <Point x-pos="834" y-pos="458" control-x-pos="974" control-y-pos="540"/>
+        </Arrow>
+      </Graphics>
+      <And>
+        <And>
+          <Neq>
+            <Variable name="domain"/>
+            <String value="SMALLTALK"/>
+          </Neq>
+          <Neq>
+            <Variable name="domain"/>
+            <String value="GENERAL"/>
+          </Neq>
+        </And>
+        <Neq>
+          <Variable name="domain"/>
+          <String value="UNSET"/>
+        </Neq>
+      </And>
+    </PAEdge>
+    <Graphics>
+      <Position x-pos="1200" y-pos="480"/>
+    </Graphics>
+    <VariableBadge>
+      <Position x-pos="10" y-pos="10"/>
+    </VariableBadge>
+    <Comment>
+      <Graphics>
+        <Rect x-pos="1296" y-pos="1121" width="112" height="59"/>
+      </Graphics>
+      <Text>
+        <html>
+          <head>
+            <style type="text/css">
+              <!--
+                body { font-family: SansSerif; font-size: 11pt }
+              -->
+            </style>
+            
+          </head>
+          <body>
+            Auf ein IF muss keine Antwort folgen.
+          </body>
+        </html>
+      </Text>
+    </Comment>
+    <Comment>
+      <Graphics>
+        <Rect x-pos="1405" y-pos="593" width="99" height="66"/>
+      </Graphics>
+      <Text>
+        <html>
+          <head>
+            <style type="text/css">
+              <!--
+                body { font-family: SansSerif; font-size: 11pt }
+              -->
+            </style>
+            
+          </head>
+          <body>
+            Der User kommt mit einer &#196;u&#223;erung von Au&#223;en zur&#252;ck.
+          </body>
+        </html>
+      </Text>
+    </Comment>
+    <Comment>
+      <Graphics>
+        <Rect x-pos="1252" y-pos="598" width="105" height="71"/>
+      </Graphics>
+      <Text>
+        <html>
+          <head>
+            <style type="text/css">
+              <!--
+                body { font-family: SansSerif; font-size: 11pt }
+              -->
+            </style>
+            
+          </head>
+          <body>
+            Der Agent kommt mit einer &#196;u&#223;erung von Au&#223;en zur&#252;ck.
+          </body>
+        </html>
+      </Text>
+    </Comment>
+    <Comment>
+      <Graphics>
+        <Rect x-pos="3098" y-pos="1049" width="103" height="50"/>
+      </Graphics>
+      <Text>
+        <html>
+          <head>
+            <style type="text/css">
+              <!--
+                body { font-family: SansSerif; font-size: 11pt }
+              -->
+            </style>
+            
+          </head>
+          <body>
+            Auf ein IF muss keine Antwort folgen.
+          </body>
+        </html>
+      </Text>
+    </Comment>
+    <Node id="N173" name="History" exhaustive="false" preserving="false" history="true">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <CEdge target="N182" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1290" y-pos="165" control-x-pos="1266" control-y-pos="286"/>
+            <Point x-pos="1097" y-pos="403" control-x-pos="1223" control-y-pos="313"/>
+          </Arrow>
+        </Graphics>
+        <And>
+          <HistoryContainsState state="ID" substate="IDN182" depth="0"/>
+          <Neq>
+            <Variable name="input"/>
+            <String value="null"/>
+          </Neq>
+        </And>
+      </CEdge>
+      <CEdge target="N193" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1290" y-pos="165" control-x-pos="1268" control-y-pos="405"/>
+            <Point x-pos="1257" y-pos="662" control-x-pos="1311" control-y-pos="464"/>
+          </Arrow>
+        </Graphics>
+        <And>
+          <HistoryContainsState state="ID" substate="IDN193" depth="0"/>
+          <Neq>
+            <Variable name="input"/>
+            <String value="null"/>
+          </Neq>
+        </And>
+      </CEdge>
+      <CEdge target="N66" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1347" y-pos="122" control-x-pos="1401" control-y-pos="405"/>
+            <Point x-pos="1413" y-pos="662" control-x-pos="1358" control-y-pos="464"/>
+          </Arrow>
+        </Graphics>
+        <And>
+          <HistoryContainsState state="ID" substate="IDN66" depth="0"/>
+          <Neq>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+            <String value="null"/>
+          </Neq>
+        </And>
+      </CEdge>
+      <CEdge target="N69" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1347" y-pos="122" control-x-pos="1403" control-y-pos="286"/>
+            <Point x-pos="1493" y-pos="396" control-x-pos="1446" control-y-pos="313"/>
+          </Arrow>
+        </Graphics>
+        <And>
+          <HistoryContainsState state="ID" substate="IDN69" depth="0"/>
+          <Neq>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+            <String value="null"/>
+          </Neq>
+        </And>
+      </CEdge>
+      <CEdge target="N200" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1347" y-pos="122" control-x-pos="1794" control-y-pos="624"/>
+            <Point x-pos="2203" y-pos="1097" control-x-pos="1775" control-y-pos="695"/>
+          </Arrow>
+        </Graphics>
+        <And>
+          <HistoryContainsState state="ID" substate="IDN200" depth="0"/>
+          <Neq>
+            <Variable name="input"/>
+            <String value="null"/>
+          </Neq>
+        </And>
+      </CEdge>
+      <CEdge target="N71" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1347" y-pos="122" control-x-pos="1950" control-y-pos="527"/>
+            <Point x-pos="2447" y-pos="1097" control-x-pos="2000" control-y-pos="650"/>
+          </Arrow>
+        </Graphics>
+        <And>
+          <HistoryContainsState state="ID" substate="IDN200" depth="0"/>
+          <Neq>
+            <Member name="meaning" member="dialogact">
+            </Member>
+            <String value="null"/>
+          </Neq>
+        </And>
+      </CEdge>
+      <TEdge target="N173" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1347" y-pos="122" control-x-pos="1371" control-y-pos="36"/>
+          <Point x-pos="1357" y-pos="126" control-x-pos="1452" control-y-pos="96"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="1290" y-pos="120"/>
+      </Graphics>
+    </Node>
+    <Node id="N174" name="init" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="threadTopic"/>
+          <Expression>
+            <Member name="meaning" member="topicObject">
+            </Member>
+          </Expression>
+        </Assign>
+      </Commands>
+      <PEdge target="N179" start="" probability="27">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="294" y-pos="682" control-x-pos="497" control-y-pos="562"/>
+            <Point x-pos="752" y-pos="447" control-x-pos="552" control-y-pos="571"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N184" start="" probability="20">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="298" y-pos="693" control-x-pos="495" control-y-pos="638"/>
+            <Point x-pos="763" y-pos="647" control-x-pos="554" control-y-pos="681"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N191" start="" probability="35">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="298" y-pos="717" control-x-pos="495" control-y-pos="771"/>
+            <Point x-pos="750" y-pos="795" control-x-pos="554" control-y-pos="728"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N207" start="" probability="8">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="298" y-pos="717" control-x-pos="497" control-y-pos="847"/>
+            <Point x-pos="763" y-pos="943" control-x-pos="552" control-y-pos="832"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N211" start="" probability="10">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="298" y-pos="717" control-x-pos="488" control-y-pos="938"/>
+            <Point x-pos="773" y-pos="1104" control-x-pos="561" control-y-pos="921"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="210" y-pos="660"/>
+      </Graphics>
+    </Node>
+    <Node id="N176" name="U:ACCEPT" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <EEdge target="N178" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1740" y-pos="705" control-x-pos="1762" control-y-pos="705"/>
+          <Point x-pos="1920" y-pos="705" control-x-pos="1897" control-y-pos="705"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1650" y-pos="660"/>
+      </Graphics>
+    </Node>
+    <Node id="N178" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_P"/>
+              <String value=""/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1920" y-pos="660"/>
+      </Graphics>
+    </Node>
+    <Node id="N179" name="S:REQUEST_INFO" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="REQUEST_INFO"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="true"/>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <CEdge target="N182" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="750" y-pos="435" control-x-pos="952" control-y-pos="435"/>
+            <Point x-pos="1020" y-pos="435" control-x-pos="997" control-y-pos="435"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N185" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="838" y-pos="423" control-x-pos="909" control-y-pos="403"/>
+          <Point x-pos="1022" y-pos="357" control-x-pos="950" control-y-pos="376"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="769" y-pos="396"/>
+      </Graphics>
+    </Node>
+    <Node id="N181" name="U:PROVIDE_INFO" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <EEdge target="N183" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1740" y-pos="435" control-x-pos="1852" control-y-pos="435"/>
+          <Point x-pos="1920" y-pos="435" control-x-pos="1897" control-y-pos="435"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1650" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N182" name="Analysis" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N69" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1110" y-pos="435" control-x-pos="1312" control-y-pos="435"/>
+          <Point x-pos="1470" y-pos="435" control-x-pos="1357" control-y-pos="435"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1020" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N183" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1920" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N184" name="S:DOUBT+REQUEST_INFO_YOU" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="DOUBT"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="REQUEST_INFO_YOU"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="true"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N193" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="795" y-pos="660" control-x-pos="992" control-y-pos="670"/>
+            <Point x-pos="1202" y-pos="693" control-x-pos="1047" control-y-pos="649"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N184" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="783" y-pos="572" control-x-pos="831" control-y-pos="486"/>
+          <Point x-pos="795" y-pos="570" control-x-pos="912" control-y-pos="546"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="570"/>
+      </Graphics>
+    </Node>
+    <Node id="N187" name="S:IF_S+PROVIDE_INFO" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_S"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N188" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1918" y-pos="783" control-x-pos="2032" control-y-pos="795"/>
+          <Point x-pos="2192" y-pos="783" control-x-pos="2077" control-y-pos="795"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1830" y-pos="750"/>
+      </Graphics>
+    </Node>
+    <Node id="N188" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2190" y-pos="750"/>
+      </Graphics>
+    </Node>
+    <Node id="N191" name="S:REQUEST_INFO_YOU" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="REQUEST_INFO_YOU"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="true"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N193" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="752" y-pos="783" control-x-pos="992" control-y-pos="739"/>
+            <Point x-pos="1202" y-pos="717" control-x-pos="1047" control-y-pos="760"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N191" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="795" y-pos="750" control-x-pos="831" control-y-pos="666"/>
+          <Point x-pos="783" y-pos="752" control-x-pos="912" control-y-pos="726"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="750"/>
+      </Graphics>
+    </Node>
+    <Node id="N192" name="U:PROVIDE_INFO_ME" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <PEdge target="N194" start="" probability="23">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1527" y-pos="932" control-x-pos="1582" control-y-pos="935"/>
+            <Point x-pos="1853" y-pos="1014" control-x-pos="1807" control-y-pos="1013"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N198" start="" probability="31">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1470" y-pos="975" control-x-pos="1582" control-y-pos="1014"/>
+            <Point x-pos="1853" y-pos="1104" control-x-pos="1807" control-y-pos="1115"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N205" start="" probability="24">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1470" y-pos="975" control-x-pos="1583" control-y-pos="1096"/>
+            <Point x-pos="1853" y-pos="1296" control-x-pos="1806" control-y-pos="1213"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <PEdge target="N187" start="" probability="22">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1527" y-pos="932" control-x-pos="1583" control-y-pos="853"/>
+            <Point x-pos="1832" y-pos="783" control-x-pos="1806" control-y-pos="916"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="1470" y-pos="930"/>
+      </Graphics>
+    </Node>
+    <Node id="N193" name="Analysis" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="false"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N66" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1290" y-pos="705" control-x-pos="1312" control-y-pos="705"/>
+          <Point x-pos="1382" y-pos="717" control-x-pos="1357" control-y-pos="705"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1200" y-pos="660"/>
+      </Graphics>
+    </Node>
+    <Node id="N194" name="S:IF_P" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_P"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N197" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1920" y-pos="975" control-x-pos="2032" control-y-pos="975"/>
+          <Point x-pos="2190" y-pos="975" control-x-pos="2077" control-y-pos="975"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1830" y-pos="930"/>
+      </Graphics>
+    </Node>
+    <Node id="N197" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2190" y-pos="930"/>
+      </Graphics>
+    </Node>
+    <Node id="N198" name="S:PROVIDE_INFO_ME+REQUEST_INFO" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="PROVIDE_INFO_ME"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="REQUEST_INFO"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="true"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N200" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1897" y-pos="1104" control-x-pos="2032" control-y-pos="1155"/>
+            <Point x-pos="2203" y-pos="1097" control-x-pos="2077" control-y-pos="1155"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N198" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1907" y-pos="1097" control-x-pos="1911" control-y-pos="1026"/>
+          <Point x-pos="1887" y-pos="1108" control-x-pos="1992" control-y-pos="1086"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="1830" y-pos="1020"/>
+      </Graphics>
+    </Node>
+    <Node id="N199" name="U:PROVIDE_INFO" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <PEdge target="N201" start="" probability="100">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="2673" y-pos="1018" control-x-pos="2752" control-y-pos="1065"/>
+            <Point x-pos="2833" y-pos="1007" control-x-pos="2797" control-y-pos="1065"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="2640" y-pos="930"/>
+      </Graphics>
+    </Node>
+    <Node id="N200" name="Analysis" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="awaitResponse"/>
+          <Expression>
+            <Bool value="false"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N71" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="2247" y-pos="1108" control-x-pos="2302" control-y-pos="1155"/>
+          <Point x-pos="2447" y-pos="1097" control-x-pos="2437" control-y-pos="1155"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="2190" y-pos="1020"/>
+      </Graphics>
+    </Node>
+    <Node id="N201" name="S:IF_S+IF_N" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_S"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_N"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N203" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="2877" y-pos="1018" control-x-pos="3022" control-y-pos="1065"/>
+            <Point x-pos="3193" y-pos="1097" control-x-pos="3067" control-y-pos="1155"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N26" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="2887" y-pos="1014" control-x-pos="2932" control-y-pos="1025"/>
+          <Point x-pos="3000" y-pos="1065" control-x-pos="2977" control-y-pos="1103"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="2820" y-pos="930"/>
+      </Graphics>
+    </Node>
+    <Node id="N202" name="U:PROVIDE_INFO" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <EEdge target="N204" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="3507" y-pos="1108" control-x-pos="3562" control-y-pos="1155"/>
+          <Point x-pos="3617" y-pos="1097" control-x-pos="3607" control-y-pos="1155"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="3450" y-pos="1020"/>
+      </Graphics>
+    </Node>
+    <Node id="N203" name="Analysis" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N202" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="3237" y-pos="1108" control-x-pos="3337" control-y-pos="1155"/>
+            <Point x-pos="3463" y-pos="1097" control-x-pos="3382" control-y-pos="1155"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="PROVIDE_INFO"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N26" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="3193" y-pos="1097" control-x-pos="3157" control-y-pos="1115"/>
+            <Point x-pos="3000" y-pos="1065" control-x-pos="3112" control-y-pos="1104"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="dialogact"/>
+          <String value="PROVIDE_INFO"/>
+        </Neq>
+      </CEdge>
+      <Graphics>
+        <Position x-pos="3180" y-pos="1020"/>
+      </Graphics>
+    </Node>
+    <Node id="N204" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="3540" y-pos="1020"/>
+      </Graphics>
+    </Node>
+    <Node id="N205" name="S:IF_N" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_N"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N206" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1920" y-pos="1335" control-x-pos="2032" control-y-pos="1335"/>
+          <Point x-pos="2190" y-pos="1335" control-x-pos="2077" control-y-pos="1335"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1830" y-pos="1290"/>
+      </Graphics>
+    </Node>
+    <Node id="N206" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2190" y-pos="1290"/>
+      </Graphics>
+    </Node>
+    <Node id="N207" name="S:IF" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_N"/>
+              <String value=""/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <EEdge target="N208" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="750" y-pos="975" control-x-pos="907" control-y-pos="975"/>
+          <Point x-pos="1020" y-pos="975" control-x-pos="952" control-y-pos="975"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="930"/>
+      </Graphics>
+    </Node>
+    <Node id="N208" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1020" y-pos="930"/>
+      </Graphics>
+    </Node>
+    <Node id="N211" name="S:IF_S" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_S"/>
+              <Member name="meaning" member="topicObject">
+              </Member>
+            </UserCommand>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <CEdge target="N213" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="783" y-pos="1108" control-x-pos="909" control-y-pos="1186"/>
+            <Point x-pos="1026" y-pos="1222" control-x-pos="950" control-y-pos="1213"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="input"/>
+          <String value="null"/>
+        </Neq>
+      </CEdge>
+      <TEdge target="N25" start="" timeout="100000">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="783" y-pos="1108" control-x-pos="997" control-y-pos="1155"/>
+          <Point x-pos="1223" y-pos="1104" control-x-pos="1042" control-y-pos="1155"/>
+        </Arrow>
+      </Graphics>
+      </TEdge>
+      <Graphics>
+        <Position x-pos="750" y-pos="1020"/>
+      </Graphics>
+    </Node>
+    <Node id="N212" name="U:ACCEPT" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <EEdge target="N214" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="1380" y-pos="1245" control-x-pos="1402" control-y-pos="1245"/>
+          <Point x-pos="1470" y-pos="1245" control-x-pos="1447" control-y-pos="1245"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1290" y-pos="1200"/>
+      </Graphics>
+    </Node>
+    <Node id="N213" name="Analysis" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <UserCommand name="setMeaning">
+          <Variable name="agentId"/>
+          <Variable name="input"/>
+        </UserCommand>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="input"/>
+          <Expression>
+            <String value="null"/>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N212" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1110" y-pos="1245" control-x-pos="1177" control-y-pos="1245"/>
+            <Point x-pos="1290" y-pos="1245" control-x-pos="1222" control-y-pos="1245"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="ACCEPT"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N25" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1065" y-pos="1200" control-x-pos="1132" control-y-pos="1205"/>
+            <Point x-pos="1223" y-pos="1104" control-x-pos="1177" control-y-pos="1193"/>
+          </Arrow>
+        </Graphics>
+        <Neq>
+          <Variable name="dialogact"/>
+          <String value="ACCEPT"/>
+        </Neq>
+      </CEdge>
+      <Graphics>
+        <Position x-pos="1020" y-pos="1200"/>
+      </Graphics>
+    </Node>
+    <Node id="N214" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1470" y-pos="1200"/>
+      </Graphics>
+    </Node>
+    <Node id="N25" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1200" y-pos="1020"/>
+      </Graphics>
+    </Node>
+    <Node id="N26" name="N26" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2910" y-pos="1020"/>
+      </Graphics>
+    </Node>
+    <Node id="N66" name="N66" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <Member name="meaning" member="domain">
+            </Member>
+          </Expression>
+        </Assign>
+      </Commands>
+      <CEdge target="N176" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1380" y-pos="705" control-x-pos="1537" control-y-pos="705"/>
+            <Point x-pos="1650" y-pos="705" control-x-pos="1582" control-y-pos="705"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="ACCEPT"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N192" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1413" y-pos="748" control-x-pos="1569" control-y-pos="849"/>
+            <Point x-pos="1503" y-pos="932" control-x-pos="1416" control-y-pos="799"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="PROVIDE_INFO_ME"/>
+        </Eq>
+      </CEdge>
+      <Graphics>
+        <Position x-pos="1380" y-pos="660"/>
+      </Graphics>
+    </Node>
+    <Node id="N69" name="N69" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <Member name="meaning" member="domain">
+            </Member>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <CEdge target="N181" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1560" y-pos="435" control-x-pos="1627" control-y-pos="435"/>
+            <Point x-pos="1738" y-pos="447" control-x-pos="1672" control-y-pos="435"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="PROVIDE_INFO"/>
+        </Eq>
+      </CEdge>
+      <CEdge target="N95" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1558" y-pos="423" control-x-pos="1629" control-y-pos="403"/>
+            <Point x-pos="1738" y-pos="267" control-x-pos="1670" control-y-pos="286"/>
+          </Arrow>
+        </Graphics>
+        <Or>
+          <Eq>
+            <Variable name="dialogact"/>
+            <String value="ACCEPT"/>
+          </Eq>
+          <Eq>
+            <Variable name="dialogact"/>
+            <String value="REJECT"/>
+          </Eq>
+        </Or>
+      </CEdge>
+      <Graphics>
+        <Position x-pos="1470" y-pos="390"/>
+      </Graphics>
+    </Node>
+    <Node id="N71" name="Analyse" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="dialogact"/>
+          <Expression>
+            <Member name="meaning" member="dialogAct">
+            </Member>
+          </Expression>
+        </Assign>
+        <Assign>
+          <Variable name="domain"/>
+          <Expression>
+            <Member name="meaning" member="domain">
+            </Member>
+          </Expression>
+        </Assign>
+        <UserCommand name="resetMeaning">
+          <Variable name="agentId"/>
+        </UserCommand>
+      </Commands>
+      <CEdge target="N199" start="">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="2447" y-pos="1097" control-x-pos="2617" control-y-pos="1155"/>
+            <Point x-pos="2653" y-pos="1007" control-x-pos="2572" control-y-pos="1065"/>
+          </Arrow>
+        </Graphics>
+        <Eq>
+          <Variable name="dialogact"/>
+          <String value="PROVIDE_INFO"/>
+        </Eq>
+      </CEdge>
+      <Graphics>
+        <Position x-pos="2370" y-pos="1020"/>
+      </Graphics>
+    </Node>
+    <Node id="N95" name="U:ACCEPT" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <PEdge target="N96" start="" probability="100">
+        <Graphics>
+          <Arrow>
+            <Point x-pos="1740" y-pos="255" control-x-pos="1852" control-y-pos="255"/>
+            <Point x-pos="1920" y-pos="255" control-x-pos="1897" control-y-pos="255"/>
+          </Arrow>
+        </Graphics>
+      </PEdge>
+      <Graphics>
+        <Position x-pos="1650" y-pos="210"/>
+      </Graphics>
+    </Node>
+    <Node id="N96" name="S:IF_N" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+        <Assign>
+          <Variable name="lastSystemTurn"/>
+          <Expression>
+            <UserCommand name="deliverMeaning">
+              <Variable name="agentId"/>
+              <String value="IF_N"/>
+              <String value=""/>
+            </UserCommand>
+          </Expression>
+        </Assign>
+      </Commands>
+      <EEdge target="N97" start ="">
+      <Graphics>
+        <Arrow>
+          <Point x-pos="2010" y-pos="255" control-x-pos="2032" control-y-pos="255"/>
+          <Point x-pos="2100" y-pos="255" control-x-pos="2077" control-y-pos="255"/>
+        </Arrow>
+      </Graphics>
+      </EEdge>
+      <Graphics>
+        <Position x-pos="1920" y-pos="210"/>
+      </Graphics>
+    </Node>
+    <Node id="N97" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="2100" y-pos="210"/>
+      </Graphics>
+    </Node>
+    <Node id="N185" name="end" exhaustive="false" preserving="false" history="false">
+      <Define>
+      </Define>
+      <Declare>
+      </Declare>
+      <Commands>
+      </Commands>
+      <Graphics>
+        <Position x-pos="1020" y-pos="300"/>
+      </Graphics>
+    </Node>
+  </TemplateSuperNode>
+  <UserCommands>
+    <UserCommand name="resetMeaning" classname ="de.kluewer.bot.interfaces.GraphInterface" method="resetMeaning">
+      <Argument name="agentId" type="java.lang.String"/>
+    </UserCommand>
+    <UserCommand name="deliverMeaning" classname ="de.kluewer.bot.interfaces.GraphInterface" method="deliverMeaning">
+      <Argument name="agentId" type="java.lang.String"/>
+      <Argument name="da" type="java.lang.String"/>
+      <Argument name="topic" type="java.lang.String"/>
+    </UserCommand>
+    <UserCommand name="selectConversationThread" classname ="de.kluewer.bot.interfaces.GraphInterface" method="selectConversationThread">
+      <Argument name="agentId" type="java.lang.String"/>
+    </UserCommand>
+    <UserCommand name="println" classname ="java.lang.System.out" method="println">
+      <Argument name="text" type="java.lang.String"/>
+    </UserCommand>
+    <UserCommand name="reset" classname ="de.kluewer.bot.interfaces.GraphInterface" method="reset">
+      <Argument name="agentId" type="java.lang.String"/>
+    </UserCommand>
+    <UserCommand name="setMeaning" classname ="de.kluewer.bot.interfaces.GraphInterface" method="setMeaning">
+      <Argument name="agentId" type="java.lang.String"/>
+      <Argument name="da" type="java.lang.String"/>
+      <Argument name="topic" type="java.lang.String"/>
+      <Argument name="domain" type="java.lang.String"/>
+    </UserCommand>
+  </UserCommands>
+  <ClassPath>
+  </ClassPath>
+  <InitContext></InitContext>
+</SceneFlow>

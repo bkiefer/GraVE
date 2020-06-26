@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SceneFlow modifDate="Fri, 26 Jun 2020 19:14:06" package="" start="N33" hideLocalVar="false" hideGlobalVar="false" id="DefaultSceneFlow" name="DefaultSceneFlow" comment="">
+    <Commands>resetMeaning( ArgumentDefinition(java.lang.String agentId) ):de.kluewer.bot.interfaces.GraphInterface.resetMeaning;
+println( ArgumentDefinition(java.lang.String text) ):java.lang.System.out.println;
+setMeaning( ArgumentDefinition(java.lang.String agentId),ArgumentDefinition(java.lang.String da),ArgumentDefinition(java.lang.String topic),ArgumentDefinition(java.lang.String domain) ):de.kluewer.bot.interfaces.GraphInterface.setMeaning;
+reset( ArgumentDefinition(java.lang.String agentId) ):de.kluewer.bot.interfaces.GraphInterface.reset;
+selectConversationThread( ArgumentDefinition(java.lang.String agentId) ):de.kluewer.bot.interfaces.GraphInterface.selectConversationThread;
+deliverMeaning( ArgumentDefinition(java.lang.String agentId),ArgumentDefinition(java.lang.String da),ArgumentDefinition(java.lang.String topic) ):de.kluewer.bot.interfaces.GraphInterface.deliverMeaning;
+    StructTypeDefinition(Meaning);
+    Meaning meaning = { dialogAct = "null" , domain = "TASK" , topicObject = "null" , mtype = "null" };
+String agentId = "";
+Bool timeout = true;
+String input = "null";
+String dialogact = "";
+Bool script = false;
+String key = "null";
+String proposedTopic = "";</Commands>
+    <Position xPos="0" yPos="0"/>
+    <Node id="N33" name="N33" comment="">
+        <Commands>println ( "Waiting for agentId" );</Commands>
+        <CEdge target="N9" source="N33" targetdock="0" sourcedock="12">
+            <SourceCtrl xPos="202" yPos="0"/>
+            <TargetCtrl xPos="-203" yPos="0"/>
+            <Condition>agentId != ""</Condition>
+        </CEdge>
+        <Position xPos="210" yPos="390"/>
+        <TEdge timeout="100000" target="N33" source="N33" targetdock="28" sourcedock="2">
+            <SourceCtrl xPos="24" yPos="-86"/>
+            <TargetCtrl xPos="78" yPos="-46"/>
+            <Commands/>
+        </TEdge>
+    </Node>
+    <Node id="N9" name="Distributor" comment="">
+        <Commands>println ( "Distributor!" );
+key = selectConversationThread ( agentId );
+domain = "UNSET";
+println ( "Distributor: key is: " + key );</Commands>
+        <CEdge target="S6" source="N9" targetdock="20" sourcedock="16">
+            <SourceCtrl xPos="-72" yPos="-20"/>
+            <TargetCtrl xPos="74" yPos="19"/>
+            <Condition>key == "Farewell"</Condition>
+        </CEdge>
+        <CEdge target="S8" source="N9" targetdock="2" sourcedock="8">
+            <SourceCtrl xPos="1" yPos="94"/>
+            <TargetCtrl xPos="-17" yPos="-26"/>
+            <Condition>key == "Compliment"</Condition>
+        </CEdge>
+        <CEdge target="S10" source="N9" targetdock="24" sourcedock="2">
+            <SourceCtrl xPos="-20" yPos="-72"/>
+            <TargetCtrl xPos="43" yPos="74"/>
+            <Condition>key == "Clarify"</Condition>
+        </CEdge>
+        <CEdge target="S12" source="N9" targetdock="28" sourcedock="24">
+            <SourceCtrl xPos="-68" yPos="67"/>
+            <TargetCtrl xPos="94" yPos="-55"/>
+            <Condition>key == "Wait"</Condition>
+        </CEdge>
+        <CEdge target="S14" source="" targetdock="-1" sourcedock="-1">
+            <Condition>key == "RI_You"</Condition>
+        </CEdge>
+        <CEdge target="S15" source="" targetdock="-1" sourcedock="-1">
+            <Condition>key == "PI_Me"</Condition>
+        </CEdge>
+        <CEdge target="S17" source="" targetdock="-1" sourcedock="-1">
+            <Condition>key == "PI_ME_System"</Condition>
+        </CEdge>
+        <CEdge target="S18" source="" targetdock="-1" sourcedock="-1">
+            <Condition>key == "RI_YOU_System"</Condition>
+        </CEdge>
+        <CEdge target="S19" source="" targetdock="-1" sourcedock="-1">
+            <Condition>key == "COMPLIMENT_System"</Condition>
+        </CEdge>
+        <Position xPos="750" yPos="390"/>
+    </Node>
+    <SuperNode start="N68" hideLocalVar="false" hideGlobalVar="false" id="S6" name="Farewell" comment="">
+        <Commands></Commands>
+        <Position xPos="480" yPos="300"/>
+        <Node id="N45" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="120" yPos="30"/>
+        </Node>
+        <Node id="N68" name="Exit" comment="">
+            <Commands>input = "null";
+dialogact = "";
+dialogPartner = "";
+deliverMeaning ( agentId , "FAREWELL" , "" );</Commands>
+            <Position xPos="120" yPos="390"/>
+        </Node>
+    </SuperNode>
+    <SuperNode start="N15" hideLocalVar="false" hideGlobalVar="false" id="S10" name="Clarify" comment="">
+        <Commands>Int lastSystemTurn = 0;</Commands>
+        <Position xPos="660" yPos="120"/>
+        <EEdge target="N9" source="S10" targetdock="28" sourcedock="4">
+            <SourceCtrl xPos="19" yPos="74"/>
+            <TargetCtrl xPos="-37" yPos="-65"/>
+        </EEdge>
+        <Node id="N14" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="30" yPos="300"/>
+        </Node>
+        <Node id="N15" name="N15" comment="">
+            <Commands>lastSystemTurn = deliverMeaning ( agentId , "CLARIFY" , "" );</Commands>
+            <CEdge target="N16" source="N15" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="67" yPos="0"/>
+                <TargetCtrl xPos="-68" yPos="0"/>
+                <Condition>input != "null"</Condition>
+            </CEdge>
+            <Position xPos="300" yPos="390"/>
+            <TEdge timeout="5000" target="N219" source="N15" targetdock="0" sourcedock="28">
+                <SourceCtrl xPos="71" yPos="-20"/>
+                <TargetCtrl xPos="-72" yPos="19"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N16" name="N16" comment="">
+            <Commands>setMeaning ( agentId , input );
+input = "null";
+dialogact = meaning.dialogAct;
+domain = meaning.domain;</Commands>
+            <Position xPos="570" yPos="390"/>
+        </Node>
+        <Node id="N219" name="N219" comment="">
+            <Commands></Commands>
+            <Position xPos="570" yPos="300"/>
+        </Node>
+    </SuperNode>
+    <SuperNode start="N27" hideLocalVar="false" hideGlobalVar="false" id="S12" name="Wait" comment="">
+        <Commands></Commands>
+        <Position xPos="480" yPos="570"/>
+        <EEdge target="N9" source="S12" targetdock="31" sourcedock="2">
+            <SourceCtrl xPos="94" yPos="-95"/>
+            <TargetCtrl xPos="-83" yPos="46"/>
+        </EEdge>
+        <Node id="N28" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="30" yPos="30"/>
+        </Node>
+        <Node id="N27" name="N27" comment="">
+            <Commands></Commands>
+            <CEdge target="N29" source="N27" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="67" yPos="0"/>
+                <TargetCtrl xPos="-68" yPos="0"/>
+                <Condition>input != "null"</Condition>
+            </CEdge>
+            <Position xPos="300" yPos="390"/>
+            <TEdge timeout="100000" target="N195" source="N27" targetdock="0" sourcedock="28">
+                <SourceCtrl xPos="71" yPos="-20"/>
+                <TargetCtrl xPos="-72" yPos="19"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N29" name="Analyse" comment="">
+            <Commands>setMeaning ( agentId , input );
+input = "null";
+dialogact = meaning.dialogAct;
+domain = meaning.domain;</Commands>
+            <Position xPos="660" yPos="390"/>
+        </Node>
+        <Node id="N195" name="N195" comment="">
+            <Commands></Commands>
+            <Position xPos="570" yPos="300"/>
+        </Node>
+    </SuperNode>
+    <SuperNode start="N32" hideLocalVar="false" hideGlobalVar="false" id="S13" name="Greet" comment="">
+        <Commands>Int lastSystemTurn = - 1;</Commands>
+        <Position xPos="480" yPos="210"/>
+        <EEdge target="N9" source="S13" targetdock="4" sourcedock="20">
+            <SourceCtrl xPos="94" yPos="54"/>
+            <TargetCtrl xPos="-83" yPos="-49"/>
+        </EEdge>
+        <Node id="N5" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="30" yPos="480"/>
+        </Node>
+        <Node id="N30" name="Greet" comment="">
+            <Commands>input = "null";
+lastSystemTurn = deliverMeaning ( agentId , "GREETING" , "" );</Commands>
+            <Position xPos="750" yPos="390"/>
+        </Node>
+        <Node id="N31" name="Wait" comment="">
+            <Commands>resetMeaning ( agentId );</Commands>
+            <CEdge target="N30" source="N31" targetdock="12" sourcedock="4">
+                <SourceCtrl xPos="71" yPos="33"/>
+                <TargetCtrl xPos="58" yPos="-10"/>
+                <Condition>! input == "null"</Condition>
+            </CEdge>
+            <Position xPos="750" yPos="210"/>
+            <TEdge timeout="100000" target="N31" source="N31" targetdock="12" sourcedock="20">
+                <SourceCtrl xPos="191" yPos="18"/>
+                <TargetCtrl xPos="128" yPos="-55"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N32" name="Start" comment="">
+            <Commands>println ( "Graph said Starting with Agent id " + agentId );</Commands>
+            <Position xPos="750" yPos="30"/>
+            <EEdge target="N31" source="N32" targetdock="28" sourcedock="20">
+                <SourceCtrl xPos="60" yPos="23"/>
+                <TargetCtrl xPos="60" yPos="-28"/>
+            </EEdge>
+        </Node>
+    </SuperNode>
+    <SuperNode start="N17" hideLocalVar="false" hideGlobalVar="false" id="S8" name="Compliment" comment="">
+        <Commands>String ID = "";
+Int lastSystemTurn = - 1;
+String threadTopic = "null";
+Bool awaitResponse = false;
+String threadDomain = "COMPLIMENT";</Commands>
+        <Position xPos="750" yPos="660"/>
+        <EEdge target="N9" source="S8" targetdock="20" sourcedock="18">
+            <SourceCtrl xPos="0" yPos="-68"/>
+            <TargetCtrl xPos="18" yPos="64"/>
+        </EEdge>
+        <Node id="N10" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="30" yPos="300"/>
+        </Node>
+        <Node id="N17" name="N17" comment="">
+            <Commands>println ( "N17: Compliment Subgraph!" );
+threadTopic = meaning.topicObject;
+resetMeaning ( agentId );</Commands>
+            <PEdge probability="50" target="N18" source="N17" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="31" yPos="-9"/>
+                <TargetCtrl xPos="-29" yPos="16"/>
+            </PEdge>
+            <PEdge probability="30" target="N19" source="N17" targetdock="16" sourcedock="20">
+                <SourceCtrl xPos="28" yPos="16"/>
+                <TargetCtrl xPos="-29" yPos="-17"/>
+            </PEdge>
+            <PEdge probability="20" target="N20" source="N17" targetdock="16" sourcedock="2">
+                <SourceCtrl xPos="46" yPos="-83"/>
+                <TargetCtrl xPos="-47" yPos="82"/>
+            </PEdge>
+            <Position xPos="120" yPos="390"/>
+        </Node>
+        <Node id="N18" name="N18" comment="">
+            <Commands>lastSystemTurn = deliverMeaning ( agentId , "THANK" , "" );</Commands>
+            <Position xPos="390" yPos="300"/>
+        </Node>
+        <Node id="N19" name="N19" comment="">
+            <Commands>lastSystemTurn = deliverMeaning ( agentId , "DOUBT" , "compliment" );</Commands>
+            <CEdge target="N23" source="N19" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="112" yPos="-32"/>
+                <TargetCtrl xPos="-113" yPos="31"/>
+                <Condition>input != "null"</Condition>
+            </CEdge>
+            <Position xPos="390" yPos="480"/>
+            <TEdge timeout="100000" target="N24" source="N19" targetdock="0" sourcedock="28">
+                <SourceCtrl xPos="250" yPos="0"/>
+                <TargetCtrl xPos="-240" yPos="66"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N20" name="N20" comment="">
+            <Commands>lastSystemTurn = deliverMeaning ( agentId , "THANK" , "compliment" );</Commands>
+            <CEdge target="N21" source="N20" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="107" yPos="-30"/>
+                <TargetCtrl xPos="-113" yPos="0"/>
+                <Condition>input != "null"</Condition>
+            </CEdge>
+            <Position xPos="390" yPos="120"/>
+            <TEdge timeout="100000" target="N22" source="N20" targetdock="0" sourcedock="28">
+                <SourceCtrl xPos="236" yPos="-66"/>
+                <TargetCtrl xPos="-248" yPos="0"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N21" name="Analyse" comment="">
+            <Commands>setMeaning ( agentId , input );
+input = "null";
+dialogact = meaning.dialogAct;
+domain = meaning.domain;</Commands>
+            <CEdge target="N22" source="N21" targetdock="31" sourcedock="12">
+                <SourceCtrl xPos="67" yPos="0"/>
+                <TargetCtrl xPos="-65" yPos="18"/>
+                <Condition>dialogact == "WEL"</Condition>
+            </CEdge>
+            <Position xPos="750" yPos="120"/>
+            <EEdge target="N38" source="N21" targetdock="0" sourcedock="20">
+                <SourceCtrl xPos="71" yPos="19"/>
+                <TargetCtrl xPos="-72" yPos="-20"/>
+            </EEdge>
+        </Node>
+        <Node id="N22" name="N22" comment="">
+            <Commands>resetMeaning ( agentId );</Commands>
+            <Position xPos="1020" yPos="30"/>
+        </Node>
+        <Node id="N23" name="Analyse" comment="">
+            <Commands>setMeaning ( agentId , input );
+input = "null";
+dialogact = meaning.dialogAct;
+domain = meaning.domain;</Commands>
+            <CEdge target="N24" source="N23" targetdock="31" sourcedock="12">
+                <SourceCtrl xPos="67" yPos="0"/>
+                <TargetCtrl xPos="-68" yPos="0"/>
+                <Condition>dialogact == "ACCEPT"</Condition>
+            </CEdge>
+            <Position xPos="750" yPos="390"/>
+            <EEdge target="N41" source="N23" targetdock="0" sourcedock="28">
+                <SourceCtrl xPos="28" yPos="-17"/>
+                <TargetCtrl xPos="-29" yPos="16"/>
+            </EEdge>
+        </Node>
+        <Node id="N24" name="N24" comment="">
+            <Commands>lastSystemTurn = deliverMeaning ( agentId , "THANK" , "compliment" );
+resetMeaning ( agentId );</Commands>
+            <Position xPos="1020" yPos="480"/>
+        </Node>
+        <Node id="N38" name="N38" comment="">
+            <Commands></Commands>
+            <Position xPos="1020" yPos="210"/>
+        </Node>
+        <Node id="N41" name="N41" comment="">
+            <Commands></Commands>
+            <Position xPos="930" yPos="300"/>
+        </Node>
+    </SuperNode>
+    <ClassPath/>
+</SceneFlow>

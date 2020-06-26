@@ -48,7 +48,7 @@ public final class SCMConverter {
       String intermediate = rp.writeToString();
       ByteArrayInputStream si = new ByteArrayInputStream(
           intermediate.getBytes(StandardCharsets.UTF_8));
-      SceneFlow sc = SceneFlow.loadFrom(si, new File(from));
+      SceneFlow sc = SceneFlow.loadFrom(si, from);
       // The new format needs no arrows, but we need them to construct the data
       // from the old format.
       deleteArrows(sc);

@@ -1,0 +1,1997 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SceneFlow modifDate="Fri, 26 Jun 2020 19:14:06" package="" start="N16" hideLocalVar="false" hideGlobalVar="false" id="Quiz" name="Quiz" comment="">
+    <Commands>provideAnswer(  ):de.dfki.lt.sminterface.QuizSmInterface.provideAnswer;
+provideSolution( ArgumentDefinition(boolean Arg0) ):de.dfki.lt.sminterface.QuizSmInterface.provideSolution;
+newTurn(  ):de.dfki.lt.sminterface.QuizSmInterface.newTurn;
+hasTablet(  ):de.dfki.lt.sminterface.QuizSmInterface.hasTablet;
+endTurn(  ):de.dfki.lt.sminterface.QuizSmInterface.endTurn;
+listen(  ):de.dfki.lt.sminterface.SceneMakerInterface.listen;
+assessAnswer( ArgumentDefinition([[Ljava.lang.Object; Arg0) ):de.dfki.lt.sminterface.QuizSmInterface.assessAnswer;
+getExplanation( ArgumentDefinition(boolean Arg0) ):de.dfki.lt.sminterface.QuizSmInterface.getExplanationForSolution;
+sysCall( ArgumentDefinition(java.lang.String Arg0),ArgumentDefinition(java.lang.String Arg1) ):de.dfki.lt.sminterface.SceneMakerInterface.sysCall;
+newRound( ArgumentDefinition(java.lang.String Arg0) ):de.dfki.lt.sminterface.QuizSmInterface.newRound;
+random(  ):de.dfki.lt.sminterface.SceneMakerInterface.random;
+endRound(  ):de.dfki.lt.sminterface.QuizSmInterface.endRound;
+isAnswerRetryPossible(  ):de.dfki.lt.sminterface.QuizSmInterface.answerRetryPossible;
+get( ArgumentDefinition([[Ljava.lang.Object; Arg0),ArgumentDefinition(java.lang.String Arg1) ):de.dfki.lt.sminterface.SceneMakerInterface.get;
+emitDA( ArgumentDefinition(java.lang.String Arg0) ):de.dfki.lt.sminterface.SceneMakerInterface.emitDAString;
+sysOut( ArgumentDefinition(java.lang.String Arg0) ):de.dfki.lt.sminterface.SceneMakerInterface.sysOut;
+turnTablet(  ):de.dfki.lt.sminterface.QuizSmInterface.turnTablet;
+getNumberOfCorrectAnswersInRound(  ):de.dfki.lt.sminterface.QuizSmInterface.getNumberOfCorrectAnswersInRound;
+startNewSession(  ):de.dfki.lt.sminterface.QuizSmInterface.startNewSession;
+firstTimeQuiz(  ):de.dfki.lt.sminterface.QuizSmInterface.firstTimeQuiz;
+endSession(  ):de.dfki.lt.sminterface.QuizSmInterface.endSession;
+shouldAskForSolution(  ):de.dfki.lt.sminterface.QuizSmInterface.shouldAskForSolution;
+maxNumberOfTurnsReached(  ):de.dfki.lt.sminterface.QuizSmInterface.maxNumberOfTurnsReached;
+provideQuestion( ArgumentDefinition(boolean Arg0) ):de.dfki.lt.sminterface.QuizSmInterface.provideQuestion;
+stopListening(  ):de.dfki.lt.sminterface.SceneMakerInterface.stopListening;
+check( ArgumentDefinition([[Ljava.lang.Object; struct),ArgumentDefinition(java.lang.String condString) ):de.dfki.lt.sminterface.SceneMakerInterface.check;
+getNumberOfQuestionsInRound(  ):de.dfki.lt.sminterface.QuizSmInterface.getNumberOfQuestionsInRound;
+provideAnswers( ArgumentDefinition(boolean Arg0) ):de.dfki.lt.sminterface.QuizSmInterface.provideAnswers;
+getNumberOfCorrectAnswers( ArgumentDefinition(java.lang.String asker) ):de.dfki.lt.sminterface.QuizSmInterface.getNumberOfCorrectAnswers;
+print( ArgumentDefinition(java.lang.String text) ):java.lang.System.out.println;
+lastTurnReached(  ):de.dfki.lt.sminterface.QuizSmInterface.lastTurnReached;
+questionProvided( ArgumentDefinition([[Ljava.lang.Object; Arg0) ):de.dfki.lt.sminterface.QuizSmInterface.questionProvided;
+emitDialogueAct( ArgumentDefinition([[Ljava.lang.Object; Arg0) ):de.dfki.lt.sminterface.SceneMakerInterface.emitDialogueAct;
+getSystemSignal(  ):de.dfki.lt.sminterface.SceneMakerInterface.systemSignal;
+getNumberOfQuestions( ArgumentDefinition(java.lang.String asker) ):de.dfki.lt.sminterface.QuizSmInterface.getNumberOfQuestions;
+emptyReaction(  ):de.dfki.lt.sminterface.SceneMakerInterface.getEmptyReaction;
+    StructTypeDefinition(DialogueAct);
+StructTypeDefinition(Params);
+StructTypeDefinition(SystemFlags);
+StructTypeDefinition(SituationEnum);
+StructTypeDefinition(StatusEnum);
+StructTypeDefinition(ActorEnum);
+StructTypeDefinition(SystemSignalEnum);
+    SituationEnum SE = { startPlaying = "startPlaying" , gameTurn = "gameTurn" , switchRole = "switchRole" , turnFinished = "turnFinished" , gameFinished = "gameFinished" , stopPlaying = "stopPlaying" };
+SystemSignalEnum Signal = { start = "start" , stop = "stop" , shutDown = "shutDown" };
+StatusEnum StatE = { started = "started" , stopped = "stopped" , idle = "idle" , shuttingDown = "shuttingDown" , interrupted = "interrupted" };
+ActorEnum AE = { robot = "robot" , user = "user" };
+SystemFlags flag = { status = StatE.idle , shutDownRequested = false };
+DialogueAct lastReaction = emptyReaction (  );
+String lastSignal = "";
+String situation = "";
+String asker = "";
+Bool roleChanged = false;
+String tabletOrientation = "unknown";</Commands>
+    <Position xPos="0" yPos="0"/>
+    <Comment>
+        <Text>
+      TODO: stopListeningToSystemSignals (or otherwise do not start listening to 
+                system signals after obtaining of Signal.shutDown)
+    </Text>
+        <Boundary height="92" width="261" xPos="890" yPos="402"/>
+    </Comment>
+    <Node id="N1" name="Done" comment="">
+        <Commands></Commands>
+        <Position xPos="802" yPos="200"/>
+    </Node>
+    <Node id="N16" name="Initialize" comment="">
+        <Commands></Commands>
+        <FEdge target="S10" source="N16" targetdock="0" sourcedock="12">
+            <SourceCtrl xPos="107" yPos="0"/>
+            <TargetCtrl xPos="-108" yPos="0"/>
+        </FEdge>
+        <FEdge target="S11" source="N16" targetdock="0" sourcedock="20">
+            <SourceCtrl xPos="110" yPos="28"/>
+            <TargetCtrl xPos="-113" yPos="-32"/>
+        </FEdge>
+        <FEdge target="S8" source="N16" targetdock="0" sourcedock="28">
+            <SourceCtrl xPos="109" yPos="65"/>
+            <TargetCtrl xPos="-128" yPos="-75"/>
+        </FEdge>
+        <FEdge target="S14" source="N16" targetdock="0" sourcedock="2">
+            <SourceCtrl xPos="27" yPos="-17"/>
+            <TargetCtrl xPos="-32" yPos="18"/>
+        </FEdge>
+        <FEdge target="S9" source="N16" targetdock="0" sourcedock="18">
+            <SourceCtrl xPos="151" yPos="-40"/>
+            <TargetCtrl xPos="-155" yPos="43"/>
+        </FEdge>
+        <Position xPos="114" yPos="200"/>
+    </Node>
+    <Node id="N9" name="N9" comment="">
+        <Commands>stopListening (  );</Commands>
+        <Position xPos="716" yPos="372"/>
+        <EEdge target="N1" source="N9" targetdock="16" sourcedock="2">
+            <SourceCtrl xPos="15" yPos="-28"/>
+            <TargetCtrl xPos="-16" yPos="27"/>
+        </EEdge>
+    </Node>
+    <Node id="N47" name="N47" comment="">
+        <Commands>flag.status = StatE.started;</Commands>
+        <Position xPos="458" yPos="716"/>
+        <EEdge target="S6" source="N47" targetdock="8" sourcedock="2">
+            <SourceCtrl xPos="0" yPos="-22"/>
+            <TargetCtrl xPos="0" yPos="21"/>
+        </EEdge>
+    </Node>
+    <SuperNode start="S13" hideLocalVar="false" hideGlobalVar="false" id="S7" name="RobotAsks" comment="">
+        <Commands>String goto = "";
+Bool doNextQuestion = true;
+DialogueAct quizReaction = { type = "" , subtype = "" };
+String explanation = "";</Commands>
+        <IEdge target="N47" source="S7" targetdock="28" sourcedock="0">
+            <SourceCtrl xPos="-128" yPos="74"/>
+            <TargetCtrl xPos="109" yPos="-66"/>
+            <Condition>flag.status == StatE.interrupted</Condition>
+        </IEdge>
+        <IEdge target="S6" source="S7" targetdock="20" sourcedock="16">
+            <SourceCtrl xPos="-108" yPos="30"/>
+            <TargetCtrl xPos="107" yPos="30"/>
+            <Condition>flag.status == StatE.stopped</Condition>
+        </IEdge>
+        <Position xPos="802" yPos="544"/>
+        <EEdge target="S6" source="S7" targetdock="12" sourcedock="8">
+            <SourceCtrl xPos="-108" yPos="-30"/>
+            <TargetCtrl xPos="107" yPos="-30"/>
+        </EEdge>
+        <Comment>
+            <Text>
+        goto=check
+      </Text>
+            <Boundary height="50" width="80" xPos="466" yPos="737"/>
+        </Comment>
+        <Comment>
+            <Text>
+        subtype is explanation
+      </Text>
+            <Boundary height="50" width="92" xPos="183" yPos="408"/>
+        </Comment>
+        <Node id="N18" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="28" yPos="286"/>
+        </Node>
+        <Node id="N20" name="Qujt" comment="">
+            <Commands>situation = SE.turnFinished;</Commands>
+            <Position xPos="286" yPos="716"/>
+        </Node>
+        <Node id="N10" name="RobotAsksTurn" comment="">
+            <Commands>newTurn (  );
+provideQuestion ( false );
+provideAnswers ( false );
+turnTablet (  );</Commands>
+            <Position xPos="458" yPos="200"/>
+            <EEdge target="S12" source="N10" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N11" name="and" comment="">
+            <Commands></Commands>
+            <CEdge target="N32" source="N11" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="21"/>
+                <TargetCtrl xPos="0" yPos="-22"/>
+                <Condition>lastReaction.subtype == "answer" | lastReaction.subtype == "tryagain"</Condition>
+            </CEdge>
+            <Position xPos="802" yPos="544"/>
+            <EEdge target="N17" source="N11" targetdock="24" sourcedock="4">
+                <SourceCtrl xPos="-23" yPos="-23"/>
+                <TargetCtrl xPos="8" yPos="30"/>
+            </EEdge>
+        </Node>
+        <Node id="N17" name="WaitForCorrectType" comment="">
+            <Commands></Commands>
+            <CEdge target="N11" source="N17" targetdock="28" sourcedock="4">
+                <SourceCtrl xPos="15" yPos="27"/>
+                <TargetCtrl xPos="-16" yPos="-28"/>
+                <Condition>lastReaction.type == "provide"</Condition>
+            </CEdge>
+            <CEdge target="N34" source="N17" targetdock="12" sourcedock="0">
+                <SourceCtrl xPos="-151" yPos="0"/>
+                <TargetCtrl xPos="150" yPos="0"/>
+                <Condition>lastReaction.type == "request" &amp; lastReaction.subtype == "explanation"</Condition>
+            </CEdge>
+            <Position xPos="716" yPos="372"/>
+            <TEdge timeout="60000" target="N17" source="N17" targetdock="28" sourcedock="2">
+                <SourceCtrl xPos="22" yPos="-84"/>
+                <TargetCtrl xPos="74" yPos="-44"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N32" name="ReactionAccepted" comment="">
+            <Commands>quizReaction = lastReaction;
+lastReaction = emptyReaction (  );</Commands>
+            <Position xPos="802" yPos="716"/>
+            <EEdge target="S2" source="N32" targetdock="12" sourcedock="0">
+                <SourceCtrl xPos="-22" yPos="0"/>
+                <TargetCtrl xPos="21" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N34" name="N34" comment="">
+            <Commands></Commands>
+            <CEdge target="S19" source="N34" targetdock="0" sourcedock="20">
+                <SourceCtrl xPos="77" yPos="46"/>
+                <TargetCtrl xPos="-91" yPos="-53"/>
+                <Condition>lastReaction.subtype == "repeat"</Condition>
+            </CEdge>
+            <Position xPos="286" yPos="372"/>
+            <EEdge target="N35" source="N34" targetdock="28" sourcedock="0">
+                <SourceCtrl xPos="-28" yPos="15"/>
+                <TargetCtrl xPos="27" yPos="-17"/>
+            </EEdge>
+        </Node>
+        <Node id="N19" name="N31" comment="">
+            <Commands>DialogueAct da = { type = "provide" , subtype = "explanation" , string = "" };
+        da.type = "provide";
+da.subtype = "explanation";
+da.string = explanation;
+emitDialogueAct ( da );
+lastReaction = emptyReaction (  );</Commands>
+            <Position xPos="372" yPos="544"/>
+            <EEdge target="N17" source="N19" targetdock="31" sourcedock="28">
+                <SourceCtrl xPos="109" yPos="-66"/>
+                <TargetCtrl xPos="-125" yPos="32"/>
+            </EEdge>
+        </Node>
+        <Node id="N35" name="N35" comment="">
+            <Commands>explanation = getExplanation ( false );</Commands>
+            <CEdge target="N19" source="N35" targetdock="0" sourcedock="20">
+                <SourceCtrl xPos="69" yPos="18"/>
+                <TargetCtrl xPos="-70" yPos="-19"/>
+                <Condition>explanation != ""</Condition>
+            </CEdge>
+            <Position xPos="114" yPos="458"/>
+            <EEdge target="N36" source="N35" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="21"/>
+                <TargetCtrl xPos="0" yPos="-22"/>
+            </EEdge>
+        </Node>
+        <Node id="N36" name="N36" comment="">
+            <Commands>emitDA ( "provide(explanation)" );
+lastReaction = emptyReaction (  );</Commands>
+            <Position xPos="114" yPos="630"/>
+            <EEdge target="N17" source="N36" targetdock="16" sourcedock="28">
+                <SourceCtrl xPos="226" yPos="-135"/>
+                <TargetCtrl xPos="-227" yPos="128"/>
+            </EEdge>
+        </Node>
+        <Node id="N42" name="N42" comment="">
+            <Commands>sysCall ( "expectDAs" , "((provide\((answer|tryagain)\b)|(request\(((repeat, what=(answers|question))|explanation\))))" );</Commands>
+            <Position xPos="802" yPos="200"/>
+            <EEdge target="N17" source="N42" targetdock="18" sourcedock="16">
+                <SourceCtrl xPos="-16" yPos="27"/>
+                <TargetCtrl xPos="15" yPos="-28"/>
+            </EEdge>
+        </Node>
+        <SuperNode start="N22" hideLocalVar="false" hideGlobalVar="false" id="S2" name="ProcessQuizReaction" comment="">
+            <Commands>DialogueAct return = { type = "" , subtype = "" };
+DialogueAct result = emptyReaction (  );</Commands>
+            <CEdge target="N17" source="S2" targetdock="8" sourcedock="2">
+                <SourceCtrl xPos="31" yPos="-113"/>
+                <TargetCtrl xPos="-29" yPos="110"/>
+                <Condition>goto == "listen"</Condition>
+            </CEdge>
+            <Position xPos="630" yPos="716"/>
+            <EEdge target="N20" source="S2" targetdock="12" sourcedock="0">
+                <SourceCtrl xPos="-108" yPos="0"/>
+                <TargetCtrl xPos="107" yPos="0"/>
+            </EEdge>
+            <Comment>
+                <Text>
+          answer unknown
+        </Text>
+                <Boundary height="50" width="104" xPos="565" yPos="691"/>
+            </Comment>
+            <Comment>
+                <Text>
+          result = request( repeat, answer)
+        </Text>
+                <Boundary height="50" width="107" xPos="890" yPos="271"/>
+            </Comment>
+            <Node id="N21" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="28" yPos="716"/>
+            </Node>
+            <Node id="N22" name="N8" comment="">
+                <Commands></Commands>
+                <CEdge target="N28" source="N22" targetdock="28" sourcedock="16">
+                    <SourceCtrl xPos="-74" yPos="129"/>
+                    <TargetCtrl xPos="105" yPos="-105"/>
+                    <Condition>quizReaction.subtype == "stop"</Condition>
+                </CEdge>
+                <CEdge target="N106" source="N22" targetdock="0" sourcedock="20">
+                    <SourceCtrl xPos="69" yPos="18"/>
+                    <TargetCtrl xPos="-70" yPos="-19"/>
+                    <Condition>quizReaction.type == "provide" &amp; quizReaction.subtype == "answer"</Condition>
+                </CEdge>
+                <CEdge target="N107" source="N22" targetdock="28" sourcedock="0">
+                    <SourceCtrl xPos="-110" yPos="62"/>
+                    <TargetCtrl xPos="109" yPos="-66"/>
+                    <Condition>quizReaction.type == "provide" &amp; quizReaction.subtype == "tryagain"</Condition>
+                </CEdge>
+                <Position xPos="458" yPos="200"/>
+            </Node>
+            <Node id="N24" name="N11" comment="">
+                <Commands>provideSolution ( false );</Commands>
+                <CEdge target="N33" source="N24" targetdock="16" sourcedock="28">
+                    <SourceCtrl xPos="39" yPos="-40"/>
+                    <TargetCtrl xPos="-40" yPos="39"/>
+                    <Condition>random (  ) &lt; 0.5</Condition>
+                </CEdge>
+                <Position xPos="372" yPos="716"/>
+                <EEdge target="N28" source="N24" targetdock="4" sourcedock="4">
+                    <SourceCtrl xPos="-40" yPos="-40"/>
+                    <TargetCtrl xPos="39" yPos="39"/>
+                </EEdge>
+            </Node>
+            <Node id="N25" name="N12" comment="">
+                <Commands>emitDialogueAct ( result );</Commands>
+                <CEdge target="N24" source="N25" targetdock="12" sourcedock="0">
+                    <SourceCtrl xPos="-194" yPos="0"/>
+                    <TargetCtrl xPos="193" yPos="0"/>
+                    <Condition>isAnswerRetryPossible (  ) == false</Condition>
+                </CEdge>
+                <Position xPos="888" yPos="716"/>
+                <EEdge target="N27" source="N25" targetdock="0" sourcedock="12">
+                    <SourceCtrl xPos="21" yPos="0"/>
+                    <TargetCtrl xPos="-22" yPos="0"/>
+                </EEdge>
+            </Node>
+            <Node id="N26" name="N12" comment="">
+                <Commands>emitDialogueAct ( result );</Commands>
+                <CEdge target="N28" source="N26" targetdock="12" sourcedock="0">
+                    <SourceCtrl xPos="-110" yPos="62"/>
+                    <TargetCtrl xPos="109" yPos="-66"/>
+                    <Condition>random (  ) &lt; 0.7</Condition>
+                </CEdge>
+                <Position xPos="544" yPos="372"/>
+                <EEdge target="N33" source="N26" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                </EEdge>
+            </Node>
+            <Node id="N27" name="N14" comment="">
+                <Commands>emitDA ( "request(tryagain)" );</Commands>
+                <Position xPos="1060" yPos="716"/>
+                <EEdge target="N108" source="N27" targetdock="8" sourcedock="2">
+                    <SourceCtrl xPos="0" yPos="-22"/>
+                    <TargetCtrl xPos="0" yPos="21"/>
+                </EEdge>
+            </Node>
+            <Node id="N28" name="N11" comment="">
+                <Commands>goto = "check";</Commands>
+                <Position xPos="200" yPos="544"/>
+            </Node>
+            <Node id="N31" name="N31" comment="">
+                <Commands>DialogueAct da = { type = "provide" , subtype = "explanation" , string = "" };
+          da.type = "provide";
+da.subtype = "explanation";
+da.string = explanation;
+emitDialogueAct ( da );</Commands>
+                <Position xPos="200" yPos="716"/>
+                <EEdge target="N28" source="N31" targetdock="8" sourcedock="2">
+                    <SourceCtrl xPos="0" yPos="-22"/>
+                    <TargetCtrl xPos="0" yPos="21"/>
+                </EEdge>
+            </Node>
+            <Node id="N33" name="N33" comment="">
+                <Commands>explanation = getExplanation ( true );</Commands>
+                <CEdge target="N31" source="N33" targetdock="28" sourcedock="0">
+                    <SourceCtrl xPos="-110" yPos="62"/>
+                    <TargetCtrl xPos="109" yPos="-66"/>
+                    <Condition>explanation != ""</Condition>
+                </CEdge>
+                <Position xPos="544" yPos="544"/>
+                <EEdge target="N28" source="N33" targetdock="20" sourcedock="8">
+                    <SourceCtrl xPos="-108" yPos="0"/>
+                    <TargetCtrl xPos="107" yPos="0"/>
+                </EEdge>
+            </Node>
+            <Node id="N29" name="N29" comment="">
+                <Commands></Commands>
+                <CEdge target="N26" source="N29" targetdock="20" sourcedock="16">
+                    <SourceCtrl xPos="-110" yPos="-66"/>
+                    <TargetCtrl xPos="109" yPos="65"/>
+                    <Condition>get ( result , "value" ) == "yes"</Condition>
+                </CEdge>
+                <CEdge target="N25" source="N29" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                    <Condition>get ( result , "value" ) == "no"</Condition>
+                </CEdge>
+                <Position xPos="888" yPos="544"/>
+                <EEdge target="N24" source="N29" targetdock="20" sourcedock="0">
+                    <SourceCtrl xPos="-203" yPos="53"/>
+                    <TargetCtrl xPos="202" yPos="-54"/>
+                </EEdge>
+            </Node>
+            <Node id="N106" name="N106" comment="">
+                <Commands>result = assessAnswer ( quizReaction );</Commands>
+                <CEdge target="N29" source="N106" targetdock="28" sourcedock="24">
+                    <SourceCtrl xPos="44" yPos="77"/>
+                    <TargetCtrl xPos="-45" yPos="-78"/>
+                    <Condition>result.type == "feedback" &amp; result.subtype == "correctness"</Condition>
+                </CEdge>
+                <Position xPos="716" yPos="286"/>
+                <EEdge target="N23" source="N106" targetdock="0" sourcedock="12">
+                    <SourceCtrl xPos="64" yPos="0"/>
+                    <TargetCtrl xPos="-65" yPos="0"/>
+                </EEdge>
+            </Node>
+            <Node id="N101" name="N23" comment="">
+                <Commands>goto = "listen";</Commands>
+                <Position xPos="28" yPos="544"/>
+            </Node>
+            <Node id="N107" name="N107" comment="">
+                <Commands></Commands>
+                <CEdge target="N101" source="N107" targetdock="2" sourcedock="16">
+                    <SourceCtrl xPos="-16" yPos="27"/>
+                    <TargetCtrl xPos="15" yPos="-28"/>
+                    <Condition>get ( quizReaction , "polarity" ) == "pos"</Condition>
+                </CEdge>
+                <Position xPos="114" yPos="372"/>
+                <EEdge target="N28" source="N107" targetdock="2" sourcedock="24">
+                    <SourceCtrl xPos="15" yPos="27"/>
+                    <TargetCtrl xPos="-16" yPos="-28"/>
+                </EEdge>
+            </Node>
+            <Node id="N23" name="N23" comment="">
+                <Commands>emitDialogueAct ( result );</Commands>
+                <Position xPos="974" yPos="286"/>
+                <EEdge target="N108" source="N23" targetdock="2" sourcedock="24">
+                    <SourceCtrl xPos="18" yPos="69"/>
+                    <TargetCtrl xPos="-19" yPos="-70"/>
+                </EEdge>
+            </Node>
+            <Node id="N108" name="N108" comment="">
+                <Commands>goto = "listen";</Commands>
+                <Position xPos="1060" yPos="544"/>
+            </Node>
+        </SuperNode>
+        <SuperNode start="N116" hideLocalVar="false" hideGlobalVar="false" id="S19" name="RepeatSomething" comment="">
+            <Commands></Commands>
+            <CEdge target="N17" source="S19" targetdock="20" sourcedock="2">
+                <SourceCtrl xPos="57" yPos="-58"/>
+                <TargetCtrl xPos="-40" yPos="39"/>
+                <Condition>goto == "listen"</Condition>
+            </CEdge>
+            <Position xPos="544" yPos="544"/>
+            <EEdge target="N20" source="S19" targetdock="28" sourcedock="16">
+                <SourceCtrl xPos="-91" yPos="52"/>
+                <TargetCtrl xPos="77" yPos="-47"/>
+            </EEdge>
+            <Node id="N102" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="114" yPos="286"/>
+            </Node>
+            <Node id="N103" name="N102" comment="">
+                <Commands>provideSolution ( true );</Commands>
+                <Position xPos="544" yPos="544"/>
+                <EEdge target="N114" source="N103" targetdock="0" sourcedock="12">
+                    <SourceCtrl xPos="21" yPos="0"/>
+                    <TargetCtrl xPos="-21" yPos="5"/>
+                </EEdge>
+            </Node>
+            <Node id="N104" name="N104" comment="">
+                <Commands>provideQuestion ( true );</Commands>
+                <Position xPos="544" yPos="200"/>
+                <EEdge target="N114" source="N104" targetdock="4" sourcedock="4">
+                    <SourceCtrl xPos="82" yPos="82"/>
+                    <TargetCtrl xPos="-83" yPos="-83"/>
+                </EEdge>
+            </Node>
+            <Node id="N114" name="N23" comment="">
+                <Commands>goto = "listen";</Commands>
+                <Position xPos="716" yPos="544"/>
+            </Node>
+            <Node id="N115" name="N103" comment="">
+                <Commands>provideAnswers ( true );</Commands>
+                <Position xPos="544" yPos="372"/>
+                <EEdge target="N114" source="N115" targetdock="16" sourcedock="20">
+                    <SourceCtrl xPos="27" yPos="16"/>
+                    <TargetCtrl xPos="-28" yPos="-17"/>
+                </EEdge>
+            </Node>
+            <Node id="N116" name="N101" comment="">
+                <Commands>quizReaction = lastReaction;
+lastReaction = emptyReaction (  );</Commands>
+                <CEdge target="N104" source="N116" targetdock="16" sourcedock="28">
+                    <SourceCtrl xPos="82" yPos="-83"/>
+                    <TargetCtrl xPos="-83" yPos="82"/>
+                    <Condition>quizReaction.what == "question"</Condition>
+                </CEdge>
+                <CEdge target="N115" source="N116" targetdock="0" sourcedock="2">
+                    <SourceCtrl xPos="97" yPos="-58"/>
+                    <TargetCtrl xPos="-111" yPos="28"/>
+                    <Condition>quizReaction.what == "answers"</Condition>
+                </CEdge>
+                <CEdge target="N103" source="N116" targetdock="0" sourcedock="12">
+                    <SourceCtrl xPos="107" yPos="0"/>
+                    <TargetCtrl xPos="-108" yPos="0"/>
+                    <Condition>quizReaction.what == "solution"</Condition>
+                </CEdge>
+                <Position xPos="200" yPos="544"/>
+                <EEdge target="N114" source="N116" targetdock="8" sourcedock="20">
+                    <SourceCtrl xPos="194" yPos="144"/>
+                    <TargetCtrl xPos="-149" yPos="131"/>
+                </EEdge>
+            </Node>
+        </SuperNode>
+        <SuperNode start="N174" hideLocalVar="false" hideGlobalVar="false" id="S13" name="WaitForTablet" comment="">
+            <Commands>String wantedOrientation = "robot";
+Bool turnRequested = false;</Commands>
+            <Position xPos="114" yPos="200"/>
+            <EEdge target="S3" source="S13" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+            <Node id="N142" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="28" yPos="286"/>
+            </Node>
+            <Node id="N171" name="DoSomething" comment="">
+                <Commands></Commands>
+                <Position xPos="200" yPos="630"/>
+            </Node>
+            <Node id="N173" name="WaitForTabletTurn" comment="">
+                <Commands></Commands>
+                <CEdge target="N171" source="N173" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                    <Condition>tabletOrientation == wantedOrientation | tabletOrientation == "inactive"</Condition>
+                </CEdge>
+                <CEdge target="N175" source="N173" targetdock="0" sourcedock="20">
+                    <SourceCtrl xPos="110" yPos="28"/>
+                    <TargetCtrl xPos="-111" yPos="-29"/>
+                    <Condition>turnRequested == false</Condition>
+                </CEdge>
+                <Position xPos="200" yPos="458"/>
+                <TEdge timeout="10000" target="N173" source="N173" targetdock="28" sourcedock="2">
+                    <SourceCtrl xPos="22" yPos="-84"/>
+                    <TargetCtrl xPos="74" yPos="-44"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N174" name="N147" comment="">
+                <Commands>sysCall ( "expectDAs" , "provide\(turntablet, what=" + wantedOrientation + "\)" );</Commands>
+                <Position xPos="200" yPos="286"/>
+                <EEdge target="N173" source="N174" targetdock="18" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                </EEdge>
+            </Node>
+            <Node id="N175" name="N118" comment="">
+                <Commands></Commands>
+                <CEdge target="N171" source="N175" targetdock="12" sourcedock="16">
+                    <SourceCtrl xPos="-111" yPos="28"/>
+                    <TargetCtrl xPos="110" yPos="-29"/>
+                    <Condition>tabletOrientation == wantedOrientation | tabletOrientation == "inactive"</Condition>
+                </CEdge>
+                <Position xPos="544" yPos="544"/>
+                <TEdge timeout="33000" target="N176" source="N175" targetdock="8" sourcedock="2">
+                    <SourceCtrl xPos="0" yPos="-65"/>
+                    <TargetCtrl xPos="0" yPos="64"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N176" name="N119" comment="">
+                <Commands>emitDA ( "request(turntablet)" );
+turnRequested = true;</Commands>
+                <Position xPos="544" yPos="286"/>
+                <EEdge target="N173" source="N176" targetdock="12" sourcedock="0">
+                    <SourceCtrl xPos="-110" yPos="62"/>
+                    <TargetCtrl xPos="124" yPos="-33"/>
+                </EEdge>
+            </Node>
+        </SuperNode>
+        <SuperNode start="N158" hideLocalVar="false" hideGlobalVar="false" id="S12" name="WaitForTablet" comment="">
+            <Commands>String wantedOrientation = "child";
+Bool turnRequested = false;</Commands>
+            <Position xPos="630" yPos="200"/>
+            <EEdge target="N42" source="S12" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="107" yPos="0"/>
+                <TargetCtrl xPos="-108" yPos="0"/>
+            </EEdge>
+            <Node id="N153" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="974" yPos="114"/>
+            </Node>
+            <Node id="N154" name="DoSomething" comment="">
+                <Commands></Commands>
+                <Position xPos="200" yPos="630"/>
+            </Node>
+            <Node id="N155" name="WaitForTabletTurn" comment="">
+                <Commands></Commands>
+                <CEdge target="N154" source="N155" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                    <Condition>tabletOrientation == wantedOrientation | tabletOrientation == "inactive"</Condition>
+                </CEdge>
+                <CEdge target="N156" source="N155" targetdock="0" sourcedock="20">
+                    <SourceCtrl xPos="110" yPos="28"/>
+                    <TargetCtrl xPos="-111" yPos="-29"/>
+                    <Condition>turnRequested == false</Condition>
+                </CEdge>
+                <Position xPos="200" yPos="458"/>
+                <TEdge timeout="10000" target="N155" source="N155" targetdock="28" sourcedock="2">
+                    <SourceCtrl xPos="22" yPos="-84"/>
+                    <TargetCtrl xPos="74" yPos="-44"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N156" name="N118" comment="">
+                <Commands></Commands>
+                <CEdge target="N154" source="N156" targetdock="12" sourcedock="16">
+                    <SourceCtrl xPos="-111" yPos="28"/>
+                    <TargetCtrl xPos="110" yPos="-29"/>
+                    <Condition>tabletOrientation == wantedOrientation | tabletOrientation == "inactive"</Condition>
+                </CEdge>
+                <Position xPos="544" yPos="544"/>
+                <TEdge timeout="33000" target="N157" source="N156" targetdock="8" sourcedock="2">
+                    <SourceCtrl xPos="0" yPos="-65"/>
+                    <TargetCtrl xPos="0" yPos="64"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N157" name="N119" comment="">
+                <Commands>emitDA ( "request(turntablet)" );
+turnRequested = true;</Commands>
+                <Position xPos="544" yPos="286"/>
+                <EEdge target="N155" source="N157" targetdock="12" sourcedock="0">
+                    <SourceCtrl xPos="-110" yPos="62"/>
+                    <TargetCtrl xPos="124" yPos="-33"/>
+                </EEdge>
+            </Node>
+            <Node id="N158" name="N147" comment="">
+                <Commands>sysCall ( "expectDAs" , "provide\(turntablet, what=" + wantedOrientation + "\)" );</Commands>
+                <Position xPos="200" yPos="286"/>
+                <EEdge target="N155" source="N158" targetdock="18" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                </EEdge>
+            </Node>
+        </SuperNode>
+        <SuperNode start="N172" hideLocalVar="false" hideGlobalVar="false" id="S3" name="WaitNextQuestion" comment="">
+            <Commands>String wantedOrientation = "robot";
+Bool turnRequested = false;</Commands>
+            <Position xPos="286" yPos="200"/>
+            <EEdge target="N10" source="S3" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+            <Node id="N119" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="28" yPos="286"/>
+            </Node>
+            <Node id="N138" name="DoSomething" comment="">
+                <Commands>lastReaction = emptyReaction (  );</Commands>
+                <Position xPos="470" yPos="544"/>
+            </Node>
+            <Node id="N139" name="WaitForTabletTurn" comment="">
+                <Commands></Commands>
+                <CEdge target="N138" source="N139" targetdock="2" sourcedock="31">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                    <Condition>lastReaction.type == "provide" &amp; lastReaction.subtype == "nextquestion"</Condition>
+                </CEdge>
+                <Position xPos="508" yPos="371"/>
+                <TEdge timeout="10000" target="N139" source="N139" targetdock="20" sourcedock="12">
+                    <SourceCtrl xPos="22" yPos="-84"/>
+                    <TargetCtrl xPos="74" yPos="-44"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N172" name="N117" comment="">
+                <Commands>sysCall ( "expectDAs" , "provide\(nextquestion\)" );</Commands>
+                <Position xPos="114" yPos="372"/>
+                <EEdge target="N139" source="N172" targetdock="7" sourcedock="12">
+                    <SourceCtrl xPos="107" yPos="0"/>
+                    <TargetCtrl xPos="-108" yPos="0"/>
+                </EEdge>
+            </Node>
+        </SuperNode>
+    </SuperNode>
+    <SuperNode start="S18" hideLocalVar="false" hideGlobalVar="false" id="S5" name="UserAsks" comment="">
+        <Commands>DialogueAct questionReaction = emptyReaction (  );
+DialogueAct possibleAnswerReaction = emptyReaction (  );
+DialogueAct feedbackReaction = emptyReaction (  );</Commands>
+        <IEdge target="N47" source="S5" targetdock="0" sourcedock="20">
+            <SourceCtrl xPos="167" yPos="46"/>
+            <TargetCtrl xPos="-164" yPos="-43"/>
+            <Condition>flag.status == StatE.interrupted</Condition>
+        </IEdge>
+        <IEdge target="S6" source="S5" targetdock="0" sourcedock="12">
+            <SourceCtrl xPos="150" yPos="42"/>
+            <TargetCtrl xPos="-151" yPos="42"/>
+            <Condition>flag.status == StatE.stopped</Condition>
+        </IEdge>
+        <Position xPos="28" yPos="544"/>
+        <EEdge target="S6" source="S5" targetdock="31" sourcedock="28">
+            <SourceCtrl xPos="150" yPos="-42"/>
+            <TargetCtrl xPos="-151" yPos="-42"/>
+        </EEdge>
+        <Comment>
+            <Text>
+        Answer not correct, should we retry?
+      </Text>
+            <Boundary height="50" width="128" xPos="827" yPos="464"/>
+        </Comment>
+        <Comment>
+            <Text>
+        repeat question!
+      </Text>
+            <Boundary height="51" width="113" xPos="28" yPos="571"/>
+        </Comment>
+        <Node id="N4" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="888" yPos="114"/>
+        </Node>
+        <Node id="N50" name="AskForQuestion" comment="">
+            <Commands>newTurn (  );
+emitDA ( "request(question)" );</Commands>
+            <Position xPos="200" yPos="200"/>
+            <EEdge target="S15" source="N50" targetdock="2" sourcedock="16">
+                <SourceCtrl xPos="-16" yPos="27"/>
+                <TargetCtrl xPos="18" yPos="-32"/>
+            </EEdge>
+        </Node>
+        <Node id="N72" name="AskForPossibleAnswers" comment="">
+            <Commands>emitDA ( "request(answers)" );</Commands>
+            <Position xPos="458" yPos="200"/>
+            <EEdge target="S16" source="N72" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N73" name="Answer" comment="">
+            <Commands>provideAnswer (  );</Commands>
+            <Position xPos="1060" yPos="200"/>
+            <EEdge target="S17" source="N73" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="21"/>
+                <TargetCtrl xPos="0" yPos="-22"/>
+            </EEdge>
+        </Node>
+        <Node id="N78" name="Done" comment="">
+            <Commands>situation = SE.turnFinished;</Commands>
+            <CEdge target="N140" source="N78" targetdock="28" sourcedock="24">
+                <SourceCtrl xPos="15" yPos="27"/>
+                <TargetCtrl xPos="-16" yPos="-28"/>
+                <Condition>lastTurnReached (  ) == true</Condition>
+            </CEdge>
+            <Position xPos="716" yPos="630"/>
+            <EEdge target="N141" source="N78" targetdock="2" sourcedock="16">
+                <SourceCtrl xPos="-16" yPos="27"/>
+                <TargetCtrl xPos="15" yPos="-28"/>
+            </EEdge>
+        </Node>
+        <Node id="N98" name="N100" comment="">
+            <Commands>emitDA ( "express(success, value=no)" );</Commands>
+            <CEdge target="N136" source="N98" targetdock="12" sourcedock="0">
+                <SourceCtrl xPos="-111" yPos="28"/>
+                <TargetCtrl xPos="110" yPos="-29"/>
+                <Condition>shouldAskForSolution (  ) == true</Condition>
+            </CEdge>
+            <CEdge target="N118" source="N98" targetdock="16" sourcedock="2">
+                <SourceCtrl xPos="15" yPos="-28"/>
+                <TargetCtrl xPos="-16" yPos="27"/>
+                <Condition>isAnswerRetryPossible (  ) == true</Condition>
+            </CEdge>
+            <Position xPos="716" yPos="458"/>
+            <EEdge target="N78" source="N98" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="21"/>
+                <TargetCtrl xPos="0" yPos="-22"/>
+            </EEdge>
+        </Node>
+        <Node id="N99" name="N99" comment="">
+            <Commands>emitDA ( "express(success, value=yes)" );</Commands>
+            <Position xPos="974" yPos="716"/>
+            <EEdge target="N78" source="N99" targetdock="20" sourcedock="0">
+                <SourceCtrl xPos="-70" yPos="-19"/>
+                <TargetCtrl xPos="69" yPos="18"/>
+            </EEdge>
+        </Node>
+        <Node id="N100" name="N98" comment="">
+            <Commands></Commands>
+            <CEdge target="N99" source="N100" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="64"/>
+                <TargetCtrl xPos="0" yPos="-65"/>
+                <Condition>get ( questionReaction , "value" ) == "yes"</Condition>
+            </CEdge>
+            <Position xPos="974" yPos="458"/>
+            <EEdge target="N98" source="N100" targetdock="12" sourcedock="0">
+                <SourceCtrl xPos="-65" yPos="0"/>
+                <TargetCtrl xPos="64" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N109" name="N109" comment="">
+            <Commands></Commands>
+            <CEdge target="N72" source="N109" targetdock="8" sourcedock="2">
+                <SourceCtrl xPos="0" yPos="-65"/>
+                <TargetCtrl xPos="0" yPos="64"/>
+                <Condition>get ( questionReaction , "answersProvided" ) != "true"</Condition>
+            </CEdge>
+            <Position xPos="458" yPos="458"/>
+            <EEdge target="S22" source="N109" targetdock="0" sourcedock="28">
+                <SourceCtrl xPos="129" yPos="-77"/>
+                <TargetCtrl xPos="-151" yPos="87"/>
+            </EEdge>
+        </Node>
+        <Node id="N110" name="N110" comment="">
+            <Commands>emitDialogueAct ( questionReaction );</Commands>
+            <Position xPos="114" yPos="716"/>
+            <EEdge target="S15" source="N110" targetdock="24" sourcedock="2">
+                <SourceCtrl xPos="27" yPos="-105"/>
+                <TargetCtrl xPos="30" yPos="107"/>
+            </EEdge>
+        </Node>
+        <Node id="N136" name="N136" comment="">
+            <Commands>emitDA ( "request(solution)" );</Commands>
+            <Position xPos="372" yPos="544"/>
+            <EEdge target="S21" source="N136" targetdock="28" sourcedock="0">
+                <SourceCtrl xPos="-28" yPos="15"/>
+                <TargetCtrl xPos="31" yPos="-19"/>
+            </EEdge>
+        </Node>
+        <Node id="N118" name="Pretent thinking" comment="">
+            <Commands>emitDialogueAct ( { type = "provide" , subtype = "convfilling" } );</Commands>
+            <Position xPos="802" yPos="286"/>
+            <EEdge target="N73" source="N118" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="69" yPos="-19"/>
+                <TargetCtrl xPos="-70" yPos="18"/>
+            </EEdge>
+        </Node>
+        <Node id="N140" name="N140" comment="">
+            <Commands></Commands>
+            <Position xPos="802" yPos="802"/>
+        </Node>
+        <Node id="N141" name="N141" comment="">
+            <Commands>turnTablet (  );</Commands>
+            <Position xPos="630" yPos="802"/>
+            <EEdge target="N140" source="N141" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+        </Node>
+        <SuperNode start="N79" hideLocalVar="false" hideGlobalVar="false" id="S15" name="WaitForQuestion" comment="">
+            <Commands></Commands>
+            <CEdge target="N109" source="S15" targetdock="0" sourcedock="20">
+                <SourceCtrl xPos="112" yPos="31"/>
+                <TargetCtrl xPos="-111" yPos="-29"/>
+                <Condition>questionReaction.type == "provide"</Condition>
+            </CEdge>
+            <Position xPos="114" yPos="372"/>
+            <EEdge target="N110" source="S15" targetdock="28" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="107"/>
+                <TargetCtrl xPos="0" yPos="-108"/>
+            </EEdge>
+            <Node id="N74" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="28" yPos="200"/>
+            </Node>
+            <Node id="N79" name="WaitForQuestionReaction" comment="">
+                <Commands>sysCall ( "expectDAs" , "provide\((free)?question" );</Commands>
+                <CEdge target="N80" source="N79" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                    <Condition>lastReaction.type == "provide" &amp; lastReaction.subtype == "question"</Condition>
+                </CEdge>
+                <Position xPos="286" yPos="200"/>
+                <TEdge timeout="60000" target="N79" source="N79" targetdock="28" sourcedock="2">
+                    <SourceCtrl xPos="22" yPos="-84"/>
+                    <TargetCtrl xPos="74" yPos="-44"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N80" name="DoSomething" comment="">
+                <Commands>questionReaction = questionProvided ( lastReaction );
+lastReaction = emptyReaction (  );</Commands>
+                <Position xPos="286" yPos="372"/>
+            </Node>
+        </SuperNode>
+        <SuperNode start="N84" hideLocalVar="false" hideGlobalVar="false" id="S16" name="WaitForAnswers" comment="">
+            <Commands></Commands>
+            <Position xPos="630" yPos="200"/>
+            <EEdge target="S22" source="S16" targetdock="31" sourcedock="12">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+            <Node id="N75" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="28" yPos="114"/>
+            </Node>
+            <Node id="N83" name="DoSomething" comment="">
+                <Commands>possibleAnswerReaction = lastReaction;
+lastReaction = emptyReaction (  );</Commands>
+                <Position xPos="372" yPos="544"/>
+            </Node>
+            <Node id="N84" name="WaitForAnswersReaction" comment="">
+                <Commands>sysCall ( "expectDAs" , "provide\(answers\)" );</Commands>
+                <CEdge target="N83" source="N84" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="64"/>
+                    <TargetCtrl xPos="0" yPos="-65"/>
+                    <Condition>lastReaction.type == "provide" &amp; lastReaction.subtype == "answers"</Condition>
+                </CEdge>
+                <Position xPos="372" yPos="286"/>
+                <TEdge timeout="60000" target="N84" source="N84" targetdock="28" sourcedock="2">
+                    <SourceCtrl xPos="22" yPos="-84"/>
+                    <TargetCtrl xPos="74" yPos="-44"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+        </SuperNode>
+        <SuperNode start="N86" hideLocalVar="false" hideGlobalVar="false" id="S17" name="WaitForFeedback" comment="">
+            <Commands></Commands>
+            <Position xPos="1060" yPos="372"/>
+            <EEdge target="N100" source="S17" targetdock="28" sourcedock="0">
+                <SourceCtrl xPos="-11" yPos="10"/>
+                <TargetCtrl xPos="7" yPos="-8"/>
+            </EEdge>
+            <Node id="N76" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="28" yPos="28"/>
+            </Node>
+            <Node id="N85" name="DoSomething" comment="">
+                <Commands>questionReaction = lastReaction;
+lastReaction = emptyReaction (  );</Commands>
+                <Position xPos="286" yPos="458"/>
+            </Node>
+            <Node id="N86" name="WaitForFeedbackReaction" comment="">
+                <Commands>sysCall ( "expectDAs" , "feedback.*correctness" );</Commands>
+                <CEdge target="N85" source="N86" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="107"/>
+                    <TargetCtrl xPos="0" yPos="-108"/>
+                    <Condition>lastReaction.type == "feedback" &amp; lastReaction.subtype == "correctness"</Condition>
+                </CEdge>
+                <Position xPos="286" yPos="286"/>
+                <TEdge timeout="60000" target="N86" source="N86" targetdock="28" sourcedock="2">
+                    <SourceCtrl xPos="22" yPos="-84"/>
+                    <TargetCtrl xPos="74" yPos="-44"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+        </SuperNode>
+        <SuperNode start="N133" hideLocalVar="false" hideGlobalVar="false" id="S21" name="WaitForSolution" comment="">
+            <Commands></Commands>
+            <CEdge target="N78" source="S21" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="193" yPos="0"/>
+                <TargetCtrl xPos="-169" yPos="-1"/>
+                <Condition>random (  ) &lt; 0.5</Condition>
+            </CEdge>
+            <Position xPos="200" yPos="630"/>
+            <EEdge target="S23" source="S21" targetdock="0" sourcedock="20">
+                <SourceCtrl xPos="31" yPos="18"/>
+                <TargetCtrl xPos="-32" yPos="-19"/>
+            </EEdge>
+            <Node id="N120" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="28" yPos="114"/>
+            </Node>
+            <Node id="N121" name="DoSomething" comment="">
+                <Commands>possibleAnswerReaction = lastReaction;
+lastReaction = emptyReaction (  );</Commands>
+                <Position xPos="372" yPos="544"/>
+            </Node>
+            <Node id="N133" name="WaitForSolutionReaction" comment="">
+                <Commands>sysCall ( "expectDAs" , "provide.*solution" );</Commands>
+                <CEdge target="N121" source="N133" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="3" yPos="70"/>
+                    <TargetCtrl xPos="0" yPos="-65"/>
+                    <Condition>lastReaction.type == "provide" &amp; lastReaction.subtype == "solution"</Condition>
+                </CEdge>
+                <Position xPos="372" yPos="286"/>
+                <TEdge timeout="60000" target="N133" source="N133" targetdock="28" sourcedock="2">
+                    <SourceCtrl xPos="22" yPos="-84"/>
+                    <TargetCtrl xPos="74" yPos="-44"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+        </SuperNode>
+        <SuperNode start="N137" hideLocalVar="false" hideGlobalVar="false" id="S23" name="WaitForExplanation" comment="">
+            <Commands>emitDA ( "request(explanation)" );</Commands>
+            <Position xPos="372" yPos="716"/>
+            <EEdge target="N78" source="S23" targetdock="31" sourcedock="12">
+                <SourceCtrl xPos="112" yPos="-32"/>
+                <TargetCtrl xPos="-113" yPos="0"/>
+            </EEdge>
+            <Node id="N134" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="28" yPos="114"/>
+            </Node>
+            <Node id="N135" name="DoSomething" comment="">
+                <Commands>possibleAnswerReaction = lastReaction;
+lastReaction = emptyReaction (  );
+emitDA ( "acknowledgement(explanation)" );</Commands>
+                <Position xPos="286" yPos="544"/>
+            </Node>
+            <Node id="N137" name="WaitForExplanationReaction" comment="">
+                <Commands>sysCall ( "expectDAs" , "provide.*explanation" );</Commands>
+                <CEdge target="N135" source="N137" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="107"/>
+                    <TargetCtrl xPos="0" yPos="-108"/>
+                    <Condition>lastReaction.type == "provide" &amp; lastReaction.subtype == "explanation"</Condition>
+                </CEdge>
+                <Position xPos="293" yPos="269"/>
+                <TEdge timeout="60000" target="N137" source="N137" targetdock="12" sourcedock="12">
+                    <SourceCtrl xPos="22" yPos="-84"/>
+                    <TargetCtrl xPos="74" yPos="-44"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+        </SuperNode>
+        <SuperNode start="N117" hideLocalVar="false" hideGlobalVar="false" id="S18" name="WaitForTablet" comment="">
+            <Commands>String wantedOrientation = "child";
+Bool turnRequested = false;</Commands>
+            <Position xPos="28" yPos="200"/>
+            <EEdge target="N50" source="S18" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+            <Node id="N159" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="28" yPos="286"/>
+            </Node>
+            <Node id="N117" name="N147" comment="">
+                <Commands>sysCall ( "expectDAs" , "provide\(turntablet, what=" + wantedOrientation + "\)" );</Commands>
+                <Position xPos="200" yPos="286"/>
+                <EEdge target="N144" source="N117" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                </EEdge>
+            </Node>
+            <Node id="N143" name="N118" comment="">
+                <Commands></Commands>
+                <CEdge target="N145" source="N143" targetdock="12" sourcedock="0">
+                    <SourceCtrl xPos="-111" yPos="28"/>
+                    <TargetCtrl xPos="110" yPos="-29"/>
+                    <Condition>tabletOrientation == wantedOrientation | tabletOrientation == "inactive"</Condition>
+                </CEdge>
+                <Position xPos="544" yPos="544"/>
+                <TEdge timeout="33000" target="N146" source="N143" targetdock="8" sourcedock="2">
+                    <SourceCtrl xPos="0" yPos="-65"/>
+                    <TargetCtrl xPos="0" yPos="64"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N144" name="WaitForTabletTurn" comment="">
+                <Commands></Commands>
+                <CEdge target="N145" source="N144" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                    <Condition>tabletOrientation == wantedOrientation | tabletOrientation == "inactive"</Condition>
+                </CEdge>
+                <CEdge target="N143" source="N144" targetdock="31" sourcedock="20">
+                    <SourceCtrl xPos="110" yPos="28"/>
+                    <TargetCtrl xPos="-111" yPos="-29"/>
+                    <Condition>turnRequested == false</Condition>
+                </CEdge>
+                <Position xPos="200" yPos="458"/>
+                <TEdge timeout="10000" target="N144" source="N144" targetdock="28" sourcedock="18">
+                    <SourceCtrl xPos="22" yPos="-84"/>
+                    <TargetCtrl xPos="74" yPos="-44"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N145" name="DoSomething" comment="">
+                <Commands></Commands>
+                <Position xPos="200" yPos="630"/>
+            </Node>
+            <Node id="N146" name="N119" comment="">
+                <Commands>emitDA ( "request(turntablet)" );
+turnRequested = true;</Commands>
+                <Position xPos="544" yPos="286"/>
+                <EEdge target="N144" source="N146" targetdock="12" sourcedock="0">
+                    <SourceCtrl xPos="-110" yPos="62"/>
+                    <TargetCtrl xPos="124" yPos="-33"/>
+                </EEdge>
+            </Node>
+        </SuperNode>
+        <SuperNode start="N163" hideLocalVar="false" hideGlobalVar="false" id="S22" name="WaitForTablet" comment="">
+            <Commands>String wantedOrientation = "robot";
+Bool turnRequested = false;</Commands>
+            <Position xPos="802" yPos="200"/>
+            <EEdge target="N118" source="S22" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="10"/>
+                <TargetCtrl xPos="0" yPos="-11"/>
+            </EEdge>
+            <Node id="N165" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="28" yPos="286"/>
+            </Node>
+            <Node id="N147" name="WaitForTabletTurn" comment="">
+                <Commands></Commands>
+                <CEdge target="N161" source="N147" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                    <Condition>tabletOrientation == wantedOrientation | tabletOrientation == "inactive"</Condition>
+                </CEdge>
+                <CEdge target="N160" source="N147" targetdock="0" sourcedock="20">
+                    <SourceCtrl xPos="110" yPos="28"/>
+                    <TargetCtrl xPos="-111" yPos="-29"/>
+                    <Condition>turnRequested == false</Condition>
+                </CEdge>
+                <Position xPos="200" yPos="458"/>
+                <TEdge timeout="10000" target="N147" source="N147" targetdock="28" sourcedock="2">
+                    <SourceCtrl xPos="22" yPos="-84"/>
+                    <TargetCtrl xPos="74" yPos="-44"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N160" name="N118" comment="">
+                <Commands></Commands>
+                <CEdge target="N161" source="N160" targetdock="12" sourcedock="16">
+                    <SourceCtrl xPos="-111" yPos="28"/>
+                    <TargetCtrl xPos="110" yPos="-29"/>
+                    <Condition>tabletOrientation == wantedOrientation | tabletOrientation == "inactive"</Condition>
+                </CEdge>
+                <Position xPos="544" yPos="544"/>
+                <TEdge timeout="33000" target="N162" source="N160" targetdock="8" sourcedock="2">
+                    <SourceCtrl xPos="0" yPos="-65"/>
+                    <TargetCtrl xPos="0" yPos="64"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N161" name="DoSomething" comment="">
+                <Commands></Commands>
+                <Position xPos="200" yPos="630"/>
+            </Node>
+            <Node id="N162" name="N119" comment="">
+                <Commands>emitDA ( "request(turntablet)" );
+turnRequested = true;</Commands>
+                <Position xPos="544" yPos="286"/>
+                <EEdge target="N147" source="N162" targetdock="12" sourcedock="0">
+                    <SourceCtrl xPos="-110" yPos="62"/>
+                    <TargetCtrl xPos="124" yPos="-33"/>
+                </EEdge>
+            </Node>
+            <Node id="N163" name="N147" comment="">
+                <Commands>sysCall ( "expectDAs" , "provide\(turntablet, what=" + wantedOrientation + "\)" );</Commands>
+                <Position xPos="200" yPos="286"/>
+                <EEdge target="N147" source="N163" targetdock="18" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                </EEdge>
+            </Node>
+        </SuperNode>
+    </SuperNode>
+    <SuperNode start="N60" hideLocalVar="false" hideGlobalVar="false" id="S6" name="PlayQuiz" comment="">
+        <Commands>DialogueAct roleReaction = emptyReaction (  );</Commands>
+        <CEdge target="S7" source="S6" targetdock="31" sourcedock="28">
+            <SourceCtrl xPos="107" yPos="0"/>
+            <TargetCtrl xPos="-108" yPos="0"/>
+            <Condition>situation == SE.gameTurn &amp; asker == AE.robot</Condition>
+        </CEdge>
+        <CEdge target="S5" source="S6" targetdock="2" sourcedock="16">
+            <SourceCtrl xPos="-151" yPos="0"/>
+            <TargetCtrl xPos="150" yPos="0"/>
+            <Condition>situation == SE.gameTurn &amp; asker == AE.user</Condition>
+        </CEdge>
+        <CEdge target="S20" source="S6" targetdock="20" sourcedock="24">
+            <SourceCtrl xPos="-151" yPos="-88"/>
+            <TargetCtrl xPos="150" yPos="87"/>
+            <Condition>situation == SE.stopPlaying</Condition>
+        </CEdge>
+        <IEdge target="S8" source="S6" targetdock="24" sourcedock="2">
+            <SourceCtrl xPos="-6" yPos="-22"/>
+            <TargetCtrl xPos="6" yPos="21"/>
+            <Condition>flag.status == StatE.interrupted</Condition>
+        </IEdge>
+        <Position xPos="458" yPos="544"/>
+        <EEdge target="S8" source="S6" targetdock="8" sourcedock="18">
+            <SourceCtrl xPos="6" yPos="-22"/>
+            <TargetCtrl xPos="0" yPos="21"/>
+        </EEdge>
+        <Comment>
+            <Text>
+        SE.turnFinished or SE.switchRole
+      </Text>
+            <Boundary height="50" width="101" xPos="188" yPos="436"/>
+        </Comment>
+        <Node id="N6" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="974" yPos="114"/>
+        </Node>
+        <Node id="N48" name="DoTurn" comment="">
+            <Commands>situation = SE.gameTurn;</Commands>
+            <Position xPos="458" yPos="630"/>
+        </Node>
+        <Node id="N30" name="InitializeNewGame" comment="">
+            <Commands>startNewSession (  );
+emitDA ( "request(role)" );</Commands>
+            <Position xPos="114" yPos="716"/>
+            <EEdge target="S1" source="N30" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N43" name="NewGameOrNot" comment="">
+            <Commands></Commands>
+            <CEdge target="N30" source="N43" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="64"/>
+                <TargetCtrl xPos="0" yPos="-65"/>
+                <Condition>situation == SE.startPlaying</Condition>
+            </CEdge>
+            <Position xPos="114" yPos="458"/>
+            <EEdge target="N52" source="N43" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N52" name="DoTurnOrNot" comment="">
+            <Commands>endTurn (  );</Commands>
+            <CEdge target="N122" source="N52" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="21"/>
+                <TargetCtrl xPos="0" yPos="-22"/>
+                <Condition>maxNumberOfTurnsReached (  ) == false &amp; situation != SE.switchRole</Condition>
+            </CEdge>
+            <Position xPos="286" yPos="458"/>
+            <EEdge target="N62" source="N52" targetdock="8" sourcedock="2">
+                <SourceCtrl xPos="0" yPos="-22"/>
+                <TargetCtrl xPos="0" yPos="21"/>
+            </EEdge>
+        </Node>
+        <Node id="N45" name="SwitchRoleOrNot" comment="">
+            <Commands>endRound (  );</Commands>
+            <CEdge target="N49" source="N45" targetdock="16" sourcedock="20">
+                <SourceCtrl xPos="77" yPos="46"/>
+                <TargetCtrl xPos="-78" yPos="-47"/>
+                <Condition>roleChanged == false | situation == SE.switchRole</Condition>
+            </CEdge>
+            <Position xPos="544" yPos="200"/>
+            <EEdge target="S4" source="N45" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="69" yPos="-19"/>
+                <TargetCtrl xPos="-72" yPos="19"/>
+            </EEdge>
+        </Node>
+        <Node id="N60" name="Start" comment="">
+            <Commands></Commands>
+            <CEdge target="N132" source="N60" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="110" yPos="-29"/>
+                <TargetCtrl xPos="-111" yPos="28"/>
+                <Condition>situation == SE.stopPlaying</Condition>
+            </CEdge>
+            <Position xPos="114" yPos="200"/>
+            <EEdge target="N43" source="N60" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="64"/>
+                <TargetCtrl xPos="0" yPos="-65"/>
+            </EEdge>
+        </Node>
+        <Node id="N105" name="N105" comment="">
+            <Commands>emitDialogueAct ( { type = "accept" , subtype = "role" , asker = asker } );
+emitDialogueAct ( { type = "provide" , subtype = "instructions" , asker = asker } );</Commands>
+            <Position xPos="630" yPos="716"/>
+            <EEdge target="N90" source="N105" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="107" yPos="0"/>
+                <TargetCtrl xPos="-108" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N122" name="N122" comment="">
+            <Commands></Commands>
+            <Position xPos="286" yPos="630"/>
+            <EEdge target="N48" source="N122" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N132" name="N132" comment="">
+            <Commands></Commands>
+            <Position xPos="458" yPos="114"/>
+        </Node>
+        <Node id="N111" name="N111" comment="">
+            <Commands>DialogueAct da = { type = "provide" , subtype = "performance" , total = 0 , correct = 0 , asker = asker };
+        da.total = getNumberOfQuestionsInRound (  );
+da.correct = getNumberOfCorrectAnswersInRound (  );
+emitDialogueAct ( da );</Commands>
+            <Position xPos="458" yPos="286"/>
+            <EEdge target="N45" source="N111" targetdock="16" sourcedock="28">
+                <SourceCtrl xPos="7" yPos="-8"/>
+                <TargetCtrl xPos="-8" yPos="7"/>
+            </EEdge>
+        </Node>
+        <Node id="N49" name="N49" comment="">
+            <Commands></Commands>
+            <CEdge target="N61" source="N49" targetdock="16" sourcedock="20">
+                <SourceCtrl xPos="27" yPos="16"/>
+                <TargetCtrl xPos="-28" yPos="-17"/>
+                <Condition>asker == AE.robot</Condition>
+            </CEdge>
+            <CEdge target="N55" source="N49" targetdock="28" sourcedock="0">
+                <SourceCtrl xPos="-28" yPos="15"/>
+                <TargetCtrl xPos="27" yPos="-17"/>
+                <Condition>asker == AE.user</Condition>
+            </CEdge>
+            <Position xPos="802" yPos="372"/>
+            <TEdge timeout="60000" target="N49" source="N49" targetdock="28" sourcedock="2">
+                <SourceCtrl xPos="22" yPos="-84"/>
+                <TargetCtrl xPos="74" yPos="-44"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N53" name="N61" comment="">
+            <Commands>String responder = "";
+        roleChanged = ! roleChanged;
+emitDialogueAct ( { type = "provide" , subtype = "role" , asker = asker } );</Commands>
+            <Position xPos="802" yPos="544"/>
+            <EEdge target="N90" source="N53" targetdock="4" sourcedock="4">
+                <SourceCtrl xPos="39" yPos="39"/>
+                <TargetCtrl xPos="-40" yPos="-40"/>
+            </EEdge>
+        </Node>
+        <Node id="N55" name="N55" comment="">
+            <Commands>asker = AE.robot;</Commands>
+            <Position xPos="630" yPos="458"/>
+            <EEdge target="N53" source="N55" targetdock="16" sourcedock="20">
+                <SourceCtrl xPos="27" yPos="16"/>
+                <TargetCtrl xPos="-28" yPos="-17"/>
+            </EEdge>
+        </Node>
+        <Node id="N61" name="N53" comment="">
+            <Commands>asker = AE.user;</Commands>
+            <Position xPos="974" yPos="458"/>
+            <EEdge target="N53" source="N61" targetdock="28" sourcedock="0">
+                <SourceCtrl xPos="-28" yPos="15"/>
+                <TargetCtrl xPos="27" yPos="-17"/>
+            </EEdge>
+        </Node>
+        <Node id="N62" name="N62" comment="">
+            <Commands></Commands>
+            <CEdge target="N45" source="N62" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="35" yPos="-58"/>
+                <TargetCtrl xPos="-70" yPos="-5"/>
+                <Condition>random (  ) &lt; 0.5</Condition>
+            </CEdge>
+            <Position xPos="286" yPos="286"/>
+            <EEdge target="N111" source="N62" targetdock="0" sourcedock="28">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N90" name="N90" comment="">
+            <Commands>newRound ( asker );</Commands>
+            <Position xPos="974" yPos="716"/>
+            <EEdge target="N48" source="N90" targetdock="20" sourcedock="16">
+                <SourceCtrl xPos="-193" yPos="-51"/>
+                <TargetCtrl xPos="192" yPos="50"/>
+            </EEdge>
+        </Node>
+        <SuperNode start="N46" hideLocalVar="false" hideGlobalVar="false" id="S1" name="WaitForRole" comment="">
+            <Commands></Commands>
+            <Position xPos="286" yPos="716"/>
+            <EEdge target="N105" source="S1" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="107" yPos="0"/>
+                <TargetCtrl xPos="-108" yPos="0"/>
+            </EEdge>
+            <Node id="N44" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="28" yPos="28"/>
+            </Node>
+            <Node id="N46" name="WaitForInterruptIReaction" comment="">
+                <Commands>sysCall ( "expectDAs" , "provide.*role" );</Commands>
+                <CEdge target="N51" source="N46" targetdock="0" sourcedock="20">
+                    <SourceCtrl xPos="79" yPos="-74"/>
+                    <TargetCtrl xPos="-19" yPos="-74"/>
+                    <Condition>lastReaction.type == "provide" &amp; lastReaction.subtype == "role"</Condition>
+                </CEdge>
+                <Position xPos="372" yPos="200"/>
+                <TEdge timeout="60000" target="N46" source="N46" targetdock="0" sourcedock="2">
+                    <SourceCtrl xPos="-42" yPos="-93"/>
+                    <TargetCtrl xPos="-99" yPos="-70"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N51" name="DoSomething" comment="">
+                <Commands>roleReaction = lastReaction;
+lastReaction = emptyReaction (  );
+asker = get ( roleReaction , "asker" );</Commands>
+                <Position xPos="630" yPos="200"/>
+            </Node>
+        </SuperNode>
+        <SuperNode start="N57" hideLocalVar="false" hideGlobalVar="false" id="S4" name="FinishGame" comment="">
+            <Commands></Commands>
+            <CEdge target="N49" source="S4" targetdock="18" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="64"/>
+                <TargetCtrl xPos="0" yPos="-65"/>
+                <Condition>situation == SE.switchRole</Condition>
+            </CEdge>
+            <Position xPos="802" yPos="114"/>
+            <EEdge target="N132" source="S4" targetdock="12" sourcedock="16">
+                <SourceCtrl xPos="-108" yPos="0"/>
+                <TargetCtrl xPos="107" yPos="0"/>
+            </EEdge>
+            <Node id="N54" name="History" comment="">
+                <Commands></Commands>
+                <Position xPos="28" yPos="200"/>
+            </Node>
+            <Node id="N56" name="N56" comment="">
+                <Commands>situation = SE.stopPlaying;</Commands>
+                <Position xPos="200" yPos="458"/>
+                <EEdge target="N113" source="N56" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                </EEdge>
+            </Node>
+            <Node id="N57" name="N57" comment="">
+                <Commands>emitDA ( "request(continue, what=game)" );</Commands>
+                <Position xPos="200" yPos="286"/>
+                <EEdge target="N112" source="N57" targetdock="0" sourcedock="12">
+                    <SourceCtrl xPos="64" yPos="0"/>
+                    <TargetCtrl xPos="-65" yPos="0"/>
+                </EEdge>
+            </Node>
+            <Node id="N58" name="DoSomething" comment="">
+                <Commands>situation = SE.switchRole;</Commands>
+                <Position xPos="544" yPos="630"/>
+                <EEdge target="N113" source="N58" targetdock="12" sourcedock="0">
+                    <SourceCtrl xPos="-65" yPos="0"/>
+                    <TargetCtrl xPos="64" yPos="0"/>
+                </EEdge>
+            </Node>
+            <Node id="N59" name="WaitForInterruptIReaction" comment="">
+                <Commands></Commands>
+                <CEdge target="N58" source="N59" targetdock="2" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                    <Condition>lastReaction.type == "confirm"</Condition>
+                </CEdge>
+                <CEdge target="N56" source="N59" targetdock="12" sourcedock="0">
+                    <SourceCtrl xPos="-108" yPos="0"/>
+                    <TargetCtrl xPos="107" yPos="0"/>
+                    <Condition>lastReaction.type == "reject"</Condition>
+                </CEdge>
+                <Position xPos="544" yPos="458"/>
+                <TEdge timeout="20000" target="N59" source="N59" targetdock="28" sourcedock="2">
+                    <SourceCtrl xPos="22" yPos="-84"/>
+                    <TargetCtrl xPos="74" yPos="-44"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N112" name="N112" comment="">
+                <Commands>sysCall ( "expectDAs" , "(confirm|reject).*repeat" );</Commands>
+                <CEdge target="N59" source="N112" targetdock="18" sourcedock="8">
+                    <SourceCtrl xPos="0" yPos="21"/>
+                    <TargetCtrl xPos="0" yPos="-22"/>
+                    <Condition>lastReaction.type != ""</Condition>
+                </CEdge>
+                <Position xPos="544" yPos="286"/>
+                <TEdge timeout="60000" target="N112" source="N112" targetdock="28" sourcedock="2">
+                    <SourceCtrl xPos="22" yPos="-84"/>
+                    <TargetCtrl xPos="74" yPos="-44"/>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N113" name="N113" comment="">
+                <Commands>lastReaction = emptyReaction (  );</Commands>
+                <Position xPos="200" yPos="630"/>
+            </Node>
+        </SuperNode>
+    </SuperNode>
+    <SuperNode start="N3" hideLocalVar="false" hideGlobalVar="false" id="S10" name="ListenToOutsideWorld" comment="">
+        <Commands></Commands>
+        <Position xPos="458" yPos="200"/>
+        <EEdge target="N1" source="S10" targetdock="0" sourcedock="12">
+            <SourceCtrl xPos="107" yPos="0"/>
+            <TargetCtrl xPos="-108" yPos="0"/>
+        </EEdge>
+        <Node id="N7" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="28" yPos="200"/>
+        </Node>
+        <Node id="N2" name="Listen" comment="">
+            <Commands>lastReaction = listen (  );</Commands>
+            <Position xPos="458" yPos="630"/>
+            <EEdge target="N3" source="N2" targetdock="24" sourcedock="2">
+                <SourceCtrl xPos="5" yPos="-21"/>
+                <TargetCtrl xPos="5" yPos="21"/>
+            </EEdge>
+        </Node>
+        <Node id="N3" name="DecideIfListen" comment="">
+            <Commands></Commands>
+            <CEdge target="N2" source="N3" targetdock="28" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="21"/>
+                <TargetCtrl xPos="0" yPos="-22"/>
+                <Condition>lastReaction.type == "" &amp; flag.status != StatE.shuttingDown</Condition>
+            </CEdge>
+            <CEdge target="N8" source="N3" targetdock="8" sourcedock="2">
+                <SourceCtrl xPos="0" yPos="-22"/>
+                <TargetCtrl xPos="0" yPos="21"/>
+                <Condition>flag.status == StatE.shuttingDown</Condition>
+            </CEdge>
+            <Position xPos="458" yPos="372"/>
+            <TEdge timeout="4000" target="N41" source="N3" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="64" yPos="0"/>
+                <TargetCtrl xPos="-65" yPos="0"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N8" name="Done" comment="">
+            <Commands></Commands>
+            <Position xPos="458" yPos="200"/>
+        </Node>
+        <Node id="N41" name="DisposeOfUnusedInput" comment="">
+            <Commands>lastReaction = emptyReaction (  );</Commands>
+            <Position xPos="716" yPos="372"/>
+            <EEdge target="N3" source="N41" targetdock="20" sourcedock="16">
+                <SourceCtrl xPos="-63" yPos="16"/>
+                <TargetCtrl xPos="63" yPos="16"/>
+            </EEdge>
+        </Node>
+    </SuperNode>
+    <SuperNode start="N14" hideLocalVar="false" hideGlobalVar="false" id="S11" name="ReactToSystemSignalsAndInterrupts" comment="">
+        <Commands></Commands>
+        <Position xPos="458" yPos="286"/>
+        <EEdge target="N1" source="S11" targetdock="31" sourcedock="12">
+            <SourceCtrl xPos="112" yPos="-32"/>
+            <TargetCtrl xPos="-111" yPos="28"/>
+        </EEdge>
+        <Node id="N12" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="27" yPos="191"/>
+        </Node>
+        <Node id="N14" name="WaitForSignalOrInterrupt" comment="">
+            <Commands></Commands>
+            <CEdge target="N15" source="N14" targetdock="20" sourcedock="16">
+                <SourceCtrl xPos="-99" yPos="24"/>
+                <TargetCtrl xPos="113" yPos="4"/>
+                <Condition>flag.status == StatE.shuttingDown</Condition>
+            </CEdge>
+            <CEdge target="N71" source="N14" targetdock="8" sourcedock="20">
+                <SourceCtrl xPos="129" yPos="4"/>
+                <TargetCtrl xPos="-105" yPos="-25"/>
+                <Condition>lastSignal == Signal.stop</Condition>
+            </CEdge>
+            <CEdge target="N89" source="N14" targetdock="0" sourcedock="4">
+                <SourceCtrl xPos="104" yPos="54"/>
+                <TargetCtrl xPos="-43" yPos="-46"/>
+                <Condition>lastSignal == Signal.shutDown</Condition>
+            </CEdge>
+            <CEdge target="N96" source="N14" targetdock="8" sourcedock="28">
+                <SourceCtrl xPos="19" yPos="-29"/>
+                <TargetCtrl xPos="-14" yPos="30"/>
+                <Condition>lastSignal == Signal.start</Condition>
+            </CEdge>
+            <Position xPos="355" yPos="273"/>
+            <TEdge timeout="600000" target="N14" source="N14" targetdock="12" sourcedock="2">
+                <SourceCtrl xPos="23" yPos="-82"/>
+                <TargetCtrl xPos="90" yPos="-40"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N15" name="Done" comment="">
+            <Commands></Commands>
+            <Position xPos="27" yPos="273"/>
+        </Node>
+        <Node id="N82" name="ChangeStatus" comment="">
+            <Commands>flag.status = StatE.stopped;</Commands>
+            <Position xPos="929" yPos="273"/>
+            <EEdge target="N14" source="N82" targetdock="18" sourcedock="24">
+                <SourceCtrl xPos="-237" yPos="46"/>
+                <TargetCtrl xPos="256" yPos="65"/>
+            </EEdge>
+        </Node>
+        <Node id="N70" name="RaiseFlag" comment="">
+            <Commands>flag.shutDownRequested = true;</Commands>
+            <Position xPos="765" yPos="437"/>
+            <EEdge target="N82" source="N70" targetdock="8" sourcedock="12">
+                <SourceCtrl xPos="68" yPos="-36"/>
+                <TargetCtrl xPos="-34" yPos="44"/>
+            </EEdge>
+        </Node>
+        <Node id="N71" name="ConsumeLastSignal" comment="">
+            <Commands>lastSignal = "";</Commands>
+            <Position xPos="683" yPos="273"/>
+            <EEdge target="N82" source="N71" targetdock="16" sourcedock="20">
+                <SourceCtrl xPos="102" yPos="4"/>
+                <TargetCtrl xPos="-61" yPos="-26"/>
+            </EEdge>
+        </Node>
+        <Node id="N89" name="ConsumeLastSignal" comment="">
+            <Commands>lastSignal = "";</Commands>
+            <Position xPos="601" yPos="437"/>
+            <EEdge target="N70" source="N89" targetdock="8" sourcedock="20">
+                <SourceCtrl xPos="59" yPos="2"/>
+                <TargetCtrl xPos="-26" yPos="-18"/>
+            </EEdge>
+        </Node>
+        <Node id="N96" name="N96" comment="">
+            <Commands>lastSignal = "";</Commands>
+            <Position xPos="437" yPos="109"/>
+            <EEdge target="N97" source="N96" targetdock="8" sourcedock="20">
+                <SourceCtrl xPos="90" yPos="-4"/>
+                <TargetCtrl xPos="-62" yPos="-33"/>
+            </EEdge>
+        </Node>
+        <Node id="N97" name="N97" comment="">
+            <Commands>flag.status = StatE.started;</Commands>
+            <Position xPos="683" yPos="109"/>
+            <EEdge target="N14" source="N97" targetdock="10" sourcedock="24">
+                <SourceCtrl xPos="-112" yPos="49"/>
+                <TargetCtrl xPos="144" yPos="-29"/>
+            </EEdge>
+        </Node>
+    </SuperNode>
+    <SuperNode start="N95" hideLocalVar="false" hideGlobalVar="false" id="S8" name="Idle" comment="">
+        <Commands></Commands>
+        <CEdge target="S6" source="S8" targetdock="10" sourcedock="4">
+            <SourceCtrl xPos="-6" yPos="21"/>
+            <TargetCtrl xPos="0" yPos="-22"/>
+            <Condition>situation == SE.startPlaying</Condition>
+        </CEdge>
+        <Position xPos="458" yPos="372"/>
+        <EEdge target="N9" source="S8" targetdock="0" sourcedock="12">
+            <SourceCtrl xPos="64" yPos="0"/>
+            <TargetCtrl xPos="-65" yPos="0"/>
+        </EEdge>
+        <Node id="N63" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="716" yPos="200"/>
+        </Node>
+        <Node id="N64" name="IdleState" comment="">
+            <Commands></Commands>
+            <CEdge target="N65" source="N64" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="21"/>
+                <TargetCtrl xPos="-11" yPos="-23"/>
+                <Condition>flag.status == StatE.started</Condition>
+            </CEdge>
+            <Position xPos="458" yPos="372"/>
+            <TEdge timeout="10000" target="N95" source="N64" targetdock="2" sourcedock="2">
+                <SourceCtrl xPos="32" yPos="-125"/>
+                <TargetCtrl xPos="32" yPos="-125"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N65" name="DecideOnInstructions" comment="">
+            <Commands></Commands>
+            <CEdge target="N5" source="N65" targetdock="20" sourcedock="18">
+                <SourceCtrl xPos="91" yPos="-76"/>
+                <TargetCtrl xPos="-64" yPos="90"/>
+                <Condition>firstTimeQuiz (  ) == true</Condition>
+            </CEdge>
+            <Position xPos="458" yPos="544"/>
+            <EEdge target="N66" source="N65" targetdock="20" sourcedock="12">
+                <SourceCtrl xPos="65" yPos="11"/>
+                <TargetCtrl xPos="-64" yPos="-11"/>
+            </EEdge>
+        </Node>
+        <Node id="N66" name="StartPlayingQuiz" comment="">
+            <Commands>situation = SE.startPlaying;</Commands>
+            <Position xPos="630" yPos="544"/>
+        </Node>
+        <Node id="N5" name="SayInstructions" comment="">
+            <Commands>Int try = 0;
+        emitDA ( "provide(instructions)" );</Commands>
+            <Position xPos="630" yPos="286"/>
+            <EEdge target="N66" source="N5" targetdock="28" sourcedock="12">
+                <SourceCtrl xPos="44" yPos="96"/>
+                <TargetCtrl xPos="56" yPos="-78"/>
+            </EEdge>
+        </Node>
+        <Node id="N81" name="Quit" comment="">
+            <Commands></Commands>
+            <Position xPos="286" yPos="544"/>
+        </Node>
+        <Node id="N91" name="ResetToIdle" comment="">
+            <Commands>flag.status = StatE.idle;
+sysCall ( "flowEnded" , "quiz" );</Commands>
+            <Position xPos="286" yPos="200"/>
+            <EEdge target="N94" source="N91" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="21"/>
+                <TargetCtrl xPos="0" yPos="-22"/>
+            </EEdge>
+        </Node>
+        <Node id="N92" name="ChangeStatus" comment="">
+            <Commands>flag.status = StatE.shuttingDown;</Commands>
+            <Position xPos="114" yPos="544"/>
+            <EEdge target="N81" source="N92" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="22" yPos="11"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N93" name="CheckShutDown" comment="">
+            <Commands></Commands>
+            <CEdge target="N92" source="N93" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="21"/>
+                <TargetCtrl xPos="0" yPos="-22"/>
+                <Condition>flag.shutDownRequested == true</Condition>
+            </CEdge>
+            <Position xPos="114" yPos="372"/>
+            <EEdge target="N94" source="N93" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-22" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N94" name="CheckStopped" comment="">
+            <Commands></Commands>
+            <CEdge target="N91" source="N94" targetdock="24" sourcedock="18">
+                <SourceCtrl xPos="5" yPos="-21"/>
+                <TargetCtrl xPos="5" yPos="21"/>
+                <Condition>flag.status == StatE.stopped</Condition>
+            </CEdge>
+            <Position xPos="286" yPos="372"/>
+            <EEdge target="N64" source="N94" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="21" yPos="0"/>
+                <TargetCtrl xPos="-23" yPos="-11"/>
+            </EEdge>
+        </Node>
+        <Node id="N95" name="Start" comment="">
+            <Commands></Commands>
+            <CEdge target="N77" source="N95" targetdock="2" sourcedock="16">
+                <SourceCtrl xPos="-12" yPos="21"/>
+                <TargetCtrl xPos="20" yPos="-40"/>
+                <Condition>hasTablet (  ) == false</Condition>
+            </CEdge>
+            <Position xPos="114" yPos="200"/>
+            <EEdge target="N93" source="N95" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="4" yPos="8"/>
+                <TargetCtrl xPos="4" yPos="-39"/>
+            </EEdge>
+        </Node>
+        <Node id="N77" name="N77" comment="">
+            <Commands>tabletOrientation = "inactive";</Commands>
+            <Position xPos="28" yPos="372"/>
+            <EEdge target="N93" source="N77" targetdock="0" sourcedock="28">
+                <SourceCtrl xPos="11" yPos="3"/>
+                <TargetCtrl xPos="-17" yPos="-8"/>
+            </EEdge>
+        </Node>
+    </SuperNode>
+    <SuperNode start="N69" hideLocalVar="false" hideGlobalVar="false" id="S14" name="ListenToSystemSignals" comment="">
+        <Commands></Commands>
+        <Position xPos="286" yPos="114"/>
+        <EEdge target="N1" source="S14" targetdock="8" sourcedock="12">
+            <SourceCtrl xPos="197" yPos="0"/>
+            <TargetCtrl xPos="-170" yPos="-101"/>
+        </EEdge>
+        <Node id="N67" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="28" yPos="544"/>
+        </Node>
+        <Node id="N69" name="DecideIfListen" comment="">
+            <Commands></Commands>
+            <CEdge target="N88" source="N69" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="21"/>
+                <TargetCtrl xPos="0" yPos="-22"/>
+                <Condition>flag.status == StatE.shuttingDown</Condition>
+            </CEdge>
+            <CEdge target="N87" source="N69" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="64" yPos="0"/>
+                <TargetCtrl xPos="-65" yPos="0"/>
+                <Condition>lastSignal == "" &amp; flag.status != StatE.shuttingDown</Condition>
+            </CEdge>
+            <Position xPos="372" yPos="372"/>
+            <TEdge timeout="2000" target="N68" source="N69" targetdock="4" sourcedock="4">
+                <SourceCtrl xPos="-64" yPos="-64"/>
+                <TargetCtrl xPos="63" yPos="63"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N87" name="Listen" comment="">
+            <Commands>lastSignal = getSystemSignal (  );</Commands>
+            <Position xPos="802" yPos="458"/>
+            <EEdge target="N69" source="N87" targetdock="28" sourcedock="4">
+                <SourceCtrl xPos="-113" yPos="-52"/>
+                <TargetCtrl xPos="65" yPos="-8"/>
+            </EEdge>
+        </Node>
+        <Node id="N88" name="Done" comment="">
+            <Commands></Commands>
+            <Position xPos="372" yPos="544"/>
+        </Node>
+        <Node id="N68" name="DisposeOfUnusedInput" comment="">
+            <Commands>print ( "disposing of lastSignal" );
+lastSignal = "";</Commands>
+            <Position xPos="200" yPos="200"/>
+            <EEdge target="N69" source="N68" targetdock="16" sourcedock="20">
+                <SourceCtrl xPos="77" yPos="46"/>
+                <TargetCtrl xPos="-78" yPos="-47"/>
+            </EEdge>
+        </Node>
+    </SuperNode>
+    <SuperNode start="N124" hideLocalVar="false" hideGlobalVar="false" id="S20" name="CloseGame" comment="">
+        <Commands>Int userQuestions = 0;</Commands>
+        <Position xPos="114" yPos="286"/>
+        <EEdge target="S8" source="S20" targetdock="31" sourcedock="12">
+            <SourceCtrl xPos="112" yPos="31"/>
+            <TargetCtrl xPos="-113" yPos="-32"/>
+        </EEdge>
+        <Comment>
+            <Text>
+        total and correct are the questions where the user was answering. The 
+                    parameter specifies the ASKER!
+      </Text>
+            <Boundary height="50" width="333" xPos="328" yPos="704"/>
+        </Comment>
+        <Node id="N123" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="28" yPos="200"/>
+        </Node>
+        <Node id="N124" name="Done" comment="">
+            <Commands>endSession (  );
+userQuestions = getNumberOfQuestions ( AE.user );</Commands>
+            <CEdge target="N125" source="N124" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="64"/>
+                <TargetCtrl xPos="0" yPos="-65"/>
+                <Condition>userQuestions &gt; 0</Condition>
+            </CEdge>
+            <Position xPos="200" yPos="286"/>
+            <EEdge target="N127" source="N124" targetdock="0" sourcedock="20">
+                <SourceCtrl xPos="69" yPos="18"/>
+                <TargetCtrl xPos="-70" yPos="-19"/>
+            </EEdge>
+        </Node>
+        <Node id="N125" name="N112" comment="">
+            <Commands></Commands>
+            <CEdge target="N127" source="N125" targetdock="31" sourcedock="28">
+                <SourceCtrl xPos="77" yPos="-47"/>
+                <TargetCtrl xPos="-78" yPos="44"/>
+                <Condition>random (  ) &lt; 0.5</Condition>
+            </CEdge>
+            <Position xPos="200" yPos="544"/>
+            <EEdge target="N126" source="N125" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="64" yPos="0"/>
+                <TargetCtrl xPos="-65" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N126" name="N113" comment="">
+            <Commands>DialogueAct da = { type = "provide" , subtype = "performanceSession" , total = 0 , correct = 0 };
+        da.total = getNumberOfQuestions ( AE.robot );
+da.correct = getNumberOfCorrectAnswers ( AE.robot );
+emitDialogueAct ( da );</Commands>
+            <Position xPos="458" yPos="544"/>
+            <EEdge target="N127" source="N126" targetdock="8" sourcedock="2">
+                <SourceCtrl xPos="0" yPos="-22"/>
+                <TargetCtrl xPos="0" yPos="21"/>
+            </EEdge>
+        </Node>
+        <Node id="N127" name="N117" comment="">
+            <Commands>emitDA ( "request(fun)" );</Commands>
+            <Position xPos="458" yPos="372"/>
+            <EEdge target="N128" source="N127" targetdock="0" sourcedock="28">
+                <SourceCtrl xPos="27" yPos="-17"/>
+                <TargetCtrl xPos="-28" yPos="15"/>
+            </EEdge>
+        </Node>
+        <Node id="N128" name="WaitForFunReaction" comment="">
+            <Commands>sysCall ( "expectDAs" , "provide.*fun" );</Commands>
+            <CEdge target="N131" source="N128" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="64"/>
+                <TargetCtrl xPos="0" yPos="-65"/>
+                <Condition>lastReaction.type != ""</Condition>
+            </CEdge>
+            <Position xPos="630" yPos="286"/>
+            <TEdge timeout="60000" target="N128" source="N128" targetdock="28" sourcedock="2">
+                <SourceCtrl xPos="22" yPos="-84"/>
+                <TargetCtrl xPos="74" yPos="-44"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N129" name="DoSomething" comment="">
+            <Commands>String fun = "";
+        lastReaction.type = "acknowledgement";
+emitDialogueAct ( lastReaction );</Commands>
+            <Position xPos="974" yPos="286"/>
+            <EEdge target="N130" source="N129" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="64"/>
+                <TargetCtrl xPos="0" yPos="-65"/>
+            </EEdge>
+        </Node>
+        <Node id="N130" name="N118" comment="">
+            <Commands>lastReaction = emptyReaction (  );
+situation = SE.gameFinished;
+flag.status = StatE.stopped;</Commands>
+            <Position xPos="974" yPos="544"/>
+        </Node>
+        <Node id="N131" name="N121" comment="">
+            <Commands></Commands>
+            <CEdge target="N129" source="N131" targetdock="16" sourcedock="28">
+                <SourceCtrl xPos="129" yPos="-77"/>
+                <TargetCtrl xPos="-105" yPos="105"/>
+                <Condition>lastReaction.type == "provide" &amp; lastReaction.subtype == "fun"</Condition>
+            </CEdge>
+            <Position xPos="630" yPos="544"/>
+            <EEdge target="N130" source="N131" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="107" yPos="0"/>
+                <TargetCtrl xPos="-108" yPos="0"/>
+            </EEdge>
+        </Node>
+    </SuperNode>
+    <SuperNode start="N39" hideLocalVar="false" hideGlobalVar="false" id="S9" name="ReactToUserEvents" comment="">
+        <Commands></Commands>
+        <Position xPos="544" yPos="114"/>
+        <EEdge target="N1" source="S9" targetdock="24" sourcedock="20">
+            <SourceCtrl xPos="71" yPos="19"/>
+            <TargetCtrl xPos="-70" yPos="-19"/>
+        </EEdge>
+        <Node id="N37" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="28" yPos="372"/>
+        </Node>
+        <Node id="N38" name="ConsumeLastReaction" comment="">
+            <Commands>lastReaction = emptyReaction (  );
+flag.status = StatE.stopped;</Commands>
+            <Position xPos="372" yPos="372"/>
+            <EEdge target="N39" source="N38" targetdock="8" sourcedock="2">
+                <SourceCtrl xPos="0" yPos="-22"/>
+                <TargetCtrl xPos="0" yPos="21"/>
+            </EEdge>
+        </Node>
+        <Node id="N39" name="WaitForSignalOrInterrupt" comment="">
+            <Commands></Commands>
+            <CEdge target="N152" source="N39" targetdock="4" sourcedock="4">
+                <SourceCtrl xPos="39" yPos="39"/>
+                <TargetCtrl xPos="-40" yPos="-40"/>
+                <Condition>lastReaction.type == "request" &amp; lastReaction.subtype == "stop"</Condition>
+            </CEdge>
+            <CEdge target="N40" source="N39" targetdock="15" sourcedock="12">
+                <SourceCtrl xPos="154" yPos="0"/>
+                <TargetCtrl xPos="-155" yPos="0"/>
+                <Condition>lastReaction.type == "provide" &amp; lastReaction.subtype == "turntablet"</Condition>
+            </CEdge>
+            <CEdge target="N13" source="N39" targetdock="12" sourcedock="0">
+                <SourceCtrl xPos="-108" yPos="0"/>
+                <TargetCtrl xPos="107" yPos="0"/>
+                <Condition>flag.status == StatE.shuttingDown</Condition>
+            </CEdge>
+            <Position xPos="372" yPos="200"/>
+            <TEdge timeout="600000" target="N39" source="N39" targetdock="28" sourcedock="2">
+                <SourceCtrl xPos="22" yPos="-84"/>
+                <TargetCtrl xPos="74" yPos="-44"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N148" name="N134" comment="">
+            <Commands></Commands>
+            <CEdge target="N150" source="N148" targetdock="20" sourcedock="16">
+                <SourceCtrl xPos="-111" yPos="-29"/>
+                <TargetCtrl xPos="110" yPos="28"/>
+                <Condition>get ( lastReaction , "what" ) == "game"</Condition>
+            </CEdge>
+            <Position xPos="622" yPos="614"/>
+            <EEdge target="N149" source="N148" targetdock="20" sourcedock="8">
+                <SourceCtrl xPos="-194" yPos="0"/>
+                <TargetCtrl xPos="193" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N149" name="N138" comment="">
+            <Commands>situation = SE.switchRole;</Commands>
+            <Position xPos="113" yPos="619"/>
+            <EEdge target="N151" source="N149" targetdock="8" sourcedock="28">
+                <SourceCtrl xPos="0" yPos="-22"/>
+                <TargetCtrl xPos="0" yPos="21"/>
+            </EEdge>
+        </Node>
+        <Node id="N150" name="N137" comment="">
+            <Commands>situation = SE.stopPlaying;</Commands>
+            <Position xPos="286" yPos="544"/>
+            <EEdge target="N151" source="N150" targetdock="20" sourcedock="16">
+                <SourceCtrl xPos="-28" yPos="-17"/>
+                <TargetCtrl xPos="27" yPos="16"/>
+            </EEdge>
+        </Node>
+        <Node id="N151" name="N139" comment="">
+            <Commands>flag.status = StatE.interrupted;
+lastReaction = emptyReaction (  );</Commands>
+            <Position xPos="114" yPos="458"/>
+            <EEdge target="N39" source="N151" targetdock="16" sourcedock="28">
+                <SourceCtrl xPos="82" yPos="-83"/>
+                <TargetCtrl xPos="-83" yPos="82"/>
+            </EEdge>
+        </Node>
+        <Node id="N152" name="N142" comment="">
+            <Commands></Commands>
+            <CEdge target="N148" source="N152" targetdock="12" sourcedock="24">
+                <SourceCtrl xPos="18" yPos="69"/>
+                <TargetCtrl xPos="-19" yPos="-70"/>
+                <Condition>situation == SE.gameTurn</Condition>
+            </CEdge>
+            <Position xPos="544" yPos="372"/>
+            <EEdge target="N38" source="N152" targetdock="12" sourcedock="0">
+                <SourceCtrl xPos="-22" yPos="0"/>
+                <TargetCtrl xPos="21" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N40" name="N40" comment="">
+            <Commands>tabletOrientation = lastReaction.what;
+lastReaction = emptyReaction (  );</Commands>
+            <Position xPos="824" yPos="273"/>
+            <EEdge target="N39" source="N40" targetdock="20" sourcedock="31">
+                <SourceCtrl xPos="-152" yPos="-40"/>
+                <TargetCtrl xPos="151" yPos="39"/>
+            </EEdge>
+        </Node>
+        <Node id="N13" name="N13" comment="">
+            <Commands></Commands>
+            <Position xPos="28" yPos="200"/>
+        </Node>
+    </SuperNode>
+    <ClassPath/>
+</SceneFlow>

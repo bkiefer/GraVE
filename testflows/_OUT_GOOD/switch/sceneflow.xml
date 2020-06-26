@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SceneFlow modifDate="Fri, 26 Jun 2020 19:14:06" package="" start="N16" hideLocalVar="false" hideGlobalVar="false" id="switchQuizRobotAsks" name="switch" comment="">
+    <Commands>sysCall( ArgumentDefinition(java.lang.String Arg0),ArgumentDefinition(java.lang.String Arg1) ):de.dfki.lt.sminterface.SceneMakerInterface.sysCall;
+print( ArgumentDefinition(java.lang.String text) ):java.lang.System.out.println;
+checkUMIfPresent( ArgumentDefinition(java.lang.String Arg0) ):de.dfki.lt.sminterface.SceneMakerInterface.checkUsermodelIfPresent;
+get( ArgumentDefinition([[Ljava.lang.Object; Arg0),ArgumentDefinition(java.lang.String Arg1) ):de.dfki.lt.sminterface.SceneMakerInterface.get;
+emitDialogueAct( ArgumentDefinition([[Ljava.lang.Object; Arg0) ):de.dfki.lt.sminterface.SceneMakerInterface.emitDialogueAct;
+stopListening(  ):de.dfki.lt.sminterface.SceneMakerInterface.stopListening;
+emitDA( ArgumentDefinition(java.lang.String Arg0) ):de.dfki.lt.sminterface.SceneMakerInterface.emitDAString;
+getSystemSignal(  ):de.dfki.lt.sminterface.SceneMakerInterface.systemSignal;
+emptyReaction(  ):de.dfki.lt.sminterface.SceneMakerInterface.getEmptyReaction;
+listen(  ):de.dfki.lt.sminterface.SceneMakerInterface.listen;
+    StructTypeDefinition(DialogueAct);
+StructTypeDefinition(Params);
+StructTypeDefinition(SystemFlags);
+StructTypeDefinition(SituationEnum);
+StructTypeDefinition(StatusEnum);
+StructTypeDefinition(ActorEnum);
+StructTypeDefinition(SystemSignalEnum);
+    SituationEnum SE = { startSwitch = "startSwitch" , askKeepPlaying = "askKeepPlaying" , askPlayGame = "askPlayGame" , switchFinished = "switchFinished" };
+SystemSignalEnum Signal = { start = "start" , stop = "stop" , continue = "continue" , shutDown = "shutDown" };
+StatusEnum StatE = { started = "started" , continue = "continue" , stopped = "stopped" , idle = "idle" , shuttingDown = "shuttingDown" };
+SystemFlags flag = { status = StatE.idle , shutDownRequested = false };
+DialogueAct lastReaction = emptyReaction (  );
+String lastSignal = "";
+String situation = "";
+Bool correctResponse = false;</Commands>
+    <Position xPos="0" yPos="0"/>
+    <Comment>
+        <Text>
+      TODO: stopListeningToSystemSignals (or otherwise do not start listening to 
+                system signals after obtaining of Signal.shutDown)
+    </Text>
+        <Boundary height="92" width="261" xPos="890" yPos="402"/>
+    </Comment>
+    <Node id="N1" name="Done" comment="">
+        <Commands></Commands>
+        <Position xPos="733" yPos="233"/>
+    </Node>
+    <Node id="N9" name="ShutDownPreparations" comment="">
+        <Commands>stopListening (  );</Commands>
+        <Position xPos="733" yPos="333"/>
+        <EEdge target="N1" source="N9" targetdock="0" sourcedock="0">
+            <SourceCtrl xPos="24" yPos="-20"/>
+            <TargetCtrl xPos="26" yPos="24"/>
+        </EEdge>
+    </Node>
+    <Node id="N16" name="Initialize" comment="">
+        <Commands></Commands>
+        <FEdge target="S10" source="N16" targetdock="2" sourcedock="24">
+            <SourceCtrl xPos="59" yPos="-61"/>
+            <TargetCtrl xPos="-70" yPos="41"/>
+        </FEdge>
+        <FEdge target="S11" source="N16" targetdock="4" sourcedock="4">
+            <SourceCtrl xPos="68" yPos="-2"/>
+            <TargetCtrl xPos="-26" yPos="96"/>
+        </FEdge>
+        <FEdge target="S8" source="N16" targetdock="8" sourcedock="20">
+            <SourceCtrl xPos="59" yPos="56"/>
+            <TargetCtrl xPos="-70" yPos="-50"/>
+        </FEdge>
+        <FEdge target="S14" source="N16" targetdock="0" sourcedock="8">
+            <SourceCtrl xPos="67" yPos="-98"/>
+            <TargetCtrl xPos="-52" yPos="51"/>
+        </FEdge>
+        <Position xPos="133" yPos="233"/>
+    </Node>
+    <SuperNode start="N3" hideLocalVar="false" hideGlobalVar="false" id="S10" name="ListenToOutsideWorld" comment="">
+        <Commands></Commands>
+        <Position xPos="333" yPos="233"/>
+        <EEdge target="N1" source="S10" targetdock="16" sourcedock="18">
+            <SourceCtrl xPos="132" yPos="10"/>
+            <TargetCtrl xPos="-128" yPos="23"/>
+        </EEdge>
+        <Node id="N7" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="30" yPos="570"/>
+        </Node>
+        <Node id="N2" name="Listen" comment="">
+            <Commands>lastReaction = listen (  );
+print ( "Got Outside Message " + lastReaction.type );</Commands>
+            <Position xPos="750" yPos="390"/>
+            <EEdge target="N3" source="N2" targetdock="20" sourcedock="0">
+                <SourceCtrl xPos="-65" yPos="18"/>
+                <TargetCtrl xPos="64" yPos="18"/>
+            </EEdge>
+        </Node>
+        <Node id="N3" name="DecideIfListen" comment="">
+            <Commands></Commands>
+            <CEdge target="N2" source="N3" targetdock="31" sourcedock="12">
+                <SourceCtrl xPos="39" yPos="-112"/>
+                <TargetCtrl xPos="-36" yPos="-111"/>
+                <Condition>lastReaction.type == "" &amp; flag.status != StatE.shuttingDown</Condition>
+            </CEdge>
+            <CEdge target="N8" source="N3" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="22"/>
+                <TargetCtrl xPos="0" yPos="-23"/>
+                <Condition>flag.status == StatE.shuttingDown</Condition>
+            </CEdge>
+            <Position xPos="480" yPos="390"/>
+            <TEdge timeout="1000" target="N41" source="N3" targetdock="20" sourcedock="2">
+                <SourceCtrl xPos="-34" yPos="-71"/>
+                <TargetCtrl xPos="106" yPos="8"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N8" name="Done" comment="">
+            <Commands></Commands>
+            <Position xPos="480" yPos="570"/>
+        </Node>
+        <Node id="N41" name="DisposeOfUnusedInput" comment="">
+            <Commands>lastReaction = emptyReaction (  );</Commands>
+            <Position xPos="210" yPos="210"/>
+            <EEdge target="N3" source="N41" targetdock="4" sourcedock="24">
+                <SourceCtrl xPos="68" yPos="95"/>
+                <TargetCtrl xPos="-112" yPos="-38"/>
+            </EEdge>
+        </Node>
+    </SuperNode>
+    <SuperNode start="N14" hideLocalVar="false" hideGlobalVar="false" id="S11" name="ReactToSystemSignalsAndInterrupts" comment="">
+        <Commands></Commands>
+        <Position xPos="233" yPos="133"/>
+        <EEdge target="N1" source="S11" targetdock="4" sourcedock="20">
+            <SourceCtrl xPos="237" yPos="52"/>
+            <TargetCtrl xPos="-145" yPos="-5"/>
+        </EEdge>
+        <Node id="N12" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="30" yPos="570"/>
+        </Node>
+        <Node id="N13" name="ConsumeLastReaction" comment="">
+            <Commands>lastReaction = emptyReaction (  );</Commands>
+            <Position xPos="750" yPos="120"/>
+            <EEdge target="N82" source="N13" targetdock="4" sourcedock="12">
+                <SourceCtrl xPos="67" yPos="0"/>
+                <TargetCtrl xPos="-32" yPos="-29"/>
+            </EEdge>
+        </Node>
+        <Node id="N14" name="WaitForSignalOrInterrupt" comment="">
+            <Commands></Commands>
+            <CEdge target="N15" source="N14" targetdock="2" sourcedock="0">
+                <SourceCtrl xPos="-61" yPos="37"/>
+                <TargetCtrl xPos="0" yPos="-23"/>
+                <Condition>flag.status == StatE.shuttingDown</Condition>
+            </CEdge>
+            <CEdge target="N13" source="N14" targetdock="0" sourcedock="2">
+                <SourceCtrl xPos="79" yPos="-36"/>
+                <TargetCtrl xPos="-251" yPos="-67"/>
+                <Condition>lastReaction.type == "interrupt" &amp; lastReaction.subtype == "stop"</Condition>
+            </CEdge>
+            <CEdge target="N71" source="N14" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="156" yPos="9"/>
+                <TargetCtrl xPos="-55" yPos="15"/>
+                <Condition>lastSignal == Signal.stop</Condition>
+            </CEdge>
+            <CEdge target="N89" source="N14" targetdock="16" sourcedock="20">
+                <SourceCtrl xPos="115" yPos="68"/>
+                <TargetCtrl xPos="-116" yPos="-69"/>
+                <Condition>lastSignal == Signal.shutDown</Condition>
+            </CEdge>
+            <CEdge target="N96" source="N14" targetdock="4" sourcedock="4">
+                <SourceCtrl xPos="133" yPos="133"/>
+                <TargetCtrl xPos="-134" yPos="-134"/>
+                <Condition>lastSignal == Signal.start</Condition>
+            </CEdge>
+            <CEdge target="N24" source="N14" targetdock="28" sourcedock="24">
+                <SourceCtrl xPos="125" yPos="222"/>
+                <TargetCtrl xPos="-126" yPos="-223"/>
+                <Condition>lastSignal == Signal.continue</Condition>
+            </CEdge>
+            <Position xPos="390" yPos="300"/>
+            <TEdge timeout="60000" target="N14" source="N14" targetdock="16" sourcedock="28">
+                <SourceCtrl xPos="-40" yPos="-109"/>
+                <TargetCtrl xPos="-122" yPos="-70"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N15" name="Done" comment="">
+            <Commands></Commands>
+            <Position xPos="120" yPos="480"/>
+        </Node>
+        <Node id="N82" name="ChangeStatus" comment="">
+            <Commands>flag.status = StatE.stopped;</Commands>
+            <Position xPos="1020" yPos="210"/>
+            <EEdge target="N90" source="N82" targetdock="16" sourcedock="20">
+                <SourceCtrl xPos="28" yPos="16"/>
+                <TargetCtrl xPos="-29" yPos="-17"/>
+            </EEdge>
+        </Node>
+        <Node id="N70" name="RaiseFlag" comment="">
+            <Commands>flag.shutDownRequested = true;</Commands>
+            <Position xPos="930" yPos="480"/>
+            <EEdge target="N82" source="N70" targetdock="0" sourcedock="28">
+                <SourceCtrl xPos="53" yPos="-54"/>
+                <TargetCtrl xPos="-65" yPos="36"/>
+            </EEdge>
+        </Node>
+        <Node id="N71" name="ConsumeLastSignal" comment="">
+            <Commands>lastSignal = "";</Commands>
+            <Position xPos="750" yPos="300"/>
+            <EEdge target="N82" source="N71" targetdock="31" sourcedock="12">
+                <SourceCtrl xPos="71" yPos="-20"/>
+                <TargetCtrl xPos="-72" yPos="19"/>
+            </EEdge>
+        </Node>
+        <Node id="N89" name="ConsumeLastSignal" comment="">
+            <Commands>lastSignal = "";</Commands>
+            <Position xPos="750" yPos="480"/>
+            <EEdge target="N70" source="N89" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="67" yPos="0"/>
+                <TargetCtrl xPos="-68" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N90" name="ReturnToWait" comment="">
+            <Commands></Commands>
+            <Position xPos="1200" yPos="300"/>
+            <EEdge target="N14" source="N90" targetdock="18" sourcedock="28">
+                <SourceCtrl xPos="-129" yPos="-291"/>
+                <TargetCtrl xPos="40" yPos="-282"/>
+            </EEdge>
+        </Node>
+        <Node id="N96" name="N96" comment="">
+            <Commands>lastSignal = "";</Commands>
+            <Position xPos="750" yPos="660"/>
+            <EEdge target="N97" source="N96" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="22" yPos="0"/>
+                <TargetCtrl xPos="-23" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N97" name="N97" comment="">
+            <Commands>flag.status = StatE.started;</Commands>
+            <Position xPos="930" yPos="660"/>
+            <EEdge target="N90" source="N97" targetdock="0" sourcedock="2">
+                <SourceCtrl xPos="99" yPos="-115"/>
+                <TargetCtrl xPos="-112" yPos="112"/>
+            </EEdge>
+        </Node>
+        <Node id="N24" name="N96" comment="">
+            <Commands>lastSignal = "";</Commands>
+            <Position xPos="750" yPos="840"/>
+            <EEdge target="N25" source="N24" targetdock="0" sourcedock="12">
+                <SourceCtrl xPos="22" yPos="0"/>
+                <TargetCtrl xPos="-23" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N25" name="N97" comment="">
+            <Commands>flag.status = StatE.continue;</Commands>
+            <Position xPos="930" yPos="840"/>
+            <EEdge target="N90" source="N25" targetdock="8" sourcedock="2">
+                <SourceCtrl xPos="114" yPos="-204"/>
+                <TargetCtrl xPos="-115" yPos="203"/>
+            </EEdge>
+        </Node>
+    </SuperNode>
+    <SuperNode start="N95" hideLocalVar="false" hideGlobalVar="false" id="S8" name="Idle" comment="">
+        <Commands></Commands>
+        <Position xPos="333" yPos="333"/>
+        <EEdge target="N9" source="S8" targetdock="31" sourcedock="20">
+            <SourceCtrl xPos="132" yPos="3"/>
+            <TargetCtrl xPos="-132" yPos="7"/>
+        </EEdge>
+        <Node id="N63" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="544" yPos="114"/>
+        </Node>
+        <Node id="N64" name="IdleState" comment="">
+            <Commands></Commands>
+            <CEdge target="N66" source="N64" targetdock="8" sourcedock="20">
+                <SourceCtrl xPos="103" yPos="-2"/>
+                <TargetCtrl xPos="-69" yPos="-23"/>
+                <Condition>flag.status == StatE.started</Condition>
+            </CEdge>
+            <Position xPos="544" yPos="372"/>
+            <TEdge timeout="2000" target="N95" source="N64" targetdock="12" sourcedock="28">
+                <SourceCtrl xPos="74" yPos="-148"/>
+                <TargetCtrl xPos="142" yPos="-143"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N66" name="StartPlayingQuiz" comment="">
+            <Commands>situation = SE.startSwitch;
+print ( "Situation: " + situation );</Commands>
+            <Position xPos="888" yPos="372"/>
+        </Node>
+        <Node id="N81" name="Quit" comment="">
+            <Commands></Commands>
+            <Position xPos="372" yPos="544"/>
+        </Node>
+        <Node id="N91" name="ResetToIdle" comment="">
+            <Commands>flag.status = StatE.idle;
+sysCall ( "flowEnded" , "switch" );</Commands>
+            <Position xPos="372" yPos="200"/>
+            <EEdge target="N94" source="N91" targetdock="28" sourcedock="20">
+                <SourceCtrl xPos="122" yPos="32"/>
+                <TargetCtrl xPos="44" yPos="-13"/>
+            </EEdge>
+        </Node>
+        <Node id="N92" name="ChangeStatus" comment="">
+            <Commands>flag.status = StatE.shuttingDown;</Commands>
+            <Position xPos="114" yPos="544"/>
+            <EEdge target="N81" source="N92" targetdock="16" sourcedock="20">
+                <SourceCtrl xPos="83" yPos="6"/>
+                <TargetCtrl xPos="-63" yPos="-2"/>
+            </EEdge>
+        </Node>
+        <Node id="N93" name="CheckShutDown" comment="">
+            <Commands></Commands>
+            <CEdge target="N92" source="N93" targetdock="2" sourcedock="24">
+                <SourceCtrl xPos="-3" yPos="45"/>
+                <TargetCtrl xPos="-3" yPos="2"/>
+                <Condition>flag.shutDownRequested == true</Condition>
+            </CEdge>
+            <Position xPos="114" yPos="372"/>
+            <EEdge target="N94" source="N93" targetdock="0" sourcedock="20">
+                <SourceCtrl xPos="38" yPos="-2"/>
+                <TargetCtrl xPos="-11" yPos="-1"/>
+            </EEdge>
+        </Node>
+        <Node id="N94" name="CheckStopped" comment="">
+            <Commands></Commands>
+            <CEdge target="N91" source="N94" targetdock="0" sourcedock="16">
+                <SourceCtrl xPos="-17" yPos="-11"/>
+                <TargetCtrl xPos="-78" yPos="18"/>
+                <Condition>flag.status == StatE.stopped</Condition>
+            </CEdge>
+            <Position xPos="372" yPos="372"/>
+            <EEdge target="N64" source="N94" targetdock="16" sourcedock="20">
+                <SourceCtrl xPos="50" yPos="-2"/>
+                <TargetCtrl xPos="-29" yPos="-15"/>
+            </EEdge>
+        </Node>
+        <Node id="N95" name="Start" comment="">
+            <Commands></Commands>
+            <Position xPos="114" yPos="200"/>
+            <EEdge target="N93" source="N95" targetdock="2" sourcedock="24">
+                <SourceCtrl xPos="-3" yPos="37"/>
+                <TargetCtrl xPos="-3" yPos="-6"/>
+            </EEdge>
+        </Node>
+    </SuperNode>
+    <SuperNode start="N69" hideLocalVar="false" hideGlobalVar="false" id="S14" name="ListenToSystemSignals" comment="">
+        <Commands></Commands>
+        <Position xPos="333" yPos="133"/>
+        <EEdge target="N1" source="S14" targetdock="24" sourcedock="12">
+            <SourceCtrl xPos="137" yPos="30"/>
+            <TargetCtrl xPos="-142" yPos="-45"/>
+        </EEdge>
+        <Node id="N67" name="History" comment="">
+            <Commands></Commands>
+            <Position xPos="30" yPos="570"/>
+        </Node>
+        <Node id="N69" name="DecideIfListen" comment="">
+            <Commands></Commands>
+            <CEdge target="N88" source="N69" targetdock="2" sourcedock="8">
+                <SourceCtrl xPos="0" yPos="22"/>
+                <TargetCtrl xPos="0" yPos="-23"/>
+                <Condition>flag.status == StatE.shuttingDown</Condition>
+            </CEdge>
+            <CEdge target="N87" source="N69" targetdock="4" sourcedock="12">
+                <SourceCtrl xPos="39" yPos="-112"/>
+                <TargetCtrl xPos="-49" yPos="-79"/>
+                <Condition>lastSignal == "" &amp; flag.status != StatE.shuttingDown</Condition>
+            </CEdge>
+            <Position xPos="480" yPos="390"/>
+            <TEdge timeout="2000" target="N68" source="N69" targetdock="20" sourcedock="28">
+                <SourceCtrl xPos="-49" yPos="-87"/>
+                <TargetCtrl xPos="98" yPos="6"/>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N87" name="Listen" comment="">
+            <Commands>lastSignal = getSystemSignal (  );
+print ( "Got SystemInput: " + lastSignal );</Commands>
+            <Position xPos="750" yPos="390"/>
+            <EEdge target="N69" source="N87" targetdock="20" sourcedock="0">
+                <SourceCtrl xPos="-65" yPos="18"/>
+                <TargetCtrl xPos="64" yPos="18"/>
+            </EEdge>
+        </Node>
+        <Node id="N88" name="Done" comment="">
+            <Commands></Commands>
+            <Position xPos="480" yPos="570"/>
+        </Node>
+        <Node id="N68" name="DisposeOfUnusedInput" comment="">
+            <Commands>print ( "disposing of lastSignal" );
+lastSignal = "";</Commands>
+            <Position xPos="210" yPos="210"/>
+            <EEdge target="N69" source="N68" targetdock="16" sourcedock="4">
+                <SourceCtrl xPos="67" yPos="67"/>
+                <TargetCtrl xPos="-70" yPos="-11"/>
+            </EEdge>
+        </Node>
+    </SuperNode>
+    <ClassPath/>
+</SceneFlow>

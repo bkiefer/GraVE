@@ -1,0 +1,9 @@
+#SceneMaker 3 Project Settings
+#Fri Apr 09 11:06:57 CEST 2010
+project.name=SimpleBot
+project.gesticon=gesticon.xml
+project.visicon=visicon.xml
+project.sceneflow=sceneflow.xml
+project.defaultsceneplayer=de.dfki.scenemaker.output.sceneplayer.DefaultScenePlayer
+project.defaultsceneplayerconfig=defaultsceneplayerconfig.ini
+project.scenes=scenes.rtf
