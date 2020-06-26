@@ -3,7 +3,6 @@ package de.dfki.grave.model.flow;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
-import de.dfki.grave.model.flow.Boundary;
 import de.dfki.grave.util.Copyable;
 
 /**
@@ -73,14 +72,14 @@ public final class Boundary implements Copyable {
   public final Boundary deepCopy() {
     return new Boundary(mXPos, mYPos, mWidth, mHeight);
   }
-  
+
   public boolean equals(Object o) {
     if (! (o instanceof Boundary)) return false;
     Boundary b = (Boundary)o;
     return mXPos == b.mXPos && mYPos == b.mYPos
-        && mWidth == b.mWidth && mHeight == b.mHeight; 
+        && mWidth == b.mWidth && mHeight == b.mHeight;
   }
-  
+
   public String toString() {
     return "[" + mXPos + "," + mYPos + "," + mWidth + "," + mHeight + "]";
   }

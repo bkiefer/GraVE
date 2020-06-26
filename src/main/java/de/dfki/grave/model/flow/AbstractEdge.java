@@ -68,12 +68,11 @@ public abstract class AbstractEdge implements ContentHolder {
   protected Position mSourceCtrlPoint; // relative, not absolute
   @XmlElement(name="TargetCtrl")
   protected Position mTargetCtrlPoint; // relative, not absolute
-  /**/
 
   // DEPRECATED
   @Deprecated
   protected EdgeArrow mArrow = null;
-  
+
   @XmlElement(name="Commands")
   protected String mCmdList = null;
 
@@ -274,8 +273,8 @@ public abstract class AbstractEdge implements ContentHolder {
         ? nodeWidth * .9
         : Math.max(start.distance(target) / nodeWidth - 0.5, 1.25)
           * nodeWidth/3; // TODO: not my preferred solution.
-    
-    double xcorr = (mSourceNode == mTargetNode) 
+
+    double xcorr = (mSourceNode == mTargetNode)
         ? Math.abs(startVec.getX() * scale * .7)
         : 0;
 
@@ -314,8 +313,8 @@ public abstract class AbstractEdge implements ContentHolder {
   /***********************************************************************/
   /******************** READING THE GRAPH FROM FILE **********************/
   /***********************************************************************/
-  
-  /** Only for establishTargetNodes. TODO: should go */
+
+  /** Only for establishTargetNodes! */
   final void setNodes(BasicNode source, BasicNode target) {
     mSourceNode = source;
     mSourceUnid = source.getId();
@@ -327,7 +326,7 @@ public abstract class AbstractEdge implements ContentHolder {
   /*********************************************************************/
   /**************************** COPY EDGE ******************************/
   /*********************************************************************/
-  
+
   /** Do a deep copy of AbstractEdge, remapping nodes, and adding new edge to
    *  the copied source node.
    */
@@ -363,11 +362,11 @@ public abstract class AbstractEdge implements ContentHolder {
     }
     return null;
   }
-  
+
   /*************************************************************************/
   /********************** MISC. PUBLIC ACCESS METHODS **********************/
   /*************************************************************************/
-  
+
   /** Get the Expression of this edge, if any */
   public Expression getExpression() {
     if (this instanceof TimeoutEdge)
@@ -383,7 +382,7 @@ public abstract class AbstractEdge implements ContentHolder {
   public boolean isInterruptEdge() { return this instanceof InterruptEdge; }
   public boolean isRandomEdge() { return this instanceof RandomEdge; }
   public boolean isTimeoutEdge() { return this instanceof TimeoutEdge; }
-  
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj)
@@ -415,7 +414,7 @@ public abstract class AbstractEdge implements ContentHolder {
       return false;
     return true;
   }
-  
+
   @Override
   public int hashCode() {
     int hash = 3;

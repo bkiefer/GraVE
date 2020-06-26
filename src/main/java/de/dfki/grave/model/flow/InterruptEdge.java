@@ -8,11 +8,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.Expression;
-import de.dfki.grave.model.flow.InterruptEdge;
-
 /**
  * @author Gregor Mehlmann
  */

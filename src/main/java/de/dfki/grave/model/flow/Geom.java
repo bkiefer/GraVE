@@ -5,8 +5,6 @@ import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.BitSet;
 
-import de.dfki.grave.model.flow.Geom;
-
 public class Geom {
 
   private static double[] num2angle;

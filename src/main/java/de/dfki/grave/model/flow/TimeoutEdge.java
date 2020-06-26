@@ -5,11 +5,6 @@ import java.util.Map;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.Expression;
-import de.dfki.grave.model.flow.TimeoutEdge;
-
 /**
  * @author Gregor Mehlmann
  */

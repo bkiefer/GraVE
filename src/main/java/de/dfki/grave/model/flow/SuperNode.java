@@ -8,14 +8,6 @@ import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.CommentBadge;
-import de.dfki.grave.model.flow.Geom;
-import de.dfki.grave.model.flow.IDManager;
-import de.dfki.grave.model.flow.Position;
-import de.dfki.grave.model.flow.SuperNode;
-
 /**
  * @author Gregor Mehlmann
  */
@@ -52,7 +44,7 @@ public class SuperNode extends BasicNode {
   }
 
   public boolean isBasic() { return false; }
-  
+
   /** Get a new SuperNode from the GUI, but only if the parent SuperNode already
    *  has a BasicNode as StartNode.
    */
@@ -77,14 +69,14 @@ public class SuperNode extends BasicNode {
     mStartNode = value;
     mStartNodeId = value.getId();
   }
-  
-  /** No code allowed with SuperNodes, must be associated with the 
+
+  /** No code allowed with SuperNodes, must be associated with the
    *  SuperNode's Start or End Node(s)
    */
   public String getContent() {
     return null;
   }
-  
+
   public void setContent(String s) {
     throw new UnsupportedOperationException(
         "SuperNode code must moved inside the Node");
@@ -146,7 +138,7 @@ public class SuperNode extends BasicNode {
     }
     return result;
   }
-  
+
   /** Add a node to the list of nodes
    *
    *  NODE MODIFICATION
@@ -174,11 +166,11 @@ public class SuperNode extends BasicNode {
   public int getNodeSize() {
     return mNodeList.size();
   }
-  
+
   /***********************************************************************/
   /******************** READING THE GRAPH FROM FILE **********************/
   /***********************************************************************/
-  
+
   /** Only for reading the graph from file */
   BasicNode getChildNodeById(String id) {
     for (BasicNode node : getNodes()) {
@@ -231,7 +223,7 @@ public class SuperNode extends BasicNode {
   /***********************************************************************/
   /********************** COPY NODES AND SUBGRAPH  ***********************/
   /***********************************************************************/
-  
+
   /** Copy constructor, only used by deepCopy */
   private void copyFieldsFrom(final SuperNode node) {
     super.copyFieldsFrom(node);
@@ -275,7 +267,7 @@ public class SuperNode extends BasicNode {
    */
   public Collection<BasicNode> copyNodeSet(Collection<BasicNode> nodes) {
     Map<BasicNode, BasicNode> orig2copy = new IdentityHashMap<>();
-    IDManager mgr = getRoot().getIDManager(); 
+    IDManager mgr = getRoot().getIDManager();
     for (BasicNode orig : nodes) {
       BasicNode copy = orig.deepCopy(mgr, this);
       orig2copy.put(orig, copy);
@@ -289,9 +281,9 @@ public class SuperNode extends BasicNode {
           newEdges.add(e.deepCopy(orig2copy));
       }
     }
-    return orig2copy.values();    
+    return orig2copy.values();
   }
-  
+
   /** Remove the nodes in the given collection.
    *  This is only legal if none of the selected nodes is a start node!
    *
@@ -323,7 +315,7 @@ public class SuperNode extends BasicNode {
         }
       }
     }
-    // This results in quadratic complexity, but we currently don't have 
+    // This results in quadratic complexity, but we currently don't have
     // and incoming edge list in the model graph
     for (BasicNode n : mNodeList) {
       // for all nodes not in the set
@@ -333,7 +325,7 @@ public class SuperNode extends BasicNode {
             // incoming edge (not in set) --> (in set), must be removed later
             // because of ConcurrentOperationException
             incomingEdges.add(e);
-          } 
+          }
         }
       }
     }
@@ -346,7 +338,7 @@ public class SuperNode extends BasicNode {
         new Collection[]{ emergingEdges, internalEdges, incomingEdges };
     return result;
   }
-  
+
   /** Add a set of edges. Prerequisite: the node models and the
    *  edges and their respective models exist, and were not modified in a way
    *  which interferes with, e.g., the docking points, or the positions.
@@ -356,10 +348,10 @@ public class SuperNode extends BasicNode {
       e.getSourceNode().addEdge(e);
     }
   }
-  
+
   /** Add the given nodes and edges of a disconnected subgraph of nodes as is
    *  to the view and model. This is used if re-inserted after a cut operation,
-   *  or as part of an undo. The nodes are just added, without further 
+   *  or as part of an undo. The nodes are just added, without further
    *  modifications.
    */
   public void addNodes(Collection<BasicNode> nodes) {
@@ -368,11 +360,11 @@ public class SuperNode extends BasicNode {
       addNode(n);
     }
   }
-  
+
   /*************************************************************************/
   /********************* MISC. PUBLIC ACCESS METHODS ***********************/
   /*************************************************************************/
-  
+
   /*
   @Override
   public int hashCode() {
@@ -386,7 +378,7 @@ public class SuperNode extends BasicNode {
   }
   */
 
-  /** Dock point for square, returns a fresh Point2D for the given dock, which 
+  /** Dock point for square, returns a fresh Point2D for the given dock, which
    *  still must be translated by the center point of the node */
   public Point2D getDockPoint(int which, int width) {
     return Geom.getDockPointSquare(which, width);

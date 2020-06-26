@@ -6,7 +6,6 @@ import java.awt.geom.Point2D;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
-import de.dfki.grave.model.flow.Position;
 import de.dfki.grave.util.Copyable;
 
 /**
@@ -71,17 +70,17 @@ public final class Position implements Copyable {
   public Point toPoint() {
     return new Point(x, y);
   }
-  
+
   public int hashCode() {
     return x + 17 * y;
   }
-  
+
   public boolean equals(Object o) {
     if (! (o instanceof Position)) return false;
     Position p = (Position)o;
     return p.x == x && p.y == y;
   }
-  
+
   public String toString() {
     return "(" + x + "," + y + ")";
   }
@@ -93,7 +92,7 @@ public final class Position implements Copyable {
   public void stretch(double d) {
     x *= d; y *= d;
   }
-  
+
   public double norm2() {
     return Math.sqrt(dotProd(this));
   }
@@ -101,14 +100,14 @@ public final class Position implements Copyable {
   public double dotProd(Position b) {
     return x * b.x + y * b.y;
   }
-  
+
   public double dotProd(Point2D b) {
     return x * b.getX() + y * b.getY();
   }
-  
+
   // returns an angle in the range 0 .. 2*pi, where (0, 1) returns zero, and
   // (1,0) returns pi/2
-  public double angle(Position p) { 
+  public double angle(Position p) {
     double res = Math.atan2(p.x - x, p.y - y);
     if (res < 0) res = 2 * Math.PI + res;
     return res;

@@ -5,10 +5,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import de.dfki.grave.model.flow.Boundary;
-import de.dfki.grave.model.flow.CommentBadge;
-import de.dfki.grave.model.flow.ContentHolder;
-import de.dfki.grave.model.flow.SuperNode;
 import de.dfki.grave.util.Copyable;
 
 /**
@@ -20,7 +16,7 @@ import de.dfki.grave.util.Copyable;
 public class CommentBadge implements ContentHolder, Copyable {
 
   protected SuperNode mParentNode = null;
-  
+
   @XmlElement(name="Text")
   private String text = "";
   @XmlElement(name="Boundary")
@@ -33,7 +29,7 @@ public class CommentBadge implements ContentHolder, Copyable {
     c.mParentNode.addComment(c);
     return c;
   }
-  
+
   public String getContent() {
     return text;
   }
@@ -53,7 +49,7 @@ public class CommentBadge implements ContentHolder, Copyable {
   public SuperNode getParentNode() {
     return mParentNode;
   }
-  
+
   @Override
   public CommentBadge deepCopy() {
     CommentBadge result = new CommentBadge();

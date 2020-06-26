@@ -10,7 +10,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.model.flow.*;
 import de.dfki.grave.util.ChainedIterator;
 
 /**
@@ -193,7 +192,7 @@ public class BasicNode implements ContentHolder {
     return ! (mComment == null || mComment.isEmpty());
   }
 
-  /** NODE MODIFICATION, ONLY THROUGH ACTION! 
+  /** NODE MODIFICATION, ONLY THROUGH ACTION!
    * @param newNode if null, a new node of the opposite type will be created
    *        otherwise, this is used in an undo operation and the edges from
    *        and to the old node will be now go to/from the new one
@@ -203,7 +202,7 @@ public class BasicNode implements ContentHolder {
   public BasicNode changeType(BasicNode newNode) throws Exception {
     // adapt node lists of parent SuperNode
     SuperNode s = getParentNode();
-    Collection<AbstractEdge> incoming = s.computeIncomingEdges(this); 
+    Collection<AbstractEdge> incoming = s.computeIncomingEdges(this);
     if (newNode == null) {
       if (this instanceof SuperNode) {
         SuperNode n = (SuperNode)this;
@@ -276,8 +275,8 @@ public class BasicNode implements ContentHolder {
   public void setPosition(Position value) {
     mPosition = value;
   }
-  
-  /** Return center point (position) of the node: for the model, nodes are 
+
+  /** Return center point (position) of the node: for the model, nodes are
    *  points.
    */
   public Position getPosition() {
@@ -307,7 +306,7 @@ public class BasicNode implements ContentHolder {
     }
     return (SceneFlow) curr;
   }
-  
+
   /* not used
   public boolean isDockTaken(int which) {
     return mDocksTaken.get(which);
@@ -355,11 +354,11 @@ public class BasicNode implements ContentHolder {
     mCmdList.setContent(s);
   }
 
-  
+
   /***********************************************************************/
   /******************** READING THE GRAPH FROM FILE **********************/
   /***********************************************************************/
-  
+
   /** NODE MODIFICATION
    *  (theoretically, though this is never used -> remove? */
   @XmlElement(name="TEdge")
@@ -388,11 +387,11 @@ public class BasicNode implements ContentHolder {
       }
     }
   }
-  
+
   /***********************************************************************/
   /********************** COPY NODES AND SUBGRAPH  ***********************/
   /***********************************************************************/
-  
+
   /** Copy fields for deep copy */
   protected void copyFieldsFrom(BasicNode b) {
     mNodeName = b.mNodeName;
@@ -418,7 +417,7 @@ public class BasicNode implements ContentHolder {
   /*************************************************************************/
   /********************** MISC. PUBLIC ACCESS METHODS **********************/
   /*************************************************************************/
-  
+
   public boolean isStartNode() {
     return mParentNode.isStartNode(this);
   }
@@ -459,7 +458,7 @@ public class BasicNode implements ContentHolder {
     return (mDEdge instanceof TimeoutEdge)
         ? FLAVOUR.TNODE : FLAVOUR.ENODE;
   }
-  
+
   public boolean canAddEdge(AbstractEdge e) {
     FLAVOUR flavour = getFlavour();
     switch (flavour) {
@@ -575,7 +574,7 @@ public class BasicNode implements ContentHolder {
   public String toString() {
     return mNodeId + "[" + mNodeName + "]" + mPosition;
   }
-  
+
   /** Returns a fresh Point2D for the given dock, which still must be
    *  translated by the center point of the node
    */

@@ -12,8 +12,6 @@ import javax.xml.bind.annotation.XmlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.model.project.EditorConfig;
-import de.dfki.grave.model.project.FontConfig;
 import de.dfki.grave.util.JaxbUtilities;
 
 /**
@@ -29,20 +27,20 @@ public class EditorConfig {
   private static final Logger mLogger = LoggerFactory.getLogger(EditorConfig.class);;
 
   private static final String EDITOR_CONFIG_NAME = "editorconfig.xml";
-  
+
   ////////////////////////////////////////////////////////////////////////////
   // VARIABLE FIELDS
   ////////////////////////////////////////////////////////////////////////////
   public int sNODEWIDTH = 100;
   public int sNODEHEIGHT = 100;
-  
+
   public float sZOOM_FACTOR = 1;
   public float sZOOM_INCREMENT = 1.2f;
-  
+
   public float sGRID_SCALE = 2;
   public boolean sSHOWGRID = true;
   public boolean sSNAPTOGRID = true;
-  
+
   public boolean sSHOWIDSOFNODES = true;
 
   public boolean sSHOW_VARIABLE_BADGE_ON_WORKSPACE = true;
@@ -73,7 +71,7 @@ public class EditorConfig {
     return (EditorConfig)JaxbUtilities.unmarshal(
         in, "system default", EditorConfig.class, FontConfig.class);
   }
-  
+
   // Get the string representation of the configuration
   public final EditorConfig copy() {
 
@@ -91,5 +89,5 @@ public class EditorConfig {
     }
     return result;
   }
-  
+
 }

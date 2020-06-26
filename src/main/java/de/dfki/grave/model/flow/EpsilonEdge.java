@@ -4,10 +4,6 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.EpsilonEdge;
-
 /**
  * @author Gregor Mehlmann
  */

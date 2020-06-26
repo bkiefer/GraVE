@@ -2,8 +2,6 @@ package de.dfki.grave.model.flow;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
-import de.dfki.grave.model.flow.*;
-
 @XmlRegistry
 public class ObjectFactory {
   public SceneFlow getSceneFlow() { return new SceneFlow(); }

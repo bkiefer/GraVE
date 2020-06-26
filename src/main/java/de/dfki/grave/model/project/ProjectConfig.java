@@ -9,8 +9,6 @@ import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.model.project.EditorConfig;
-import de.dfki.grave.model.project.ProjectConfig;
 import de.dfki.grave.util.Copyable;
 import de.dfki.grave.util.JaxbUtilities;
 
@@ -28,15 +26,15 @@ public final class ProjectConfig implements Copyable {
   // The name of the project
   @XmlAttribute(name="name")
   private String mProjectName;
-  
+
   // The editor configuration
   @XmlElement(name="editorConfig")
   private EditorConfig mEditorConfig;
-  
+
   /** Only for XML unmarshalling */
   @SuppressWarnings("unused")
   private ProjectConfig() {}
-  
+
   // Construct an empty project
   ProjectConfig(String name, EditorConfig conf) {
     // Initialize The Project Name
@@ -53,13 +51,13 @@ public final class ProjectConfig implements Copyable {
   public final EditorConfig getEditorConfig() {
     return mEditorConfig;
   }
-  
+
   // Get a copy of the project configuration
   @Override
   public ProjectConfig deepCopy() {
     return new ProjectConfig(mProjectName, mEditorConfig.copy());
   }
-  
+
   /** Write project configuration file into the directory base.
    *
    * @param file the file to write to
@@ -77,10 +75,10 @@ public final class ProjectConfig implements Copyable {
       }
     }
     //  Write the project configuration file
-    return JaxbUtilities.marshal(file, this, 
+    return JaxbUtilities.marshal(file, this,
         ProjectConfig.class, EditorConfig.class);
   }
-  
+
   /** Load project config file, return null upon failure */
   public static ProjectConfig load(File file) {
     try {

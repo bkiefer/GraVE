@@ -1,22 +1,17 @@
 package de.dfki.grave;
 
+//import static de.dfki.grave.Icons.*;
+
 import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.ArrayList;
 
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.xml.bind.annotation.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.Preferences;
-import de.dfki.grave.RecentProject;
 import de.dfki.grave.model.project.EditorConfig;
 import de.dfki.grave.model.project.FontConfig;
 import de.dfki.grave.util.JaxbUtilities;
@@ -34,11 +29,11 @@ import java.io.File;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class Preferences {
   private static final Logger mLogger = LoggerFactory.getLogger(Preferences.class);
-  
+
   // The global preferences and settings file
-  private static final String CONFIG_FILE = System.getProperty("user.home") 
+  private static final String CONFIG_FILE = System.getProperty("user.home")
       + System.getProperty("file.separator") + ".grave";
-  
+
   public static boolean DEBUG_COMPONENT_BOUNDARIES = false;
   public static boolean DEBUG_MOUSE_LOCATIONS = false;
 
@@ -112,7 +107,7 @@ public final class Preferences {
   private Preferences() {}
 
   public static Preferences getPrefs() {
-    if (instance == null) 
+    if (instance == null)
         instance = new Preferences();
     return instance;
   }
@@ -124,7 +119,7 @@ public final class Preferences {
             Preferences.class, EditorConfig.class, FontConfig.class);
   }
 
-  private static synchronized void load() {
+  public static synchronized void loadUserPrefs() {
     try {
       instance = (Preferences)JaxbUtilities.unmarshal(
           new FileInputStream(CONFIG_FILE), CONFIG_FILE,
@@ -138,53 +133,18 @@ public final class Preferences {
     }
   }
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  public static synchronized void configure() {
-    try {
-      load();
-      
-      // Use system look and feel
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-      UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
-      UIManager.put("TabbedPane.background", new Color(100, 100, 100));
-      UIManager.put("TabbedPane.contentAreaColor", new Color(100, 100, 100));
-      UIManager.put("TabbedPane.tabAreaBackground", new Color(100, 100, 100));
-
-      // paint a nice doc icon when os is mac
-      if (isMac()) {
-        // Mac/Apple Settings
-        System.setProperty("apple.laf.useScreenMenuBar", "true");
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name",
-            instance.FRAME_TITLE);
-
-        final Class appClass = Class.forName("com.apple.eawt.Application");
-        // Get the application and the method to set the dock icon
-        final Object app = appClass.getMethod("getApplication", new Class[]{}).invoke(null, new Object[]{});
-        final Method setDockIconImage = appClass.getMethod("setDockIconImage", new Class[]{Image.class});
-        // Set the dock icon to the logo of Visual Scene Maker 3
-        //setDockIconImage.invoke(app, new Object[]{ICON_DOC.getImage()});
-      }
-    } catch (final ClassNotFoundException | InstantiationException | 
-        IllegalAccessException | UnsupportedLookAndFeelException | 
-        NoSuchMethodException | SecurityException | IllegalArgumentException | 
-        InvocationTargetException exc) {
-      mLogger.error("Error: " + exc.getMessage());
-    }
-  }
-  
   /* **********************************************************************
    * Frame Position and Size
    * ********************************************************************** */
-  
+
   public Point getFramePosition() {
     return new Point(FRAME_POS_X, FRAME_POS_Y);
   }
-  
+
   public Dimension getFrameDimension() {
     return new Dimension(FRAME_WIDTH, FRAME_HEIGHT);
   }
-  
+
   public void updateBounds(int x, int y, int width, int height) {
     FRAME_POS_X = x;
     FRAME_POS_Y = y;
@@ -196,16 +156,16 @@ public final class Preferences {
   /* **********************************************************************
    * Recent Projects
    * ********************************************************************** */
-  
+
   public Iterable<RecentProject> getRecentProjects() {
     return recentProjects;
   }
-  
+
   public void clearRecentProjects(){
     recentProjects.clear();
     savePrefs();
   }
-  
+
   private int findRecentProject(String path) {
     int i = 0;
     for (RecentProject rp : recentProjects) {
@@ -220,7 +180,7 @@ public final class Preferences {
     }
     return -1;
   }
-  
+
   public void updateRecentProjects(String name, String path, String date) {
     int index = findRecentProject(path);
     if (index >= 0) {
@@ -232,11 +192,10 @@ public final class Preferences {
     } else {
       recentProjects.add(0, new RecentProject(name, path, date));
     }
-    
+
     int si = recentProjects.size();
     while (si > sMAX_RECENT_PROJECTS) {
-      recentProjects.remove(si);
-      --si;
+      recentProjects.remove(--si);
     }
     savePrefs();
   }

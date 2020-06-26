@@ -7,10 +7,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.RandomEdge;
-
 /**
  * @author Gregor Mehlmann
  */
@@ -18,7 +14,7 @@ import de.dfki.grave.model.flow.RandomEdge;
 @XmlAccessorType(XmlAccessType.NONE)
 public class RandomEdge extends AbstractEdge {
 
-  protected int mProbability = 50; // TODO: in percent, or should we use float? 
+  protected int mProbability = 50; // TODO: in percent, or should we use float?
 
   @XmlAttribute(name="probability")
   public int getProbability() {

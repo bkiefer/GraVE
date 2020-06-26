@@ -2,7 +2,6 @@ package de.dfki.grave.model.flow;
 
 import java.util.Observable;
 
-import de.dfki.grave.model.flow.Code;
 import de.dfki.grave.util.Copyable;
 
 /**

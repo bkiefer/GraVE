@@ -1,9 +1,5 @@
 package de.dfki.grave.model.flow;
 
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.SceneFlow;
-import de.dfki.grave.model.flow.SuperNode;
-
 /**
  * IDManager provides unique ids for nodes and supernodes
  */

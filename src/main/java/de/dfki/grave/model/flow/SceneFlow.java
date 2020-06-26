@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.model.flow.*;
 import de.dfki.grave.util.JaxbUtilities;
 
 /**
@@ -34,7 +33,7 @@ public final class SceneFlow extends SuperNode {
   protected String mContextClass = new String();
 
   protected String mContextCode = new String();
-  
+
   @XmlTransient
   private IDManager mIDMananger;
 
@@ -43,14 +42,14 @@ public final class SceneFlow extends SuperNode {
   protected String mModifDate = new String();
 
   public SceneFlow() {
-    mPosition = new Position(0,0); 
+    mPosition = new Position(0,0);
   }
 
   /** To be called when the whole graph has been read */
   public void init() {
     mIDMananger = new IDManager(this);
   }
-  
+
   @XmlTransient
   public String getContextCode() {
     return mContextCode;
@@ -73,7 +72,7 @@ public final class SceneFlow extends SuperNode {
   public IDManager getIDManager() {
     return mIDMananger;
   }
-  
+
   @XmlAttribute(name="package")
   public String getPackageName() {
     return mPackageName;
@@ -109,16 +108,17 @@ public final class SceneFlow extends SuperNode {
     InputStream inputStream = null;
     try {
       inputStream = new FileInputStream(file);
-      return loadFrom(inputStream, file);
+      return loadFrom(inputStream, file.getAbsolutePath());
     } catch (FileNotFoundException e) {
       mLogger.error("Cannot find or opensceneflow file '{}'", file);
     }
     return null;
   }
-  
-  public static SceneFlow loadFrom(InputStream inputStream, File file) {
+
+  /** @param path is only for error reporting */
+  public static SceneFlow loadFrom(InputStream inputStream, String path) {
     SceneFlow mSceneFlow = (SceneFlow) JaxbUtilities.unmarshal(inputStream,
-        file.getAbsolutePath(),
+        path,
         SceneFlow.class, SuperNode.class, BasicNode.class,
         AbstractEdge.class, TimeoutEdge.class, EpsilonEdge.class,
         GuardedEdge.class, InterruptEdge.class, ForkingEdge.class,
@@ -129,7 +129,7 @@ public final class SceneFlow extends SuperNode {
     mSceneFlow.establishStartNodes();
     mSceneFlow.establishTargetNodes();
     // Print an information message in this case
-    mLogger.info("Loaded sceneflow from '{}'", file);
+    mLogger.info("Loaded sceneflow from '{}'", path);
     // Return success if the project was loaded
     return mSceneFlow;
   }

@@ -1,7 +1,5 @@
 package de.dfki.grave.util;
 
-import de.dfki.grave.util.Copyable;
-
 /**
  * An interface for all copyable objects.
  *
