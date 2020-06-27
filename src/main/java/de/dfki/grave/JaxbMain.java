@@ -19,7 +19,7 @@ public class JaxbMain {
   public static void main(String[] args) 
       throws JAXBException, FileNotFoundException {
     /**/
-    Preferences.configure();
+    Preferences.loadUserPrefs();
     JaxbUtilities.marshal(new File("prefs.xml"), Preferences.getPrefs(),
         Preferences.class, EditorConfig.class, FontConfig.class);
     Object o = JaxbUtilities.unmarshal(new FileInputStream("prefs.xml"), "prefs.xml",

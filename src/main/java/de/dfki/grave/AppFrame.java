@@ -1,13 +1,15 @@
 package de.dfki.grave;
 
+import static de.dfki.grave.Constants.DATE_FORMAT;
 import static de.dfki.grave.Icons.*;
 import static de.dfki.grave.Preferences.*;
-import static de.dfki.grave.Constants.*;
-import static java.awt.event.InputEvent.*;
+import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Date;
 
 import javax.swing.*;
@@ -24,7 +26,11 @@ import de.dfki.grave.editor.dialog.AboutDialog;
 import de.dfki.grave.editor.dialog.NewProjectDialog;
 import de.dfki.grave.editor.dialog.OptionsDialog;
 import de.dfki.grave.editor.dialog.QuitDialog;
-import de.dfki.grave.editor.panels.*;
+import de.dfki.grave.editor.panels.AddButton;
+import de.dfki.grave.editor.panels.ClipBoard;
+import de.dfki.grave.editor.panels.EditorMenuBar;
+import de.dfki.grave.editor.panels.ProjectEditor;
+import de.dfki.grave.editor.panels.WorkSpacePanel;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.ResourceLoader;
 
@@ -102,14 +108,11 @@ public final class AppFrame extends JFrame implements ChangeListener {
   
   // Private construction of an editor
   private AppFrame() {
-    configure();
+    loadUserPrefs();
 
     getContentPane().setBackground(Color.WHITE);
-    /*try {
-         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-         } catch (final Exception e) {
-         // If Nimbus is not available, you can set the GUI to another look and feel.
-         }*/
+    configureUI();
+    
     // SET FONTS
     setUIFonts();
 
@@ -186,9 +189,6 @@ public final class AppFrame extends JFrame implements ChangeListener {
     setTitle(getPrefs().FRAME_TITLE);
     setName(getPrefs().FRAME_NAME);
     checkAndSetLocation();
-
-    // setContentPane(jsWelcome);
-    // add(mProjectEditorList); // COMMENTED BY M.FALLAS
     pack();
     
     refresh();
@@ -206,7 +206,40 @@ public final class AppFrame extends JFrame implements ChangeListener {
   public AbstractAction getUndoAction() { return undoAction; } 
   public AbstractAction getRedoAction() { return redoAction; }
 
-  private void setUIFonts() {
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public static synchronized void configureUI() {
+    try {
+      // Use system look and feel
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+      UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
+      UIManager.put("TabbedPane.background", new Color(100, 100, 100));
+      UIManager.put("TabbedPane.contentAreaColor", new Color(100, 100, 100));
+      UIManager.put("TabbedPane.tabAreaBackground", new Color(100, 100, 100));
+
+      // paint a nice doc icon when os is mac
+      if (isMac()) {
+        // Mac/Apple Settings
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name",
+            getPrefs().FRAME_TITLE);
+
+        final Class appClass = Class.forName("com.apple.eawt.Application");
+        // Get the application and the method to set the dock icon
+        final Object app = appClass.getMethod("getApplication", new Class[]{}).invoke(null, new Object[]{});
+        final Method setDockIconImage = appClass.getMethod("setDockIconImage", new Class[]{Image.class});
+        // Set the dock icon to the logo of Visual Scene Maker 3
+        setDockIconImage.invoke(app, new Object[]{ICON_DOC.getImage()});
+      }
+    } catch (final ClassNotFoundException | InstantiationException |
+        IllegalAccessException | UnsupportedLookAndFeelException |
+        NoSuchMethodException | SecurityException | IllegalArgumentException |
+        InvocationTargetException exc) {
+      mLogger.error("Error: " + exc.getMessage());
+    }
+  }
+  
+  private static void setUIFonts() {
     Font uiFont = getPrefs().editorConfig.sUI_FONT.getFont();
     Font treeFont = getPrefs().editorConfig.sTREE_FONT.getFont();
 
@@ -248,7 +281,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
     UIManager.put("Tree.font", treeFont);
   }
 
-  private void setUIBackgrounds() {
+  private static void setUIBackgrounds() {
 
     UIManager.put("Frame.background", Color.WHITE);
     UIManager.put("Panel.background", Color.WHITE);

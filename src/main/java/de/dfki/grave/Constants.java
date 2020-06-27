@@ -7,7 +7,7 @@ public class Constants {
 
   public static final String PROJECT_CONFIG_NAME = "project.xml";
   public static final String SCENEFLOW_NAME = "sceneflow.xml";
-  
+
   //////////////////////////////////////////////////////////////////////////////
   // DATE FORMAT
   //////////////////////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@ public class Constants {
   //////////////////////////////////////////////////////////////////////////////
   // FILE RESSOURCES
   //////////////////////////////////////////////////////////////////////////////
-  public static final URL ABOUT_FILE = MainGrave.class.getResource("doc/about.html");
-  public static final URL HELP_FILE = MainGrave.class.getResource("doc/index.html");
+  public static final URL ABOUT_FILE = Constants.class.getResource("doc/about.html");
+  public static final URL HELP_FILE = Constants.class.getResource("doc/index.html");
 
 }
