@@ -638,7 +638,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
     super.add(e);
     CodeArea c = e.getCodeArea();
     if (c != null)
-      super.add(c);
+      super.add(c, 1);
     mObservable.addObserver(e);
   }
 

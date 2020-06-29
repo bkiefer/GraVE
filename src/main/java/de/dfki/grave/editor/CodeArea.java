@@ -1,5 +1,7 @@
 package de.dfki.grave.editor;
 
+import static de.dfki.grave.Preferences.*;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -82,10 +84,6 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
   // TODO: put into preferences
   private final int maxWidth = 800;
   private final int maxHeight = 300;
-
-  // TODO: color to preferences
-  private Color activeColour = new Color(200, 200, 200, 255);
-  private Color inactiveColour = new Color(175, 175, 175, 100);
   
   /** A syntax-aware area for entering code or numerical values
    * @param compo the component this code area belongs to 
@@ -95,7 +93,7 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
     this.setLineWrap(true);
     this.setWrapStyleWord(true);
     setVisible(true);
-    setBackground(inactiveColour);
+    setBackground(sINACTIVE_CODE_COLOR);
     this.setMaximumSize(new Dimension(maxWidth, maxHeight));
 
     // Get rid of annoying yellow line
@@ -164,12 +162,12 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
   public void setSelected() {
     if (! mComponent.isSelected())
       mComponent.setSelected();
-    setBackground(activeColour);
+    setBackground(sACTIVE_CODE_COLOR);
     setEnabled(true);
   }
 
   public synchronized void setDeselected() {
-    setBackground(inactiveColour);
+    setBackground(sINACTIVE_CODE_COLOR);
     // Maybe this should be done in the OK action
     mComponent.checkDocumentChange();
     update();

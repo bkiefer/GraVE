@@ -1,7 +1,8 @@
 package de.dfki.grave.editor.panels;
 
+import static de.dfki.grave.Preferences.*;
+
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 
@@ -19,10 +20,6 @@ import de.dfki.grave.editor.CodeArea;
 public class CodeEditPanel extends JPanel {
   private RSyntaxTextArea mTextArea;
   private CodeArea mEditedObject;
-
-  // TODO: color to preferences
-  private Color activeColour = new Color(200, 200, 200, 255);
-  private Color inactiveColour = new Color(175, 175, 175, 100);
   
   public CodeEditPanel(Font font) { 
     super(new BorderLayout());
@@ -76,14 +73,14 @@ public class CodeEditPanel extends JPanel {
   }
   
   private void setEnabled() {
-    mTextArea.setBackground(activeColour);
+    mTextArea.setBackground(sACTIVE_CODE_COLOR);
     mTextArea.setEnabled(true);
   }
   
   public void setDisabled() {
     mEditedObject = null;
     mTextArea.setDocument(new RSyntaxDocument(""));
-    mTextArea.setBackground(inactiveColour);
+    mTextArea.setBackground(sINACTIVE_CODE_COLOR);
     mTextArea.setEnabled(false);
   }
 

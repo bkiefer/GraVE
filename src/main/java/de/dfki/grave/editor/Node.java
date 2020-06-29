@@ -275,6 +275,7 @@ public final class Node extends EditorComponent {
       }
       addItem(pop, "To Supernode", new ChangeNodeTypeAction(getEditor(), mDataNode));
     }
+    pop.add(new JSeparator());
     addItem(pop, "Edit Code", (e) -> activateCodeArea());
     pop.add(new JSeparator());
     addItem(pop, "Copy", new CopyNodesAction(getEditor(), mDataNode));
