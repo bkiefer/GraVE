@@ -81,12 +81,14 @@ public class CodeEditor extends JPanel {
     
     mPinButton = new JButton();
     mPinButton.setVisible(true);
+    /*
     pinPricked = mEditorProject.getEditorConfig().sAUTOHIDE_BOTTOMPANEL;
     setPin(pinPricked);
     mPinButton.setContentAreaFilled(false);
     mPinButton.setFocusable(false);
     mPinButton.addActionListener((ActionEvent e) -> { setPin(!pinPricked); });
     sanitizeTinyButton(mPinButton);
+    */
     Box VpinBox = Box.createVerticalBox();
     VpinBox.add(mPinButton);
     VpinBox.add(Box.createVerticalGlue());
@@ -102,7 +104,7 @@ public class CodeEditor extends JPanel {
     mLeftTextArea.updateBorders(0, 0, splitPane.getDividerLocation(), this.getSize().height);
   }
 
-  // Set the pin pricked flag
+  /** Set the pin pricked flag
   public final void setPin(boolean state) {
     pinPricked = state;
     mPinButton.setIcon(pinPricked ? ICON_PIN_ROLLOVER : ICON_PIN_STANDARD);
@@ -116,19 +118,20 @@ public class CodeEditor extends JPanel {
     }
   }
 
-  /** Get the pin pricked flag */
+  /** Get the pin pricked flag *
   public boolean isPinPricked() { return pinPricked; }
 
-  /** Set the pin pricked flag */
+  /** Set the pin pricked flag *
   public void setPinPricked() {
     setPin(true); // true pricks the pin
   }
 
+  /*
   public void setEditedNodeOrEdge(EditorComponent n) {
     if (mRightTextArea.getEditedObject() == n) return; // may be due to FocusGained
     // update text area with current code & object
     mRightTextArea.setEditedObject(n);
-  }
+  }*/
 
   /** If the TODO: revert button is pressed, put the original text back into
    *  the text area

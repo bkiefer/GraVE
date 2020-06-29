@@ -80,6 +80,12 @@ public class ObserverDocument extends RSyntaxDocument implements Observer {
     }
   }
   
+  public void discardChanges() {
+    if (contentChanged()) {
+      updateModel(getInitialContent());
+    }
+  }
+  
   @Override
   public void update(Observable o, Object o1) {
     try {

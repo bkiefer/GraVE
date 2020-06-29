@@ -180,7 +180,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
   }
 
   /** Show the context menu if multiple nodes are selected */
-  private void multipleNodesContextMenu(MouseEvent evt, Node node) {
+  private void multipleNodesContextMenu(MouseEvent evt) {
     JPopupMenu pop = new JPopupMenu();
     // copy is not undoable
     addItem(pop, "Copy Nodes", 
@@ -190,7 +190,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
     pop.add(new JSeparator());
     addItem(pop, "Delete Nodes",
         new RemoveNodesAction(getEditor(), getSelectedNodes(), false));
-    pop.show(this, node.getX() + node.getWidth(), node.getY());
+    pop.show(this, evt.getX() , evt.getY());
   }
 
   /**
@@ -242,21 +242,15 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
 
 
   private void nodeClicked(MouseEvent event, Node clickedNode) {
-    // enter supernode, if it has been double clicked
-    if (!clickedNode.isBasic()
-        && event.getButton() == MouseEvent.BUTTON1
-        && event.getClickCount() == 2) {
-      getEditor().increaseWorkSpaceLevel(clickedNode);
-      return;
-    }
+    clickedNode.mouseClicked(event);
     // show context menu on single right click
     if (event.getButton() == MouseEvent.BUTTON3 && event.getClickCount() == 1) {
       if (mSelectedNodes.size() > 1
           && mSelectedNodes.containsKey(clickedNode)) {
-        multipleNodesContextMenu(event, clickedNode);
+        multipleNodesContextMenu(event);
       } else {
         selectSingleNode(clickedNode);
-        clickedNode.showContextMenu(this);
+        clickedNode.showContextMenu();
       }
       return;
     }

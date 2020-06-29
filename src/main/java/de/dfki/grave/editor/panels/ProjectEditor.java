@@ -29,9 +29,9 @@ import org.slf4j.LoggerFactory;
 import de.dfki.grave.AppFrame;
 import de.dfki.grave.Preferences;
 import de.dfki.grave.editor.Edge;
-import de.dfki.grave.editor.EditorComponent;
 import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.action.*;
+import de.dfki.grave.editor.event.CodeEditedEvent;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.event.ProjectChangedEvent;
 import de.dfki.grave.editor.event.TreeEntrySelectedEvent;
@@ -605,6 +605,13 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     setDividerLocation(1d);
   }
 
+  private void endEdit() {
+    if (mCodeEditor.getActiveArea() != null) {
+      mUndoManager.endTextMode();
+      mCodeEditor.getActiveArea().setDeselected();
+      mCodeEditor.setDisabled();
+    }
+  }
   // Update when an event happened
   @Override
   public void update(final Object event) {
@@ -613,18 +620,23 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       //showAuxiliaryEditor();
     } else if (event instanceof ElementSelectedEvent) {
       Object edited = ((ElementSelectedEvent) event).getElement();
-      if (edited instanceof EditorComponent) {
-        mCodeEditor.setEditedObject(((EditorComponent) edited));
-      } else {
-        mCodeEditor.setEditedObject(null);
-      }
+      endEdit();
       if (edited instanceof Node) {
         mNameEditor.setNode(((Node)edited).getDataNode());
       } else {
         mNameEditor.setNode(null);
       }
       AppFrame.getInstance().refreshMenuBar();
-    } else if (event instanceof ProjectChangedEvent) {
+    } else if (event instanceof CodeEditedEvent) {
+      CodeEditedEvent ev = (CodeEditedEvent)event;
+      endEdit();
+      // TODO: DO THE RIGHT THING
+      if (ev.isActive()) {
+        mUndoManager.startTextMode();
+        ev.getContainer().setSelected();
+        mCodeEditor.setEditedObject(ev.getContainer());
+      }
+    } if (event instanceof ProjectChangedEvent) {
       refreshToolBar();
     }
   }

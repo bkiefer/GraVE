@@ -25,7 +25,9 @@ import javax.swing.event.UndoableEditListener;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
+import de.dfki.grave.editor.event.CodeEditedEvent;
 import de.dfki.grave.editor.panels.ProjectEditor;
+import de.dfki.grave.util.evt.EventDispatcher;
 
 
 /**
@@ -67,7 +69,7 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
       if (! CodeArea.this.isEnabled() && ev.getButton() == MouseEvent.BUTTON1)
         if ((ev.getClickCount() == 1 && mComponent.isSelected())
             || (ev.getClickCount() == 2)) {
-          setSelected();
+          tryToSelect();
         }
     }
   }
@@ -121,16 +123,11 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
     getInputMap().put(KeyStroke.getKeyStroke("ctrl ENTER"), "enter");
     getActionMap().put("enter", new AbstractAction() {
       @Override
-      public void actionPerformed(ActionEvent e) { setDeselected(); }
-    });
+      public void actionPerformed(ActionEvent e) { okAction(); }});
     getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
     getActionMap().put("escape", new AbstractAction() {
       @Override
-      public void actionPerformed(ActionEvent e) {
-        // TODO: revert all changes
-        setDeselected();
-      }
-    });
+      public void actionPerformed(ActionEvent e) { cancelAction(); }});
     d.addUndoableEditListener(
         mUndoListener = new UndoableEditListener() {
           public void undoableEditHappened(UndoableEditEvent e) {
@@ -145,40 +142,39 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
     return mComponent;
   }
 
+  public void okAction() {
+    EventDispatcher.getInstance().convey(new CodeEditedEvent(this, false));
+  }
+  
+  public void cancelAction() {
+    mComponent.discardDocumentChange();
+    EventDispatcher.getInstance().convey(new CodeEditedEvent(this, false));
+  }
+  
   /** remove undo listener and document */
   public void clear() {
     this.getDocument().removeUndoableEditListener(mUndoListener);
     this.setDocument(new RSyntaxDocument(""));
   }
   
-  void setSelected() {
+  public void tryToSelect() {
+    EventDispatcher.getInstance().convey(new CodeEditedEvent(this, true));
+  }
+  
+  public void setSelected() {
     if (! mComponent.isSelected())
       mComponent.setSelected();
-    //EventDispatcher.getInstance().convey(new ElementSelectedEvent(CodeArea.this));
     setBackground(activeColour);
-    getEditor().getUndoManager().startTextMode();
     setEnabled(true);
   }
 
   public synchronized void setDeselected() {
     setBackground(inactiveColour);
-    getEditor().getUndoManager().endTextMode();
+    // Maybe this should be done in the OK action
     mComponent.checkDocumentChange();
     update();
     setEnabled(false);
   }
-
-  /*
-  public void translate(Point vector) {
-    Point p = getLocation();
-    p.translate(vector.x, vector.y);
-    setLocation(p);
-  }
-
-  public boolean containsPoint(int x, int y) {
-    return getBounds().contains(x, y);
-  }
-  */
 
   public void update() {
     String text = getText();

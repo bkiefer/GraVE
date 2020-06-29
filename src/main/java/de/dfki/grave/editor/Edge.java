@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Observable;
 
 import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 
 import de.dfki.grave.editor.action.MoveEdgeCtrlAction;
 import de.dfki.grave.editor.action.MoveEdgeEndPointAction;
@@ -201,8 +202,10 @@ public class Edge extends EditorComponent {
   private void showContextMenu(MouseEvent evt, Edge edge) {
     JPopupMenu pop = new JPopupMenu();
     AbstractEdge model = edge.getDataEdge();
-    //addItem(pop, "Modify", new ModifyEdgeAction(edge, this));
     addItem(pop, "Delete", new RemoveEdgeAction(getEditor(), model));
+    pop.add(new JSeparator());    
+    addItem(pop, "Edit Code", (e) -> activateCodeArea());
+    pop.add(new JSeparator());
     addItem(pop, "Shortest Path", new ShortestEdgeAction(getEditor(), model));
     addItem(pop, "Straighten", new StraightenEdgeAction(getEditor(), model));
     addItem(pop, "Smart Path", new NormalizeEdgeAction(getEditor(), model));

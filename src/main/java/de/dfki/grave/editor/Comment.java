@@ -98,7 +98,10 @@ implements DocumentContainer, Observer, ProjectElement {
     addMouseMotionListener(myDrag);
     addMouseListener(myDrag);
     
-    setDeselected();
+    update();
+    mTextField.setBackground(inactiveColor);
+    mTextField.setEditable(false);
+    setEnabled(false);
   }
 
   @Override
@@ -155,27 +158,32 @@ implements DocumentContainer, Observer, ProjectElement {
   }
 
   public void setSelected() {
-    mTextField.setBackground(activeColor);
-    getEditor().getUndoManager().startTextMode();
-    mEditMode = true;
-    mTextField.setEditable(true);
-    setEnabled(true);
-    EventDispatcher.getInstance().convey(new ElementSelectedEvent(this));
-    requestFocus();
+    if (! isEnabled()) {
+      mTextField.setBackground(activeColor);
+      getEditor().getUndoManager().startTextMode();
+      mEditMode = true;
+      mTextField.setEditable(true);
+      setEnabled(true);
+      EventDispatcher.getInstance().convey(new ElementSelectedEvent(this));
+      requestFocus();
+    }
   };
 
   /** Resets the comment to its default visual behavior */
   public void setDeselected() {
-    if (mEditMode) {
-      getEditor().getUndoManager().endTextMode();
-      mEditMode = false;
-      if (mDocument.contentChanged())
-        new EditContentAction(mWorkSpace.getEditor(), mDocument).run();
+    if (isEnabled()) {
+      if (mEditMode) {
+        getEditor().getUndoManager().endTextMode();
+        mEditMode = false;
+        if (mDocument.contentChanged())
+          new EditContentAction(mWorkSpace.getEditor(), mDocument).run();
+      }
+      update();
+      mTextField.setBackground(inactiveColor);
+      mTextField.setEditable(false);
+      setEnabled(false);
+      EventDispatcher.getInstance().convey(new ElementSelectedEvent(null));
     }
-    update();
-    mTextField.setBackground(inactiveColor);
-    mTextField.setEditable(false);
-    setEnabled(false);
   }
 
   public static void passEventToParent(MouseEvent me, int what) {

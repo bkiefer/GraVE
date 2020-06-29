@@ -42,24 +42,6 @@ public abstract class EditorComponent extends JComponent
     if (ch != null && ch.getContent() != null) {
       mDocument = new ObserverDocument(ch);
       mCodeArea = new CodeArea(this, getEditorConfig().sCODEAREA_FONT.getFont(), col);
-      /*
-    mTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
-    mTextArea.getActionMap().put("enter", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        setDeselected();
-        mDispatcher.convey(new ElementSelectedEvent(null));
-        updateFromTextEditor();
-      }
-    });
-    mTextArea.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape");
-    mTextArea.getActionMap().put("escape", new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        setDeselected();
-      }
-    });
-    */
     } else {
       mCodeArea = null;
       mDocument = null;
@@ -72,15 +54,23 @@ public abstract class EditorComponent extends JComponent
   
   public CodeArea getCodeArea() { return mCodeArea; }
   
+  protected void activateCodeArea() {
+    if (mCodeArea != null)
+      mCodeArea.tryToSelect();
+  }
+  
+    /** Return the location for the code area, depending on the component type
+   *  (Node or Edge)
+   * @param r size of the code area
+   * @return the point place the component
+   */
   protected abstract Point getCodeAreaLocation(Dimension r);
   
   @Override
-  public void mouseEntered(MouseEvent e) {
-  }
+  public void mouseEntered(MouseEvent e) { }
 
-  @Override
-  public void mouseExited(MouseEvent e) {
-  }   
+  @Override 
+  public void mouseExited(MouseEvent e) { }   
 
   /** Set initial view position and size, given *model* coordinates */
   protected final void setViewBounds(int x, int y, int width, int height) {
@@ -117,21 +107,29 @@ public abstract class EditorComponent extends JComponent
       new EditContentAction(getEditor(), mDocument).run();
   }
   
+  public void discardDocumentChange() {
+    mDocument.discardChanges();
+  }
+  
   public void setSelected() {
-    mSelected = true;
-    EventDispatcher.getInstance().convey(new ElementSelectedEvent(this));
-    if (mDocument != null && mDocument.getLength() == 0)
-      mCodeArea.setSelected();
-    repaint(100);
+    if (! mSelected) {
+      mSelected = true;
+      EventDispatcher.getInstance().convey(new ElementSelectedEvent(this));
+      //if (mDocument != null && mDocument.getLength() == 0)
+      //  mCodeArea.setSelected();
+      repaint(100);
+    }
   }
 
   public void setDeselected() {
-    EventDispatcher.getInstance().convey(new ElementSelectedEvent(null));
-    if (mCodeArea != null && mSelected) {
-      mCodeArea.setDeselected();
+    if (mSelected) {
+      EventDispatcher.getInstance().convey(new ElementSelectedEvent(null));
+      if (mCodeArea != null && mSelected) {
+        mCodeArea.setDeselected();
+      }
+      mSelected = false;
+      repaint(100);
     }
-    mSelected = false;
-    repaint(100);
   }
   
   public boolean isSelected() {

@@ -89,21 +89,6 @@ public final class Node extends EditorComponent {
     update();
   }
 
-  /*
-  public void issueChangeName(String newName) {
-    if (! mDataNode.getName().equals(newName)) {
-      new ChangeNodeNameAction(mWorkSpace, mDataNode, newName).run();
-    }
-  }
-  */
-  
-  /*
-  public void setText(String text) {
-    // this automatically sets the text in DataNode, too...
-    mCodeArea.setText(text);
-  }
-  */
-
   private void setColor() {
     // Update the color of the node that has to be changed
     // if the type or the flavour of the node have changed
@@ -273,7 +258,7 @@ public final class Node extends EditorComponent {
   /**
    * TODO: ADD "CREATE XEDGE" FOR ALL LEGAL EDGES STARTING AT THIS NODE
    */
-  public void showContextMenu(WorkSpacePanel mWorkSpace) {
+  public void showContextMenu() {
     JPopupMenu pop = new JPopupMenu();
 
     if (! isBasic()) {
@@ -286,12 +271,12 @@ public final class Node extends EditorComponent {
       // Only BasicNodes can become start nodes
       if (! mDataNode.isStartNode()) {
         addItem(pop, "Set Start",
-            new ToggleStartNodeAction(mWorkSpace.getEditor(), this.getDataNode()));
-        addItem(pop, "To Supernode", new ChangeNodeTypeAction(getEditor(), mDataNode));
-        pop.add(new JSeparator());
+            new ToggleStartNodeAction(getEditor(), this.getDataNode()));
       }
+      addItem(pop, "To Supernode", new ChangeNodeTypeAction(getEditor(), mDataNode));
     }
-    
+    addItem(pop, "Edit Code", (e) -> activateCodeArea());
+    pop.add(new JSeparator());
     addItem(pop, "Copy", new CopyNodesAction(getEditor(), mDataNode));
     if (! mDataNode.isStartNode()) {
       addItem(pop, "Cut", new RemoveNodesAction(getEditor(), mDataNode, true));
@@ -302,7 +287,12 @@ public final class Node extends EditorComponent {
   }
 
   public void mouseClicked(MouseEvent event) {
-    setSelected();
+    // enter supernode, if it has been double clicked
+    if (!isBasic()
+        && event.getButton() == MouseEvent.BUTTON1
+        && event.getClickCount() == 2) {
+      getEditor().increaseWorkSpaceLevel(this);
+    }
   }
 
   public void mousePressed(MouseEvent event) {
