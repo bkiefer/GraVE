@@ -71,8 +71,6 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
 
   // The project editor
   private final ProjectEditor mEditor;
-  private final EditorProject mProject;
-
   private float mZoomFactor = 1.0f;
   
   // to suspend mouse input when the workspace changes drastically
@@ -84,7 +82,6 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
    */
   protected WorkSpace(ProjectEditor editor) {
     mEditor = editor;
-    mProject = editor.getEditorProject();
     mGridManager = new GridManager(this);
     mZoomFactor = getEditorConfig().sZOOM_FACTOR;
 
@@ -144,7 +141,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   }
 
   public EditorConfig getEditorConfig() {
-    return mProject.getEditorConfig();
+    return mEditor.getEditorProject().getEditorConfig();
   }
 
   public ProjectEditor getEditor() {

@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.AppFrame;
-import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.project.EditorConfig;
+import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.model.project.FontConfig;
 import say.swing.JFontChooser;
 
@@ -26,15 +26,15 @@ public class OptionsDialog extends JDialog {
   private final Logger mLogger = LoggerFactory.getLogger(OptionsDialog.class);;
   private final AppFrame mApplication = AppFrame.getInstance();
 
-  private ProjectEditor mEditor;
+  private EditorProject mEditor;
   
   private EditorConfig mCurrentConfig;
   private EditorConfig mEditorConfig;
 
-  public OptionsDialog(ProjectEditor editor) {
+  public OptionsDialog(EditorProject editor) {
     super(AppFrame.getInstance(), "Preferences", false);
     mEditor = editor;
-    mEditorConfig = mEditor.getEditorProject().getEditorConfig();
+    mEditorConfig = mEditor.getEditorConfig();
     // to enable cancel 
     mCurrentConfig = mEditorConfig.copy();
     initComponents();
@@ -286,7 +286,7 @@ public class OptionsDialog extends JDialog {
   private void saveEditorConfig(boolean dispose) {
    
     AppFrame.getInstance().refresh();
-    mEditor.getEditorProject().setDefinitelyChanged();
+    mEditor.setDefinitelyChanged();
     if (dispose) {
       dispose();
     }

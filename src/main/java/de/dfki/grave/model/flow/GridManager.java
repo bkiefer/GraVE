@@ -46,10 +46,6 @@ public class GridManager {
     return (int)(mWorkspace.getEditorConfig().sNODEWIDTH * 
         mWorkspace.getEditorConfig().sGRID_SCALE);
   }
-  
-  public int nodeSize() {
-    return mWorkspace.getEditorConfig().sNODEWIDTH;
-  }
 
   /** Compute the closest free point by increasing the manhattan distance
    *  incrementally and checking all points in the same distance first

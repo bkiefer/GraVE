@@ -273,11 +273,8 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     mCodeEditor.addComponentListener(new ComponentAdapter() {
       @Override
       public void componentResized(ComponentEvent e) {
-        if (mCodeEditor.getSize().height == 0) {
-          mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = false;
-        } else {
-          mEditorProject.getEditorConfig().sSHOW_CODEEDITOR = true;
-        }
+        mEditorProject.getEditorConfig().sSHOW_CODEEDITOR =
+            (mCodeEditor.getSize().height == 0);
         Preferences.savePrefs();
       }
     });

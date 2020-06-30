@@ -344,13 +344,6 @@ public final class AppFrame extends JFrame implements ChangeListener {
     return (ProjectEditor) mProjectEditors.getSelectedComponent();
   }
   
-  /** Get the current workspace, if any */
-  public final WorkSpacePanel getWorkSpace() {
-    ProjectEditor pe = getSelectedProjectEditor();
-    if (pe == null) return null;
-    return pe.getWorkSpace();
-  }
-  
   public final boolean newProject() {
     String[] newName = { "New Project" };
     @SuppressWarnings("unused")
@@ -747,7 +740,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
   // Show the options dialog
   public final void showOptions() {
     final OptionsDialog optionsDialog =
-        new OptionsDialog(getSelectedProjectEditor());
+        new OptionsDialog(getSelectedProjectEditor().getEditorProject());
     addEscapeListener(optionsDialog);
     optionsDialog.setVisible(true);
   }

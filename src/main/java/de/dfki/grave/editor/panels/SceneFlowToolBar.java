@@ -96,22 +96,15 @@ public class SceneFlowToolBar extends JToolBar {
     //
     // Element space
     add(Box.createHorizontalStrut(2));
-    /**
-     * LESS AND MORE BUTTONS ARE INVERTED TO MATCH WITH THE LEFT SIZE
-     */
+    /** Correct icons are shown after calling refreshButtons */
     mTogglePalette = add(new AbstractAction("ACTION_SHOW_ELEMENTS",
-            mEditor.getEditorProject().getEditorConfig().sSHOW_ELEMENTS
-            ? ICON_MORE_STANDARD
-            : ICON_LESS_STANDARD) {
+        ICON_MORE_STANDARD) {
       public void actionPerformed(ActionEvent evt) {
         mEditor.toggleElementEditor();
         refreshButtons();
       }
     });
-    mTogglePalette.setRolloverIcon(
-        mEditor.getEditorProject().getEditorConfig().sSHOW_ELEMENTS
-            ? ICON_MORE_ROLLOVER
-            : ICON_LESS_ROLLOVER);
+    mTogglePalette.setRolloverIcon(ICON_MORE_ROLLOVER);
     sanitizeButton(mTogglePalette, tinyButtonDim);
     //add(Box.createHorizontalGlue());
     //add(Box.createHorizontalStrut(200));
@@ -360,10 +353,9 @@ public class SceneFlowToolBar extends JToolBar {
 
     //*************************************
     // Refresh the element display buttons
-    mTogglePalette.setIcon(mEditor.isElementDisplayVisible()
-            ? ICON_MORE_STANDARD : ICON_LESS_STANDARD);
-    mTogglePalette.setRolloverIcon(mEditor.getEditorProject().getEditorConfig().sSHOW_ELEMENTS
-            ? ICON_MORE_ROLLOVER : ICON_LESS_ROLLOVER);
+    boolean visible = mEditor.isElementDisplayVisible();
+    mTogglePalette.setIcon(visible ? ICON_MORE_STANDARD : ICON_LESS_STANDARD);
+    mTogglePalette.setRolloverIcon(visible ? ICON_MORE_ROLLOVER : ICON_LESS_ROLLOVER);
   }
 
   /*
