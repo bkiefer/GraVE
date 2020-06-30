@@ -16,9 +16,7 @@ import javax.swing.*;
 
 import de.dfki.grave.AppFrame;
 import de.dfki.grave.RecentProject;
-import de.dfki.grave.editor.action.PasteNodesAction;
 import de.dfki.grave.editor.dialog.QuitDialog;
-import de.dfki.grave.model.flow.Position;
 import de.dfki.grave.model.project.EditorConfig;
 
 /**
@@ -63,16 +61,13 @@ public final class EditorMenuBar extends JMenuBar {
     initComponents();
   }
 
-  private WorkSpacePanel getCurrentWorkSpace() {
-    return mAppInstance.getWorkSpace();
-  }
-
   private ProjectEditor getActiveEditor() {
     return mAppInstance.getSelectedProjectEditor();
   }
 
   private EditorConfig getEditorConfig() {
-    return getCurrentWorkSpace().getEditorConfig();
+    ProjectEditor pe = getActiveEditor();
+    return pe == null ? null : pe.getEditorProject().getEditorConfig();
   }
 
   private void setShowGrid(boolean flag) {
@@ -121,7 +116,8 @@ public final class EditorMenuBar extends JMenuBar {
       return;
     mCutMenuItem.setEnabled(flag);
     mCopyMenuItem.setEnabled(flag);
-    mPasteMenuItem.setEnabled(sthOnClipboard);
+    // TODO: REACTIVATE TO PASTE CODE / COMMENT TEXT FROM SYSTEM CLIPBOARD
+    //mPasteMenuItem.setEnabled(sthOnClipboard);
     mDeleteMenuItem.setEnabled(flag);
   }
 
@@ -235,7 +231,8 @@ public final class EditorMenuBar extends JMenuBar {
 
     // sth on clipboard
     mPasteMenuItem = addItem(mEditMenu, "Paste", getAccel(KeyEvent.VK_V),
-        (e) -> new PasteNodesAction(getActiveEditor(), new Position(0, 0)));
+        (e) -> {});//new PasteNodesAction(getActiveEditor(), new Position(0, 0)));
+    mPasteMenuItem.setEnabled(false);
     // sth selected
     mDeleteMenuItem = addItem(mEditMenu, "Delete", getAccel(KeyEvent.VK_DELETE),
         (e) -> getActiveEditor().deleteSelected());
