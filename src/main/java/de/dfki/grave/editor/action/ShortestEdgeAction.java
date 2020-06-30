@@ -23,7 +23,7 @@ public class ShortestEdgeAction extends ReshapeEdgeAction {
 
   @Override
   protected void reshape() {
-    mEdge.straightenEdge(mEditor.getEditorProject().getEditorConfig().sNODEWIDTH);
+    mEdge.straightenEdge();
     if (onActiveWorkSpace())
       getWorkSpace().updateView(mEdge); 
   }

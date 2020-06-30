@@ -29,7 +29,7 @@ public class NormalizeEdgeAction extends ReshapeEdgeAction {
   }
 
   protected void reshape() {
-    mEdge.straightenEdge(mEditor.getEditorProject().getEditorConfig().sNODEWIDTH);
+    mEdge.straightenEdge();
   }
 
   /*

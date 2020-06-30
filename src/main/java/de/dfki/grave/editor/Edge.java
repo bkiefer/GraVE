@@ -350,7 +350,7 @@ public class Edge extends EditorComponent {
    *  EDGE MODIFICATION
    */
   public void straightenEdge() {
-    mDataEdge.straightenEdge(mSourceNode.getWidth());
+    mDataEdge.straightenEdge();
     update();
   }
 

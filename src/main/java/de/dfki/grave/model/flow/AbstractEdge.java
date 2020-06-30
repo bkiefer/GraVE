@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class AbstractEdge implements ContentHolder {
-  private final static int MIN_CTRL_LEN = 50;
+  private final static int MIN_CTRL_LEN = 40;
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractEdge.class);
 
@@ -207,7 +207,7 @@ public abstract class AbstractEdge implements ContentHolder {
   /** compute (relative) bezier control points
    *  (using node center point and edge connection points)
    */
-  private void initCurve(int nodeWidth) {
+  private void initCurve() {
     Point start = mSourceNode.getPosition().toPoint();
     Point target = mTargetNode.getPosition().toPoint();
 
@@ -215,21 +215,13 @@ public abstract class AbstractEdge implements ContentHolder {
     Point2D startVec = Geom.getDockPointCircle(mSourceDock, 2);
     Point2D targVec = Geom.getDockPointCircle(mTargetDock, 2);
 
-    // scale control point in relation to distance between nodes
-    double scale = (mSourceNode == mTargetNode)
-        ? nodeWidth * .9
-        : Math.max(start.distance(target) / nodeWidth - 0.5, 1.25)
-          * nodeWidth/3; // TODO: not my preferred solution.
-    
-    double xcorr = (mSourceNode == mTargetNode) 
-        ? Math.abs(startVec.getX() * scale * .7)
-        : 0;
-
-    mSourceCtrlPoint = new Position( (int) (scale * startVec.getX() - xcorr),
+    double scale = (mSourceNode == mTargetNode) ? 90
+        : Geom.norm2(Geom.sub(start, target)) / 5.0;
+    mSourceCtrlPoint = new Position( (int) (scale * startVec.getX()),
         (int) (scale * startVec.getY()));
-    mTargetCtrlPoint = new Position((int) (scale * targVec.getX() + xcorr),
+    mTargetCtrlPoint = new Position((int) (scale * targVec.getX()),
         (int) (scale * targVec.getY()));
-
+    
     // re-done for relative control pointss
     checkControl(mSourceCtrlPoint, mSourceDock);
     checkControl(mTargetCtrlPoint, mTargetDock);
@@ -239,22 +231,34 @@ public abstract class AbstractEdge implements ContentHolder {
    *  allowed concerning the dock points already taken.
    *  EDGE MODIFICATION
    */
-  public void straightenEdge(int nodeWidth) {
+  public void straightenEdge() {
     mSourceNode.freeDock(mSourceDock);
     mTargetNode.freeDock(mTargetDock);
     if (mSourceNode == mTargetNode) { // loop
-      Position p = mSourceNode.getPosition();
-      mSourceDock = mSourceNode.getNearestFreeDock(
-          new Position(p.getXPos()+(int)(nodeWidth*0.35), p.getYPos()), true);
-      mTargetDock = mTargetNode.getNearestFreeDock(
-          new Position(p.getXPos()+(int)(nodeWidth*0.65), p.getYPos()), false);
+      if (mSourceDock == -1) mSourceDock = 0;
+      if (mTargetDock == -1) mTargetDock = 1;
+      // normalize the angle between source and target dock (min angular dist)
+      double sourceAngle = Geom.dockToAngle(mSourceDock);
+      double targetAngle = Geom.dockToAngle(mTargetDock);
+      sourceAngle = (sourceAngle + targetAngle) / 2.0;
+      double angleDist = Math.PI * 20.0 / 180.0; 
+      int dist = 100;
+
+      Position srcPos = mSourceNode.getPosition().deepCopy();
+      srcPos.translate((int)(Math.sin(sourceAngle + angleDist) * dist),
+          (int)(Math.cos(sourceAngle + angleDist) * dist));
+      Position targPos = mSourceNode.getPosition().deepCopy();
+      targPos.translate((int)(Math.sin(sourceAngle - angleDist) * dist),
+          (int)(Math.cos(sourceAngle - angleDist) * dist));
+      mSourceDock = mSourceNode.getNearestFreeDock(srcPos, true);
+      mTargetDock = mTargetNode.getNearestFreeDock(targPos, false);
     } else {
       mSourceDock = mSourceNode.getNearestFreeDock(mTargetNode.getPosition(), true);
       mTargetDock = mTargetNode.getNearestFreeDock(mSourceNode.getPosition(), false);
     }
     mSourceNode.occupyDock(mSourceDock);
     mTargetNode.occupyDock(mTargetDock);
-    initCurve(nodeWidth);
+    initCurve();
   }
 
   /***********************************************************************/
