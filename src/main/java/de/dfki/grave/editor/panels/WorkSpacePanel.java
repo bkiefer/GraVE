@@ -143,8 +143,7 @@ public class WorkSpacePanel extends WorkSpace implements MouseListener, MouseMot
             dtde.acceptDrop(mAcceptableActions);
             dtde.getDropTargetContext().dropComplete(true);
           } else if (data instanceof AbstractEdge) {
-            AbstractEdge e = AbstractEdge.getNewEdge((AbstractEdge)data);
-            startNewEdge(e, dtde.getLocation());
+            startNewEdge((AbstractEdge)data, dtde.getLocation());
             dtde.acceptDrop(mAcceptableActions);
             dtde.getDropTargetContext().dropComplete(true);
           } else if (data instanceof Comment) {

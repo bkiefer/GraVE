@@ -24,7 +24,7 @@ public class CreateEdgeAction extends EditorAction {
 
   protected void doIt() {
     if (mEdge == null) {
-      mEdge = mPrototype;
+      mEdge = AbstractEdge.getNewEdge(mPrototype);
       mEdge.connect(mSourceNode, mTargetNode);
       // also computes dock points
       mEdge.straightenEdge(

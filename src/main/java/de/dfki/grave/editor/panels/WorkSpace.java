@@ -121,7 +121,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
       n.update(null,  null);
     }
     for (Edge e: mEdges.values()) {
-      e.update(null,  null);
+      e.update();
     }
     for (Comment c: mCmtSet.values()) {
       c.update();
@@ -286,7 +286,10 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   }
 
   public void updateView(AbstractEdge e) {
-    if (mEdges.containsKey(e)) mEdges.get(e).update();
+    if (mEdges.containsKey(e)) {
+      mEdges.get(e).update(mNodeSet.get(e.getSourceNode()),
+          mNodeSet.get(e.getTargetNode()));
+    }
   }
   
   public void showNewSuperNode() {

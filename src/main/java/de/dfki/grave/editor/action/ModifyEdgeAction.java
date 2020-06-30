@@ -42,10 +42,16 @@ public abstract class ModifyEdgeAction extends EditorAction {
 
   protected void undoIt() {
     mEdge.modifyEdge(mOldNodes, mOldDocks, mOldCtrls);
+    if (onActiveWorkSpace()) {
+      getWorkSpace().updateView(mEdge);
+    }
   }
 
   protected void doIt() {
     mEdge.modifyEdge(mNewNodes, mNewDocks, mNewCtrls);
+    if (onActiveWorkSpace()) {
+      getWorkSpace().updateView(mEdge);
+    }
   }
 
 }

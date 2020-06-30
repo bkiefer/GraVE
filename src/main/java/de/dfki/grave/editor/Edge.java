@@ -183,6 +183,12 @@ public class Edge extends EditorComponent {
     computeBounds();
   }
 
+  public void update(Node start, Node end) {
+    mSourceNode = start;
+    mTargetNode = end;
+    update();
+  }
+
   public void setSelected() {
     mArrow.showControlPoints();
     super.setSelected();
