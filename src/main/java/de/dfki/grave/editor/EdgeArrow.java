@@ -271,11 +271,15 @@ public final class EdgeArrow {
 
   public void paintArrow(java.awt.Graphics2D g, float lineWidth, Color color) {
     g.draw(mCurve);
+    g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT, 
+        BasicStroke.JOIN_MITER));
     Polygon mHead = computeHead();
     // if selected draw interface control points
     if (mSelected >= 0
         // || mSelected < 0 // debugging: show them always
         ) {
+      g.setStroke(new BasicStroke(lineWidth / 2.5f, BasicStroke.CAP_BUTT, 
+          BasicStroke.JOIN_MITER));
       final int r = 6, d = 2*r;
       g.setColor(mSelected == C1 ? color : Color.DARK_GRAY);
       g.drawLine((int) mCurve.x1, (int) mCurve.y1, (int) mCurve.ctrlx1,

@@ -42,15 +42,14 @@ public class CodeEditPanel extends JPanel {
     mTextArea.getActionMap().put("enter_OK", new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) { 
-        mEditedObject.okAction(); // save changes
+        mEditedObject.okAction();      // save changes
       }
     });
     mTextArea.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "escape_CANCEL");
     mTextArea.getActionMap().put("escape_CANCEL", new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        // TODO: revert all changes
-        mEditedObject.cancelAction();
+        mEditedObject.cancelAction();  // revert all changes
       }
     });
   }

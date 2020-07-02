@@ -60,7 +60,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   protected Map<Node,Node> mSelectedNodes = new IdentityHashMap<>();
   protected boolean mDoAreaSelection = false;
   
-  // Snap to grid support: TODO: MOVE TO MODEL
+  // Snap to grid support: TODO: is there a more sensible place for this?
   private GridManager mGridManager = null;
 
   /** Node positions when dragging starts */
@@ -275,7 +275,6 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
     mGridManager.clear();
     revalidate();
     repaint(100);
-    // TODO: Refresh here!
   }
 
   /** */

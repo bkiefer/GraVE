@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Project name="test">
+    <editorConfig>
+        <sNODEWIDTH>100</sNODEWIDTH>
+        <sNODEHEIGHT>100</sNODEHEIGHT>
+        <sZOOM_FACTOR>1.0</sZOOM_FACTOR>
+        <sZOOM_INCREMENT>1.2</sZOOM_INCREMENT>
+        <sGRID_SCALE>2.0</sGRID_SCALE>
+        <sSHOWGRID>true</sSHOWGRID>
+        <sSNAPTOGRID>true</sSNAPTOGRID>
+        <sSHOWIDSOFNODES>true</sSHOWIDSOFNODES>
+        <sSHOW_VARIABLE_BADGE_ON_WORKSPACE>true</sSHOW_VARIABLE_BADGE_ON_WORKSPACE>
+        <sSHOW_SMART_PATH_DEBUG>false</sSHOW_SMART_PATH_DEBUG>
+        <sAUTOHIDE_BOTTOMPANEL>true</sAUTOHIDE_BOTTOMPANEL>
+        <sSHOW_ELEMENTS>true</sSHOW_ELEMENTS>
+        <sELEMENTS_DIVIDER_LOCATION>230</sELEMENTS_DIVIDER_LOCATION>
+        <sSHOW_CODEEDITOR>true</sSHOW_CODEEDITOR>
+        <sCODE_DIVIDER_LOCATION>804</sCODE_DIVIDER_LOCATION>
+        <sSCENEFLOW_SCENE_EDITOR_RATIO>0.85</sSCENEFLOW_SCENE_EDITOR_RATIO>
+        <sNODE_FONT family="Helvetica" size="16.0" bold="true" italic="false"/>
+        <sCODE_FONT family="Source Code Pro" size="16.0" bold="false" italic="false"/>
+        <sCODEAREA_FONT family="Source Code Pro" size="11.0" bold="false" italic="true"/>
+        <sCOMMENT_FONT family="Helvetica" size="16.0" bold="false" italic="false"/>
+        <sBUTTON_FONT family="Helvetica" size="20.0" bold="false" italic="false"/>
+        <sDIALOG_FONT family="Helvetica" size="11.0" bold="false" italic="false"/>
+        <sTREE_FONT family="Helvetica" size="10.0" bold="false" italic="false"/>
+        <sUI_FONT family="Helvetica" size="14.0" bold="false" italic="false"/>
+    </editorConfig>
+</Project>

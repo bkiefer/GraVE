@@ -627,7 +627,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     } else if (event instanceof CodeEditedEvent) {
       CodeEditedEvent ev = (CodeEditedEvent)event;
       endEdit();
-      // TODO: DO THE RIGHT THING
+      // start text edit here
       if (ev.isActive()) {
         mUndoManager.startTextMode();
         ev.getContainer().setSelected();

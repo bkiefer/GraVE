@@ -6,9 +6,5 @@
 .idea
 *.iml
 dialogueflow
-dflow
-test
-foo
-demo
-*-flows
+/*flows
 Aufbewahrung

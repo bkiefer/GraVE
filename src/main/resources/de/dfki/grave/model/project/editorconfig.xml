@@ -20,13 +20,13 @@
   <sSHOW_CODEEDITOR>true</sSHOW_CODEEDITOR>
   <sCODE_DIVIDER_LOCATION>450</sCODE_DIVIDER_LOCATION>
   <sSCENEFLOW_SCENE_EDITOR_RATIO>0.85</sSCENEFLOW_SCENE_EDITOR_RATIO>
-  <sNODE_FONT family="Helvetica" size="16" bold="true" italic="false"/>
-  <sCODE_FONT family="Source Code Pro" size="16" bold="false" italic="false"/>
+  <sNODE_FONT family="Helvetica" size="12" bold="true" italic="false"/>
+  <sCODE_FONT family="Source Code Pro" size="14" bold="false" italic="false"/>
     <!-- new Font(Font.SANS_SERIF, Font.PLAIN, 16) -->
-  <sCODEAREA_FONT family="Source Code Pro" size="11" bold="false" italic="true"/>
-  <sCOMMENT_FONT family="Helvetica" size="16" bold="false" italic="false"/>
-  <sBUTTON_FONT family="Helvetica" size="20" bold="false" italic="false"/>
-  <sDIALOG_FONT family="Helvetica" size="11" bold="false" italic="false"/>
+  <sCODEAREA_FONT family="Source Code Pro" size="12" bold="false" italic="false"/>
+  <sCOMMENT_FONT family="Helvetica" size="14" bold="false" italic="false"/>
+  <sBUTTON_FONT family="Helvetica" size="14" bold="false" italic="false"/>
+  <sDIALOG_FONT family="Helvetica" size="14" bold="false" italic="false"/>
   <sTREE_FONT family="Helvetica" size="10" bold="false" italic="false"/>
   <sUI_FONT family="Helvetica" size="14" bold="false" italic="false"/>
 </editorConfig>

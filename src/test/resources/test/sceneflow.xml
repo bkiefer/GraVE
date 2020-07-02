@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SceneFlow modifDate="" package="" start="N5" hideLocalVar="false" hideGlobalVar="false" id="" name="Test" comment="">
+    <Commands></Commands>
+    <Position xPos="0" yPos="0"/>
+    <Comment>
+        <Text>Neuer Text, Sieht OK aus.</Text>
+        <Boundary height="87" width="193" xPos="3" yPos="0"/>
+    </Comment>
+    <Node id="N4" name="N4" comment="">
+        <Commands></Commands>
+        <CEdge target="S1" source="N4" targetdock="19" sourcedock="6">
+            <SourceCtrl xPos="50" yPos="4"/>
+            <TargetCtrl xPos="-102" yPos="1"/>
+            <Condition>true || false</Condition>
+        </CEdge>
+        <Position xPos="260" yPos="320"/>
+    </Node>
+    <Node id="N5" name="N5" comment="">
+        <Commands>new Code();</Commands>
+        <CEdge target="S1" source="N5" targetdock="19" sourcedock="6">
+            <SourceCtrl xPos="50" yPos="4"/>
+            <TargetCtrl xPos="-102" yPos="1"/>
+            <Condition>true || false</Condition>
+        </CEdge>
+        <Position xPos="160" yPos="320"/>
+    </Node>
+    <SuperNode start="N6" hideLocalVar="false" hideGlobalVar="false" id="S1" name="S1" comment="">
+        <Commands></Commands>
+        <Position xPos="480" yPos="0"/>
+        <Node id="N6" name="N6" comment="">
+            <Commands>i += 1;</Commands>
+            <Position xPos="320" yPos="160"/>
+            <EEdge target="S2" source="N6" targetdock="3" sourcedock="2">
+                <SourceCtrl xPos="97" yPos="0"/>
+                <TargetCtrl xPos="-97" yPos="0"/>
+            </EEdge>
+        </Node>
+        <SuperNode start="" hideLocalVar="false" hideGlobalVar="false" id="S2" name="S2" comment="">
+            <Commands></Commands>
+            <Position xPos="640" yPos="160"/>
+        </SuperNode>
+    </SuperNode>
+    <ClassPath/>
+</SceneFlow>
