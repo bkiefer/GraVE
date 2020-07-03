@@ -1,7 +1,7 @@
 package de.dfki.grave.editor;
 
 import static de.dfki.grave.Preferences.*;
-import static de.dfki.grave.editor.panels.WorkSpacePanel.addItem;
+import static de.dfki.grave.editor.panels.WorkSpace.addItem;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

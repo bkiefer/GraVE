@@ -1,10 +1,6 @@
 package de.dfki.grave.editor.panels;
 
-import static de.dfki.grave.Preferences.sCEDGE_COLOR;
-import static de.dfki.grave.Preferences.sFEDGE_COLOR;
-import static de.dfki.grave.Preferences.sIEDGE_COLOR;
-import static de.dfki.grave.Preferences.sPEDGE_COLOR;
-import static de.dfki.grave.Preferences.sTEDGE_COLOR;
+import static de.dfki.grave.Preferences.*;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -12,12 +8,21 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.dnd.DropTarget;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
+import java.text.AttributedString;
 import java.util.*;
 
 import javax.swing.BorderFactory;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +36,6 @@ import de.dfki.grave.editor.action.*;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.model.flow.*;
 import de.dfki.grave.model.project.EditorConfig;
-import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.evt.EventDispatcher;
 
 /**
@@ -46,19 +50,20 @@ import de.dfki.grave.util.evt.EventDispatcher;
  * Adding / Removing / Moving
  */
 @SuppressWarnings("serial")
-public abstract class WorkSpace extends JPanel implements ProjectElement {
+public class WorkSpace extends JPanel implements ProjectElement {
   protected static final Logger logger = LoggerFactory.getLogger(WorkSpace.class);
 
+  private static AttributedString sEdgeCreationHint = 
+      new AttributedString("Select Target Node");
+  // Drag & Drop support
+  @SuppressWarnings("unused")
+  private DropTarget mDropTarget;
+  
   // Elements to draw
   protected final Map<BasicNode, Node> mNodeSet = new IdentityHashMap<>();
   private final Map<CommentBadge, Comment> mCmtSet = new IdentityHashMap<>();
   private final Map<AbstractEdge, Edge> mEdges = new IdentityHashMap<>();
 
-  // Selected Elements
-  protected Edge mSelectedEdge = null;
-  protected Map<Comment, Comment> mSelectedComments = new IdentityHashMap<>();
-  protected Map<Node,Node> mSelectedNodes = new IdentityHashMap<>();
-  protected boolean mDoAreaSelection = false;
   
   // Snap to grid support: TODO: is there a more sensible place for this?
   private GridManager mGridManager = null;
@@ -76,15 +81,21 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   // to suspend mouse input when the workspace changes drastically
   private boolean mIgnoreMouseInput = false;
 
+  private WorkSpaceMouseHandler mMouseHandler;
+  
   /**
    *
    *
    */
-  protected WorkSpace(ProjectEditor editor) {
+  public WorkSpace(ProjectEditor editor) {
     mEditor = editor;
     mGridManager = new GridManager(this);
     mZoomFactor = getEditorConfig().sZOOM_FACTOR;
 
+    mMouseHandler = new WorkSpaceMouseHandler(this);
+    addMouseMotionListener(mMouseHandler);
+    addMouseListener(mMouseHandler);
+    mDropTarget = new DropTarget(this, new WorkSpaceDropAdapter(this));
     // init layout
     setLayout(new SceneFlowLayoutManager());
     setBorder(BorderFactory.createEmptyBorder());
@@ -218,6 +229,14 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
     return null;
   }
 
+  Node getView(BasicNode n) {
+    return mNodeSet.get(n);
+  }
+  
+  Iterable<Node> getNodes() {
+    return mNodeSet.values();
+  }
+  
   private class EdgeIterator implements Iterator<Edge> {
 
     Iterator<Node> nodeIt = mNodeSet.values().iterator();
@@ -263,6 +282,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
 
   /** Clear all data structures of this WorkSpace */
   protected void clearCurrentWorkspace() {
+    mMouseHandler.deselectAll();
     mObservable.deleteObservers();
 
     // Clear the list of currently shown nodes and edges and
@@ -338,7 +358,6 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
     EventDispatcher.getInstance().convey(ev);
   }
   
-
   /** Helper function for dragNodes */
   private Map<Node, Point> computeNewPositions(Point moveVec) {
     Map<Node, Point> newPositions =
@@ -464,8 +483,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
   
   /**
    */
-  @Override
-  public void paintComponent(Graphics g) {
+  private void paintGrid(Graphics g) {
     Graphics2D g2d = (Graphics2D) g;
 
     super.paintComponent(g);
@@ -488,7 +506,69 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
     g2d.drawRect(1, 1, getSize().width - 3, getSize().height - 4);
   }
 
+  /** Paint for things specific to mouse selection */
+  @Override
+  public void paintComponent(Graphics g) {
+    paintGrid(g);
+    Graphics2D g2d = (Graphics2D) g;
 
+    // Edge construction in progress?
+    Node newEdgeSourceNode = mMouseHandler.edgeConstructionSource();
+    if (newEdgeSourceNode != null) {
+      setBackground(Color.LIGHT_GRAY);
+      // draw line between source node and current mouse position
+      Point mSelectNodePoint = getMousePosition();
+      if (mSelectNodePoint != null) {
+        Point sourceNodeCenter = newEdgeSourceNode.getCenterPoint();
+
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setColor(Color.WHITE);
+        g2d.setStroke(new BasicStroke(3.0f));
+        g2d.drawLine(sourceNodeCenter.x, sourceNodeCenter.y, mSelectNodePoint.x, mSelectNodePoint.y);
+
+        TextLayout textLayout = new TextLayout(sEdgeCreationHint.getIterator(), g2d.getFontRenderContext());
+        int height = (int) (textLayout.getAscent() + textLayout.getDescent()
+                + textLayout.getLeading());
+        int width = (int) textLayout.getVisibleAdvance();
+
+        g2d.setStroke(new BasicStroke(0.5f));
+        g2d.drawLine(mSelectNodePoint.x, mSelectNodePoint.y, mSelectNodePoint.x,
+                mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) + (height / 2));
+        g2d.setColor(new Color(100, 100, 100, 100));
+        g2d.fillRoundRect(mSelectNodePoint.x - (width / 2) - 5,
+                mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) - (height / 2) - 6, width + 10,
+                height + 5, 5, 5);
+        g2d.setColor(Color.WHITE);
+        g2d.setStroke(new BasicStroke(2.0f));
+        g2d.drawRoundRect(mSelectNodePoint.x - (width / 2) - 5,
+                mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) - (height / 2) - 6, width + 10,
+                height + 5, 5, 5);
+        g2d.drawString(sEdgeCreationHint.getIterator(), mSelectNodePoint.x - (width / 2),
+                mSelectNodePoint.y - (getEditorConfig().sNODEHEIGHT / 2) + 1);
+      }
+    } else {
+      setBackground(Color.WHITE);
+    }
+
+    Rectangle2D areaSelection = mMouseHandler.getAreaSelection(); 
+    if (areaSelection != null) {
+      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      g2d.setStroke(new BasicStroke(3.0f));
+      g2d.setColor(Color.LIGHT_GRAY);
+      g2d.draw(areaSelection);
+    }
+
+    /* Debugging: check boundaries of all components on workspace */
+    if (DEBUG_COMPONENT_BOUNDARIES) {
+      g2d.setColor(Color.pink);
+      g2d.setStroke(new BasicStroke(0.5f));
+      for (int i = 0 ; i <  this.getComponentCount(); ++i) {
+        Rectangle r = getComponent(i).getBounds();
+        g2d.drawRect(r.x, r.y, r.width, r.height);
+      }
+    }
+  }
+  
   /** Add our own update method */
   public class Observable extends java.util.Observable {
 
@@ -497,124 +577,103 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
       notifyObservers(obj);
     }
   }
-  // #########################################################################
-  // Element Selection
-  // #########################################################################
+
+  // ######################################################################
+  // Delegate functions to mouse handler
+  // ######################################################################
+  
+  public void selectNodes(Collection<BasicNode> nodes) {
+    mMouseHandler.selectNodes(nodes);
+  }
+  
+  public void startNewEdge(AbstractEdge edge, Point p) {
+    Node sourceNode = findNodeAtPoint(p);
+
+    // Check if the type of this edge is allowed to be connected to the
+    // source node. If the edge is not allowed then we exit the method.
+    if (sourceNode == null || !sourceNode.isEdgeAllowed(edge)) {
+      return;
+    }
+    mMouseHandler.startNewEdge(edge, sourceNode);
+    setMessageLabelText("Select target node or click on workspace to abort");
+  }
+  
+  AbstractEdge getSelectedEdge() {
+    return mMouseHandler.getSelectedEdge();
+  }
+
+  Collection<BasicNode> getSelectedNodes() {
+    return nodeModels(mMouseHandler.getSelectedNodes());
+  }
+
+  Collection<CommentBadge> getSelectedComments() {
+    return commentModels(mMouseHandler.getSelectedComments());
+  }
+  
+  /** Add an item with name and action a to the menu m */
+  public static void addItem(JPopupMenu m, String name, ActionListener a) {
+    JMenuItem item = new JMenuItem(name);
+    item.addActionListener(a);
+    m.add(item);
+  }
   
   /** Return true if something on the workspace is selected */
   public boolean isSomethingSelected() {
-    return ! mSelectedNodes.isEmpty() || mSelectedEdge != null
-        || ! mSelectedComments.isEmpty();
+    return mMouseHandler.isSomethingSelected();
   }
   
-  /** */
-  protected void deselectAllNodes() {
-    for (Node node : mSelectedNodes.keySet()) {
-      node.setDeselected();
+ // ######################################################################
+ // Context menus: nodes/global
+ // ######################################################################
+
+  /** Show the context menu if multiple nodes are selected */
+  void multipleNodesContextMenu(MouseEvent evt) {
+    JPopupMenu pop = new JPopupMenu();
+    // copy is not undoable
+    addItem(pop, "Copy Nodes", 
+        new CopyNodesAction(getEditor(), getSelectedNodes()));
+    addItem(pop, "Cut Nodes",
+        new RemoveNodesAction(getEditor(), getSelectedNodes(), true));
+    pop.add(new JSeparator());
+    addItem(pop, "Delete Nodes",
+        new RemoveNodesAction(getEditor(), getSelectedNodes(), false));
+    pop.show(this, evt.getX() , evt.getY());
+  }
+  
+  /**
+   * Eventually show "Paste" menu item, when clicking on workspace
+   */
+  void globalContextMenu(MouseEvent event) {
+    int eventX = event.getX();
+    int eventY = event.getY();
+    JPopupMenu pop = new JPopupMenu();
+    // paste nodes menu item
+    if (! getEditor().mClipboard.isEmpty()) {
+      JMenuItem itemPasteNodes = new JMenuItem("Paste");
+      PasteNodesAction pasteAction = new PasteNodesAction(getEditor(), 
+          toModelPos(event.getPoint()));
+      itemPasteNodes.addActionListener(pasteAction);
+      pop.add(itemPasteNodes);
     }
-    mSelectedNodes.clear();
-    repaint(100);
-  }
-
-  protected void deselectAll() {
-    deselectEdge();
-    deselectAllComments();
-    deselectAllNodes();
-  }
-
-  protected void selectComment(Comment e) {
-    deselectAll();
-    mSelectedComments.put(e, e);
-    e.setSelected();
-  }
-
-  /** Deselect a single comment, leave all other selected comments selected */
-  protected void deselectComment(Comment n) {
-    mSelectedComments.remove(n);
-    n.setDeselected();
-  }
-
-  protected void deselectAllComments() {
-    for (Comment c : mSelectedComments.keySet()) {
-      c.setDeselected();
-    }
-    mSelectedComments.clear();
-  }
-
-  protected void selectEdge(Edge e) {
-    deselectAll();
-    mSelectedEdge = e;
-    e.setSelected();
-  }
-
-  protected void deselectEdge() {
-    if (mSelectedEdge != null) {
-      mSelectedEdge.setDeselected();
-      mSelectedEdge = null;
-    }
-  }
-
-  /** Select a single node, leave all other selected nodes selected */
-  protected void selectNode(Node n) {
-    deselectEdge();
-    deselectAllComments();
-    mSelectedNodes.put(n, n);
-    n.setSelected();
-  }
-
-  /** Deselect a single node, leave all other selected nodes selected */
-  protected void deselectNode(Node n) {
-    mSelectedNodes.remove(n);
-    n.setDeselected();
-  }
-
-  protected void selectSingleNode(Node n) {
-    mDoAreaSelection = false;
-    deselectAllNodes();
-    selectNode(n);
-  }
-
-  /** Select all nodes intersecting the given area */
-  protected void selectNodesInArea(Rectangle2D area) {
-    deselectAllNodes();
-    for (Node node : mNodeSet.values()) {
-      if (node.getBounds().intersects(area)) {
-        node.setSelected();
-        mSelectedNodes.put(node, node);
+    // refresh menu item
+    JMenuItem refresh = new JMenuItem("Refresh");
+    refresh.addActionListener(new ActionListener(){
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        refreshAll();
       }
-    }
+    });
+    pop.add(refresh);
+    pop.show(this, eventX, eventY);
   }
-
-  public void selectNodes(Collection<BasicNode> nodes) {
-    deselectAllNodes();
-    for (BasicNode node : nodes) {
-      Node vn = mNodeSet.get(node);
-      vn.setSelected();
-      mSelectedNodes.put(vn, vn);
-    }
-    repaint(100);
-  }
-
-  public Collection<BasicNode> getSelectedNodes() {
-    return nodeModels(mSelectedNodes.keySet());
-  }
-
-  public Collection<CommentBadge> getSelectedComments() {
-    return commentModels(mSelectedComments.keySet());
-  }
-  
-  public AbstractEdge getSelectedEdge() {
-    return (mSelectedEdge == null) ? null : mSelectedEdge.getDataEdge();
-  }
-  
+   
   // ######################################################################
   // Helper functions for undoable actions for nodes and edges
   // ######################################################################
 
   /** Removes view edge from workspace, no change in model */
   private void removeFromWorkSpace(Edge e) {
-    if (mSelectedEdge != null && mSelectedEdge == e)
-      deselectEdge();
+    mMouseHandler.deselectEdge(e);
     // Free the docking points on source and target node
     e.disconnect();
     mEdges.remove(e.getDataEdge());
@@ -643,8 +702,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
 
   /** Removes node view from workspace, no change in model */
   private void removeFromWorkSpace(Node n) {
-    if (mSelectedNodes.containsKey(n))
-      deselectNode(n);
+    mMouseHandler.deselectNode(n);
     mNodeSet.remove(n.getDataNode());
     if (getEditorConfig().sSNAPTOGRID)
       mGridManager.releaseGridPosition(n.getDataNode());
@@ -673,8 +731,7 @@ public abstract class WorkSpace extends JPanel implements ProjectElement {
 
   /** Remove comment view from workspace, no change in model */
   private void removeFromWorkSpace(Comment c) {
-    if (mSelectedComments.containsKey(c))
-      deselectComment(c);
+    mMouseHandler.deselectComment(c);
     mCmtSet.remove(c.getData());
     super.remove(c);
     mObservable.deleteObserver(c);

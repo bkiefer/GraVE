@@ -68,7 +68,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   private LinkedList<SuperNode> mActiveSuperNodes;
 
   // The GUI components of the editor
-  private final WorkSpacePanel mWorkSpacePanel;
+  private final WorkSpace mWorkSpacePanel;
   private final SceneFlowToolBar mSceneFlowToolBar;
   private final NameEditor mNameEditor;
   private final SceneFlowElementPanel mDynamicElementsPanel;
@@ -111,7 +111,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     // prepare the vertical split region (now used as code editor)
     mSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     // The right component is the workspace
-    mWorkSpacePanel = new WorkSpacePanel(this);
+    mWorkSpacePanel = new WorkSpace(this);
     mWorkSpacePanel.setTransferHandler(new SceneFlowImage());
     //  Initialize the GUI components
     initComponents();
@@ -308,7 +308,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     return mEditorProject.getSceneFlow();
   }
 
-  public WorkSpacePanel getWorkSpace() {
+  public WorkSpace getWorkSpace() {
     return mWorkSpacePanel;
   }
 

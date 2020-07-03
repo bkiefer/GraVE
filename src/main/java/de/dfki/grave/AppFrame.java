@@ -30,7 +30,7 @@ import de.dfki.grave.editor.panels.AddButton;
 import de.dfki.grave.editor.panels.ClipBoard;
 import de.dfki.grave.editor.panels.EditorMenuBar;
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.editor.panels.WorkSpacePanel;
+import de.dfki.grave.editor.panels.WorkSpaceMouseHandler;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.ResourceLoader;
 

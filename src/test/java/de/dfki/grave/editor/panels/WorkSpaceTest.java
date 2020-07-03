@@ -8,7 +8,7 @@ import org.junit.*;
 
 import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.editor.panels.WorkSpacePanel;
+import de.dfki.grave.editor.panels.WorkSpaceMouseHandler;
 import de.dfki.grave.model.flow.*;
 
 public class WorkSpaceTest {
@@ -16,7 +16,7 @@ public class WorkSpaceTest {
   protected static String RESOURCE_DIR = "src/test/resources";
 
   protected ProjectEditor ed;
-  protected WorkSpacePanel ws;
+  protected WorkSpace ws;
   
   @BeforeClass
   public static void init() {

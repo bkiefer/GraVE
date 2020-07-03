@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import de.dfki.grave.editor.panels.ClipBoard;
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.editor.panels.WorkSpacePanel;
 import de.dfki.grave.model.flow.BasicNode;
 import de.dfki.grave.model.flow.Position;
 
@@ -42,7 +41,7 @@ public class PasteNodesAction extends EditorAction {
     if (onActiveWorkSpace()) {
       getWorkSpace().addNodes(nodes);
       // dangerous, but (currently) working
-      ((WorkSpacePanel)getWorkSpace()).selectNodes(mAffected);
+      getWorkSpace().selectNodes(mAffected);
     }
   }
 
