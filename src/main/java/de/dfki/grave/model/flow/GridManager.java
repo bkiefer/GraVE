@@ -127,7 +127,7 @@ public class GridManager {
       mPlacedNodes.put(colRow, n);
     } else {
       if (occupant != n)
-        logger.error("Grid point to be occupied by two nodes: {} and {}",
+        logger.warn("Grid point to be occupied by two nodes: {} and {}",
             occupant, n);
     }
   }

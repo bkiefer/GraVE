@@ -322,6 +322,7 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
    */
   @Override
   public void mouseClicked(MouseEvent event) {
+    logger.debug("Mouse clicked: {}", event);
     Point current = event.getPoint();
     if (mWorkspace.shouldIgnoreMouseInput()) {
       return;
@@ -362,6 +363,7 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
    */
   @Override
   public void mousePressed(MouseEvent event) {
+    logger.debug("Mouse pressed: {}", event);
     if (mLastMousePos == null)
       mLastMousePos = event.getPoint();
     // we need to check the selected edge first, otherwise it's almost impossible
@@ -370,9 +372,8 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
     if (e != null) {
       if (mSelectedEdge != e) {
         selectEdge(e);
-      } else {
-        mSelectedEdge.mousePressed(event);
       }
+      mSelectedEdge.mousePressed(event);
       return;
     }
 
@@ -392,9 +393,11 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
       }
     } else {
       // right click: global context menu for clipboard actions
-      if ((event.getButton() == MouseEvent.BUTTON3)
-          && (event.getClickCount() == 1)) {
-        mWorkspace.globalContextMenu(event);
+      if (event.getButton() == MouseEvent.BUTTON3) {
+        if (mSelectedNodes.size() > 1)
+          mWorkspace.multipleNodesContextMenu(event);
+        else
+          mWorkspace.globalContextMenu(event);
       } else {
         mDoAreaSelection = true;
       }
@@ -414,6 +417,7 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
    */
   @Override
   public void mouseReleased(MouseEvent event) {
+    logger.debug("Mouse released: {}", event);
     //launchProjectChangedEvent();
     straightenAllOutOfBoundEdges();
 
@@ -457,6 +461,7 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
    */
   @Override
   public void mouseDragged(MouseEvent event) {
+    logger.debug("Mouse dragged: {}", event);
     if (mEdgeSourceNode != null) {
       createNewEdge(event.getPoint());
       return;

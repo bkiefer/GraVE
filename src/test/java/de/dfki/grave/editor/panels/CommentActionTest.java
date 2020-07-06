@@ -9,8 +9,6 @@ import org.junit.*;
 import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.*;
 import de.dfki.grave.editor.action.*;
-import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.editor.panels.WorkSpaceMouseHandler;
 import de.dfki.grave.model.flow.*;
 
 public class CommentActionTest {

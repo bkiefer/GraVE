@@ -10,7 +10,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.dnd.DropTarget;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextLayout;
@@ -629,14 +628,23 @@ public class WorkSpace extends JPanel implements ProjectElement {
   /** Show the context menu if multiple nodes are selected */
   void multipleNodesContextMenu(MouseEvent evt) {
     JPopupMenu pop = new JPopupMenu();
+    Collection<BasicNode> selected = getSelectedNodes();
+    ProjectEditor ed = getEditor();
     // copy is not undoable
-    addItem(pop, "Copy Nodes", 
-        new CopyNodesAction(getEditor(), getSelectedNodes()));
-    addItem(pop, "Cut Nodes",
-        new RemoveNodesAction(getEditor(), getSelectedNodes(), true));
+    addItem(pop, "Copy Nodes", new CopyNodesAction(ed, selected));
+    addItem(pop, "Cut Nodes", new RemoveNodesAction(ed, selected, true));
     pop.add(new JSeparator());
-    addItem(pop, "Delete Nodes",
-        new RemoveNodesAction(getEditor(), getSelectedNodes(), false));
+    addItem(pop, "Delete Nodes", new RemoveNodesAction(ed, selected, false));
+    List<AbstractEdge> inner = BasicNode.computeInnerEdges(selected);
+    if (!inner.isEmpty()) {
+      pop.add(new JSeparator());
+      List<EditorAction> acts = new ArrayList<>(inner.size());
+      for (AbstractEdge e : inner) {
+        acts.add(new StraightenEdgeAction(ed, e));
+      }
+      addItem(pop, "Straighten Edges", 
+          new CompoundAction(ed, acts, "Straighten Edges"));
+    }
     pop.show(this, evt.getX() , evt.getY());
   }
   
@@ -657,12 +665,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
     }
     // refresh menu item
     JMenuItem refresh = new JMenuItem("Refresh");
-    refresh.addActionListener(new ActionListener(){
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        refreshAll();
-      }
-    });
+    refresh.addActionListener((e) -> refreshAll());
     pop.add(refresh);
     pop.show(this, eventX, eventY);
   }
