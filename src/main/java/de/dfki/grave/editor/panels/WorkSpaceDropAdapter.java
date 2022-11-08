@@ -20,6 +20,7 @@ import de.dfki.grave.editor.action.CreateCommentAction;
 import de.dfki.grave.editor.action.CreateNodeAction;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.flow.CommentBadge;
 
 public class WorkSpaceDropAdapter extends DropTargetAdapter {
   private static final Logger logger = LoggerFactory
@@ -92,8 +93,8 @@ public class WorkSpaceDropAdapter extends DropTargetAdapter {
         dtde.acceptDrop(mAcceptableActions);
         dtde.getDropTargetContext().dropComplete(true);
       } else if (data instanceof Comment) {
-        new CreateCommentAction(mWorkSpace.getEditor(),
-            mWorkSpace.toModelPos(dtde.getLocation())).run();
+        CommentBadge comm = mWorkSpace.createComment(dtde.getLocation());
+        new CreateCommentAction(mWorkSpace.getEditor(), comm).run();
         dtde.acceptDrop(mAcceptableActions);
         dtde.getDropTargetContext().dropComplete(true);
       } else {

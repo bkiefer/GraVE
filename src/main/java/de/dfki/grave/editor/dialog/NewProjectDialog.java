@@ -16,7 +16,7 @@ import de.dfki.grave.AppFrame;
 
 /**
  * @author Sergio Soto
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class NewProjectDialog extends JDialog {
@@ -36,7 +36,7 @@ public class NewProjectDialog extends JDialog {
   // Labels
   private JLabel errorMsg;
   private JLabel lblName;
-  
+
   private String[] name;
 
   public NewProjectDialog(String[] newName) {
@@ -58,6 +58,7 @@ public class NewProjectDialog extends JDialog {
     mNameTextField.setMinimumSize(tSize);
     mNameTextField.setPreferredSize(tSize);
     mNameTextField.setText(name[0]);
+    mNameTextField.selectAll();
 
     mNameTextField.addActionListener(new ActionListener() {
       @Override
@@ -134,15 +135,15 @@ public class NewProjectDialog extends JDialog {
     mMainPanel.add(Box.createVerticalGlue());
     mMainPanel.add(mButtonsPanel);
     mMainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
     //Key listener need to gain focus on the text field
     KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 
       @Override
       public boolean dispatchKeyEvent(KeyEvent ke) {
         if (ke.getID() == KeyEvent.KEY_PRESSED) {
-          if (!mNameTextField.hasFocus()) {
-            mNameTextField.setText(mNameTextField.getText() + ke.getKeyChar());
-            mNameTextField.requestFocus();
+          if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
+            okActionPerformed();
           }
         }
         return false;
@@ -169,7 +170,7 @@ public class NewProjectDialog extends JDialog {
 
     setLocation(getParent().getLocation().x + (getParent().getWidth() - getWidth()) / 2,
             getParent().getLocation().y + (getParent().getHeight() - getHeight()) / 2);
-    mOkButton.requestFocus();
+    mNameTextField.requestFocus();
   }
 
   protected void okActionPerformed() {

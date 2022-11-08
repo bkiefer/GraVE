@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.*;
@@ -51,36 +50,41 @@ import de.dfki.grave.util.evt.EventListener;
 public final class ProjectEditor extends JSplitPane implements EventListener {
 
   private static final Logger mLogger = LoggerFactory.getLogger(ProjectEditor.class);
-  
+
   // The singleton event multicaster
   private final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
   // The editor project of this editor
   private EditorProject mEditorProject;
-  
-  private final UndoRedoProvider mUndoManager;
 
-  // The clipboard
+ // The clipboard
   public final ClipBoard mClipboard = ClipBoard.getInstance();
 
-  /** The list of active supernodes from the Sceneflow to the currently
-   *  displayed node
-   */
-  private LinkedList<SuperNode> mActiveSuperNodes;
+  /** The currently displayed SuperNode */
+  private SuperNode mActiveSuperNode;
+
+  private UndoRedoProvider mUndoManager;
 
   // The GUI components of the editor
+  // Area showing the graph
   private final WorkSpace mWorkSpacePanel;
+  // The tool bar
   private final SceneFlowToolBar mSceneFlowToolBar;
+  // Editor to change the name of a node
   private final NameEditor mNameEditor;
+  // currently not used: for the scenes
   private final SceneFlowElementPanel mDynamicElementsPanel;
+  // the panel with prototypes to insert new nodes or edges by dragging
   private final JPanel mNewElementDisplay;
+  // line for status and other messages
   private final JLabel mFooterLabel;
+  // split between upper area and code editor
   private final JSplitPane mSplitPane;
-  
+
   // Code editing panel
   private final CodeEditPanel mCodeEditor;
-  
 
-  
+
+
   // Construct a project editor with a project
   public ProjectEditor(final EditorProject project) {
     // Initialize the parent split pane
@@ -90,16 +94,12 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     // Initialize Code Editing Region
     mCodeEditor = //new CodeEditor(mEditorProject);
         new CodeEditPanel(mEditorProject.getEditorConfig().sCODE_FONT.getFont());
-    mUndoManager = new UndoRedoProvider();
     // Register at the event dispatcher
     mEventDispatcher.register(this);
     // TOOLBAR: NORTH ELEMENT
+    mUndoManager = new UndoRedoProvider();
     mSceneFlowToolBar = new SceneFlowToolBar(this);
 
-    // Stack of active SuperNodes
-    mActiveSuperNodes = new LinkedList<SuperNode>();
-    addActiveSuperNode(getSceneFlow());
-    
     // The west component is the workbar
     mFooterLabel = new JLabel();
     mDynamicElementsPanel = new SceneFlowElementPanel(mEditorProject);
@@ -113,6 +113,9 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     // The right component is the workspace
     mWorkSpacePanel = new WorkSpace(this);
     mWorkSpacePanel.setTransferHandler(new SceneFlowImage());
+
+    setActiveSuperNode(getSceneFlow());
+
     //  Initialize the GUI components
     initComponents();
   }
@@ -142,13 +145,13 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     result.setVisible(visible);
     return result;
   }
-  
+
   private JPanel initUpperCompos() {
     JScrollPane wsScrollPane = new JScrollPane(mWorkSpacePanel);
     wsScrollPane.setBorder(BorderFactory.createEtchedBorder());
     wsScrollPane.setMinimumSize(new Dimension(10, 10));
     wsScrollPane.setMaximumSize(new Dimension(10000, 3000));
-    
+
     mSplitPane.setBorder(BorderFactory.createEmptyBorder());
     mSplitPane.setContinuousLayout(true);
     mSplitPane.setUI(new BasicSplitPaneUI() {
@@ -204,7 +207,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     });
 
     mFooterLabel.setForeground(Color.red);
-        
+
     final JPanel upper = new JPanel();
     upper.setLayout(new BorderLayout());
     // Set Background Color
@@ -213,13 +216,13 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     upper.setBorder(BorderFactory.createEmptyBorder());
     upper.setMinimumSize(new Dimension(10, 10));
     upper.setMaximumSize(new Dimension(10000, 3000));
-    
+
     upper.add(mSceneFlowToolBar, BorderLayout.NORTH);
     upper.add(mSplitPane, BorderLayout.CENTER);
     upper.add(mFooterLabel, BorderLayout.SOUTH);
     return upper;
   }
-    
+
   // Initialize the GUI components
   private void initComponents() {
 
@@ -313,17 +316,19 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   }
 
   public UndoRedoProvider getUndoManager() {
+    //return mUndoManagers.getLast();
     return mUndoManager;
   }
+
 
   public void clearClipBoard() {
     mClipboard.clear();
   }
-  
+
   // ##########################################################################
   // Methods for interactive functionality in menus and buttons for the project
   // ##########################################################################
-  
+
   /** Copy nodes in the selected nodes set (mSelectedNodes) to the clipboard for
    *  the Copy operation (lazy copy).
    */
@@ -332,53 +337,40 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
         Collections.emptyList(), Collections.emptyList());
   }
 
-  // TODO: adding not explicit but via refresh method
-  public void addActiveSuperNode(SuperNode supernode) {
-    mActiveSuperNodes.addLast(supernode);
-    mSceneFlowToolBar.addPathComponent(supernode);
-    // mWorkSpacePanel.setActiveSuperNode(supernode);
-  }
-
-  public SuperNode removeActiveSuperNode() {
-    if (mActiveSuperNodes.size() == 1) return null;
-    mActiveSuperNodes.removeLast();
-    mSceneFlowToolBar.removePathComponent();
-    // mWorkSpacePanel.setActiveSuperNode(getActiveSuperNode());
-    return getActiveSuperNode();
-  }
-
-  public SuperNode getActiveSuperNode() {
-    return mActiveSuperNodes.getLast();
-  }
-  
-  /** Jump into the SuperNode node (currently present on the WorkSpace) */
-  public void increaseWorkSpaceLevel(Node node) {
+  // TODO: only to be used by this class and the ActiveSuperNodeAction
+  public void setActiveSuperNode(SuperNode supernode) {
     // Reset mouse interaction
     mWorkSpacePanel.ignoreMouseInput(true);
-    SuperNode superNode = (SuperNode) node.getDataNode();
-    addActiveSuperNode(superNode);
+    //mActiveSuperNodes.addLast(supernode);
+    mActiveSuperNode = supernode;
+    mSceneFlowToolBar.updateBreadcrumbs(supernode);
+    // mWorkSpacePanel.setActiveSuperNode(supernode);
+
     mWorkSpacePanel.showNewSuperNode();
     mWorkSpacePanel.ignoreMouseInput(false);
   }
 
-  /** Pop out to the specified SuperNode */
-  public void selectNewWorkSpaceLevel(SuperNode supernode) {
-    if (mWorkSpacePanel.getSuperNode().equals(supernode)) return;
-    SuperNode parent = removeActiveSuperNode();
-    while (parent != null && parent != supernode) {
-      parent = removeActiveSuperNode();
+  public SuperNode getActiveSuperNode() {
+    return mActiveSuperNode;
+  }
+
+  public void switchActiveSuperNodeAction(SuperNode supernode) {
+    if (supernode != null && supernode != getActiveSuperNode()) {
+      ActiveSuperNodeAction ase = new ActiveSuperNodeAction(this, supernode);
+      ase.run();
     }
-    mWorkSpacePanel.showNewSuperNode();
- }
+  }
+
+  /** Jump into the SuperNode node (currently present on the WorkSpace) */
+  public void switchToSuperNode(Node node) {
+    switchActiveSuperNodeAction((SuperNode) node.getDataNode());
+  }
 
   /** Pop out one level, if possible */
   public void decreaseWorkSpaceLevel() {
-    SuperNode parent = removeActiveSuperNode();
-    if (parent == null) return;
-    mWorkSpacePanel.showNewSuperNode();
+    switchActiveSuperNodeAction(getActiveSuperNode().getParentNode());
   }
-  
-  
+
   void zoomOut() {
     float mZoomFactor = mEditorProject.getEditorConfig().sZOOM_FACTOR;
     if (mZoomFactor > 0.5) mZoomFactor -= .1;
@@ -400,7 +392,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     //saveEditorConfig(); // TODO: activate
     mWorkSpacePanel.refreshAll();
   }
-  
+
   public void setMessageLabelText(String value) {
     mFooterLabel.setText(value);
   }
@@ -411,7 +403,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     mDynamicElementsPanel.refresh();
     mWorkSpacePanel.refresh();
   }
-  
+
   public final void refreshToolBar() {
     mSceneFlowToolBar.refresh();
   }
@@ -425,7 +417,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     String what= (sel.size() > 1) ? " Nodes " : " Node ";
     setMessageLabelText(sel.size() + what + act);
   }
-  
+
   // TODO: MAYBE ADD THIS TO EDITORACTION
   private void actionMessage(int size, String act) {
     String what= (size > 1) ? " Elements " : " Element ";
@@ -456,7 +448,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     PasteNodesAction action = new PasteNodesAction(this, new Position(0, 0));
     action.run();
   }
-  
+
   public void deleteSelected() {
     int elements = 0;
     List<EditorAction> actions = new ArrayList<>();
@@ -481,12 +473,12 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     } else {
       action = actions.get(0);
     }
-      
+
     actionMessage(elements, "deleted");
     action.run();
   }
-  
-  
+
+
   /** Try to get all edges as straight as possible: menu/button */
   public void straightenAllEdges() {
     List<EditorAction> actions = new ArrayList<>();
@@ -504,7 +496,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     }
     new CompoundAction(this, actions, "Normalize all Edges").run();
   }
-  
+
   /* ######################################################################
    * End provide functionality for the global menu bar
    * ###################################################################### */
@@ -573,6 +565,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     }
 
     // Transferable
+    @Override
     public Object getTransferData(DataFlavor flavor) {
       if (isDataFlavorSupported(flavor)) {
         return image;
@@ -581,16 +574,18 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       return null;
     }
 
+    @Override
     public DataFlavor[] getTransferDataFlavors() {
       return flavors;
     }
 
+    @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
       return flavor.equals(DataFlavor.imageFlavor);
     }
   }
 
-  
+
   // Show the bottom part of the project editor
   private void showAuxiliaryEditor() {
     setDividerLocation(mEditorProject.getEditorConfig().sCODE_DIVIDER_LOCATION);
@@ -604,11 +599,12 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
   private void endEdit() {
     if (mCodeEditor.getActiveArea() != null) {
-      mUndoManager.endTextMode();
+      getUndoManager().endTextMode();
       mCodeEditor.getActiveArea().setDeselected();
       mCodeEditor.setDisabled();
     }
   }
+
   // Update when an event happened
   @Override
   public void update(final Object event) {
@@ -629,7 +625,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       endEdit();
       // start text edit here
       if (ev.isActive()) {
-        mUndoManager.startTextMode();
+        getUndoManager().startTextMode();
         ev.getContainer().setSelected();
         mCodeEditor.setEditedObject(ev.getContainer());
       }

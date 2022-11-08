@@ -7,7 +7,15 @@ import java.awt.Dimension;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionEvent;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JSeparator;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
+import javax.swing.TransferHandler;
 
 import de.dfki.grave.AppFrame;
 import de.dfki.grave.editor.dialog.SaveFileDialog;
@@ -36,13 +44,14 @@ public class SceneFlowToolBar extends JToolBar {
   private JButton mSaveProject;
   private JButton mPreferences;
   //private JButton mProjectSettings;
+  private JButton undo, redo;
 
   //Dimension for buttons
   private Dimension tinyButtonDim = new Dimension(35, 35);
   private Dimension smallButtonDim = new Dimension(40, 35);
 
   // Path Display GUI Components
-  private BreadCrumb mBreadCrumb; 
+  private BreadCrumb mBreadCrumb;
 
   // Construct a sceneflow editor toolbar
   public SceneFlowToolBar(final ProjectEditor editor) {
@@ -99,6 +108,7 @@ public class SceneFlowToolBar extends JToolBar {
     /** Correct icons are shown after calling refreshButtons */
     mTogglePalette = add(new AbstractAction("ACTION_SHOW_ELEMENTS",
         ICON_MORE_STANDARD) {
+      @Override
       public void actionPerformed(ActionEvent evt) {
         mEditor.toggleElementEditor();
         refreshButtons();
@@ -109,7 +119,7 @@ public class SceneFlowToolBar extends JToolBar {
     //add(Box.createHorizontalGlue());
     //add(Box.createHorizontalStrut(200));
     add(createSeparator());
-    
+
     //EDIT PROJECT SECTION
     //Save project
     mSaveProject = add(new AbstractAction("ACTION_SAVEPROJECT", ICON_SAVE_STANDARD) {
@@ -165,7 +175,9 @@ public class SceneFlowToolBar extends JToolBar {
     */
 
     //Undo last action
-    JButton undo = add(AppFrame.getInstance().getUndoAction());
+    undo = add(mEditor.getUndoManager().getUndoAction());
+    //AppFrame.getInstance().getUndoAction());
+
     undo.setIcon(ICON_UNDO_STANDARD);
     undo.setRolloverIcon(ICON_UNDO_ROLLOVER);
     undo.setDisabledIcon(ICON_UNDO_DISABLED);
@@ -173,7 +185,8 @@ public class SceneFlowToolBar extends JToolBar {
     sanitizeButton(undo, tinyButtonDim);
 
     //Redo last action
-    JButton redo = add(AppFrame.getInstance().getRedoAction());
+    redo = add(mEditor.getUndoManager().getRedoAction());
+        //AppFrame.getInstance().getRedoAction());
     redo.setIcon(ICON_REDO_STANDARD);
     redo.setRolloverIcon(ICON_REDO_ROLLOVER);
     redo.setDisabledIcon(ICON_REDO_DISABLED);
@@ -267,7 +280,7 @@ public class SceneFlowToolBar extends JToolBar {
     //***********************************************************************
     // Zoom Control
     JButton b;
-    
+
 //  ZOOM IN BUTTON
     b = add(new AbstractAction("ACTION_ZOOM_IN", ICON_ZOOMIN_STANDARD) {
       @Override
@@ -294,10 +307,10 @@ public class SceneFlowToolBar extends JToolBar {
     b.setToolTipText("Zoom Out");
     b.setRolloverIcon(ICON_ZOOMOUT_ROLLOVER);
     sanitizeButton(b, tinyButtonDim);
-  
+
     add(Box.createHorizontalStrut(10));
     add(createSeparator());
-    
+
     //***********************************************************************
     // CONTROL OF ACTIVE SUPERNODES
 
@@ -312,7 +325,7 @@ public class SceneFlowToolBar extends JToolBar {
     b.setRolloverIcon(ICON_UP_ROLLOVER);
     sanitizeButton(b, tinyButtonDim);
     add(Box.createHorizontalStrut(5));
-    
+
     mBreadCrumb = new BreadCrumb(mEditor);
     add(mBreadCrumb);
 
@@ -371,18 +384,20 @@ public class SceneFlowToolBar extends JToolBar {
             : "Show Variables");
   }
   */
-  
-  public void addPathComponent(SuperNode supernode) {
-    mBreadCrumb.addPathComponent(supernode);
+
+  public void updateBreadcrumbs(SuperNode supernode) {
+    mBreadCrumb.update(supernode);
   }
 
+  /*
   public void removePathComponent() {
     mBreadCrumb.removePathComponent();
   }
+   */
 
   public final void refresh() {
     refreshButtons();
     mBreadCrumb.refreshDisplay();
   }
- 
+
 }

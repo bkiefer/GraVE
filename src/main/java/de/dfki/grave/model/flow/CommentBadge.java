@@ -16,7 +16,7 @@ import de.dfki.grave.util.Copyable;
 public class CommentBadge implements ContentHolder, Copyable {
 
   protected SuperNode mParentNode = null;
-  
+
   @XmlElement(name="Text")
   private String text = "";
   @XmlElement(name="Boundary")
@@ -26,10 +26,9 @@ public class CommentBadge implements ContentHolder, Copyable {
     CommentBadge c = new CommentBadge();
     c.mBoundary = b;
     c.mParentNode = parent;
-    c.mParentNode.addComment(c);
     return c;
   }
-  
+
   public String getContent() {
     return text;
   }
@@ -49,7 +48,7 @@ public class CommentBadge implements ContentHolder, Copyable {
   public SuperNode getParentNode() {
     return mParentNode;
   }
-  
+
   @Override
   public CommentBadge deepCopy() {
     CommentBadge result = new CommentBadge();

@@ -115,6 +115,13 @@ public class BasicNode implements ContentHolder {
 
   public BasicNode() {}
 
+  public void addToSupernode() {
+    if (mParentNode.mNodeList.isEmpty()) {
+      mParentNode.setStartNode(this);
+    }
+    mParentNode.mNodeList.add(this);
+  }
+
   /** helper method to get new BasicNode, with no other side effects in the
    *  graph beyond the node being added to the super node s, and it being the
    *  start node in case it's the first node added to s.
@@ -123,10 +130,6 @@ public class BasicNode implements ContentHolder {
     mNodeId = mNodeName = newId;
     mPosition = p;
     mParentNode = s;
-    if (mParentNode.mNodeList.isEmpty()) {
-      mParentNode.setStartNode(this);
-    }
-    mParentNode.mNodeList.add(this);
     return this;
   }
 
@@ -192,7 +195,7 @@ public class BasicNode implements ContentHolder {
     return ! (mComment == null || mComment.isEmpty());
   }
 
-  /** NODE MODIFICATION, ONLY THROUGH ACTION! 
+  /** NODE MODIFICATION, ONLY THROUGH ACTION!
    * @param newNode if null, a new node of the opposite type will be created
    *        otherwise, this is used in an undo operation and the edges from
    *        and to the old node will be now go to/from the new one
@@ -202,7 +205,7 @@ public class BasicNode implements ContentHolder {
   public BasicNode changeType(BasicNode newNode) throws Exception {
     // adapt node lists of parent SuperNode
     SuperNode s = getParentNode();
-    Collection<AbstractEdge> incoming = s.computeIncomingEdges(this); 
+    Collection<AbstractEdge> incoming = s.computeIncomingEdges(this);
     if (newNode == null) {
       if (this instanceof SuperNode) {
         SuperNode n = (SuperNode)this;
@@ -262,21 +265,21 @@ public class BasicNode implements ContentHolder {
     if ((e instanceof EpsilonEdge) || e instanceof TimeoutEdge) {
       mDEdge = null; return;
     } else if (e instanceof ForkingEdge) {
-      mFEdgeList.remove((ForkingEdge) e); return;
+      mFEdgeList.remove(e); return;
     } else if (e instanceof GuardedEdge) {
-      mCEdgeList.remove((GuardedEdge) e); return;
+      mCEdgeList.remove(e); return;
     } else if (e instanceof RandomEdge) {
       mPEdgeList.add((RandomEdge) e); return;
     } else if (e instanceof InterruptEdge)
-      mIEdgeList.remove((InterruptEdge) e);
+      mIEdgeList.remove(e);
   }
 
   /** NODE MODIFICATION */
   public void setPosition(Position value) {
     mPosition = value;
   }
-  
-  /** Return center point (position) of the node: for the model, nodes are 
+
+  /** Return center point (position) of the node: for the model, nodes are
    *  points.
    */
   public Position getPosition() {
@@ -306,7 +309,7 @@ public class BasicNode implements ContentHolder {
     }
     return (SceneFlow) curr;
   }
-  
+
   /* not used
   public boolean isDockTaken(int which) {
     return mDocksTaken.get(which);
@@ -354,11 +357,11 @@ public class BasicNode implements ContentHolder {
     mCmdList.setContent(s);
   }
 
-  
+
   /***********************************************************************/
   /******************** READING THE GRAPH FROM FILE **********************/
   /***********************************************************************/
-  
+
   /** NODE MODIFICATION
    *  (theoretically, though this is never used -> remove? */
   @XmlElement(name="TEdge")
@@ -387,11 +390,11 @@ public class BasicNode implements ContentHolder {
       }
     }
   }
-  
+
   /***********************************************************************/
   /********************** COPY NODES AND SUBGRAPH  ***********************/
   /***********************************************************************/
-  
+
   /** Copy fields for deep copy */
   protected void copyFieldsFrom(BasicNode b) {
     mNodeName = b.mNodeName;
@@ -417,7 +420,7 @@ public class BasicNode implements ContentHolder {
   /*************************************************************************/
   /********************** MISC. PUBLIC ACCESS METHODS **********************/
   /*************************************************************************/
-  
+
   public boolean isStartNode() {
     return mParentNode.isStartNode(this);
   }
@@ -458,7 +461,7 @@ public class BasicNode implements ContentHolder {
     return (mDEdge instanceof TimeoutEdge)
         ? FLAVOUR.TNODE : FLAVOUR.ENODE;
   }
-  
+
   public boolean canAddEdge(AbstractEdge e) {
     FLAVOUR flavour = getFlavour();
     switch (flavour) {
@@ -574,7 +577,7 @@ public class BasicNode implements ContentHolder {
   public String toString() {
     return mNodeId + "[" + mNodeName + "]" + mPosition;
   }
-  
+
   /** Returns a fresh Point2D for the given dock, which still must be
    *  translated by the center point of the node
    */

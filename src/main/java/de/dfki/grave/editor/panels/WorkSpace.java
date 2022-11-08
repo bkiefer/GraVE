@@ -52,18 +52,18 @@ import de.dfki.grave.util.evt.EventDispatcher;
 public class WorkSpace extends JPanel implements ProjectElement {
   protected static final Logger logger = LoggerFactory.getLogger(WorkSpace.class);
 
-  private static AttributedString sEdgeCreationHint = 
+  private static AttributedString sEdgeCreationHint =
       new AttributedString("Select Target Node");
   // Drag & Drop support
   @SuppressWarnings("unused")
   private DropTarget mDropTarget;
-  
+
   // Elements to draw
   protected final Map<BasicNode, Node> mNodeSet = new IdentityHashMap<>();
   private final Map<CommentBadge, Comment> mCmtSet = new IdentityHashMap<>();
   private final Map<AbstractEdge, Edge> mEdges = new IdentityHashMap<>();
 
-  
+
   // Snap to grid support: TODO: is there a more sensible place for this?
   private GridManager mGridManager = null;
 
@@ -76,12 +76,12 @@ public class WorkSpace extends JPanel implements ProjectElement {
   // The project editor
   private final ProjectEditor mEditor;
   private float mZoomFactor = 1.0f;
-  
+
   // to suspend mouse input when the workspace changes drastically
   private boolean mIgnoreMouseInput = false;
 
   private WorkSpaceMouseHandler mMouseHandler;
-  
+
   /**
    *
    *
@@ -98,9 +98,6 @@ public class WorkSpace extends JPanel implements ProjectElement {
     // init layout
     setLayout(new SceneFlowLayoutManager());
     setBorder(BorderFactory.createEmptyBorder());
-
-    // show all elements
-    showCurrentWorkSpace();
   }
 
   /** Inhibit mouse actions for a while. */
@@ -112,7 +109,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
   protected boolean shouldIgnoreMouseInput() {
     return mIgnoreMouseInput;
   }
-  
+
   //
   public void refresh() {
     mObservable.update(null);
@@ -137,7 +134,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
       c.update();
     }
     revalidate();
-    repaint(100);    
+    repaint(100);
   }
 
   /** Return the SuperNode this WorkSpace currently displays */
@@ -157,20 +154,20 @@ public class WorkSpace extends JPanel implements ProjectElement {
   public ProjectEditor getEditor() {
     return mEditor;
   }
-  
+
   /* ######################################################################
    * Zoom Methods, followed by Coordinate transformations
    * ###################################################################### */
- 
+
   /* The split in x and y for the next four methods is currently not necessary,
    * for possible future extensions, where x and y might behave differently
    */
-  
+
   /** Convert from model x position to x view position */
   public int toViewXPos(int modx) {
     return (int)(modx * mZoomFactor);
   }
-  
+
   /** Convert from model y position to y view position */
   public int toViewYPos(int mody) {
     return (int)(mody * mZoomFactor);
@@ -195,7 +192,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
   public Point toViewPoint(Position val) {
     return new Point(toViewXPos(val.getXPos()), toViewYPos(val.getYPos()));
   }
-  
+
   /** Convert from view to model coordinates */
   public Boundary toModelBoundary(Rectangle r) {
     int x = toModelXPos(r.x);
@@ -204,7 +201,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
     int height = toModelYPos(r.y + r.height) - y;
     return new Boundary(x, y, width, height);
   }
-  
+
   /** Convert from model to view coordinates */
   public Rectangle toViewRectangle(Boundary r) {
     int x = toViewXPos(r.getXPos());
@@ -213,11 +210,11 @@ public class WorkSpace extends JPanel implements ProjectElement {
     int height = toViewYPos(r.getYPos() + r.getHeight()) - y;
     return new Rectangle(x, y, width, height);
   }
-  
+
   /* ######################################################################
    * Node/Edge/Comment access methods
    * ###################################################################### */
-  
+
   private Node getNode(String id) {
     for (Node node : mNodeSet.values()) {
       if (node.getDataNode().getId().equals(id)) {
@@ -231,11 +228,11 @@ public class WorkSpace extends JPanel implements ProjectElement {
   Node getView(BasicNode n) {
     return mNodeSet.get(n);
   }
-  
+
   Iterable<Node> getNodes() {
     return mNodeSet.values();
   }
-  
+
   private class EdgeIterator implements Iterator<Edge> {
 
     Iterator<Node> nodeIt = mNodeSet.values().iterator();
@@ -309,7 +306,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
           mNodeSet.get(e.getTargetNode()));
     }
   }
-  
+
   public void showNewSuperNode() {
     clearCurrentWorkspace();
     showCurrentWorkSpace();
@@ -356,7 +353,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
         new ElementSelectedEvent(n == null ? getSuperNode() : n);
     EventDispatcher.getInstance().convey(ev);
   }
-  
+
   /** Helper function for dragNodes */
   private Map<Node, Point> computeNewPositions(Point moveVec) {
     Map<Node, Point> newPositions =
@@ -418,7 +415,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
     Map<BasicNode, Position> oldPositions =
         new IdentityHashMap<>(mNodeStartPositions.size());
     for (Map.Entry<Node, Point> entry : mNodeStartPositions.entrySet()) {
-      oldPositions.put(entry.getKey().getDataNode(), 
+      oldPositions.put(entry.getKey().getDataNode(),
           toModelPos(entry.getValue()));
     }
     new MoveNodesAction(getEditor(), oldPositions, newPositions).run();
@@ -441,7 +438,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
   public Node findNodeAtPoint(Point p) {
     return findNodeAtPoint(mNodeSet.values(), p);
   }
-  
+
   /** Where are the grid points (crosses):
    * (3 * offset + col * gridWidth, 3 * offsets + row * gridHeight)
    * where gridWidth = nodeWidth * config.sGRID_SCALE * config.sZOOM_FACTOR
@@ -470,8 +467,8 @@ public class WorkSpace extends JPanel implements ProjectElement {
         } else {
           g2d.setColor(Color.GRAY.brighter());
         }
-        int xx = (int)(x + offset.x); 
-        int yy = (int)(y + offset.y);
+        int xx = x + offset.x;
+        int yy = y + offset.y;
         // draw small cross
         int width = (int)(gridWidth / 20);
         g2d.drawLine(xx - width, yy, xx + width, yy);
@@ -479,7 +476,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
       }
     }
   }
-  
+
   /**
    */
   private void paintGrid(Graphics g) {
@@ -549,7 +546,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
       setBackground(Color.WHITE);
     }
 
-    Rectangle2D areaSelection = mMouseHandler.getAreaSelection(); 
+    Rectangle2D areaSelection = mMouseHandler.getAreaSelection();
     if (areaSelection != null) {
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       g2d.setStroke(new BasicStroke(3.0f));
@@ -567,7 +564,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
       }
     }
   }
-  
+
   /** Add our own update method */
   public class Observable extends java.util.Observable {
 
@@ -580,11 +577,11 @@ public class WorkSpace extends JPanel implements ProjectElement {
   // ######################################################################
   // Delegate functions to mouse handler
   // ######################################################################
-  
+
   public void selectNodes(Collection<BasicNode> nodes) {
     mMouseHandler.selectNodes(nodes);
   }
-  
+
   public void startNewEdge(AbstractEdge edge, Point p) {
     Node sourceNode = findNodeAtPoint(p);
 
@@ -596,7 +593,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
     mMouseHandler.startNewEdge(edge, sourceNode);
     setMessageLabelText("Select target node or click on workspace to abort");
   }
-  
+
   AbstractEdge getSelectedEdge() {
     return mMouseHandler.getSelectedEdge();
   }
@@ -608,19 +605,19 @@ public class WorkSpace extends JPanel implements ProjectElement {
   Collection<CommentBadge> getSelectedComments() {
     return commentModels(mMouseHandler.getSelectedComments());
   }
-  
+
   /** Add an item with name and action a to the menu m */
   public static void addItem(JPopupMenu m, String name, ActionListener a) {
     JMenuItem item = new JMenuItem(name);
     item.addActionListener(a);
     m.add(item);
   }
-  
+
   /** Return true if something on the workspace is selected */
   public boolean isSomethingSelected() {
     return mMouseHandler.isSomethingSelected();
   }
-  
+
  // ######################################################################
  // Context menus: nodes/global
  // ######################################################################
@@ -642,12 +639,12 @@ public class WorkSpace extends JPanel implements ProjectElement {
       for (AbstractEdge e : inner) {
         acts.add(new StraightenEdgeAction(ed, e));
       }
-      addItem(pop, "Straighten Edges", 
+      addItem(pop, "Straighten Edges",
           new CompoundAction(ed, acts, "Straighten Edges"));
     }
     pop.show(this, evt.getX() , evt.getY());
   }
-  
+
   /**
    * Eventually show "Paste" menu item, when clicking on workspace
    */
@@ -658,7 +655,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
     // paste nodes menu item
     if (! getEditor().mClipboard.isEmpty()) {
       JMenuItem itemPasteNodes = new JMenuItem("Paste");
-      PasteNodesAction pasteAction = new PasteNodesAction(getEditor(), 
+      PasteNodesAction pasteAction = new PasteNodesAction(getEditor(),
           toModelPos(event.getPoint()));
       itemPasteNodes.addActionListener(pasteAction);
       pop.add(itemPasteNodes);
@@ -669,7 +666,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
     pop.add(refresh);
     pop.show(this, eventX, eventY);
   }
-   
+
   // ######################################################################
   // Helper functions for undoable actions for nodes and edges
   // ######################################################################
@@ -776,7 +773,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
       removeFromWorkSpace(edge);
   }
 
-  /** Add a view for this edge, requires that the corresponding node views 
+  /** Add a view for this edge, requires that the corresponding node views
    *  already exist.
    */
   public void addEdge(AbstractEdge e) {
@@ -786,9 +783,9 @@ public class WorkSpace extends JPanel implements ProjectElement {
   }
 
   /** Add a set of edge views for the given models
-   * 
+   *
    *  Prerequisite: the node views and models the edges and their respective
-   *     models exist, and were not modified in a way which interferes with, 
+   *     models exist, and were not modified in a way which interferes with,
    *     e.g., the docking points, or the positions.
    */
   public void addEdges(Collection<AbstractEdge> edges) {
@@ -839,15 +836,15 @@ public class WorkSpace extends JPanel implements ProjectElement {
     List<BasicNode> result = new ArrayList<>(l.size());
     for (Node n: l) result.add(n.getDataNode());
     return result;
-  } 
-  
+  }
+
   protected List<CommentBadge> commentModels(Collection<Comment> l) {
     List<CommentBadge> result = new ArrayList<>(l.size());
     for (Comment n: l) result.add(n.getData());
     return result;
   }
-  
-  /** Remove the node and edge views that belong to the models from the view 
+
+  /** Remove the node and edge views that belong to the models from the view
    */
   @SuppressWarnings("unchecked")
   public void removeNodes(Collection<BasicNode> nodes, Object[] edgeLists) {
@@ -870,6 +867,13 @@ public class WorkSpace extends JPanel implements ProjectElement {
   // ######################################################################
   // actions for comments
   // ######################################################################
+
+  /** Create a new CommentBadge */
+  public CommentBadge createComment(Point point) {
+    Position pos = toModelPos(point);
+    return CommentBadge.createComment(mEditor.getActiveSuperNode(),
+        new Boundary(pos.getXPos(), pos.getYPos(), 100, 100));
+  }
 
   /** Add a new comment view */
   public void addComment(CommentBadge comment) {

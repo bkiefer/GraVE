@@ -15,15 +15,15 @@ import de.dfki.grave.model.flow.SuperNode;
 /** A breadcrumb panel for the current path of supernodes */
 @SuppressWarnings("serial")
 public class BreadCrumb extends JPanel {
-  
+
   private final ProjectEditor mEditor;
-  
+
   // The supernodes of the path display
   private final LinkedList<JButton> mPathComponents = new LinkedList<>();
-  
+
   private JScrollBar mPathScrollBar;
   private JPanel inner;
-  
+
   public BreadCrumb(ProjectEditor editor) {
     mEditor = editor;
     setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -44,12 +44,12 @@ public class BreadCrumb extends JPanel {
     pane.setHorizontalScrollBar(mPathScrollBar);
     add(pane);
   }
-  
+
   private JButton createPathButton(SuperNode supernode) {
     final Action action = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        mEditor.selectNewWorkSpaceLevel(supernode);
+        mEditor.switchActiveSuperNodeAction(supernode);
       }
     };
     action.putValue(Action.NAME, supernode.getName());
@@ -77,7 +77,7 @@ public class BreadCrumb extends JPanel {
     });
     return pathElement;
   }
-  
+
   // Refresh the path display
   public void refreshDisplay() {
     // Remove all path components
@@ -100,17 +100,16 @@ public class BreadCrumb extends JPanel {
     revalidate();
     repaint(100);
   }
-  
+
   // TODO: adding not explicit but via refresh method
-  public void addPathComponent(SuperNode supernode) {
-    mPathComponents.addLast(createPathButton(supernode));
+  public void update(SuperNode supernode) {
+    mPathComponents.clear();
+    do {
+      mPathComponents.addFirst(createPathButton(supernode));
+      supernode = supernode.getParentNode();
+    } while (supernode != null);
     refreshDisplay();
     int va = mPathScrollBar.getMaximum();
     mPathScrollBar.setValue(va);
-  }
-
-  public void removePathComponent() {
-    mPathComponents.removeLast();
-    refreshDisplay();
   }
 }

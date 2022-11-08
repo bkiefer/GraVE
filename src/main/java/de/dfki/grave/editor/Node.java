@@ -292,7 +292,7 @@ public final class Node extends EditorComponent {
     if (!isBasic()
         && event.getButton() == MouseEvent.BUTTON1
         && event.getClickCount() == 2) {
-      getEditor().increaseWorkSpaceLevel(this);
+      getEditor().switchToSuperNode(this);
     }
   }
 

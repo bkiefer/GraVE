@@ -3,7 +3,6 @@ package de.dfki.grave;
 import static de.dfki.grave.Constants.DATE_FORMAT;
 import static de.dfki.grave.Icons.*;
 import static de.dfki.grave.Preferences.*;
-import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -21,7 +20,6 @@ import javax.swing.filechooser.FileView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.editor.action.UndoRedoProvider;
 import de.dfki.grave.editor.dialog.AboutDialog;
 import de.dfki.grave.editor.dialog.NewProjectDialog;
 import de.dfki.grave.editor.dialog.OptionsDialog;
@@ -30,7 +28,6 @@ import de.dfki.grave.editor.panels.AddButton;
 import de.dfki.grave.editor.panels.ClipBoard;
 import de.dfki.grave.editor.panels.EditorMenuBar;
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.editor.panels.WorkSpaceMouseHandler;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.ResourceLoader;
 
@@ -39,19 +36,15 @@ import de.dfki.grave.util.ResourceLoader;
  */
 @SuppressWarnings("serial")
 public final class AppFrame extends JFrame implements ChangeListener {
-  public static final Logger mLogger = LoggerFactory.getLogger(MainGrave.class);
-  
-  // The singelton editor instance
+  public static final Logger mLogger = LoggerFactory.getLogger(AppFrame.class);
+
+  // The singleton editor instance
   public static AppFrame sInstance = null;
   // The editor's GUI components
   private final EditorMenuBar mEditorMenuBar;
   private final JTabbedPane mProjectEditors;
-  
-  // Global undo/redo for global menu
-  private final AbstractAction undoAction;
-  private final AbstractAction redoAction;
-  
-  // Get the singelton editor instance
+
+  // Get the singleton editor instance
   public synchronized static AppFrame getInstance() {
     if (sInstance == null) {
       sInstance = new AppFrame();
@@ -105,62 +98,27 @@ public final class AppFrame extends JFrame implements ChangeListener {
     public void componentHidden(ComponentEvent e) { }
   };
 
-  
+
   // Private construction of an editor
   private AppFrame() {
     loadUserPrefs();
 
     getContentPane().setBackground(Color.WHITE);
     configureUI();
-    
+
     // SET FONTS
     setUIFonts();
 
     // SET BACKGROUNDS
     setUIBackgrounds();
 
-    undoAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        ProjectEditor pe = getSelectedProjectEditor();
-        if (pe != null) {
-          UndoRedoProvider um = pe.getUndoManager();
-          if (um != null) {
-            um.doUndo(this, e);
-            refreshMenuBar();
-            pe.refreshToolBar();
-            //EventDispatcher.getInstance().convey(new ProjectChangedEvent(this));
-          }
-        }
-      }
-    };
-    undoAction.putValue(Action.ACCELERATOR_KEY, getAccel(KeyEvent.VK_Z));
-    undoAction.putValue(Action.NAME, "Undo");
-    redoAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        ProjectEditor pe = getSelectedProjectEditor();
-        if (pe != null) {
-          UndoRedoProvider um = pe.getUndoManager();
-          if (um != null) {
-            um.doRedo(this, e);
-            refreshMenuBar();
-            pe.refreshToolBar();
-            //EventDispatcher.getInstance().convey(new ProjectChangedEvent(this));
-          }
-        }
-      }
-    };
-    redoAction.putValue(Action.ACCELERATOR_KEY, 
-        getAccel(KeyEvent.VK_Z, SHIFT_DOWN_MASK));
-    redoAction.putValue(Action.NAME, "Redo");
     // Init the menu bar
 
     // Init the project editor list
     mProjectEditors = new JTabbedPane(
             JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
     //mObservable.addObserver(mProjectEditors);
-    
+
     mEditorMenuBar = new EditorMenuBar(this);
     // Hide the menu bar
     mEditorMenuBar.setVisible(true);
@@ -179,9 +137,9 @@ public final class AppFrame extends JFrame implements ChangeListener {
 
     // Init the editor application frame
     setJMenuBar(mEditorMenuBar);
-    
+
     setContentPane(mProjectEditors);
-    
+
     Dimension editorSize = getPrefs().getFrameDimension();
 
     setPreferredSize(editorSize);
@@ -190,21 +148,12 @@ public final class AppFrame extends JFrame implements ChangeListener {
     setName(getPrefs().FRAME_NAME);
     checkAndSetLocation();
     pack();
-    
+
     refresh();
 
     // handle resize and positioning
     this.addComponentListener(mComponentListener);
   }
-  
-  public void refreshUndoRedo(UndoRedoProvider.UndoRedoAction undo, 
-      UndoRedoProvider.UndoRedoAction redo) {
-    undo.refreshState(undoAction);
-    redo.refreshState(redoAction);
-  }
-  
-  public AbstractAction getUndoAction() { return undoAction; } 
-  public AbstractAction getRedoAction() { return redoAction; }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
   public static synchronized void configureUI() {
@@ -238,7 +187,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
       mLogger.error("Error: " + exc.getMessage());
     }
   }
-  
+
   private static void setUIFonts() {
     Font uiFont = getPrefs().editorConfig.sUI_FONT.getFont();
     Font treeFont = getPrefs().editorConfig.sTREE_FONT.getFont();
@@ -301,12 +250,12 @@ public final class AppFrame extends JFrame implements ChangeListener {
     UIManager.put("ScrollBar.thumb", Color.LIGHT_GRAY);
   }
 
-  
+
   public void clearRecentProjects() {
     clearRecentProjects();
     mEditorMenuBar.refreshRecentFileMenu();
   }
-  
+
   private void checkAndSetLocation() {
     Point finalPos = new Point(0, 0);
     Point editorPosition = getPrefs().getFramePosition();
@@ -343,20 +292,20 @@ public final class AppFrame extends JFrame implements ChangeListener {
   public final ProjectEditor getSelectedProjectEditor() {
     return (ProjectEditor) mProjectEditors.getSelectedComponent();
   }
-  
+
   public final boolean newProject() {
     String[] newName = { "New Project" };
     @SuppressWarnings("unused")
     NewProjectDialog np = new NewProjectDialog(newName);
     if (newName[0] == null) // cancel
       return false;
-    
+
     // Create a new project config, and new EditorProject
     EditorProject epj = new EditorProject(newName[0]);
 
     // Create a new project editor
     final ProjectEditor editor = new ProjectEditor(epj);
-
+    epj.setChanged(true);
     // Add the new project editor
     addProjectTab(editor);
 
@@ -381,7 +330,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
     @Override
     public String getDescription() { return "GraVE Project File Filter"; }
   }
-  
+
   ////////////////////////////////////////////////////////////////////////////
   // Open a new project editor with chooser
   public final boolean openProject() {
@@ -393,7 +342,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
       public final Icon getIcon(final File file) {
         return EditorProject.isProjectDirectory(file) ? Icons.ICON_FILE : null;
       }
-      
+
     });
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     chooser.setFileFilter(new GraveFileFilter());
@@ -528,10 +477,10 @@ public final class AppFrame extends JFrame implements ChangeListener {
   void addProjectTab(ProjectEditor editor) {
     EditorProject project = editor.getEditorProject();
     String tabName = project.getProjectName();
-    String path = project.isNew() 
-        ? "" 
+    String path = project.isNew()
+        ? ""
         : project.getProjectPath().getAbsolutePath();
-    
+
     JEditorPane ep = new JEditorPane();
     ep.setEditable(false);
     mProjectEditors.addTab(null, new JScrollPane(ep));
@@ -606,21 +555,28 @@ public final class AppFrame extends JFrame implements ChangeListener {
         String projectName = mProjectEditors.getTitleAt(mProjectEditors.getSelectedIndex()).replace("*", "");
         project.setProjectName(projectName);
         // Create a new file chooser
-        final JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
+        final JFileChooser chooser = new JFileChooser(new File("."));
         // Configure The File Chooser
         // TODO: Set the correct view and filter
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
         // Show the file chooser in open mode
         final int option = chooser.showOpenDialog(this);
         // Check the result of the file chooser
         if (option == JFileChooser.APPROVE_OPTION) {
           // Get the chooser's selected file
           final File file = chooser.getSelectedFile();
+          if (file.exists()) {// Print an error message
+            mLogger.error("Error: file or directory exists: '" + projectName + "'");
+            // And return failure here
+            return false;
+          }
+          String newName = file.getName();
+          project.setProjectName(newName);
           // Try to write the editor project
-          if (project.saveNewProject(file)) {
-            // Refresh the title of the project tab
-            //final int index = mProjectEditors.getSelectedIndex();
-            setTabNameSaved();
+          if (project.saveNewProject(file.getParentFile())) {
+            mProjectEditors.remove(mProjectEditors.getSelectedIndex());
+            addProjectTab(editor);
             // Update rectent project list
             updateRecent(project);
             // Refresh the appearance
@@ -635,7 +591,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
           }
         } else {
           // Print an error message
-          mLogger.warn("Warning: Canceled saving of a project file");
+          mLogger.debug("Warning: Canceled saving of a project file");
           // And return failure here
           return false;
         }
@@ -684,7 +640,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
     refresh();
     editor = null;
     System.gc();
-    return exitMessage; 
+    return exitMessage;
   }
 
   // Save all project editors
@@ -705,13 +661,13 @@ public final class AppFrame extends JFrame implements ChangeListener {
     System.exit(0);
   }
 
-  public static KeyStroke getAccel(int code, int mask) {
+  public static KeyStroke getAccelMask(int code, int mask) {
     return KeyStroke.getKeyStroke(code,
         mask | Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
   }
 
   public static KeyStroke getAccel(int code) {
-    return getAccel(code, 0);
+    return getAccelMask(code, 0);
   }
 
   //ESCAPE LISTENER- Closes dialog with escape key
@@ -733,7 +689,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
     String path = project.getProjectPath().getAbsolutePath();
     String date = DATE_FORMAT.format(new Date());
     getPrefs().updateRecentProjects(project.getProjectName(), path, date);
-    
+
     mEditorMenuBar.refreshRecentFileMenu();
   }
 
@@ -770,20 +726,22 @@ public final class AppFrame extends JFrame implements ChangeListener {
     }
     refreshMenuBar();
   }
-  
+
   public final void refreshMenuBar() {
     final ProjectEditor editor = getSelectedProjectEditor();
-    boolean hasChanged = 
+    boolean hasChanged =
         (editor != null && editor.getEditorProject().hasChanged());
     // set status of file menu
     mEditorMenuBar.someProjectOpen(
         mProjectEditors.getTabCount() > 0, hasChanged);
-    if (editor != null)
+    if (editor != null) {
       mEditorMenuBar.somethingSelected(
           editor.getWorkSpace().isSomethingSelected(),
           ! ClipBoard.getInstance().isEmpty()
           );
-    
-    mEditorMenuBar.refreshViewOptions();
+      mEditorMenuBar.refreshUndoActions(editor);
+    }
+
+    mEditorMenuBar.refreshViewOptions(editor);
   }
 }

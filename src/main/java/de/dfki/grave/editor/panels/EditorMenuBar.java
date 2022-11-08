@@ -1,6 +1,7 @@
 package de.dfki.grave.editor.panels;
 
 import static de.dfki.grave.AppFrame.getAccel;
+import static de.dfki.grave.AppFrame.getAccelMask;
 import static de.dfki.grave.Preferences.getPrefs;
 import static java.awt.event.InputEvent.*;
 
@@ -28,11 +29,11 @@ public final class EditorMenuBar extends JMenuBar {
   // private final Logger mLogger =
   // LoggerFactory.getLogger(EditorMenuBar.class);
 
-  private static final int[] sDYNAMIC_KEYS = { 
+  private static final int[] sDYNAMIC_KEYS = {
       KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5,
       KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8, KeyEvent.VK_9
   };
-  
+
   private final AppFrame mAppInstance;
 
   // File menu
@@ -43,6 +44,8 @@ public final class EditorMenuBar extends JMenuBar {
   private JMenuItem mSaveAllMenuItem;
   // Edit menu
   private JMenu mEditMenu;
+  private JMenuItem mUndoMenuItem;
+  private JMenuItem mRedoMenuItem;
   private JMenuItem mCutMenuItem;
   private JMenuItem mCopyMenuItem;
   private JMenuItem mPasteMenuItem;
@@ -73,17 +76,23 @@ public final class EditorMenuBar extends JMenuBar {
   private void setShowGrid(boolean flag) {
     getEditorConfig().sSHOWGRID = flag;
   }
-  
+
   private void setShowNodeIds(boolean flag) {
     getEditorConfig().sSHOWIDSOFNODES = flag;
   }
-  
+
   private void setSnapToGrid(boolean flag) {
     getEditorConfig().sSNAPTOGRID = flag;
   }
-  
+
   // Refresh the state of all items
-  public final void refreshViewOptions() {
+  public final void refreshUndoActions(ProjectEditor editor) {
+    mUndoMenuItem.setAction(editor.getUndoManager().getUndoAction());
+    mRedoMenuItem.setAction(editor.getUndoManager().getRedoAction());
+  }
+
+  // Refresh the state of all items
+  public final void refreshViewOptions(ProjectEditor editor) {
     // View Menu
     if (mViewMenu.isEnabled()) {
       mShowGridMenuItem.setState(getEditorConfig().sSHOWGRID);
@@ -143,6 +152,7 @@ public final class EditorMenuBar extends JMenuBar {
           JMenuItem recentFileMenuItem = new JMenuItem(rp.name);
           recentFileMenuItem.setAccelerator(getAccel(sDYNAMIC_KEYS[i++]));
           recentFileMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               mAppInstance.openProject(projectDir);
             }
@@ -198,13 +208,13 @@ public final class EditorMenuBar extends JMenuBar {
         (e) -> mAppInstance.save());
     // someOpen
     mSaveAsMenuItem = addItem(fileMenu, "Save As",
-        getAccel(KeyEvent.VK_S, SHIFT_DOWN_MASK),
+        getAccelMask(KeyEvent.VK_S, SHIFT_DOWN_MASK),
         (e) -> mAppInstance.saveAs());
     // mSaveAsMenuItem.setIcon(new ImageIcon("data/img/saveas.png"));
 
     // someOpen
     mSaveAllMenuItem = addItem(fileMenu, "Save All",
-        getAccel(KeyEvent.VK_S, ALT_DOWN_MASK),
+        getAccelMask(KeyEvent.VK_S, ALT_DOWN_MASK),
         (e) -> mAppInstance.saveAll());
     // mSaveAllMenuItem.setIcon(new ImageIcon("data/img/saveall.png"));
 
@@ -219,8 +229,16 @@ public final class EditorMenuBar extends JMenuBar {
   private void initEditMenu() {
     mEditMenu = new JMenu("Edit");
 
-    mEditMenu.add(mAppInstance.getUndoAction());
-    mEditMenu.add(mAppInstance.getRedoAction());
+    ProjectEditor pe = getActiveEditor();
+    if (pe != null) {
+      mUndoMenuItem = mEditMenu.add(pe.getUndoManager().getUndoAction());
+      mRedoMenuItem = mEditMenu.add(pe.getUndoManager().getRedoAction());
+    } else {
+      mUndoMenuItem = addItem(mEditMenu, "Undo", getAccel(KeyEvent.VK_Z),
+          (e) -> {});
+      mRedoMenuItem = addItem(mEditMenu, "Redo",
+          getAccelMask(KeyEvent.VK_Z, SHIFT_DOWN_MASK), (e) -> {});
+    }
     mEditMenu.add(new JSeparator());
     // sth selected
     mCopyMenuItem = addItem(mEditMenu, "Copy", getAccel(KeyEvent.VK_C),
@@ -240,10 +258,10 @@ public final class EditorMenuBar extends JMenuBar {
     mEditMenu.add(new JSeparator());
     // always
     addItem(mEditMenu, "Normalize all Edges",
-        getAccel(KeyEvent.VK_N, ALT_DOWN_MASK),
+        getAccelMask(KeyEvent.VK_N, ALT_DOWN_MASK),
         (e) -> getActiveEditor().normalizeAllEdges());
     addItem(mEditMenu, "Straighen all Edges",
-        getAccel(KeyEvent.VK_B, ALT_DOWN_MASK),
+        getAccelMask(KeyEvent.VK_B, ALT_DOWN_MASK),
         (e) -> getActiveEditor().straightenAllEdges());
     add(mEditMenu);
   }

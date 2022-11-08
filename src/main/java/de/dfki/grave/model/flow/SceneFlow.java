@@ -110,12 +110,12 @@ public final class SceneFlow extends SuperNode {
       inputStream = new FileInputStream(file);
       return loadFrom(inputStream, file.getAbsolutePath());
     } catch (FileNotFoundException e) {
-      mLogger.error("Cannot find or opensceneflow file '{}'", file);
+      mLogger.error("Cannot find or open sceneflow file '{}'", file);
     }
     return null;
   }
 
-  /** @param path is only for error reporting */ 
+  /** @param path is only for error reporting */
   public static SceneFlow loadFrom(InputStream inputStream, String path) {
     SceneFlow mSceneFlow = (SceneFlow) JaxbUtilities.unmarshal(inputStream,
         path,
@@ -139,7 +139,7 @@ public final class SceneFlow extends SuperNode {
     // Check if the configuration file does exist
     if (!file.exists()) {
       // Print a warning message in this case
-      mLogger.warn("Creating the new sceneflow file '{}'", file);
+      mLogger.info("Creating the new sceneflow file '{}'", file);
       // Create a new configuration file now
       try {
         // Try to create a new configuration file

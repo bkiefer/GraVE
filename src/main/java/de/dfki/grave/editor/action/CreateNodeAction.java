@@ -20,13 +20,15 @@ public class CreateNodeAction extends EditorAction {
   }
 
   protected void doIt() {
-    if (onActiveWorkSpace()) 
+    // add to model
+    mNode.get(0).addToSupernode();
+    if (onActiveWorkSpace())
       getWorkSpace().addNodeView(mNode.get(0));
   }
 
   protected void undoIt() {
     Object[] edgeLists = mSuperNode.removeNodes(mNode);
-    if (onActiveWorkSpace()) 
+    if (onActiveWorkSpace())
       getWorkSpace().removeNodes(mNode, edgeLists);
   }
 

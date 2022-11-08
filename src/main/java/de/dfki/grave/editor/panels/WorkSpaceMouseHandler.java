@@ -34,23 +34,23 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
   private Point mLastMousePos = null;
 
   private Rectangle2D.Double mAreaSelection = null;
-  
+
   // Selected Elements
   protected Edge mSelectedEdge = null;
   protected Map<Comment, Comment> mSelectedComments = new IdentityHashMap<>();
   protected Map<Node,Node> mSelectedNodes = new IdentityHashMap<>();
   protected boolean mDoAreaSelection = false;
-  
+
   private AbstractEdge mEdgeInProgress = null;
   private Node mEdgeSourceNode = null;
-  
+
   private WorkSpace mWorkspace;
-  
+
   public WorkSpaceMouseHandler(WorkSpace ws) {
     mWorkspace = ws;
     setKeyBindings();
   }
-  
+
   /**
    * Implementation of the delete button. the del-key is bound to the function
    * mWorkspace.deleteSelectedItem this detects which items are selected and
@@ -82,25 +82,25 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
       }
     });
   }
-  
+
   // #########################################################################
   // Element Selection
   // #########################################################################
-  
+
   Rectangle2D getAreaSelection() {
     return mAreaSelection;
   }
-  
+
   Node edgeConstructionSource() {
     return mEdgeSourceNode;
   }
-        
+
   /** Return true if something on the workspace is selected */
   boolean isSomethingSelected() {
     return ! mSelectedNodes.isEmpty() || mSelectedEdge != null
         || ! mSelectedComments.isEmpty();
   }
-  
+
   /** */
   private void deselectAllNodes() {
     for (Node node : mSelectedNodes.keySet()) {
@@ -149,12 +149,12 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
       mSelectedEdge = null;
     }
   }
-  
+
   void deselectEdge(Edge e) {
     if (mSelectedEdge != null && mSelectedEdge == e)
       deselectEdge();
   }
-  
+
   /** Select a single node, leave all other selected nodes selected */
   private void selectNode(Node n) {
     deselectEdge();
@@ -205,7 +205,7 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
   Collection<Comment> getSelectedComments() {
     return mSelectedComments.keySet();
   }
-  
+
   AbstractEdge getSelectedEdge() {
     return (mSelectedEdge == null) ? null : mSelectedEdge.getDataEdge();
   }
@@ -232,8 +232,9 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
       // and we exit the method without creating a new edge.
       Node targetNode = mWorkspace.findNodeAtPoint(p);
       if (targetNode != null) {
+        AbstractEdge e = AbstractEdge.getNewEdge(mEdgeInProgress);
         new CreateEdgeAction(mWorkspace.getEditor(), mEdgeSourceNode.getDataNode(),
-            targetNode.getDataNode(), mEdgeInProgress).run();
+            targetNode.getDataNode(), e).run();
       }
 
       // edge creation ends
@@ -354,7 +355,7 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
         mWorkspace.requestFocus();
       }
     }
-    if (! somethingSelected()) 
+    if (! somethingSelected())
       mWorkspace.launchElementSelectedEvent(null);
   }
 
@@ -402,7 +403,7 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
         mDoAreaSelection = true;
       }
     }
-    if (! somethingSelected()) 
+    if (! somethingSelected())
       mWorkspace.launchElementSelectedEvent(null);
   }
 
@@ -451,7 +452,7 @@ public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener
       }
     }
 
-    if (! somethingSelected()) 
+    if (! somethingSelected())
       mWorkspace.launchElementSelectedEvent(null);
   }
 

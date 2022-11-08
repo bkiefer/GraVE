@@ -9,34 +9,30 @@ import de.dfki.grave.model.flow.BasicNode;
  */
 public class CreateEdgeAction extends EditorAction {
 
-  private AbstractEdge mEdge, mPrototype;
+  private AbstractEdge mEdge;
   private BasicNode mSourceNode, mTargetNode;
 
-  public CreateEdgeAction(ProjectEditor editor, 
+  public CreateEdgeAction(ProjectEditor editor,
       BasicNode sourceNode, BasicNode targetNode, AbstractEdge dataEdge) {
     super(editor);
     mSourceNode = sourceNode;
     mTargetNode = targetNode;
-    mPrototype = dataEdge;
-    mEdge = null;
+    mEdge = dataEdge;
   }
 
-
   protected void doIt() {
-    if (mEdge == null) {
-      mEdge = AbstractEdge.getNewEdge(mPrototype);
-      mEdge.connect(mSourceNode, mTargetNode);
-      // also computes dock points
-      mEdge.straightenEdge();
-      mSourceNode.addEdge(mEdge);
-    }
-    if (onActiveWorkSpace()) 
+    // add to model
+    mEdge.connect(mSourceNode, mTargetNode);
+    // also computes dock points
+    mEdge.straightenEdge();
+    mSourceNode.addEdge(mEdge);
+    if (onActiveWorkSpace())
       getWorkSpace().addEdge(mEdge);
   }
 
   protected void undoIt() {
     mEdge.getSourceNode().removeEdge(mEdge);
-    if (onActiveWorkSpace()) 
+    if (onActiveWorkSpace())
       getWorkSpace().removeEdge(mEdge);
   }
 
