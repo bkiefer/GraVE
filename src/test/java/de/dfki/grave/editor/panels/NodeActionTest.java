@@ -43,7 +43,7 @@ public class NodeActionTest extends WorkSpaceTest {
     assertEquals(nodes - 1, getNodeNum());
     int[] nedges = getEdgeNum();
     assertEquals(nedges[1], nedges[0]);
-    assertEquals(edges[0] - 2, nedges[0]);
+    assertEquals(edges[0] - 3, nedges[0]);
     act.undo();
     assertEquals(nodes, getNodeNum());
     nedges = getEdgeNum();
@@ -53,7 +53,7 @@ public class NodeActionTest extends WorkSpaceTest {
     assertEquals(nodes - 1, getNodeNum());
     nedges = getEdgeNum();
     assertEquals(nedges[1], nedges[0]);
-    assertEquals(edges[0] - 2, nedges[0]);
+    assertEquals(edges[0] - 3, nedges[0]);
   }
 
   @Test
@@ -79,6 +79,7 @@ public class NodeActionTest extends WorkSpaceTest {
         (n) -> { n.getEdgeList().forEach((e) -> { ++nedges[1]; }); });
     assertEquals(nedges[1], nedges[0]);
     assertEquals(edges[0], nedges[0]);
+
     act.redo();
     assertEquals(nodes - 1, getNodeNum());
     int[] nedges2 = getEdgeNum();
@@ -100,18 +101,19 @@ public class NodeActionTest extends WorkSpaceTest {
     assertEquals(nodes - 2, getNodeNum());
     int[] nedges = getEdgeNum();
     assertEquals(nedges[1], nedges[0]);
-    assertEquals(edges[0] - 2, nedges[0]);
+    assertEquals(edges[0] - 3, nedges[0]);
 
     act.undo();
     assertEquals(nodes, getNodeNum());
     nedges = getEdgeNum();
     assertEquals(nedges[1], nedges[0]);
     assertEquals(edges[0], nedges[0]);
+
     act.redo();
     assertEquals(nodes - 2, getNodeNum());
     nedges = getEdgeNum();
     assertEquals(nedges[1], nedges[0]);
-    assertEquals(edges[0] - 2, nedges[0]);
+    assertEquals(edges[0] - 3, nedges[0]);
   }
 
   @Test

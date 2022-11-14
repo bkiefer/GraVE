@@ -269,7 +269,7 @@ public class BasicNode implements ContentHolder {
     } else if (e instanceof GuardedEdge) {
       mCEdgeList.remove(e); return;
     } else if (e instanceof RandomEdge) {
-      mPEdgeList.add((RandomEdge) e); return;
+      mPEdgeList.remove(e); return;
     } else if (e instanceof InterruptEdge)
       mIEdgeList.remove(e);
   }
@@ -348,11 +348,13 @@ public class BasicNode implements ContentHolder {
     }
   }*/
 
+  @Override
   public String getContent() {
     return mCmdList.getContent();
   }
 
   /** NODE MODIFICATION */
+  @Override
   public void setContent(String s) {
     mCmdList.setContent(s);
   }
@@ -574,6 +576,7 @@ public class BasicNode implements ContentHolder {
     return result;
   }
 
+  @Override
   public String toString() {
     return mNodeId + "[" + mNodeName + "]" + mPosition;
   }

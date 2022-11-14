@@ -26,6 +26,10 @@
     </Node>
     <SuperNode start="N6" hideLocalVar="false" hideGlobalVar="false" id="S1" name="S1" comment="">
         <Commands></Commands>
+        <PEdge probability="50" target="N7" source="S1" targetdock="3" sourcedock="2">
+            <SourceCtrl xPos="64" yPos="0"/>
+            <TargetCtrl xPos="-64" yPos="0"/>
+        </PEdge>
         <Position xPos="480" yPos="0"/>
         <Node id="N6" name="N6" comment="">
             <Commands>i += 1;</Commands>
@@ -40,5 +44,9 @@
             <Position xPos="640" yPos="160"/>
         </SuperNode>
     </SuperNode>
+    <Node id="N7" name="N7" comment="">
+        <Commands></Commands>
+        <Position xPos="800" yPos="0"/>
+    </Node>
     <ClassPath/>
 </SceneFlow>
