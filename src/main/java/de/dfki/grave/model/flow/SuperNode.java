@@ -75,7 +75,7 @@ public class SuperNode extends BasicNode {
 
   /** No code allowed with SuperNodes, must be associated with the
    *  SuperNode's Start or End Node(s)
-   */
+   *
   @Override
   public String getContent() {
     return null;
@@ -85,7 +85,7 @@ public class SuperNode extends BasicNode {
   public void setContent(String s) {
     throw new UnsupportedOperationException(
         "SuperNode code must moved inside the Node");
-  }
+  }*/
 
   @Override
   public void setComment(String value) {
