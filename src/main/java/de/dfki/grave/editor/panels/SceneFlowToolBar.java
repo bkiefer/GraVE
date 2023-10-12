@@ -22,7 +22,10 @@ import de.dfki.grave.editor.dialog.SaveFileDialog;
 import de.dfki.grave.model.flow.SuperNode;
 
 /**
- * @author Gregor Mehlmann
+ * @author Bernd Kiefer
+ *
+ * The tool bar that is shown above the main editor work panel and the
+ * sceneflow element panel
  */
 @SuppressWarnings({ "serial" })
 public class SceneFlowToolBar extends JToolBar {
@@ -32,8 +35,6 @@ public class SceneFlowToolBar extends JToolBar {
    */
   // The singleton system clipboard
   private final Clipboard mSystemClipBoard = getToolkit().getSystemClipboard();
-  // The parent sceneflow editor
-  private final ProjectEditor mEditor;
 
   // The button GUI components
   private JButton mTogglePalette;
@@ -61,17 +62,11 @@ public class SceneFlowToolBar extends JToolBar {
     setMinimumSize(new Dimension((int) (getPrefs().SCREEN_HORIZONTAL * 0.6), 40));
     //setPreferredSize(new Dimension(SCREEN_HORIZONTAL, 40));
     setMaximumSize(new Dimension(getPrefs().SCREEN_HORIZONTAL, 40));
-    // Initialize the sceneflow editor
-    mEditor = editor;
     // Initialize the GUI components
     setRollover(true);
     setFloatable(false);
     setBorder(BorderFactory.createEmptyBorder(1, 0, 1, 0));
-    initComponents();
-  }
-
-  private WorkSpace getWorkSpace() {
-    return mEditor.getWorkSpace();
+    initComponents(editor);
   }
 
   private void sanitizeButton(JButton b, Dimension bDim) {
@@ -97,7 +92,7 @@ public class SceneFlowToolBar extends JToolBar {
   /**
    *
    */
-  private void initComponents() {
+  private void initComponents(ProjectEditor mEditor) {
 
     //menu separator
     // 3 Layout sections in toolbar
@@ -111,7 +106,7 @@ public class SceneFlowToolBar extends JToolBar {
       @Override
       public void actionPerformed(ActionEvent evt) {
         mEditor.toggleElementEditor();
-        refreshButtons();
+        mEditor.refreshToolBar();
       }
     });
     mTogglePalette.setRolloverIcon(ICON_MORE_ROLLOVER);
@@ -176,8 +171,6 @@ public class SceneFlowToolBar extends JToolBar {
 
     //Undo last action
     undo = add(mEditor.getUndoManager().getUndoAction());
-    //AppFrame.getInstance().getUndoAction());
-
     undo.setIcon(ICON_UNDO_STANDARD);
     undo.setRolloverIcon(ICON_UNDO_ROLLOVER);
     undo.setDisabledIcon(ICON_UNDO_DISABLED);
@@ -186,7 +179,6 @@ public class SceneFlowToolBar extends JToolBar {
 
     //Redo last action
     redo = add(mEditor.getUndoManager().getRedoAction());
-        //AppFrame.getInstance().getRedoAction());
     redo.setIcon(ICON_REDO_STANDARD);
     redo.setRolloverIcon(ICON_REDO_ROLLOVER);
     redo.setDisabledIcon(ICON_REDO_DISABLED);
@@ -336,10 +328,11 @@ public class SceneFlowToolBar extends JToolBar {
     Action action = new AbstractAction("ACTION_SCREEN_SHOT", ICON_SCREENSHOT_STANDARD) {
       @Override
       public void actionPerformed(ActionEvent evt) {
-        TransferHandler handler = getWorkSpace().getTransferHandler();
+        TransferHandler handler = mEditor.getWorkSpace().getTransferHandler();
 
         if (handler != null) {
-          handler.exportToClipboard(getWorkSpace(), mSystemClipBoard, TransferHandler.COPY);
+          handler.exportToClipboard(mEditor.getWorkSpace(), mSystemClipBoard,
+              TransferHandler.COPY);
           SaveFileDialog fileChooser = new SaveFileDialog();
           fileChooser.save();
         } else {
@@ -359,16 +352,15 @@ public class SceneFlowToolBar extends JToolBar {
   ////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  private void refreshButtons() {
+  private void refreshButtons(boolean projectChanged, boolean elementDisplayVisible) {
     // Refresh the button SAVE when project have been changed
-    mSaveProject.setEnabled(mEditor.getEditorProject().hasChanged());
+    mSaveProject.setEnabled(projectChanged);
     //*************************************
 
     //*************************************
     // Refresh the element display buttons
-    boolean visible = mEditor.isElementDisplayVisible();
-    mTogglePalette.setIcon(visible ? ICON_MORE_STANDARD : ICON_LESS_STANDARD);
-    mTogglePalette.setRolloverIcon(visible ? ICON_MORE_ROLLOVER : ICON_LESS_ROLLOVER);
+    mTogglePalette.setIcon(elementDisplayVisible? ICON_MORE_STANDARD : ICON_LESS_STANDARD);
+    mTogglePalette.setRolloverIcon(elementDisplayVisible? ICON_MORE_ROLLOVER : ICON_LESS_ROLLOVER);
   }
 
   /*
@@ -389,14 +381,8 @@ public class SceneFlowToolBar extends JToolBar {
     mBreadCrumb.update(supernode);
   }
 
-  /*
-  public void removePathComponent() {
-    mBreadCrumb.removePathComponent();
-  }
-   */
-
-  public final void refresh() {
-    refreshButtons();
+  public final void refresh(boolean projectChanged, boolean elementDisplayVisible) {
+    refreshButtons(projectChanged, elementDisplayVisible);
     mBreadCrumb.refreshDisplay();
   }
 

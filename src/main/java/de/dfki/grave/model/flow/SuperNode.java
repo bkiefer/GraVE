@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.*;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,9 @@ public class SuperNode extends BasicNode {
   protected boolean mHideLocalVarBadge = false;
   @XmlAttribute(name="hideGlobalVar")
   protected boolean mHideGlobalVarBadge = false;
+  @XmlElement(name="Definitions")
+  @XmlJavaTypeAdapter(BasicNode.CodeAdapter.class)
+  protected Code mDefinitions = new Code();
 
   public SuperNode() {
   }
@@ -108,6 +112,27 @@ public class SuperNode extends BasicNode {
 
   public ArrayList<CommentBadge> getCommentList() {
     return mCommentList;
+  }
+
+  @XmlTransient
+  public String getDefinitions() {
+    return mDefinitions.getContent();
+  }
+
+  // For editing the definitions at a SuperNode
+  public ContentHolder getDefinitionsHolder() {
+    return new ContentHolder() {
+
+      @Override
+      public String getContent() {
+        return mDefinitions.getContent();
+      }
+
+      @Override
+      public void setContent(String s) {
+        mDefinitions.setContent(s);
+      }
+    };
   }
 
   /*

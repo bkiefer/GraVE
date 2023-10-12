@@ -44,7 +44,7 @@ import de.dfki.grave.util.evt.EventDispatcher;
 import de.dfki.grave.util.evt.EventListener;
 
 /**
- * @author Gregor Mehlmann
+ * @author Bernd Kiefer
  */
 @SuppressWarnings("serial")
 public final class ProjectEditor extends JSplitPane implements EventListener {
@@ -82,8 +82,11 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
 
   // Code editing panel
   private final CodeEditPanel mCodeEditor;
+  // Supernode definitions panel
+  private final DefinitionsPanel mDefinitionsEditor;
 
-
+  // Bottom split pane, holding the two code editors
+  private final JSplitPane mBottom;
 
   // Construct a project editor with a project
   public ProjectEditor(final EditorProject project) {
@@ -92,8 +95,11 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     // Initialize the editor project
     mEditorProject = project;
     // Initialize Code Editing Region
+    Font codeFont = mEditorProject.getEditorConfig().sCODE_FONT.getFont();
     mCodeEditor = //new CodeEditor(mEditorProject);
-        new CodeEditPanel(mEditorProject.getEditorConfig().sCODE_FONT.getFont());
+        new CodeEditPanel(codeFont);
+    mDefinitionsEditor = new DefinitionsPanel(codeFont);
+    mBottom = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
     // Register at the event dispatcher
     mEventDispatcher.register(this);
     // TOOLBAR: NORTH ELEMENT
@@ -267,7 +273,12 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     setTopComponent(initUpperCompos());
     mCodeEditor.setMinimumSize(new Dimension(10, 10));
     mCodeEditor.setMaximumSize(new Dimension(10000, 3000));
-    setBottomComponent(mCodeEditor);
+    mDefinitionsEditor.setMinimumSize(new Dimension(10, 10));
+    mDefinitionsEditor.setMaximumSize(new Dimension(10000, 3000));
+    mBottom.setResizeWeight(0.5);
+    mBottom.add(mDefinitionsEditor);
+    mBottom.add(mCodeEditor);
+    setBottomComponent(mBottom);
 
     if (mEditorProject.getEditorConfig().sSHOW_CODEEDITOR) {
       showAuxiliaryEditor();
@@ -277,7 +288,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
       @Override
       public void componentResized(ComponentEvent e) {
         mEditorProject.getEditorConfig().sSHOW_CODEEDITOR =
-            (mCodeEditor.getSize().height == 0);
+            (mBottom.getSize().height == 0);
         Preferences.savePrefs();
       }
     });
@@ -345,6 +356,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     mActiveSuperNode = supernode;
     mSceneFlowToolBar.updateBreadcrumbs(supernode);
     // mWorkSpacePanel.setActiveSuperNode(supernode);
+    mDefinitionsEditor.setSuperNode(supernode);
 
     mWorkSpacePanel.showNewSuperNode();
     mWorkSpacePanel.ignoreMouseInput(false);
@@ -405,7 +417,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   }
 
   public final void refreshToolBar() {
-    mSceneFlowToolBar.refresh();
+    mSceneFlowToolBar.refresh(getEditorProject().hasChanged(), isElementDisplayVisible());
   }
 
   /* ######################################################################
@@ -611,6 +623,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     if (event instanceof TreeEntrySelectedEvent) {
       // Show the auxiliary editor
       //showAuxiliaryEditor();
+      // XXXXXX THIS IS THE PLACE TO START EDITING THE DEFINITIONS XXXXXXX
     } else if (event instanceof ElementSelectedEvent) {
       Object edited = ((ElementSelectedEvent) event).getElement();
       endEdit();
@@ -620,14 +633,18 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
         mNameEditor.setNode(null);
       }
       AppFrame.getInstance().refreshMenuBar();
+      mDefinitionsEditor.setDeselected();
     } else if (event instanceof CodeEditedEvent) {
       CodeEditedEvent ev = (CodeEditedEvent)event;
       endEdit();
       // start text edit here
       if (ev.isActive()) {
         getUndoManager().startTextMode();
-        ev.getContainer().setSelected();
-        mCodeEditor.setEditedObject(ev.getContainer());
+        if (ev.getContainer() != null) {
+          ev.getContainer().setSelected();
+          mCodeEditor.setEditedObject(ev.getContainer());
+          mDefinitionsEditor.setDeselected();
+        }
       }
     } if (event instanceof ProjectChangedEvent) {
       refreshToolBar();

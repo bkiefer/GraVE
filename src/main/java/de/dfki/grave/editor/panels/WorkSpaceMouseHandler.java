@@ -2,15 +2,25 @@ package de.dfki.grave.editor.panels;
 
 import static de.dfki.grave.Preferences.*;
 
-import java.awt.*;
-import java.awt.dnd.*;
-import java.awt.event.*;
+import java.awt.Point;
+import java.awt.dnd.DropTarget;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +28,12 @@ import org.slf4j.LoggerFactory;
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
-import de.dfki.grave.editor.action.*;
+import de.dfki.grave.editor.action.CreateEdgeAction;
+import de.dfki.grave.editor.action.RemoveCommentsAction;
+import de.dfki.grave.editor.action.RemoveEdgeAction;
+import de.dfki.grave.editor.action.RemoveNodesAction;
 import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
-
 
 @SuppressWarnings("serial")
 public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener {

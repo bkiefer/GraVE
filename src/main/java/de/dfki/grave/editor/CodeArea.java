@@ -38,7 +38,7 @@ import de.dfki.grave.util.evt.EventDispatcher;
  */
 @SuppressWarnings("serial")
 public class CodeArea extends RSyntaxTextArea implements ProjectElement {
-  
+
   /** This MouseListener guarantees that we can select components behind this
    *  disabled code area, and handles click events at the code area in case
    *  it's not selected
@@ -48,25 +48,27 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
   private class MyMouseListener extends MouseAdapter {
 
     // this will be called when mouse is pressed on the component
-    public void mousePressed(MouseEvent me) { 
+    @Override
+    public void mousePressed(MouseEvent me) {
       if (! CodeArea.this.isEnabled()) {
         Component child = me.getComponent();
         Component parent = child.getParent();
-        
+
         //transform the mouse coordinate to be relative to the parent component:
         int deltax = child.getX() + me.getX();
         int deltay = child.getY() + me.getY();
-        
+
         //build new mouse event:
         MouseEvent parentMouseEvent =
-            new MouseEvent(parent, MouseEvent.MOUSE_PRESSED, 
+            new MouseEvent(parent, MouseEvent.MOUSE_PRESSED,
                 me.getWhen(), me.getModifiersEx(), deltax, deltay,
-                me.getClickCount(), false); 
+                me.getClickCount(), false);
         //dispatch it to the parent component
         parent.dispatchEvent( parentMouseEvent);
       }
     }
-    
+
+    @Override
     public void mouseClicked(MouseEvent ev) {
       if (! CodeArea.this.isEnabled() && ev.getButton() == MouseEvent.BUTTON1)
         if ((ev.getClickCount() == 1 && mComponent.isSelected())
@@ -75,18 +77,18 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
         }
     }
   }
-  
+
   // The node to which the badge is connected
   protected final EditorComponent mComponent;
-  
+
   private final UndoableEditListener mUndoListener;
 
   // TODO: put into preferences
   private final int maxWidth = 800;
   private final int maxHeight = 300;
-  
+
   /** A syntax-aware area for entering code or numerical values
-   * @param compo the component this code area belongs to 
+   * @param compo the component this code area belongs to
    */
   protected CodeArea(EditorComponent compo, Font font, Color col) {
     setCodeFoldingEnabled(true);
@@ -128,6 +130,7 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
       public void actionPerformed(ActionEvent e) { cancelAction(); }});
     d.addUndoableEditListener(
         mUndoListener = new UndoableEditListener() {
+          @Override
           public void undoableEditHappened(UndoableEditEvent e) {
             getEditor().getUndoManager().addTextEdit(e.getEdit());
           }
@@ -136,34 +139,36 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
     setEnabled(false);
   }
 
-  public EditorComponent getEditorComponent() {
-    return mComponent;
+  public boolean emptyDocument() {
+    return mComponent.getDoc() == null
+        || mComponent.getDoc().toString().isBlank();
   }
 
   public void okAction() {
     EventDispatcher.getInstance().convey(new CodeEditedEvent(this, false));
   }
-  
+
   public void cancelAction() {
     mComponent.discardDocumentChange();
     EventDispatcher.getInstance().convey(new CodeEditedEvent(this, false));
   }
-  
+
   /** remove undo listener and document */
   public void clear() {
     this.getDocument().removeUndoableEditListener(mUndoListener);
     this.setDocument(new RSyntaxDocument(""));
   }
-  
+
   public void tryToSelect() {
     EventDispatcher.getInstance().convey(new CodeEditedEvent(this, true));
   }
-  
+
   public void setSelected() {
     if (! mComponent.isSelected())
       mComponent.setSelected();
     setBackground(sACTIVE_CODE_COLOR);
     setEnabled(true);
+    requestFocus();
   }
 
   public synchronized void setDeselected() {
@@ -185,21 +190,22 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
     setRows(lines);
     int newHeight = lines * this.getLineHeight();
     newHeight = newHeight > maxHeight? maxHeight : newHeight;
-    
+
     FontMetrics fm = getFontMetrics(getFont());
     Optional<Integer> longestLine = Arrays.asList(text.split("\n")).stream()
         .map(s -> fm.stringWidth(s)).max(Comparator.naturalOrder());
     // No idea why i have to add 2 here
     int newWidth = longestLine.isPresent() ? longestLine.get() + 2: 0;
-    
+
     setSize(new Dimension(newWidth, newHeight));
     setLocation();
   }
 
   void setLocation() {
     setLocation(mComponent.getCodeAreaLocation(getSize()));
-  }    
-  
+  }
+
+  @Override
   public ProjectEditor getEditor() {
     Container p = this;
     while (! (p instanceof ProjectEditor)) {

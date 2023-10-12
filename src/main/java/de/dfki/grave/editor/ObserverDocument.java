@@ -40,27 +40,30 @@ public class ObserverDocument extends RSyntaxDocument implements Observer {
     mModel = h;
     init();
   }
-  
+
   private void init() {
     mInitialContent = mModel.getContent();
+    if (mInitialContent == null) {
+      mInitialContent = "";
+    }
     try {
       replace(0, getLength(), mInitialContent, null);
     } catch (BadLocationException e) {
       throw new RuntimeException(e);      // can not happen
     }
   }
-  
+
   /** Write the document content back to the model */
   public void updateModel(String newContent) {
     mModel.setContent(newContent);
     init();
   }
-  
+
   /** Get the content before the last editing session started */
   public String getInitialContent() {
     return mInitialContent;
   }
-  
+
   /** Did the content change from init or last explicit update? */
   public String getCurrentContent() {
     try {
@@ -69,7 +72,7 @@ public class ObserverDocument extends RSyntaxDocument implements Observer {
       throw new RuntimeException(e);      // can not happen
     }
   }
-  
+
   /** Did the content change from init or last explicit update? */
   public boolean contentChanged() {
     try {
@@ -79,13 +82,13 @@ public class ObserverDocument extends RSyntaxDocument implements Observer {
       throw new RuntimeException(e);
     }
   }
-  
+
   public void discardChanges() {
     if (contentChanged()) {
       updateModel(getInitialContent());
     }
   }
-  
+
   @Override
   public void update(Observable o, Object o1) {
     try {
@@ -96,7 +99,8 @@ public class ObserverDocument extends RSyntaxDocument implements Observer {
       logger.error("bad loc: {}", ex);
     }
   }
-  
+
+  @Override
   public String toString() {
     try {
       return getText(0, getLength());

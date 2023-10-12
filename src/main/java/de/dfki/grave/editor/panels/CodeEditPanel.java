@@ -20,8 +20,8 @@ import de.dfki.grave.editor.CodeArea;
 public class CodeEditPanel extends JPanel {
   private RSyntaxTextArea mTextArea;
   private CodeArea mEditedObject;
-  
-  public CodeEditPanel(Font font) { 
+
+  public CodeEditPanel(Font font) {
     super(new BorderLayout());
     mTextArea = new RSyntaxTextArea();
     mTextArea.setCodeFoldingEnabled(true);
@@ -30,18 +30,18 @@ public class CodeEditPanel extends JPanel {
     mTextArea.setVisible(true);
     mTextArea.setFont(font);
     //textArea.setBackground(Color.white);
-    
+
     // Get rid of annoying yellow line
     mTextArea.setHighlightCurrentLine(false);
     mTextArea.setHighlightSecondaryLanguages(false);
     setDisabled();
     JScrollPane s = new JScrollPane(mTextArea);
     add(s, BorderLayout.CENTER);
-    
+
     mTextArea.getInputMap().put(KeyStroke.getKeyStroke("ctrl ENTER"), "enter_OK");
     mTextArea.getActionMap().put("enter_OK", new AbstractAction() {
       @Override
-      public void actionPerformed(ActionEvent e) { 
+      public void actionPerformed(ActionEvent e) {
         mEditedObject.okAction();      // save changes
       }
     });
@@ -55,27 +55,22 @@ public class CodeEditPanel extends JPanel {
   }
 
   public void setEditedObject(CodeArea n) {
-    if (n == null || n.getEditorComponent().getDoc() == null) {
+    if (n == null || n.emptyDocument()) {
       setDisabled();
       return;
     }
     mEditedObject = n;
-    mTextArea.setDocument(n.getEditorComponent().getDoc());
+    mTextArea.setDocument(n.getDocument());
     setEnabled();
     revalidate();
     repaint();
   }
-  
-  /** */
-  public CodeArea getEditedObject() {
-    return mEditedObject;
-  }
-  
+
   private void setEnabled() {
     mTextArea.setBackground(sACTIVE_CODE_COLOR);
     mTextArea.setEnabled(true);
   }
-  
+
   public void setDisabled() {
     mEditedObject = null;
     mTextArea.setDocument(new RSyntaxDocument(""));
@@ -86,7 +81,7 @@ public class CodeEditPanel extends JPanel {
   public CodeArea getActiveArea() {
     return mEditedObject;
   }
-  
+
   public void updateBorders(int x, int y, int w, int h) {
     mTextArea.setBounds(x, y, w, h);
   }

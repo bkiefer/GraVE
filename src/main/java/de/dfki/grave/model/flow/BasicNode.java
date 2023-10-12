@@ -467,8 +467,8 @@ public class BasicNode implements ContentHolder {
   public boolean canAddEdge(AbstractEdge e) {
     FLAVOUR flavour = getFlavour();
     switch (flavour) {
-    case NONE:    // if node working type is unclear, allow all (except iedge for nodes)
-      return true;
+    case NONE:    // if node working type is unclear, allow all (except iedge for basic nodes)
+      return !isBasic() || ! (e instanceof InterruptEdge);
 
     case ENODE:    // only one eegde is allowed
     case TNODE:    // only one tegde is allowed
@@ -503,7 +503,6 @@ public class BasicNode implements ContentHolder {
 
   private class EdgeIterator implements Iterator<AbstractEdge> {
     private Iterator<? extends AbstractEdge> it;
-    private AbstractEdge lastEdge = null;
     private AbstractEdge dEdge = null;
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -522,12 +521,11 @@ public class BasicNode implements ContentHolder {
     public AbstractEdge next() {
       if (! hasNext()) throw new IllegalStateException("No next Element");
       if (! it.hasNext()) {
-        lastEdge = dEdge;
         AbstractEdge e = dEdge;
         dEdge = null;
         return e;
       }
-      return lastEdge = it.next();
+      return it.next();
     }
 
     @Override
@@ -586,6 +584,18 @@ public class BasicNode implements ContentHolder {
    */
   public Point2D getDockPoint(int which, int width) {
     return Geom.getDockPointCircle(which, width);
+  }
+
+  /*************************************************************************/
+  /********************* VONDA COMPILER ACCESS METHODS *********************/
+  /*************************************************************************/
+
+  /**
+   * @return A boolean indicating if a process can die at this {@BasicNode} (if
+   *         it has only conditional/interruptive outgoing edges, or none at all)
+   */
+  public boolean processCanDieHere() {
+    return mDEdge == null && mFEdgeList.isEmpty() && mPEdgeList.isEmpty();
   }
 
 }

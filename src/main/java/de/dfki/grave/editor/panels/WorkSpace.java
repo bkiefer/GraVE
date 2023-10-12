@@ -58,7 +58,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
   @SuppressWarnings("unused")
   private DropTarget mDropTarget;
 
-  // Elements to draw
+  // Elements to draw, and the associations from model to view
   protected final Map<BasicNode, Node> mNodeSet = new IdentityHashMap<>();
   private final Map<CommentBadge, Comment> mCmtSet = new IdentityHashMap<>();
   private final Map<AbstractEdge, Edge> mEdges = new IdentityHashMap<>();
@@ -151,6 +151,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
     return mEditor.getEditorProject().getEditorConfig();
   }
 
+  @Override
   public ProjectEditor getEditor() {
     return mEditor;
   }
