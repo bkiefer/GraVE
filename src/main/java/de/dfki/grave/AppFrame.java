@@ -26,7 +26,6 @@ import de.dfki.grave.editor.dialog.OptionsDialog;
 import de.dfki.grave.editor.dialog.QuitDialog;
 import de.dfki.grave.editor.panels.AddButton;
 import de.dfki.grave.editor.panels.ClipBoard;
-import de.dfki.grave.editor.panels.EditorMenuBar;
 import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.project.EditorProject;
 import de.dfki.grave.util.ResourceLoader;

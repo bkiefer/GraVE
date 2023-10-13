@@ -1,4 +1,4 @@
-package de.dfki.grave.editor;
+package de.dfki.grave.editor.panels;
 
 import static de.dfki.grave.Preferences.*;
 
@@ -19,9 +19,9 @@ import javax.swing.event.UndoableEditListener;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
+import de.dfki.grave.editor.ObserverDocument;
 import de.dfki.grave.editor.action.EditContentAction;
 import de.dfki.grave.editor.event.CodeEditedEvent;
-import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.flow.SuperNode;
 import de.dfki.grave.util.evt.EventDispatcher;
 

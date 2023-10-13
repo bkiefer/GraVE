@@ -1,4 +1,4 @@
-package de.dfki.grave.editor.panels;
+package de.dfki.grave;
 
 import static de.dfki.grave.AppFrame.getAccel;
 import static de.dfki.grave.AppFrame.getAccelMask;
@@ -15,9 +15,8 @@ import java.io.File;
 
 import javax.swing.*;
 
-import de.dfki.grave.AppFrame;
-import de.dfki.grave.RecentProject;
 import de.dfki.grave.editor.dialog.QuitDialog;
+import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.project.EditorConfig;
 
 /**

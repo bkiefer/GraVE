@@ -15,10 +15,8 @@ import de.dfki.grave.editor.action.ChangeNodeNameAction;
 import de.dfki.grave.model.flow.BasicNode;
 
 /**
- *
- * @author Gregor Mehlmann
- *
- *
+ * @author Bernd Kiefer
+ * A text field to edit the name of the selected node
  */
 @SuppressWarnings("serial")
 public class NameEditor extends JPanel {
@@ -68,7 +66,7 @@ public class NameEditor extends JPanel {
       mNameField.setEditable(true);
     }
   }
-  
+
   // remove all illegal characters
   private String sanitizeString(String st) {
     return st.replaceAll("[^-a-zA-Z0-9_]", "");

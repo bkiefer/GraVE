@@ -30,7 +30,6 @@ import de.dfki.grave.editor.CodeArea;
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
-import de.dfki.grave.editor.ProjectElement;
 import de.dfki.grave.editor.action.*;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.model.flow.*;
@@ -49,7 +48,7 @@ import de.dfki.grave.util.evt.EventDispatcher;
  * Adding / Removing / Moving
  */
 @SuppressWarnings("serial")
-public class WorkSpace extends JPanel implements ProjectElement {
+public class WorkSpace extends JPanel {
   protected static final Logger logger = LoggerFactory.getLogger(WorkSpace.class);
 
   private static AttributedString sEdgeCreationHint =
@@ -96,7 +95,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
     addMouseListener(mMouseHandler);
     mDropTarget = new DropTarget(this, new WorkSpaceDropAdapter(this));
     // init layout
-    setLayout(new SceneFlowLayoutManager());
+    setLayout(new WorkSpaceLayoutManager());
     setBorder(BorderFactory.createEmptyBorder());
   }
 
@@ -151,8 +150,7 @@ public class WorkSpace extends JPanel implements ProjectElement {
     return mEditor.getEditorProject().getEditorConfig();
   }
 
-  @Override
-  public ProjectEditor getEditor() {
+  protected ProjectEditor getEditor() {
     return mEditor;
   }
 

@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 
 import de.dfki.grave.AppFrame;
-import de.dfki.grave.editor.panels.SceneFlowToolBar;
+import de.dfki.grave.editor.panels.ProjectEditorToolBar;
 
 /**
  *
@@ -49,7 +49,7 @@ public class SaveFileDialog extends JFileChooser {
         boolean isSuccess = ImageIO.write(image, "png", fileToSave);
         //isSuccess ? return true : return false;
       } catch (Exception ex) {
-        Logger.getLogger(SceneFlowToolBar.class.getName()).log(Level.SEVERE, null, ex);
+        Logger.getLogger(ProjectEditorToolBar.class.getName()).log(Level.SEVERE, null, ex);
       }
       return true;
     }

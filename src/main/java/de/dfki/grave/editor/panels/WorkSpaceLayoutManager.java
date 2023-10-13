@@ -14,7 +14,7 @@ import java.awt.LayoutManager;
 /**
  * Use the LayoutManager facility to compute sizes
  */
-public class SceneFlowLayoutManager implements LayoutManager {
+public class WorkSpaceLayoutManager implements LayoutManager {
   @Override
   public void addLayoutComponent(String name, Component comp) {}
   @Override

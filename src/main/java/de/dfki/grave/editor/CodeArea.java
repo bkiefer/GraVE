@@ -37,7 +37,7 @@ import de.dfki.grave.util.evt.EventDispatcher;
  * @author Patrick Gebhard
  */
 @SuppressWarnings("serial")
-public class CodeArea extends RSyntaxTextArea implements ProjectElement {
+public class CodeArea extends RSyntaxTextArea  {
 
   /** This MouseListener guarantees that we can select components behind this
    *  disabled code area, and handles click events at the code area in case
@@ -205,8 +205,7 @@ public class CodeArea extends RSyntaxTextArea implements ProjectElement {
     setLocation(mComponent.getCodeAreaLocation(getSize()));
   }
 
-  @Override
-  public ProjectEditor getEditor() {
+  private ProjectEditor getEditor() {
     Container p = this;
     while (! (p instanceof ProjectEditor)) {
       p = p.getParent();

@@ -36,6 +36,11 @@ import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
 
 @SuppressWarnings("serial")
+/** Do mouse handling for the different elements on the WorkSpace, including
+ *  - Comments, Nodes, Edges
+ *  - Code areas
+ *  - Area selection of several elements
+ */
 public class WorkSpaceMouseHandler implements MouseListener, MouseMotionListener {
   protected static final Logger logger = LoggerFactory.getLogger(WorkSpaceMouseHandler.class);
 

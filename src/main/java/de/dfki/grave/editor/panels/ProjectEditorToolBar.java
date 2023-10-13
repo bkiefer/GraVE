@@ -28,7 +28,7 @@ import de.dfki.grave.model.flow.SuperNode;
  * sceneflow element panel
  */
 @SuppressWarnings({ "serial" })
-public class SceneFlowToolBar extends JToolBar {
+public class ProjectEditorToolBar extends JToolBar {
 
   /**
    * ***********************************************************************************************************************
@@ -55,7 +55,7 @@ public class SceneFlowToolBar extends JToolBar {
   private BreadCrumb mBreadCrumb;
 
   // Construct a sceneflow editor toolbar
-  public SceneFlowToolBar(final ProjectEditor editor) {
+  public ProjectEditorToolBar(final ProjectEditor editor) {
     // Create a horizontal toolbar
     super("SceneFlowToolBar", JToolBar.HORIZONTAL);
     //Set maximum size

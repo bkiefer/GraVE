@@ -36,18 +36,17 @@ import de.dfki.grave.util.evt.EventDispatcher;
  *
  */
 @SuppressWarnings("serial")
-public class Comment extends JPanel 
-implements DocumentContainer, Observer, ProjectElement {
+public class Comment extends JPanel implements DocumentContainer, Observer {
 
   private JTextArea mTextField;
-  
+
   private ObserverDocument mDocument;
   private CommentBadge mDataComment;
   private WorkSpace mWorkSpace;
 
   // in edit, or not
   private boolean mEditMode = false;
-  
+
   private final static Color TRANSPARENT =  new Color(0,0,0,0);
   private final Color activeColor, inactiveColor;
 
@@ -68,6 +67,7 @@ implements DocumentContainer, Observer, ProjectElement {
     mTextField.setDocument(mDocument = new ObserverDocument(dataComment));
     mDocument.addUndoableEditListener(
         new UndoableEditListener() {
+          @Override
           public void undoableEditHappened(UndoableEditEvent e) {
             getEditor().getUndoManager().addTextEdit(e.getEdit());
           }
@@ -77,7 +77,7 @@ implements DocumentContainer, Observer, ProjectElement {
 
     inactiveColor = Preferences.sCOMMENT_BADGE_COLOR;
     // active color only sets the alpha channel to opaque
-    activeColor = new Color(inactiveColor.getRed(), inactiveColor.getGreen(), 
+    activeColor = new Color(inactiveColor.getRed(), inactiveColor.getGreen(),
         inactiveColor.getBlue(), 255);
     mTextField.setDisabledTextColor(Color.gray);
     Border border = new TextBubbleBorder(Color.gray, 3, 7, 9, Color.black, 10);
@@ -93,11 +93,11 @@ implements DocumentContainer, Observer, ProjectElement {
     TextAreaMouseListener textDrag = new TextAreaMouseListener();
     mTextField.addMouseMotionListener(textDrag);
     mTextField.addMouseListener(textDrag);
-    
+
     MyMouseListener myDrag = new MyMouseListener();
     addMouseMotionListener(myDrag);
     addMouseListener(myDrag);
-    
+
     update();
     mTextField.setBackground(inactiveColor);
     mTextField.setEditable(false);
@@ -114,6 +114,7 @@ implements DocumentContainer, Observer, ProjectElement {
     setBounds(mWorkSpace.toViewRectangle(b));
   }
 
+  @Override
   public ObserverDocument getDoc() {
     return mDocument;
   }
@@ -151,8 +152,8 @@ implements DocumentContainer, Observer, ProjectElement {
   /** Show the context menu for a comment  */
   public void showContextMenu(MouseEvent evt, Comment comment) {
     JPopupMenu pop = new JPopupMenu();
-    addItem(pop, "Delete", 
-        new RemoveCommentsAction(mWorkSpace.getEditor(), comment.getData()));
+    addItem(pop, "Delete",
+        new RemoveCommentsAction(getEditor(), comment.getData()));
     Rectangle r = comment.getBounds();
     pop.show(this, r.width, evt.getY());
   }
@@ -176,7 +177,7 @@ implements DocumentContainer, Observer, ProjectElement {
         getEditor().getUndoManager().endTextMode();
         mEditMode = false;
         if (mDocument.contentChanged())
-          new EditContentAction(mWorkSpace.getEditor(), mDocument).run();
+          new EditContentAction(getEditor(), mDocument).run();
       }
       update();
       mTextField.setBackground(inactiveColor);
@@ -190,47 +191,47 @@ implements DocumentContainer, Observer, ProjectElement {
     // Now make sure the WorkSpacePanel knows about the mouse press event
     Component child = me.getComponent();
     Component parent = child.getParent();
-    
+
     // transform the mouse coordinate to be relative to the parent component:
     int deltax = child.getX() + me.getX();
     int deltay = child.getY() + me.getY();
-    
+
     // build new mouse event:
     MouseEvent parentMouseEvent = new MouseEvent(parent, what, me.getWhen(),
-        me.getModifiersEx(), deltax, deltay, me.getClickCount(), 
+        me.getModifiersEx(), deltax, deltay, me.getClickCount(),
         me.isPopupTrigger(), me.getButton());
     // dispatch it to the parent component
     parent.dispatchEvent(parentMouseEvent);
   }
-    
+
   private class MyMouseListener extends MouseAdapter {
-    
+
     // interaction flags: move or resize?
     private boolean mResizing;
-  
+
     // for drag: move or resize
     private Rectangle mCommentStartBounds = null;
-    
+
     // To compute movement delta
     Point mPressedLocation = null;
-    
 
-    
+
+
     @Override
     /** Pass on the mouse press event if this component is not enabled */
     public void mouseClicked(MouseEvent me) {
       // show context menu
       if ((me.getButton() == MouseEvent.BUTTON3)
-          && (me.getClickCount() == 1)) { 
+          && (me.getClickCount() == 1)) {
         showContextMenu(me, Comment.this);
         return;
-      } 
+      }
       if (Comment.this.isEnabled()) return;
       mPressedLocation = me.getPoint();
       // parent (WorkSpacePanel) will handle selection/deselection
       passEventToParent(me, MouseEvent.MOUSE_CLICKED);
-    } 
-    
+    }
+
     @Override
     /** Pass on the mouse press event if this component is not enabled */
     public void mousePressed(MouseEvent me) {
@@ -241,7 +242,7 @@ implements DocumentContainer, Observer, ProjectElement {
     @Override
     public void mouseReleased(MouseEvent e) {
       if (mCommentStartBounds != null) {
-        new MoveCommentAction(mWorkSpace.getEditor(), Comment.this.getData(),
+        new MoveCommentAction(getEditor(), Comment.this.getData(),
             mWorkSpace.toModelBoundary(mCommentStartBounds))
             .run();
         mCommentStartBounds = null;
@@ -249,7 +250,7 @@ implements DocumentContainer, Observer, ProjectElement {
         setBackground(TRANSPARENT);
       }
     }
-    
+
     @Override
     public void mouseDragged(MouseEvent e) {
       // If selected, leave it to the text area
@@ -265,7 +266,7 @@ implements DocumentContainer, Observer, ProjectElement {
       // compute movement trajectory vectors
       int dx = currentMousePosition.x - mPressedLocation.x;
       int dy = currentMousePosition.y - mPressedLocation.y;
-      
+
       if (mResizing) {
         setBackground(Color.white);
         // Change the size of a comment with the mouse
@@ -287,38 +288,38 @@ implements DocumentContainer, Observer, ProjectElement {
     }
   }
 
-  
+
   private class TextAreaMouseListener extends MouseAdapter {
-    
+
     @Override
     /** Pass on the mouse press event if this component is not enabled */
     public void mouseClicked(MouseEvent me) {
       if (! Comment.this.isEnabled())
         // parent (WorkSpacePanel) will handle selection/deselection
         passEventToParent(me, MouseEvent.MOUSE_CLICKED);
-    } 
-    
+    }
+
     @Override
     /** Pass on the mouse press event if this component is not enabled */
     public void mousePressed(MouseEvent me) {
-      if (! Comment.this.isEnabled()) 
+      if (! Comment.this.isEnabled())
         passEventToParent(me, MouseEvent.MOUSE_PRESSED);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-      if (! Comment.this.isEnabled()) 
+      if (! Comment.this.isEnabled())
         passEventToParent(e, MouseEvent.MOUSE_RELEASED);
     }
-    
+
     @Override
     public void mouseDragged(MouseEvent e) {
-      if (! Comment.this.isEnabled()) 
+      if (! Comment.this.isEnabled())
         passEventToParent(e, MouseEvent.MOUSE_DRAGGED);
     }
   }
-    
-  public ProjectEditor getEditor() {
+
+  private ProjectEditor getEditor() {
     Container p = this;
     while (! (p instanceof ProjectEditor)) {
       p = p.getParent();

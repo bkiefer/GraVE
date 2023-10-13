@@ -22,6 +22,11 @@ import de.dfki.grave.model.flow.AbstractEdge;
 import de.dfki.grave.model.flow.BasicNode;
 import de.dfki.grave.model.flow.CommentBadge;
 
+/** Handle drag and drop for the elements on the workspace:
+ *  - Comments
+ *  - Nodes
+ *  - Edges
+ */
 public class WorkSpaceDropAdapter extends DropTargetAdapter {
   private static final Logger logger = LoggerFactory
       .getLogger(WorkSpaceDropAdapter.class);

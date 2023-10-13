@@ -68,7 +68,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
   // Area showing the graph
   private final WorkSpace mWorkSpacePanel;
   // The tool bar
-  private final SceneFlowToolBar mSceneFlowToolBar;
+  private final ProjectEditorToolBar mSceneFlowToolBar;
   // Editor to change the name of a node
   private final NameEditor mNameEditor;
   // currently not used: for the scenes
@@ -104,7 +104,7 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     mEventDispatcher.register(this);
     // TOOLBAR: NORTH ELEMENT
     mUndoManager = new UndoRedoProvider();
-    mSceneFlowToolBar = new SceneFlowToolBar(this);
+    mSceneFlowToolBar = new ProjectEditorToolBar(this);
 
     // The west component is the workbar
     mFooterLabel = new JLabel();

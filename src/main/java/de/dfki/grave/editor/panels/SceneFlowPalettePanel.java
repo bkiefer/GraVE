@@ -20,7 +20,7 @@ import de.dfki.grave.model.flow.*;
 /**
  * @author Sergio Soto
  * @author Gregor Mehlmann
- * 
+ *
  * Provides graphical elements to create new objects in the workspace
  */
 @SuppressWarnings("serial")
@@ -147,7 +147,7 @@ public class SceneFlowPalettePanel extends JPanel {
           ICON_TEDGE_ENTRY_ROLLOVER,
           ICON_TEDGE_ENTRY_DRAGGING, new TimeoutEdge()),
 
-      new PaletteItem("Interruptive Edge", "Creates Interrutive Transition",
+      new PaletteItem("Interruptive Edge", "Creates Interruptive Transition",
           ICON_IEDGE_ENTRY_STANDARD,
           ICON_IEDGE_ENTRY_ROLLOVER,
           ICON_IEDGE_ENTRY_DRAGGING, new InterruptEdge())

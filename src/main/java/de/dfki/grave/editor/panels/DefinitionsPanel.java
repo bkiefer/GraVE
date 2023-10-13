@@ -6,7 +6,6 @@ import java.awt.Font;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import de.dfki.grave.editor.DefinitionsArea;
 import de.dfki.grave.model.flow.SuperNode;
 
 @SuppressWarnings("serial")

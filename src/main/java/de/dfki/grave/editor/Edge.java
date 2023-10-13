@@ -1,9 +1,16 @@
 package de.dfki.grave.editor;
 
 import static de.dfki.grave.Preferences.*;
-import static de.dfki.grave.editor.panels.WorkSpace.addItem;
+import static de.dfki.grave.editor.panels.WorkSpace.*;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
@@ -20,7 +27,16 @@ import de.dfki.grave.editor.action.RemoveEdgeAction;
 import de.dfki.grave.editor.action.ShortestEdgeAction;
 import de.dfki.grave.editor.action.StraightenEdgeAction;
 import de.dfki.grave.editor.panels.WorkSpace;
-import de.dfki.grave.model.flow.*;
+import de.dfki.grave.model.flow.AbstractEdge;
+import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.flow.EpsilonEdge;
+import de.dfki.grave.model.flow.ForkingEdge;
+import de.dfki.grave.model.flow.Geom;
+import de.dfki.grave.model.flow.GuardedEdge;
+import de.dfki.grave.model.flow.InterruptEdge;
+import de.dfki.grave.model.flow.Position;
+import de.dfki.grave.model.flow.RandomEdge;
+import de.dfki.grave.model.flow.TimeoutEdge;
 
 
 /**
@@ -115,6 +131,7 @@ public class Edge extends EditorComponent {
     return mDataEdge != null ? mDataEdge.getContent() : null;
   }
 
+  @Override
   protected Point getCodeAreaLocation(Dimension r) {
     Point2D p = getCurveCenter();
     // center around middle of curve
@@ -122,7 +139,7 @@ public class Edge extends EditorComponent {
     int y = (int) Math.round(p.getY() - r.height / 2.0);
     return new Point(x, y);
   }
-  
+
   // **********************************************************************
   // All methods use view coordinates
   // **********************************************************************
@@ -163,14 +180,14 @@ public class Edge extends EditorComponent {
   public boolean containsPointSelected(Point p) {
     return containsPoint(p) || mArrow.controlContainsPoint(p);
   }
-  
+
   public boolean outOfBounds() {
     Point ctrl1 = getStartCtrl();
     Point ctrl2 = getEndCtrl();
     // return ctrl1.x < 0 || ctrl1.y < 0 || ctrl2.x < 0 || ctrl2.y < 0;
     // what do we consider as out of bounds?
     // If the control point is covered by the node
-    return mSourceNode.getBounds().contains(ctrl1) 
+    return mSourceNode.getBounds().contains(ctrl1)
         || mTargetNode.getBounds().contains(ctrl2);
   }
 
@@ -178,6 +195,7 @@ public class Edge extends EditorComponent {
     return mArrow.isIntersectByRectangle(x1, x2, y1, y2);
   }
 
+  @Override
   public void update() {
     mArrow.computeCurve(getStart(), getStartCtrl(), getEndCtrl(), getEnd());
     computeBounds();
@@ -189,11 +207,13 @@ public class Edge extends EditorComponent {
     update();
   }
 
+  @Override
   public void setSelected() {
     mArrow.showControlPoints();
     super.setSelected();
   }
-  
+
+  @Override
   public void setDeselected() {
     mArrow.deselectMCs();
     super.setDeselected();
@@ -202,14 +222,14 @@ public class Edge extends EditorComponent {
   public boolean isInEditMode() {
     return mSelected;
   }
-  
+
   /**
    */
   private void showContextMenu(MouseEvent evt, Edge edge) {
     JPopupMenu pop = new JPopupMenu();
     AbstractEdge model = edge.getDataEdge();
     addItem(pop, "Delete", new RemoveEdgeAction(getEditor(), model));
-    pop.add(new JSeparator());    
+    pop.add(new JSeparator());
     addItem(pop, "Edit Code", (e) -> activateCodeArea());
     pop.add(new JSeparator());
     addItem(pop, "Shortest Path", new ShortestEdgeAction(getEditor(), model));
@@ -243,7 +263,7 @@ public class Edge extends EditorComponent {
       repaint(100);
     }
   }
-  
+
   private boolean canDeflect(Node curr, Node old) {
     return (curr != null &&
         (curr == old || curr.getDataNode().canAddEdge(mDataEdge)));
@@ -259,7 +279,7 @@ public class Edge extends EditorComponent {
   public void mouseReleased(MouseEvent e) {
     Point p = e.getPoint();
     switch (mArrow.mSelected) {
-    case EdgeArrow.S: 
+    case EdgeArrow.S:
     case EdgeArrow.E: {
       boolean isSource = mArrow.mSelected == EdgeArrow.S;
       Node newNode = mWorkSpace.findNodeAtPoint(p);
@@ -272,11 +292,11 @@ public class Edge extends EditorComponent {
       }
       break;
     }
-    case EdgeArrow.C1:     
+    case EdgeArrow.C1:
     case EdgeArrow.C2: {
       boolean isSource = mArrow.mSelected == EdgeArrow.C1;
       // compute vector from dock point to p (relative ctrls)
-      Point dock = isSource 
+      Point dock = isSource
           ? mSourceNode.getDockPoint(mDataEdge.getSourceDock())
           : mTargetNode.getDockPoint(mDataEdge.getTargetDock());
       p.translate(-dock.x, -dock.y);
@@ -365,12 +385,12 @@ public class Edge extends EditorComponent {
   Point2D getCurveCenter() {
     return new Point2D.Double(mArrow.mLeftCurve.x2, mArrow.mLeftCurve.y2);
   }
-  
+
   private Rectangle computeTextBoxBounds() {
     CodeArea c = getCodeArea();
     if (c == null) return null;
     Dimension r = c.getSize();
-    
+
     // center around middle of curve
     int x = (int) Math.round(mArrow.mLeftCurve.x2 - r.width/2);
     int y = (int) Math.round(mArrow.mLeftCurve.y2 - r.height/2);
@@ -389,12 +409,13 @@ public class Edge extends EditorComponent {
     setBounds(bounds);
   }
 
+  @Override
   public void paintComponent(Graphics g) {
     float lineWidth = mSourceNode.getWidth() / 30.0f;
     Graphics2D graphics = (Graphics2D) g;
 
     graphics.setColor(color());
-    graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+    graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         RenderingHints.VALUE_ANTIALIAS_ON);
     graphics.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_BUTT,
         BasicStroke.JOIN_MITER));
