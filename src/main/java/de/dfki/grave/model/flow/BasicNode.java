@@ -464,6 +464,7 @@ public class BasicNode implements ContentHolder {
         ? FLAVOUR.TNODE : FLAVOUR.ENODE;
   }
 
+  /** Can this node be the start node for e? Depends on edge and node type */
   public boolean canAddEdge(AbstractEdge e) {
     FLAVOUR flavour = getFlavour();
     switch (flavour) {

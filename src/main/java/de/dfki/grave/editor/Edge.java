@@ -264,6 +264,7 @@ public class Edge extends EditorComponent {
     }
   }
 
+  /** Can i change the start node of this to curr? */
   private boolean canDeflect(Node curr, Node old) {
     return (curr != null &&
         (curr == old || curr.getDataNode().canAddEdge(mDataEdge)));
@@ -283,7 +284,7 @@ public class Edge extends EditorComponent {
     case EdgeArrow.E: {
       boolean isSource = mArrow.mSelected == EdgeArrow.S;
       Node newNode = mWorkSpace.findNodeAtPoint(p);
-      if (canDeflect(newNode, isSource ? mSourceNode : mTargetNode)) {
+      if (newNode != null && (! isSource || canDeflect(newNode, mSourceNode))) {
         int dock = newNode.getNearestFreeDock(p, isSource);
         new MoveEdgeEndPointAction(getEditor(), getDataEdge(), isSource, dock,
             newNode.getDataNode()).run();
