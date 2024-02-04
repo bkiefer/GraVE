@@ -55,10 +55,7 @@ public class CodeEditPanel extends JPanel {
   }
 
   public void setEditedObject(CodeArea n) {
-    if (n == null || n.emptyDocument()) {
-      setDisabled();
-      return;
-    }
+    assert n != null;
     mEditedObject = n;
     mTextArea.setDocument(n.getDocument());
     setEnabled();
