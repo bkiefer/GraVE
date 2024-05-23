@@ -7,7 +7,7 @@ import java.awt.geom.Point2D;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.dfki.grave.model.flow.Geom;
+import de.dfki.grave.model.Geom;
 
 public class GeomTest {
   @BeforeClass

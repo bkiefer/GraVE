@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 
-import de.dfki.grave.model.flow.SuperNode;
+import de.dfki.grave.model.SuperNode;
 
 /** A breadcrumb panel for the current path of supernodes */
 @SuppressWarnings("serial")

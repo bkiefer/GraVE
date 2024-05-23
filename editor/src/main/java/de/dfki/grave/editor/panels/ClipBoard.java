@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.CommentBadge;
+import de.dfki.grave.model.AbstractEdge;
+import de.dfki.grave.model.BasicNode;
+import de.dfki.grave.model.CommentBadge;
 
 /**
  * Created by alvaro on 7/18/16.

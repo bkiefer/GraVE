@@ -32,9 +32,16 @@ import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.action.*;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
-import de.dfki.grave.model.flow.*;
 import de.dfki.grave.editor.project.EditorConfig;
 import de.dfki.grave.editor.util.grid.GridManager;
+import de.dfki.grave.model.*;
+import de.dfki.grave.model.AbstractEdge;
+import de.dfki.grave.model.BasicNode;
+import de.dfki.grave.model.Boundary;
+import de.dfki.grave.model.CommentBadge;
+import de.dfki.grave.model.Geom;
+import de.dfki.grave.model.Position;
+import de.dfki.grave.model.SuperNode;
 import de.dfki.grave.util.evt.EventDispatcher;
 
 /**

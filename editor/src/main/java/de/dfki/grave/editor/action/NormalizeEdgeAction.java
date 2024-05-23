@@ -7,7 +7,7 @@
 package de.dfki.grave.editor.action;
 
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.model.flow.AbstractEdge;
+import de.dfki.grave.model.AbstractEdge;
 
 /**
  *

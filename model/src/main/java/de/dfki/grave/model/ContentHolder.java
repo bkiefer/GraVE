@@ -1,4 +1,4 @@
-package de.dfki.grave.model.flow;
+package de.dfki.grave.model;
 
 public interface ContentHolder {
   String getContent();

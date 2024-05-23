@@ -15,14 +15,14 @@ import de.dfki.grave.editor.ObserverDocument;
 import de.dfki.grave.editor.action.CreateEdgeAction;
 import de.dfki.grave.editor.action.EditContentAction;
 import de.dfki.grave.editor.action.RemoveEdgeAction;
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.EpsilonEdge;
-import de.dfki.grave.model.flow.ForkingEdge;
-import de.dfki.grave.model.flow.GuardedEdge;
-import de.dfki.grave.model.flow.InterruptEdge;
-import de.dfki.grave.model.flow.RandomEdge;
-import de.dfki.grave.model.flow.TimeoutEdge;
+import de.dfki.grave.model.AbstractEdge;
+import de.dfki.grave.model.BasicNode;
+import de.dfki.grave.model.EpsilonEdge;
+import de.dfki.grave.model.ForkingEdge;
+import de.dfki.grave.model.GuardedEdge;
+import de.dfki.grave.model.InterruptEdge;
+import de.dfki.grave.model.RandomEdge;
+import de.dfki.grave.model.TimeoutEdge;
 
 public class EdgeActionTest extends WorkSpaceTest {
 

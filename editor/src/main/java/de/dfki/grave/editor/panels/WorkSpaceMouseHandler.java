@@ -32,8 +32,8 @@ import de.dfki.grave.editor.action.CreateEdgeAction;
 import de.dfki.grave.editor.action.RemoveCommentsAction;
 import de.dfki.grave.editor.action.RemoveEdgeAction;
 import de.dfki.grave.editor.action.RemoveNodesAction;
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.AbstractEdge;
+import de.dfki.grave.model.BasicNode;
 
 @SuppressWarnings("serial")
 /** Do mouse handling for the different elements on the WorkSpace, including

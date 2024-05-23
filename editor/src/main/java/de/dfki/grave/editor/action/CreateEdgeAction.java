@@ -1,8 +1,8 @@
 package de.dfki.grave.editor.action;
 
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.AbstractEdge;
+import de.dfki.grave.model.BasicNode;
 
 /**
  * @author Gregor Mehlmann

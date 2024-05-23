@@ -18,9 +18,9 @@ import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.action.CreateCommentAction;
 import de.dfki.grave.editor.action.CreateNodeAction;
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.CommentBadge;
+import de.dfki.grave.model.AbstractEdge;
+import de.dfki.grave.model.BasicNode;
+import de.dfki.grave.model.CommentBadge;
 
 /** Handle drag and drop for the elements on the workspace:
  *  - Comments

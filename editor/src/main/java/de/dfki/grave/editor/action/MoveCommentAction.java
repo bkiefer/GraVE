@@ -1,8 +1,8 @@
 package de.dfki.grave.editor.action;
 
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.model.flow.Boundary;
-import de.dfki.grave.model.flow.CommentBadge;
+import de.dfki.grave.model.Boundary;
+import de.dfki.grave.model.CommentBadge;
 
 /**
  * @author Gregor Mehlmann

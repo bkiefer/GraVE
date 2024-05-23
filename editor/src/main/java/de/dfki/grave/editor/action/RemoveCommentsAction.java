@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.model.flow.CommentBadge;
+import de.dfki.grave.model.CommentBadge;
 
 /**
  * @author Patrick Gebhard

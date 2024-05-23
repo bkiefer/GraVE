@@ -1,4 +1,4 @@
-package de.dfki.grave.model.flow;
+package de.dfki.grave.model;
 
 /**
  * IDManager provides unique ids for nodes and supernodes

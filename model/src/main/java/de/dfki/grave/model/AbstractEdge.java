@@ -1,6 +1,6 @@
-package de.dfki.grave.model.flow;
+package de.dfki.grave.model;
 
-import static de.dfki.grave.model.flow.Geom.*;
+import static de.dfki.grave.model.Geom.*;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;

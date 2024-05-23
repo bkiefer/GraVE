@@ -13,7 +13,8 @@ import org.junit.*;
 
 import de.dfki.grave.editor.*;
 import de.dfki.grave.editor.action.*;
-import de.dfki.grave.model.flow.*;
+import de.dfki.grave.model.BasicNode;
+import de.dfki.grave.model.Position;
 
 public class NodeActionTest extends WorkSpaceTest {
 

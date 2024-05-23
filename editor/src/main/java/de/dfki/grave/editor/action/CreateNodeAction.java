@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.BasicNode;
 
 /**
  * @author Gregor Mehlmann

@@ -22,7 +22,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import de.dfki.grave.editor.ObserverDocument;
 import de.dfki.grave.editor.action.EditContentAction;
 import de.dfki.grave.editor.event.CodeEditedEvent;
-import de.dfki.grave.model.flow.SuperNode;
+import de.dfki.grave.model.SuperNode;
 import de.dfki.grave.util.evt.EventDispatcher;
 
 

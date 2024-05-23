@@ -19,7 +19,7 @@ import javax.swing.TransferHandler;
 
 import de.dfki.grave.app.AppFrame;
 import de.dfki.grave.editor.dialog.SaveFileDialog;
-import de.dfki.grave.model.flow.SuperNode;
+import de.dfki.grave.model.SuperNode;
 
 /**
  * @author Bernd Kiefer

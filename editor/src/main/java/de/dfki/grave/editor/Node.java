@@ -14,10 +14,10 @@ import javax.swing.JSeparator;
 
 import de.dfki.grave.editor.action.*;
 import de.dfki.grave.editor.panels.*;
-import de.dfki.grave.model.flow.AbstractEdge;
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.Position;
-import de.dfki.grave.model.flow.SuperNode;
+import de.dfki.grave.model.AbstractEdge;
+import de.dfki.grave.model.BasicNode;
+import de.dfki.grave.model.Position;
+import de.dfki.grave.model.SuperNode;
 import de.dfki.grave.util.ChainedIterator;
 
 /**

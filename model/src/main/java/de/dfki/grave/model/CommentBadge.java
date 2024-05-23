@@ -1,4 +1,4 @@
-package de.dfki.grave.model.flow;
+package de.dfki.grave.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

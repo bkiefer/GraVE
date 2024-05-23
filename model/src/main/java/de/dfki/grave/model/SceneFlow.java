@@ -1,4 +1,4 @@
-package de.dfki.grave.model.flow;
+package de.dfki.grave.model;
 
 import java.io.File;
 import java.io.FileInputStream;

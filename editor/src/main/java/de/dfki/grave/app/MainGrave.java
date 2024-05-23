@@ -8,7 +8,7 @@ import javax.swing.SwingUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.model.flow.Geom;
+import de.dfki.grave.model.Geom;
 
 /**
  * @author Gregor Mehlmann

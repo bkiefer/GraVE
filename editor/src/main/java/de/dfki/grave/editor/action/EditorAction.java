@@ -10,7 +10,7 @@ import javax.swing.undo.UndoableEdit;
 
 import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.editor.panels.WorkSpace;
-import de.dfki.grave.model.flow.SuperNode;
+import de.dfki.grave.model.SuperNode;
 
 /**
  * @author Gregor Mehlmann

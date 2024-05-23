@@ -15,7 +15,14 @@ import java.io.IOException;
 import javax.swing.*;
 
 import de.dfki.grave.editor.Comment;
-import de.dfki.grave.model.flow.*;
+import de.dfki.grave.model.BasicNode;
+import de.dfki.grave.model.EpsilonEdge;
+import de.dfki.grave.model.ForkingEdge;
+import de.dfki.grave.model.GuardedEdge;
+import de.dfki.grave.model.InterruptEdge;
+import de.dfki.grave.model.RandomEdge;
+import de.dfki.grave.model.SuperNode;
+import de.dfki.grave.model.TimeoutEdge;
 
 /**
  * @author Sergio Soto

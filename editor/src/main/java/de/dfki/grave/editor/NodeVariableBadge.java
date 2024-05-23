@@ -24,7 +24,7 @@ public class NodeVariableBadge extends JComponent {
   LocationType mLocation = LocationType.RIGHT;
   Node mNode = null;
   WorkSpacePanel mWorkSpace = null;
-  de.dfki.vsm.model.flow.BasicNode mDataNode = null;
+  de.dfki.vsm.model.BasicNode mDataNode = null;
   Point mRelPos = null;
   ArrayList<Pair<String, AttributedString>> mLocalVarDefList = null;
   ArrayList<Pair<String, AttributedString>> mGlobalVarDefList = null;

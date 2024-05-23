@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import de.dfki.grave.editor.panels.ClipBoard;
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.Position;
+import de.dfki.grave.model.BasicNode;
+import de.dfki.grave.model.Position;
 
 /**
  * @author Patrick Gebhard

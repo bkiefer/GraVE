@@ -1,7 +1,7 @@
 package de.dfki.grave.editor.action;
 
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.model.flow.SuperNode;
+import de.dfki.grave.model.SuperNode;
 
 /**
  * @author Patrick Gebhard

@@ -12,7 +12,7 @@ import javax.swing.JTextField;
 
 import de.dfki.grave.app.AppFrame;
 import de.dfki.grave.editor.action.ChangeNodeNameAction;
-import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.BasicNode;
 
 /**
  * @author Bernd Kiefer

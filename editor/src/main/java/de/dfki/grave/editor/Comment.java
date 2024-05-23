@@ -22,8 +22,8 @@ import de.dfki.grave.editor.action.RemoveCommentsAction;
 import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.editor.panels.WorkSpace;
-import de.dfki.grave.model.flow.Boundary;
-import de.dfki.grave.model.flow.CommentBadge;
+import de.dfki.grave.model.Boundary;
+import de.dfki.grave.model.CommentBadge;
 import de.dfki.grave.util.evt.EventDispatcher;
 
 /** A class for Comment Text Bubbles

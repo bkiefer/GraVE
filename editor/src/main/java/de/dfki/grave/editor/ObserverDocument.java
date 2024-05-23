@@ -15,7 +15,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.model.flow.ContentHolder;
+import de.dfki.grave.model.ContentHolder;
 
 /**
  *

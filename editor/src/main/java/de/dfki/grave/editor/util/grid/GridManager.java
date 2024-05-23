@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.editor.panels.WorkSpace;
-import de.dfki.grave.model.flow.BasicNode;
-import de.dfki.grave.model.flow.Position;
+import de.dfki.grave.model.BasicNode;
+import de.dfki.grave.model.Position;
 
 /**
  * @author Patrick

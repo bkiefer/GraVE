@@ -7,7 +7,8 @@ import java.util.List;
 import org.junit.*;
 
 import de.dfki.grave.app.AppFrame;
-import de.dfki.grave.model.flow.*;
+import de.dfki.grave.model.BasicNode;
+import de.dfki.grave.model.Geom;
 
 public class WorkSpaceTest {
   

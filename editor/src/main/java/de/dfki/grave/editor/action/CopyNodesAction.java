@@ -7,7 +7,7 @@ import java.util.Collection;
 
 import de.dfki.grave.app.AppFrame;
 import de.dfki.grave.editor.panels.ProjectEditor;
-import de.dfki.grave.model.flow.BasicNode;
+import de.dfki.grave.model.BasicNode;
 
 /**
  * @author Bernd Kiefer

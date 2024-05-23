@@ -1,4 +1,4 @@
-package de.dfki.grave.model.flow;
+package de.dfki.grave.model;
 
 import java.util.Map;
 
@@ -11,13 +11,13 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 /**
  * @author Gregor Mehlmann
  */
-@XmlRootElement(name="CEdge")
+@XmlRootElement(name="IEdge")
 @XmlAccessorType(XmlAccessType.NONE)
-public class GuardedEdge extends AbstractEdge {
+public class InterruptEdge extends AbstractEdge {
 
   @XmlElement(name="Condition")
   @XmlJavaTypeAdapter(ExpressionAdapter.class)
-  protected Expression mCondition = new Expression("true");
+  protected Expression mCondition = new Expression("false");
 
   public String getCondition() {
     return mCondition.getContent();
@@ -36,22 +36,23 @@ public class GuardedEdge extends AbstractEdge {
     setCondition(s);
   }
 
-  public GuardedEdge deepCopy(Map<BasicNode, BasicNode> orig2copy) {
-    GuardedEdge result = deepCopy(new GuardedEdge(), orig2copy);
+  @Override
+  public InterruptEdge deepCopy(Map<BasicNode, BasicNode> orig2copy) {
+    InterruptEdge result = deepCopy(new InterruptEdge(), orig2copy);
     result.mCondition = this.mCondition.deepCopy();
     return result;
   }
 
   @Override
   public int hashCode() {
-    int hash = super.hashCode() + 73;
+    int hash = super.hashCode() + 71;
     hash = 59 * hash + mCondition.hashCode();
     return hash;
   }
 
   public boolean equals(Object o) {
     return o.getClass().equals(this.getClass())
-        && getCondition().equals(((GuardedEdge)o).getCondition())
+        && getCondition().equals(((InterruptEdge)o).getCondition())
         && super.equals(o);
   }
 

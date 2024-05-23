@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.dfki.grave.app.Preferences;
-import de.dfki.grave.model.flow.*;
+import de.dfki.grave.model.SceneFlow;
 
 /**
  * @author Gregor Mehlmann

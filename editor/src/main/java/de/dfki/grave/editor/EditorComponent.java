@@ -15,8 +15,8 @@ import de.dfki.grave.editor.event.ElementSelectedEvent;
 import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.editor.panels.WorkSpace;
 import de.dfki.grave.editor.project.EditorConfig;
-import de.dfki.grave.model.flow.ContentHolder;
-import de.dfki.grave.model.flow.Position;
+import de.dfki.grave.model.ContentHolder;
+import de.dfki.grave.model.Position;
 import de.dfki.grave.util.evt.EventDispatcher;
 
 @SuppressWarnings("serial")

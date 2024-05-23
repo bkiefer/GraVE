@@ -10,7 +10,9 @@ import org.junit.*;
 import de.dfki.grave.app.AppFrame;
 import de.dfki.grave.editor.*;
 import de.dfki.grave.editor.action.*;
-import de.dfki.grave.model.flow.*;
+import de.dfki.grave.model.Boundary;
+import de.dfki.grave.model.CommentBadge;
+import de.dfki.grave.model.Geom;
 
 public class CommentActionTest {
 
