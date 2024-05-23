@@ -1,8 +1,8 @@
-package de.dfki.grave;
+package de.dfki.grave.app;
 
-import static de.dfki.grave.AppFrame.getAccel;
-import static de.dfki.grave.AppFrame.getAccelMask;
-import static de.dfki.grave.Preferences.getPrefs;
+import static de.dfki.grave.app.AppFrame.getAccel;
+import static de.dfki.grave.app.AppFrame.getAccelMask;
+import static de.dfki.grave.app.Preferences.getPrefs;
 import static java.awt.event.InputEvent.*;
 
 import java.awt.Color;

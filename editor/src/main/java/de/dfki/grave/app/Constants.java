@@ -1,4 +1,4 @@
-package de.dfki.grave;
+package de.dfki.grave.app;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;

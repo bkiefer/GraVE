@@ -1,6 +1,6 @@
 package de.dfki.grave.editor.action;
 
-import static de.dfki.grave.AppFrame.*;
+import static de.dfki.grave.app.AppFrame.*;
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
 
 import java.awt.event.ActionEvent;

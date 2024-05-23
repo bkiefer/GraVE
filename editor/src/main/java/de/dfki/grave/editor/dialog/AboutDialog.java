@@ -1,7 +1,7 @@
 package de.dfki.grave.editor.dialog;
 
-import static de.dfki.grave.Constants.*;
-import static de.dfki.grave.Icons.ICON_LOGO;
+import static de.dfki.grave.app.Constants.*;
+import static de.dfki.grave.app.Icons.ICON_LOGO;
 import static de.dfki.grave.editor.dialog.Dialog.getFillerBox;
 
 //~--- JDK imports ------------------------------------------------------------
@@ -22,8 +22,8 @@ import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
 
-import de.dfki.grave.AppFrame;
-import de.dfki.grave.Preferences;
+import de.dfki.grave.app.AppFrame;
+import de.dfki.grave.app.Preferences;
 
 /**
  * @author Patrick Gebhard

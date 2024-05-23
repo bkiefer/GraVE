@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 
-import de.dfki.grave.AppFrame;
+import de.dfki.grave.app.AppFrame;
 import de.dfki.grave.editor.panels.ProjectEditorToolBar;
 
 /**

@@ -13,7 +13,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.AppFrame;
+import de.dfki.grave.app.AppFrame;
 import de.dfki.grave.editor.Comment;
 import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.action.CreateCommentAction;

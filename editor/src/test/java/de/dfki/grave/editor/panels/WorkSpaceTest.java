@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.*;
 
-import de.dfki.grave.AppFrame;
+import de.dfki.grave.app.AppFrame;
 import de.dfki.grave.model.flow.*;
 
 public class WorkSpaceTest {

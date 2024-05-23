@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.dfki.grave.AppFrame;
+import de.dfki.grave.app.AppFrame;
 import de.dfki.grave.editor.panels.ProjectEditor;
 import de.dfki.grave.model.flow.BasicNode;
 

@@ -1,6 +1,6 @@
 package de.dfki.grave.editor;
 
-import static de.dfki.grave.Preferences.*;
+import static de.dfki.grave.app.Preferences.*;
 import static de.dfki.grave.editor.panels.WorkSpace.addItem;
 
 //~--- JDK imports ------------------------------------------------------------

@@ -25,8 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 //import org.fife.ui.autocomplete.AutoCompletion;
 
-import de.dfki.grave.AppFrame;
-import de.dfki.grave.Preferences;
+import de.dfki.grave.app.AppFrame;
+import de.dfki.grave.app.Preferences;
 import de.dfki.grave.editor.Edge;
 import de.dfki.grave.editor.Node;
 import de.dfki.grave.editor.action.*;

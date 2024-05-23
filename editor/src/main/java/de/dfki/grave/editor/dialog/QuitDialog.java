@@ -9,7 +9,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.*;
 
-import de.dfki.grave.AppFrame;
+import de.dfki.grave.app.AppFrame;
 import de.dfki.grave.util.ResourceLoader;
 
 /**

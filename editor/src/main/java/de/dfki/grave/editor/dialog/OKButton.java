@@ -1,6 +1,6 @@
 package de.dfki.grave.editor.dialog;
 
-import static de.dfki.grave.Icons.*;
+import static de.dfki.grave.app.Icons.*;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.Color;
@@ -12,7 +12,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import de.dfki.grave.Preferences;
+import de.dfki.grave.app.Preferences;
 
 /**
  *

@@ -1,13 +1,13 @@
 package de.dfki.grave.editor.project;
 
-import static de.dfki.grave.Constants.*;
+import static de.dfki.grave.app.Constants.*;
 
 import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.grave.Preferences;
+import de.dfki.grave.app.Preferences;
 import de.dfki.grave.model.flow.*;
 
 /**

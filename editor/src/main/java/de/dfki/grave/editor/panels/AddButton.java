@@ -1,6 +1,6 @@
 package de.dfki.grave.editor.panels;
 
-import static de.dfki.grave.Icons.*;
+import static de.dfki.grave.app.Icons.*;
 
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -9,7 +9,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import de.dfki.grave.Preferences;
+import de.dfki.grave.app.Preferences;
 
 /**
  *

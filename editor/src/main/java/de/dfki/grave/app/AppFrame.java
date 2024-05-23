@@ -1,8 +1,8 @@
-package de.dfki.grave;
+package de.dfki.grave.app;
 
-import static de.dfki.grave.Constants.DATE_FORMAT;
-import static de.dfki.grave.Icons.*;
-import static de.dfki.grave.Preferences.*;
+import static de.dfki.grave.app.Constants.DATE_FORMAT;
+import static de.dfki.grave.app.Icons.*;
+import static de.dfki.grave.app.Preferences.*;
 
 import java.awt.*;
 import java.awt.event.*;

@@ -7,7 +7,7 @@ import java.io.File;
 
 import org.junit.*;
 
-import de.dfki.grave.AppFrame;
+import de.dfki.grave.app.AppFrame;
 import de.dfki.grave.editor.*;
 import de.dfki.grave.editor.action.*;
 import de.dfki.grave.model.flow.*;

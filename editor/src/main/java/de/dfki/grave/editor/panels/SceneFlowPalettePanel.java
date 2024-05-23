@@ -1,7 +1,7 @@
 package de.dfki.grave.editor.panels;
 
-import static de.dfki.grave.Icons.*;
-import static de.dfki.grave.Preferences.getPrefs;
+import static de.dfki.grave.app.Icons.*;
+import static de.dfki.grave.app.Preferences.getPrefs;
 
 //~--- JDK imports ------------------------------------------------------------
 import java.awt.*;

@@ -1,4 +1,4 @@
-package de.dfki.grave;
+package de.dfki.grave.app;
 
 //import static de.dfki.grave.Icons.*;
 

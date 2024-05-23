@@ -1,6 +1,6 @@
 package de.dfki.grave.editor.panels;
 
-import static de.dfki.grave.Preferences.*;
+import static de.dfki.grave.app.Preferences.*;
 
 import java.awt.Point;
 import java.awt.dnd.DropTarget;

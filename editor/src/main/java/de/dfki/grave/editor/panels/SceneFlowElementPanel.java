@@ -1,6 +1,6 @@
 package de.dfki.grave.editor.panels;
 
-import static de.dfki.grave.Icons.*;
+import static de.dfki.grave.app.Icons.*;
 
 import java.awt.Color;
 import java.awt.Component;

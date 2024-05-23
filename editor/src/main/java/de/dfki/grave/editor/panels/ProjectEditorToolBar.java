@@ -1,6 +1,6 @@
 package de.dfki.grave.editor.panels;
 
-import static de.dfki.grave.Preferences.getPrefs;
+import static de.dfki.grave.app.Preferences.getPrefs;
 import static de.dfki.grave.editor.panels.Icons.*;
 
 import java.awt.Dimension;
@@ -17,7 +17,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
 
-import de.dfki.grave.AppFrame;
+import de.dfki.grave.app.AppFrame;
 import de.dfki.grave.editor.dialog.SaveFileDialog;
 import de.dfki.grave.model.flow.SuperNode;
 

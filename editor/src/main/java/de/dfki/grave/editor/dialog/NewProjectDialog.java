@@ -12,7 +12,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
-import de.dfki.grave.AppFrame;
+import de.dfki.grave.app.AppFrame;
 
 /**
  * @author Sergio Soto

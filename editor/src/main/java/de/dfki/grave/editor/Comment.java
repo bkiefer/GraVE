@@ -15,7 +15,7 @@ import javax.swing.border.Border;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 
-import de.dfki.grave.Preferences;
+import de.dfki.grave.app.Preferences;
 import de.dfki.grave.editor.action.EditContentAction;
 import de.dfki.grave.editor.action.MoveCommentAction;
 import de.dfki.grave.editor.action.RemoveCommentsAction;
