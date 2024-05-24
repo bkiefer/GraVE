@@ -1,0 +1,6 @@
+#!/bin/bash
+if test -f logback.xml; then
+    LOGBACK_CONF="-Dlogback.configurationFile=./logback.xml"
+fi
+
+java $LOGBACK_CONF -jar target/introduction-jar-with-dependencies.jar

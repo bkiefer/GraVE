@@ -1,0 +1,1039 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SceneFlow modifDate="Tue, 9 May 2023 15:39:28" package="" start="N16" hideLocalVar="false" hideGlobalVar="false" id="introduction" name="introduction" comment="">
+    <Commands></Commands>
+    <Position xPos="0" yPos="0"/>
+    <Comment>
+        <Text>TODO: stopListeningToSystemSignals(or otherwise do not start listening to system signals after obtaining of Signal.shutDown)</Text>
+        <Boundary height="109" width="270" xPos="681" yPos="276"/>
+    </Comment>
+    <Node id="N1" name="Done" comment="">
+        <Commands>//shutdown();</Commands>
+        <Position xPos="582" yPos="125"/>
+    </Node>
+    <Node id="N9" name="ShutDownPreparations" comment="">
+        <Commands>status = StatE.shuttingDown;</Commands>
+        <Position xPos="582" yPos="347"/>
+        <EEdge target="N1" source="N9" targetdock="0" sourcedock="1">
+            <SourceCtrl xPos="0" yPos="-44"/>
+            <TargetCtrl xPos="0" yPos="44"/>
+        </EEdge>
+    </Node>
+    <Node id="N16" name="Initialize" comment="">
+        <Commands></Commands>
+        <FEdge target="S8" source="N16" targetdock="21" sourcedock="20">
+            <SourceCtrl xPos="55" yPos="37"/>
+            <TargetCtrl xPos="-55" yPos="-37"/>
+        </FEdge>
+        <FEdge target="S11" source="N16" targetdock="29" sourcedock="28">
+            <SourceCtrl xPos="57" yPos="11"/>
+            <TargetCtrl xPos="-57" yPos="-11"/>
+        </FEdge>
+        <FEdge target="S10" source="N16" targetdock="19" sourcedock="18">
+            <SourceCtrl xPos="57" yPos="-11"/>
+            <TargetCtrl xPos="-57" yPos="11"/>
+        </FEdge>
+        <FEdge target="S14" source="N16" targetdock="27" sourcedock="26">
+            <SourceCtrl xPos="60" yPos="-40"/>
+            <TargetCtrl xPos="-60" yPos="40"/>
+        </FEdge>
+        <Position xPos="72" yPos="174"/>
+    </Node>
+    <SuperNode start="N3" hideLocalVar="false" hideGlobalVar="false" id="S10" name="ListenToOutsideWorld" comment="">
+        <Commands></Commands>
+        <Position xPos="360" yPos="125"/>
+        <EEdge target="N1" source="S10" targetdock="3" sourcedock="2">
+            <SourceCtrl xPos="44" yPos="0"/>
+            <TargetCtrl xPos="-44" yPos="0"/>
+        </EEdge>
+        <Node id="N2" name="Listen" comment="">
+            <Commands>lastReaction = lastDA();
+if (lastDA())
+  logger.warn("Got Outside Message {}", lastReaction);</Commands>
+            <CEdge target="N3" source="N2" targetdock="6" sourcedock="8">
+                <SourceCtrl xPos="56" yPos="105"/>
+                <TargetCtrl xPos="112" yPos="-7"/>
+                <Condition>lastDA() || status == StatE.shuttingDown</Condition>
+            </CEdge>
+            <Position xPos="655" yPos="9"/>
+            <TEdge timeout="100000" target="N2" source="N2" targetdock="12" sourcedock="10">
+                <SourceCtrl xPos="83" yPos="-34"/>
+                <TargetCtrl xPos="83" yPos="34"/>
+                <Commands></Commands>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N3" name="DecideIfListen" comment="">
+            <Commands></Commands>
+            <CEdge target="N8" source="N3" targetdock="1" sourcedock="0">
+                <SourceCtrl xPos="0" yPos="40"/>
+                <TargetCtrl xPos="0" yPos="-40"/>
+                <Condition>status == StatE.shuttingDown</Condition>
+            </CEdge>
+            <CEdge target="N2" source="N3" targetdock="27" sourcedock="22">
+                <SourceCtrl xPos="41" yPos="-61"/>
+                <TargetCtrl xPos="-61" yPos="41"/>
+                <Condition>! lastDA() &amp;&amp; status != StatE.shuttingDown</Condition>
+            </CEdge>
+            <Position xPos="392" yPos="274"/>
+            <TEdge timeout="1000" target="N41" source="N3" targetdock="20" sourcedock="21">
+                <SourceCtrl xPos="-53" yPos="-36"/>
+                <TargetCtrl xPos="53" yPos="36"/>
+                <Commands></Commands>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N8" name="Done" comment="">
+            <Commands></Commands>
+            <Position xPos="392" yPos="453"/>
+        </Node>
+        <Node id="N41" name="DisposeOfUnusedInput" comment="">
+            <Commands>lastDAprocessed();</Commands>
+            <Position xPos="122" yPos="93"/>
+            <EEdge target="N3" source="N41" targetdock="5" sourcedock="12">
+                <SourceCtrl xPos="59" yPos="24"/>
+                <TargetCtrl xPos="-45" yPos="-45"/>
+            </EEdge>
+        </Node>
+        <Definitions>import de.dfki.introduction.IntroAgent.StatE;</Definitions>
+    </SuperNode>
+    <SuperNode start="N14" hideLocalVar="false" hideGlobalVar="false" id="S11" name="ReactToSystemSignalsAndInterrupts" comment="">
+        <Commands></Commands>
+        <Position xPos="361" yPos="235"/>
+        <EEdge target="N1" source="S11" targetdock="11" sourcedock="10">
+            <SourceCtrl xPos="45" yPos="-18"/>
+            <TargetCtrl xPos="-45" yPos="18"/>
+        </EEdge>
+        <Node id="N13" name="ConsumeLastReaction" comment="">
+            <Commands>lastDAprocessed();</Commands>
+            <Position xPos="674" yPos="18"/>
+            <EEdge target="N82" source="N13" targetdock="13" sourcedock="12">
+                <SourceCtrl xPos="52" yPos="21"/>
+                <TargetCtrl xPos="-52" yPos="-21"/>
+            </EEdge>
+        </Node>
+        <Node id="N14" name="WaitForSignalOrInterrupt" comment="">
+            <Commands></Commands>
+            <CEdge target="N15" source="N14" targetdock="26" sourcedock="27">
+                <SourceCtrl xPos="-53" yPos="36"/>
+                <TargetCtrl xPos="53" yPos="-36"/>
+                <Condition>status == StatE.shuttingDown</Condition>
+            </CEdge>
+            <CEdge target="N89" source="N14" targetdock="13" sourcedock="12">
+                <SourceCtrl xPos="74" yPos="30"/>
+                <TargetCtrl xPos="-74" yPos="-30"/>
+                <Condition>lastSignal == Signal.shutDown</Condition>
+            </CEdge>
+            <CEdge target="N24" source="N14" targetdock="25" sourcedock="24">
+                <SourceCtrl xPos="72" yPos="107"/>
+                <TargetCtrl xPos="-72" yPos="-107"/>
+                <Condition>lastSignal == Signal.continuation</Condition>
+            </CEdge>
+            <CEdge target="N71" source="N14" targetdock="3" sourcedock="18">
+                <SourceCtrl xPos="70" yPos="-14"/>
+                <TargetCtrl xPos="-72" yPos="0"/>
+                <Condition>lastSignal == Signal.stop</Condition>
+            </CEdge>
+            <CEdge target="N96" source="N14" targetdock="5" sourcedock="4">
+                <SourceCtrl xPos="71" yPos="72"/>
+                <TargetCtrl xPos="-71" yPos="-72"/>
+                <Condition>lastSignal == Signal.start</Condition>
+            </CEdge>
+            <CEdge target="N13" source="N14" targetdock="11" sourcedock="10">
+                <SourceCtrl xPos="74" yPos="-30"/>
+                <TargetCtrl xPos="-74" yPos="30"/>
+                <Condition>lastDA() &gt;= #interrupt(stop)</Condition>
+            </CEdge>
+            <Position xPos="314" yPos="198"/>
+            <TEdge timeout="60000" target="N14" source="N14" targetdock="25" sourcedock="29">
+                <SourceCtrl xPos="-88" yPos="-17"/>
+                <TargetCtrl xPos="-50" yPos="-74"/>
+                <Commands></Commands>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N15" name="Done" comment="">
+            <Commands></Commands>
+            <Position xPos="44" yPos="378"/>
+        </Node>
+        <Node id="N82" name="ChangeStatus" comment="">
+            <Commands>status = StatE.stopped;</Commands>
+            <Position xPos="944" yPos="108"/>
+            <EEdge target="N90" source="N82" targetdock="5" sourcedock="4">
+                <SourceCtrl xPos="46" yPos="46"/>
+                <TargetCtrl xPos="-46" yPos="-46"/>
+            </EEdge>
+        </Node>
+        <Node id="N70" name="RaiseFlag" comment="">
+            <Commands>shutDownRequested = true;</Commands>
+            <Position xPos="919" yPos="379"/>
+            <EEdge target="N82" source="N70" targetdock="31" sourcedock="1">
+                <SourceCtrl xPos="0" yPos="-54"/>
+                <TargetCtrl xPos="-10" yPos="53"/>
+            </EEdge>
+        </Node>
+        <Node id="N71" name="ConsumeLastSignal" comment="">
+            <Commands>lastDAprocessed();</Commands>
+            <Position xPos="674" yPos="198"/>
+            <EEdge target="N82" source="N71" targetdock="11" sourcedock="10">
+                <SourceCtrl xPos="52" yPos="-21"/>
+                <TargetCtrl xPos="-52" yPos="21"/>
+            </EEdge>
+        </Node>
+        <Node id="N89" name="ConsumeLastSignal" comment="">
+            <Commands>lastSignal = null;</Commands>
+            <Position xPos="674" yPos="378"/>
+            <EEdge target="N70" source="N89" targetdock="3" sourcedock="2">
+                <SourceCtrl xPos="49" yPos="0"/>
+                <TargetCtrl xPos="-49" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N90" name="ReturnToWait" comment="">
+            <Commands></Commands>
+            <Position xPos="1180" yPos="338"/>
+            <EEdge target="N14" source="N90" targetdock="28" sourcedock="29">
+                <SourceCtrl xPos="-172" yPos="-34"/>
+                <TargetCtrl xPos="172" yPos="34"/>
+            </EEdge>
+        </Node>
+        <Node id="N96" name="N96" comment="">
+            <Commands>lastSignal = null;
+status = StatE.started;</Commands>
+            <Position xPos="674" yPos="558"/>
+            <EEdge target="N90" source="N96" targetdock="11" sourcedock="10">
+                <SourceCtrl xPos="101" yPos="-42"/>
+                <TargetCtrl xPos="-101" yPos="42"/>
+            </EEdge>
+        </Node>
+        <Node id="N24" name="N96" comment="">
+            <Commands>lastSignal = null;</Commands>
+            <Position xPos="674" yPos="738"/>
+            <EEdge target="N25" source="N24" targetdock="3" sourcedock="2">
+                <SourceCtrl xPos="52" yPos="0"/>
+                <TargetCtrl xPos="-52" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N25" name="N97" comment="">
+            <Commands>status = StatE.cont;</Commands>
+            <Position xPos="938" yPos="738"/>
+            <EEdge target="N90" source="N25" targetdock="7" sourcedock="22">
+                <SourceCtrl xPos="51" yPos="-77"/>
+                <TargetCtrl xPos="-66" yPos="66"/>
+            </EEdge>
+        </Node>
+        <Definitions>import de.dfki.introduction.IntroAgent.StatE;
+import de.dfki.introduction.IntroAgent.Signal;
+import de.dfki.introduction.IntroAgent.SE;</Definitions>
+    </SuperNode>
+    <SuperNode start="N95" hideLocalVar="false" hideGlobalVar="false" id="S8" name="Idle" comment="">
+        <Commands></Commands>
+        <CEdge target="S19" source="S8" targetdock="30" sourcedock="0">
+            <SourceCtrl xPos="0" yPos="40"/>
+            <TargetCtrl xPos="7" yPos="-39"/>
+            <Condition>situation == SE.startIntro</Condition>
+        </CEdge>
+        <Position xPos="360" yPos="347"/>
+        <EEdge target="N9" source="S8" targetdock="3" sourcedock="2">
+            <SourceCtrl xPos="44" yPos="0"/>
+            <TargetCtrl xPos="-44" yPos="0"/>
+        </EEdge>
+        <Node id="N64" name="IdleState" comment="">
+            <Commands></Commands>
+            <CEdge target="N66" source="N64" targetdock="3" sourcedock="2">
+                <SourceCtrl xPos="78" yPos="0"/>
+                <TargetCtrl xPos="-78" yPos="0"/>
+                <Condition>status == StatE.started</Condition>
+            </CEdge>
+            <Position xPos="368" yPos="17"/>
+            <TEdge timeout="2000" target="N95" source="N64" targetdock="2" sourcedock="3">
+                <SourceCtrl xPos="-62" yPos="0"/>
+                <TargetCtrl xPos="62" yPos="0"/>
+                <Commands></Commands>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N66" name="StartIntroduction" comment="">
+            <Commands>situation = SE.startIntro;
+logger.info("Situation: {}", situation);</Commands>
+            <Position xPos="811" yPos="19"/>
+        </Node>
+        <Node id="N81" name="Quit" comment="">
+            <Commands></Commands>
+            <Position xPos="367" yPos="358"/>
+        </Node>
+        <Node id="N91" name="ResetToIdle" comment="">
+            <Commands>status = StatE.idle;
+sysCall("flowEnded" , "introduction");</Commands>
+            <Position xPos="661" yPos="358"/>
+            <EEdge target="N94" source="N91" targetdock="20" sourcedock="21">
+                <SourceCtrl xPos="-56" yPos="-37"/>
+                <TargetCtrl xPos="56" yPos="37"/>
+            </EEdge>
+        </Node>
+        <Node id="N92" name="ChangeStatus" comment="">
+            <Commands>status = StatE.shuttingDown;</Commands>
+            <Position xPos="109" yPos="358"/>
+            <EEdge target="N81" source="N92" targetdock="3" sourcedock="2">
+                <SourceCtrl xPos="51" yPos="0"/>
+                <TargetCtrl xPos="-51" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N93" name="CheckShutDown" comment="">
+            <Commands></Commands>
+            <CEdge target="N92" source="N93" targetdock="1" sourcedock="0">
+                <SourceCtrl xPos="0" yPos="40"/>
+                <TargetCtrl xPos="0" yPos="-40"/>
+                <Condition>shutDownRequested == true</Condition>
+            </CEdge>
+            <Position xPos="109" yPos="186"/>
+            <EEdge target="N94" source="N93" targetdock="3" sourcedock="2">
+                <SourceCtrl xPos="51" yPos="0"/>
+                <TargetCtrl xPos="-51" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N94" name="CheckStopped" comment="">
+            <Commands></Commands>
+            <CEdge target="N91" source="N94" targetdock="5" sourcedock="12">
+                <SourceCtrl xPos="62" yPos="26"/>
+                <TargetCtrl xPos="-48" yPos="-48"/>
+                <Condition>status == StatE.stopped</Condition>
+            </CEdge>
+            <Position xPos="367" yPos="186"/>
+            <EEdge target="N64" source="N94" targetdock="31" sourcedock="1">
+                <SourceCtrl xPos="0" yPos="-40"/>
+                <TargetCtrl xPos="-7" yPos="39"/>
+            </EEdge>
+        </Node>
+        <Node id="N95" name="Start" comment="">
+            <Commands></Commands>
+            <Position xPos="109" yPos="14"/>
+            <EEdge target="N93" source="N95" targetdock="1" sourcedock="0">
+                <SourceCtrl xPos="0" yPos="40"/>
+                <TargetCtrl xPos="0" yPos="-40"/>
+            </EEdge>
+        </Node>
+        <Definitions>import de.dfki.introduction.IntroAgent.SE;
+import de.dfki.introduction.IntroAgent.StatE;</Definitions>
+    </SuperNode>
+    <SuperNode start="N69" hideLocalVar="false" hideGlobalVar="false" id="S14" name="ListenToSystemSignals" comment="">
+        <Commands></Commands>
+        <Position xPos="360" yPos="16"/>
+        <EEdge target="N1" source="S14" targetdock="13" sourcedock="12">
+            <SourceCtrl xPos="45" yPos="18"/>
+            <TargetCtrl xPos="-45" yPos="-18"/>
+        </EEdge>
+        <Node id="N69" name="DecideIfListen" comment="">
+            <Commands></Commands>
+            <CEdge target="N88" source="N69" targetdock="10" sourcedock="11">
+                <SourceCtrl xPos="-63" yPos="26"/>
+                <TargetCtrl xPos="63" yPos="-26"/>
+                <Condition>status == StatE.shuttingDown</Condition>
+            </CEdge>
+            <CEdge target="N87" source="N69" targetdock="5" sourcedock="4">
+                <SourceCtrl xPos="76" yPos="9"/>
+                <TargetCtrl xPos="-48" yPos="-48"/>
+                <Condition>lastSignal == null &amp;&amp; status != StatE.shuttingDown</Condition>
+            </CEdge>
+            <Position xPos="441" yPos="261"/>
+            <TEdge timeout="2000" target="N68" source="N69" targetdock="31" sourcedock="1">
+                <SourceCtrl xPos="0" yPos="-47"/>
+                <TargetCtrl xPos="-9" yPos="46"/>
+                <Commands></Commands>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N87" name="Listen" comment="">
+            <Commands>lastSignal = getSystemSignal();
+if (lastSignal != null)
+  logger.warn("Got SystemInput: {}", lastSignal);</Commands>
+            <CEdge target="N88" source="N87" targetdock="28" sourcedock="29">
+                <SourceCtrl xPos="-114" yPos="-22"/>
+                <TargetCtrl xPos="114" yPos="22"/>
+                <Condition>status == StatE.shuttingDown</Condition>
+            </CEdge>
+            <CEdge target="N69" source="N87" targetdock="24" sourcedock="21">
+                <SourceCtrl xPos="-56" yPos="-37"/>
+                <TargetCtrl xPos="37" yPos="56"/>
+                <Condition>lastSignal != null</Condition>
+            </CEdge>
+            <Position xPos="699" yPos="484"/>
+            <TEdge timeout="333" target="N87" source="N87" targetdock="12" sourcedock="10">
+                <SourceCtrl xPos="83" yPos="-34"/>
+                <TargetCtrl xPos="83" yPos="34"/>
+                <Commands></Commands>
+                <Commands/>
+            </TEdge>
+        </Node>
+        <Node id="N88" name="Done" comment="">
+            <Commands></Commands>
+            <Position xPos="124" yPos="397"/>
+        </Node>
+        <Node id="N68" name="DisposeOfUnusedInput" comment="">
+            <Commands>logger.info("disposing of lastSignal");
+lastSignal = null;</Commands>
+            <Position xPos="451" yPos="24"/>
+            <EEdge target="N69" source="N68" targetdock="30" sourcedock="0">
+                <SourceCtrl xPos="0" yPos="47"/>
+                <TargetCtrl xPos="9" yPos="-46"/>
+            </EEdge>
+        </Node>
+        <Definitions>import de.dfki.introduction.IntroAgent.StatE;</Definitions>
+    </SuperNode>
+    <SuperNode start="N65" hideLocalVar="false" hideGlobalVar="false" id="S19" name="DoIntroduction" comment="">
+        <Commands>retDA = #Bottom(Bottom);</Commands>
+        <Position xPos="357" yPos="520"/>
+        <EEdge target="S8" source="S19" targetdock="31" sourcedock="1">
+            <SourceCtrl xPos="0" yPos="-40"/>
+            <TargetCtrl xPos="-7" yPos="39"/>
+        </EEdge>
+        <Comment>
+            <Text>ask if the child wants to play </Text>
+            <Boundary height="63" width="132" xPos="506" yPos="340"/>
+        </Comment>
+        <Comment>
+            <Text>Welcomes child and asks for information ie age, hobby</Text>
+            <Boundary height="74" width="158" xPos="192" yPos="238"/>
+        </Comment>
+        <Node id="N65" name="Start introduction" comment="">
+            <Commands></Commands>
+            <Position xPos="59" yPos="331"/>
+            <EEdge target="S2" source="N65" targetdock="3" sourcedock="2">
+                <SourceCtrl xPos="40" yPos="0"/>
+                <TargetCtrl xPos="-40" yPos="0"/>
+            </EEdge>
+        </Node>
+        <Node id="N204" name="Done" comment="">
+            <Commands>status = StatE.stopped;</Commands>
+            <Position xPos="56" yPos="99"/>
+        </Node>
+        <Node id="N30" name="AskToPlay" comment="">
+            <Commands>retDA = #request(play);
+emitDA(retDA);</Commands>
+            <Position xPos="392" yPos="331"/>
+            <EEdge target="S1" source="N30" targetdock="0" sourcedock="1">
+                <SourceCtrl xPos="0" yPos="-46"/>
+                <TargetCtrl xPos="0" yPos="46"/>
+            </EEdge>
+        </Node>
+        <SuperNode start="N182" hideLocalVar="false" hideGlobalVar="false" id="S2" name="AskForParameters" comment="">
+            <Commands></Commands>
+            <Position xPos="214" yPos="332"/>
+            <EEdge target="N30" source="S2" targetdock="3" sourcedock="2">
+                <SourceCtrl xPos="40" yPos="0"/>
+                <TargetCtrl xPos="-40" yPos="0"/>
+            </EEdge>
+            <Comment>
+                <Text>Test if response is to the question asked  </Text>
+                <Boundary height="53" width="199" xPos="304" yPos="415"/>
+            </Comment>
+            <Comment>
+                <Text>When started say hello and if know make comment on eyecolor </Text>
+                <Boundary height="84" width="226" xPos="781" yPos="49"/>
+            </Comment>
+            <Comment>
+                <Text>Wait here until an input is given </Text>
+                <Boundary height="105" width="205" xPos="508" yPos="598"/>
+            </Comment>
+            <Node id="N181" name="Done" comment="">
+                <Commands>situation = SE.askPlay;</Commands>
+                <Position xPos="877" yPos="590"/>
+            </Node>
+            <Node id="N182" name="Start" comment="">
+                <Commands></Commands>
+                <CEdge target="S3" source="N182" targetdock="3" sourcedock="2">
+                    <SourceCtrl xPos="118" yPos="0"/>
+                    <TargetCtrl xPos="-118" yPos="0"/>
+                    <Condition>situation == SE.startIntro</Condition>
+                </CEdge>
+                <Position xPos="206" yPos="47"/>
+                <EEdge target="N182" source="N182" targetdock="12" sourcedock="10">
+                    <SourceCtrl xPos="83" yPos="-34"/>
+                    <TargetCtrl xPos="83" yPos="34"/>
+                </EEdge>
+            </Node>
+            <SuperNode start="N29" hideLocalVar="false" hideGlobalVar="false" id="S3" name="DoGreeting" comment="">
+                <Commands></Commands>
+                <Position xPos="663" yPos="47"/>
+                <EEdge target="S6" source="S3" targetdock="1" sourcedock="0">
+                    <SourceCtrl xPos="0" yPos="40"/>
+                    <TargetCtrl xPos="0" yPos="-40"/>
+                </EEdge>
+                <Node id="N29" name="TestNameGiven" comment="">
+                    <Commands></Commands>
+                    <CEdge target="N37" source="N29" targetdock="1" sourcedock="31">
+                        <SourceCtrl xPos="-8" yPos="43"/>
+                        <TargetCtrl xPos="0" yPos="-44"/>
+                        <Condition>! user.givenname</Condition>
+                    </CEdge>
+                    <Position xPos="61" yPos="37"/>
+                    <EEdge target="N39" source="N29" targetdock="13" sourcedock="12">
+                        <SourceCtrl xPos="53" yPos="22"/>
+                        <TargetCtrl xPos="-53" yPos="-22"/>
+                    </EEdge>
+                </Node>
+                <Node id="N39" name="Done" comment="">
+                    <Commands>emitDA(#salutation(greeting));</Commands>
+                    <Position xPos="331" yPos="139"/>
+                </Node>
+                <Node id="N37" name="AskName" comment="">
+                    <Commands>situation = SE.askName;</Commands>
+                    <Position xPos="54" yPos="259"/>
+                    <EEdge target="N39" source="N37" targetdock="11" sourcedock="10">
+                        <SourceCtrl xPos="55" yPos="-23"/>
+                        <TargetCtrl xPos="-55" yPos="23"/>
+                    </EEdge>
+                </Node>
+                <Definitions>import de.dfki.introduction.IntroAgent.SE;</Definitions>
+            </SuperNode>
+            <SuperNode start="N43" hideLocalVar="false" hideGlobalVar="false" id="S4" name="TestAskAgain" comment="">
+                <Commands></Commands>
+                <Position xPos="74" yPos="635"/>
+                <EEdge target="S31" source="S4" targetdock="3" sourcedock="2">
+                    <SourceCtrl xPos="58" yPos="0"/>
+                    <TargetCtrl xPos="-58" yPos="0"/>
+                </EEdge>
+                <Node id="N43" name="N129" comment="">
+                    <Commands></Commands>
+                    <CEdge target="N51" source="N43" targetdock="29" sourcedock="2">
+                        <SourceCtrl xPos="121" yPos="0"/>
+                        <TargetCtrl xPos="-118" yPos="-23"/>
+                        <Condition>situation == SE.askHobby &amp;&amp; ! user.hobby</Condition>
+                    </CEdge>
+                    <CEdge target="N44" source="N43" targetdock="11" sourcedock="10">
+                        <SourceCtrl xPos="115" yPos="-47"/>
+                        <TargetCtrl xPos="-115" yPos="47"/>
+                        <Condition>situation == SE.askName &amp;&amp; ! user.givenname</Condition>
+                    </CEdge>
+                    <CEdge target="N52" source="N43" targetdock="21" sourcedock="20">
+                        <SourceCtrl xPos="111" yPos="74"/>
+                        <TargetCtrl xPos="-111" yPos="-74"/>
+                        <Condition>situation == SE.askColor &amp;&amp; ! user.color</Condition>
+                    </CEdge>
+                    <CEdge target="N45" source="N43" targetdock="3" sourcedock="18">
+                        <SourceCtrl xPos="115" yPos="-22"/>
+                        <TargetCtrl xPos="-117" yPos="0"/>
+                        <Condition>situation == SE.askAge &amp;&amp; ! user.age</Condition>
+                    </CEdge>
+                    <Position xPos="48" yPos="242"/>
+                </Node>
+                <Node id="N44" name="NameAgain" comment="">
+                    <Commands>retDA = #apologize(name);</Commands>
+                    <Position xPos="636" yPos="27"/>
+                    <EEdge target="N53" source="N44" targetdock="13" sourcedock="12">
+                        <SourceCtrl xPos="74" yPos="30"/>
+                        <TargetCtrl xPos="-74" yPos="-30"/>
+                    </EEdge>
+                </Node>
+                <Node id="N45" name="AgeAgain" comment="">
+                    <Commands>retDA = #apologize(age);</Commands>
+                    <Position xPos="636" yPos="207"/>
+                    <EEdge target="N53" source="N45" targetdock="3" sourcedock="2">
+                        <SourceCtrl xPos="72" yPos="0"/>
+                        <TargetCtrl xPos="-72" yPos="0"/>
+                    </EEdge>
+                </Node>
+                <Node id="N51" name="HobbyAgain" comment="">
+                    <Commands>retDA = #apologize(hobby);</Commands>
+                    <Position xPos="636" yPos="387"/>
+                    <EEdge target="N53" source="N51" targetdock="11" sourcedock="10">
+                        <SourceCtrl xPos="74" yPos="-30"/>
+                        <TargetCtrl xPos="-74" yPos="30"/>
+                    </EEdge>
+                </Node>
+                <Node id="N52" name="ColorAgain" comment="">
+                    <Commands>retDA = #apologize(color);</Commands>
+                    <Position xPos="636" yPos="567"/>
+                    <EEdge target="N53" source="N52" targetdock="7" sourcedock="6">
+                        <SourceCtrl xPos="72" yPos="-71"/>
+                        <TargetCtrl xPos="-72" yPos="71"/>
+                    </EEdge>
+                </Node>
+                <Node id="N53" name="N105" comment="">
+                    <Commands>emitDA(retDA);</Commands>
+                    <Position xPos="996" yPos="207"/>
+                </Node>
+                <Definitions>import de.dfki.introduction.IntroAgent.SE;</Definitions>
+            </SuperNode>
+            <SuperNode start="N178" hideLocalVar="false" hideGlobalVar="false" id="S31" name="WaitToContinue" comment="">
+                <Commands>waitFor = "inform";</Commands>
+                <Position xPos="365" yPos="637"/>
+                <EEdge target="S32" source="S31" targetdock="24" sourcedock="25">
+                    <SourceCtrl xPos="-30" yPos="-45"/>
+                    <TargetCtrl xPos="30" yPos="45"/>
+                </EEdge>
+                <Node id="N174" name="InformReceived" comment="">
+                    <Commands>checkProp();</Commands>
+                    <Position xPos="625" yPos="250"/>
+                    <EEdge target="N175" source="N174" targetdock="1" sourcedock="0">
+                        <SourceCtrl xPos="0" yPos="50"/>
+                        <TargetCtrl xPos="0" yPos="-50"/>
+                    </EEdge>
+                </Node>
+                <Node id="N175" name="Quit" comment="">
+                    <Commands></Commands>
+                    <Position xPos="625" yPos="500"/>
+                </Node>
+                <Node id="N176" name="ResetToIdle" comment="">
+                    <Commands>status = StatE.idle;</Commands>
+                    <Position xPos="375" yPos="375"/>
+                    <EEdge target="N175" source="N176" targetdock="13" sourcedock="12">
+                        <SourceCtrl xPos="51" yPos="21"/>
+                        <TargetCtrl xPos="-51" yPos="-21"/>
+                    </EEdge>
+                </Node>
+                <Node id="N177" name="ChangeStatus" comment="">
+                    <Commands>status = StatE.shuttingDown;</Commands>
+                    <Position xPos="125" yPos="500"/>
+                    <EEdge target="N175" source="N177" targetdock="3" sourcedock="2">
+                        <SourceCtrl xPos="100" yPos="0"/>
+                        <TargetCtrl xPos="-100" yPos="0"/>
+                    </EEdge>
+                </Node>
+                <Node id="N178" name="WaitForInput" comment="">
+                    <Commands></Commands>
+                    <CEdge target="N174" source="N178" targetdock="3" sourcedock="2">
+                        <SourceCtrl xPos="100" yPos="0"/>
+                        <TargetCtrl xPos="-100" yPos="0"/>
+                        <Condition>lastDA() &gt;= #inform(top)</Condition>
+                    </CEdge>
+                    <CEdge target="N176" source="N178" targetdock="13" sourcedock="12">
+                        <SourceCtrl xPos="51" yPos="21"/>
+                        <TargetCtrl xPos="-51" yPos="-21"/>
+                        <Condition>status == StatE.stopped</Condition>
+                    </CEdge>
+                    <CEdge target="N177" source="N178" targetdock="1" sourcedock="0">
+                        <SourceCtrl xPos="0" yPos="50"/>
+                        <TargetCtrl xPos="0" yPos="-50"/>
+                        <Condition>shutDownRequested == true</Condition>
+                    </CEdge>
+                    <Position xPos="125" yPos="250"/>
+                    <TEdge timeout="100000" target="N178" source="N178" targetdock="21" sourcedock="19">
+                        <SourceCtrl xPos="-88" yPos="17"/>
+                        <TargetCtrl xPos="-74" yPos="-50"/>
+                        <Commands></Commands>
+                        <Commands/>
+                    </TEdge>
+                </Node>
+                <Definitions>import de.dfki.introduction.IntroAgent.StatE;
+
+void checkProp() {
+  da = lastDA();	
+  prop = da.getProposition();
+  if (prop == "top") {
+    if (situation == null) return;
+    prop = situation.toString();
+    prop = prop.substring(3).toLowerCase();
+  }  
+  if (prop == "name") prop = "givenname";
+  prop="&lt;dom:" + prop + "&gt;";
+  val = da.getValue("value");
+  logger.info("given: {} is {}", prop, val);
+  user.{prop} = val;
+  lastDAprocessed();	
+}</Definitions>
+            </SuperNode>
+            <SuperNode start="N184" hideLocalVar="false" hideGlobalVar="false" id="S32" name="TestAnswerFits" comment="">
+                <Commands></Commands>
+                <CEdge target="S4" source="S32" targetdock="22" sourcedock="23">
+                    <SourceCtrl xPos="-27" yPos="40"/>
+                    <TargetCtrl xPos="27" yPos="-40"/>
+                    <Condition>! correctResponse</Condition>
+                </CEdge>
+                <Position xPos="198" yPos="424"/>
+                <EEdge target="S5" source="S32" targetdock="31" sourcedock="1">
+                    <SourceCtrl xPos="0" yPos="-40"/>
+                    <TargetCtrl xPos="-7" yPos="39"/>
+                </EEdge>
+                <Node id="N184" name="N129" comment="">
+                    <Commands>correctResponse = false;
+logger.error("Set correct response false");</Commands>
+                    <CEdge target="N185" source="N184" targetdock="19" sourcedock="10">
+                        <SourceCtrl xPos="238" yPos="-98"/>
+                        <TargetCtrl xPos="-252" yPos="50"/>
+                        <Condition>situation == SE.askColor &amp;&amp; user.color</Condition>
+                    </CEdge>
+                    <CEdge target="N185" source="N184" targetdock="11" sourcedock="20">
+                        <SourceCtrl xPos="258" yPos="220"/>
+                        <TargetCtrl xPos="-221" yPos="278"/>
+                        <Condition>situation == SE.askHobby &amp;&amp; user.hobby</Condition>
+                    </CEdge>
+                    <CEdge target="N185" source="N184" targetdock="3" sourcedock="2">
+                        <SourceCtrl xPos="250" yPos="91"/>
+                        <TargetCtrl xPos="-234" yPos="158"/>
+                        <Condition>situation == SE.askAge &amp;&amp; user.age</Condition>
+                    </CEdge>
+                    <CEdge target="N185" source="N184" targetdock="29" sourcedock="22">
+                        <SourceCtrl xPos="186" yPos="-151"/>
+                        <TargetCtrl xPos="-252" yPos="-50"/>
+                        <Condition>situation == SE.askName &amp;&amp; user.givenname</Condition>
+                    </CEdge>
+                    <Position xPos="112" yPos="114"/>
+                </Node>
+                <Node id="N185" name="N130" comment="">
+                    <Commands>correctResponse = true;
+logger.error("Set response correct");</Commands>
+                    <Position xPos="767" yPos="65"/>
+                </Node>
+                <Definitions>import de.dfki.introduction.IntroAgent.SE;</Definitions>
+            </SuperNode>
+            <SuperNode start="N20" hideLocalVar="false" hideGlobalVar="false" id="S5" name="TestToSendConfirm" comment="">
+                <Commands></Commands>
+                <Position xPos="207" yPos="252"/>
+                <EEdge target="S7" source="S5" targetdock="3" sourcedock="2">
+                    <SourceCtrl xPos="40" yPos="0"/>
+                    <TargetCtrl xPos="-40" yPos="0"/>
+                </EEdge>
+                <Node id="N20" name="TestIfSend" comment="">
+                    <Commands></Commands>
+                    <CEdge target="N35" source="N20" targetdock="5" sourcedock="4">
+                        <SourceCtrl xPos="57" yPos="57"/>
+                        <TargetCtrl xPos="-57" yPos="-57"/>
+                        <Condition>random() &lt; 0.9</Condition>
+                    </CEdge>
+                    <Position xPos="70" yPos="33"/>
+                    <EEdge target="N31" source="N20" targetdock="3" sourcedock="2">
+                        <SourceCtrl xPos="71" yPos="0"/>
+                        <TargetCtrl xPos="-71" yPos="0"/>
+                    </EEdge>
+                </Node>
+                <Node id="N31" name="WaitToEndSpeak" comment="">
+                    <Commands>situation = null;</Commands>
+                    <Position xPos="429" yPos="35"/>
+                </Node>
+                <Node id="N35" name="N28" comment="">
+                    <Commands>if (situation != null) {
+  String rep = situation.toString();
+  rep = rep.substring(3).toLowerCase();
+  logger.error("In N35_N28: {}", rep);
+  retDA = #acknowledgement({rep});
+  emitDA(retDA);
+}</Commands>
+                    <Position xPos="233" yPos="275"/>
+                    <TEdge timeout="1000" target="N31" source="N35" targetdock="7" sourcedock="6">
+                        <SourceCtrl xPos="54" yPos="-54"/>
+                        <TargetCtrl xPos="-54" yPos="54"/>
+                        <Commands></Commands>
+                        <Commands/>
+                    </TEdge>
+                </Node>
+                <Definitions></Definitions>
+            </SuperNode>
+            <SuperNode start="N86" hideLocalVar="false" hideGlobalVar="false" id="S9" name="AskOther" comment="">
+                <Commands></Commands>
+                <CEdge target="N181" source="S9" targetdock="5" sourcedock="4">
+                    <SourceCtrl xPos="46" yPos="46"/>
+                    <TargetCtrl xPos="-46" yPos="-46"/>
+                    <Condition>situation == SE.introFinished</Condition>
+                </CEdge>
+                <Position xPos="663" yPos="343"/>
+                <EEdge target="S31" source="S9" targetdock="6" sourcedock="7">
+                    <SourceCtrl xPos="-59" yPos="59"/>
+                    <TargetCtrl xPos="59" yPos="-59"/>
+                </EEdge>
+                <Comment>
+                    <Text>Test if any parameter is given
+- no =&gt; select random of the possibilities
+- yes =&gt; test if one of the possible parameters is given </Text>
+                    <Boundary height="77" width="394" xPos="244" yPos="28"/>
+                </Comment>
+                <Node id="N40" name="N4" comment="">
+                    <Commands>r = random();</Commands>
+                    <CEdge target="N46" source="N40" targetdock="13" sourcedock="12">
+                        <SourceCtrl xPos="73" yPos="30"/>
+                        <TargetCtrl xPos="-73" yPos="-30"/>
+                        <Condition>r &lt; 0.33</Condition>
+                    </CEdge>
+                    <CEdge target="N49" source="N40" targetdock="19" sourcedock="20">
+                        <SourceCtrl xPos="78" yPos="52"/>
+                        <TargetCtrl xPos="-101" yPos="26"/>
+                        <Condition>r &gt;= 0.33 &amp;&amp; r &lt; 0.66</Condition>
+                    </CEdge>
+                    <Position xPos="168" yPos="106"/>
+                    <EEdge target="N58" source="N40" targetdock="3" sourcedock="2">
+                        <SourceCtrl xPos="74" yPos="0"/>
+                        <TargetCtrl xPos="-74" yPos="0"/>
+                    </EEdge>
+                </Node>
+                <Node id="N46" name="N5" comment="">
+                    <Commands></Commands>
+                    <CEdge target="N47" source="N46" targetdock="3" sourcedock="2">
+                        <SourceCtrl xPos="59" yPos="0"/>
+                        <TargetCtrl xPos="-59" yPos="0"/>
+                        <Condition>! user.hobby</Condition>
+                    </CEdge>
+                    <Position xPos="551" yPos="282"/>
+                    <EEdge target="N72" source="N46" targetdock="2" sourcedock="3">
+                        <SourceCtrl xPos="-74" yPos="0"/>
+                        <TargetCtrl xPos="74" yPos="0"/>
+                    </EEdge>
+                </Node>
+                <Node id="N47" name="N6" comment="">
+                    <Commands>situation = SE.askHobby;</Commands>
+                    <Position xPos="837" yPos="283"/>
+                    <EEdge target="N48" source="N47" targetdock="3" sourcedock="2">
+                        <SourceCtrl xPos="74" yPos="0"/>
+                        <TargetCtrl xPos="-74" yPos="0"/>
+                    </EEdge>
+                </Node>
+                <Node id="N48" name="AskOther_Done" comment="">
+                    <Commands>String rep = situation.toString();
+rep = rep.substring(3).toLowerCase();
+emitDA(#request({rep}));</Commands>
+                    <Position xPos="1204" yPos="308"/>
+                </Node>
+                <Node id="N49" name="N11" comment="">
+                    <Commands></Commands>
+                    <CEdge target="N50" source="N49" targetdock="3" sourcedock="2">
+                        <SourceCtrl xPos="59" yPos="0"/>
+                        <TargetCtrl xPos="-59" yPos="0"/>
+                        <Condition>! user.age</Condition>
+                    </CEdge>
+                    <Position xPos="545" yPos="432"/>
+                    <EEdge target="N72" source="N49" targetdock="20" sourcedock="13">
+                        <SourceCtrl xPos="-73" yPos="-30"/>
+                        <TargetCtrl xPos="66" yPos="44"/>
+                    </EEdge>
+                </Node>
+                <Node id="N50" name="N17" comment="">
+                    <Commands>situation = SE.askAge;</Commands>
+                    <Position xPos="843" yPos="439"/>
+                    <EEdge target="N48" source="N50" targetdock="19" sourcedock="10">
+                        <SourceCtrl xPos="73" yPos="-30"/>
+                        <TargetCtrl xPos="-78" yPos="15"/>
+                    </EEdge>
+                </Node>
+                <Node id="N58" name="N18" comment="">
+                    <Commands></Commands>
+                    <CEdge target="N62" source="N58" targetdock="3" sourcedock="2">
+                        <SourceCtrl xPos="59" yPos="0"/>
+                        <TargetCtrl xPos="-59" yPos="0"/>
+                        <Condition>! user.color</Condition>
+                    </CEdge>
+                    <Position xPos="557" yPos="138"/>
+                    <EEdge target="N72" source="N58" targetdock="10" sourcedock="11">
+                        <SourceCtrl xPos="-73" yPos="30"/>
+                        <TargetCtrl xPos="73" yPos="-30"/>
+                    </EEdge>
+                </Node>
+                <Node id="N62" name="N21" comment="">
+                    <Commands>situation = SE.askColor;</Commands>
+                    <Position xPos="840" yPos="149"/>
+                    <EEdge target="N48" source="N62" targetdock="13" sourcedock="12">
+                        <SourceCtrl xPos="73" yPos="30"/>
+                        <TargetCtrl xPos="-73" yPos="-30"/>
+                    </EEdge>
+                </Node>
+                <Node id="N72" name="N27" comment="">
+                    <Commands></Commands>
+                    <CEdge target="N40" source="N72" targetdock="0" sourcedock="1">
+                        <SourceCtrl xPos="0" yPos="-40"/>
+                        <TargetCtrl xPos="0" yPos="40"/>
+                        <Condition>! user.color || ! user.age || ! user.hobby</Condition>
+                    </CEdge>
+                    <Position xPos="170" yPos="412"/>
+                    <EEdge target="N77" source="N72" targetdock="9" sourcedock="8">
+                        <SourceCtrl xPos="14" yPos="37"/>
+                        <TargetCtrl xPos="-14" yPos="-37"/>
+                    </EEdge>
+                </Node>
+                <Node id="N77" name="N36" comment="">
+                    <Commands>situation = SE.introFinished;</Commands>
+                    <Position xPos="397" yPos="541"/>
+                </Node>
+                <Node id="N86" name="AskOther_Start" comment="">
+                    <Commands>logger.error("Situation in AskOther: {}", situation);</Commands>
+                    <CEdge target="N48" source="N86" targetdock="31" sourcedock="2">
+                        <SourceCtrl xPos="251" yPos="-35"/>
+                        <TargetCtrl xPos="-238" yPos="281"/>
+                        <Condition>situation == SE.askName</Condition>
+                    </CEdge>
+                    <Position xPos="168" yPos="678"/>
+                    <EEdge target="N72" source="N86" targetdock="0" sourcedock="1">
+                        <SourceCtrl xPos="0" yPos="-74"/>
+                        <TargetCtrl xPos="0" yPos="74"/>
+                    </EEdge>
+                </Node>
+                <Definitions>import de.dfki.introduction.IntroAgent.SE;
+r = 0.0;</Definitions>
+            </SuperNode>
+            <SuperNode start="N36" hideLocalVar="false" hideGlobalVar="false" id="S6" name="HasEyeColor" comment="">
+                <Commands></Commands>
+                <Position xPos="663" yPos="195"/>
+                <EEdge target="S9" source="S6" targetdock="1" sourcedock="0">
+                    <SourceCtrl xPos="0" yPos="40"/>
+                    <TargetCtrl xPos="0" yPos="-40"/>
+                </EEdge>
+                <Node id="N36" name="N34" comment="">
+                    <Commands></Commands>
+                    <CEdge target="N27" source="N36" targetdock="19" sourcedock="18">
+                        <SourceCtrl xPos="74" yPos="-14"/>
+                        <TargetCtrl xPos="-74" yPos="14"/>
+                        <Condition>user.color</Condition>
+                    </CEdge>
+                    <CEdge target="N54" source="N36" targetdock="13" sourcedock="12">
+                        <SourceCtrl xPos="76" yPos="31"/>
+                        <TargetCtrl xPos="-76" yPos="-31"/>
+                        <Condition>! user.color</Condition>
+                    </CEdge>
+                    <Position xPos="48" yPos="80"/>
+                </Node>
+                <Node id="N54" name="Done" comment="">
+                    <Commands></Commands>
+                    <Position xPos="420" yPos="262"/>
+                </Node>
+                <Node id="N27" name="N27" comment="">
+                    <Commands>setEyeColor();
+emitDA(#acknowledgement(eyecolorset));</Commands>
+                    <Position xPos="424" yPos="37"/>
+                    <EEdge target="N54" source="N27" targetdock="1" sourcedock="31">
+                        <SourceCtrl xPos="-8" yPos="44"/>
+                        <TargetCtrl xPos="0" yPos="-45"/>
+                    </EEdge>
+                </Node>
+                <Definitions></Definitions>
+            </SuperNode>
+            <SuperNode start="N33" hideLocalVar="false" hideGlobalVar="false" id="S7" name="HasEyeColor" comment="">
+                <Commands></Commands>
+                <Position xPos="437" yPos="252"/>
+                <EEdge target="S9" source="S7" targetdock="13" sourcedock="12">
+                    <SourceCtrl xPos="37" yPos="14"/>
+                    <TargetCtrl xPos="-37" yPos="-14"/>
+                </EEdge>
+                <Node id="N33" name="N34" comment="">
+                    <Commands>logger.error("I'm in for good: {}, {}, {}", node.state, node.parent.children.size(), user.color);</Commands>
+                    <CEdge target="N56" source="N33" targetdock="19" sourcedock="18">
+                        <SourceCtrl xPos="74" yPos="-14"/>
+                        <TargetCtrl xPos="-74" yPos="14"/>
+                        <Condition>user.color</Condition>
+                    </CEdge>
+                    <CEdge target="N34" source="N33" targetdock="13" sourcedock="12">
+                        <SourceCtrl xPos="72" yPos="30"/>
+                        <TargetCtrl xPos="-72" yPos="-30"/>
+                        <Condition>! user.color</Condition>
+                    </CEdge>
+                    <Position xPos="41" yPos="127"/>
+                </Node>
+                <Node id="N34" name="Done" comment="">
+                    <Commands>logger.error("I'm done for good: {}, {}", node.state, node.parent.children.size());</Commands>
+                    <Position xPos="316" yPos="293"/>
+                </Node>
+                <Node id="N56" name="N28" comment="">
+                    <Commands></Commands>
+                    <CEdge target="N57" source="N56" targetdock="30" sourcedock="28">
+                        <SourceCtrl xPos="216" yPos="18"/>
+                        <TargetCtrl xPos="-21" yPos="-56"/>
+                        <Condition>setEyeColor() == true 
+  &amp;&amp; ! saidInSession(#acknowledgement(eyecolorset))</Condition>
+                    </CEdge>
+                    <Position xPos="321" yPos="34"/>
+                    <EEdge target="N34" source="N56" targetdock="1" sourcedock="0">
+                        <SourceCtrl xPos="0" yPos="42"/>
+                        <TargetCtrl xPos="0" yPos="-42"/>
+                    </EEdge>
+                </Node>
+                <Node id="N57" name="N27" comment="">
+                    <Commands>emitDA(#acknowledgement(eyecolorset));</Commands>
+                    <Position xPos="750" yPos="250"/>
+                    <EEdge target="N34" source="N57" targetdock="2" sourcedock="3">
+                        <SourceCtrl xPos="-102" yPos="0"/>
+                        <TargetCtrl xPos="102" yPos="0"/>
+                    </EEdge>
+                </Node>
+                <Definitions></Definitions>
+            </SuperNode>
+            <Definitions>import de.dfki.introduction.IntroAgent.SE;
+boolean correctResponse;</Definitions>
+        </SuperNode>
+        <SuperNode start="N26" hideLocalVar="false" hideGlobalVar="false" id="S1" name="WaitToContinue" comment="">
+            <Commands>waitFor = "provide";</Commands>
+            <Position xPos="392" yPos="101"/>
+            <EEdge target="N204" source="S1" targetdock="2" sourcedock="3">
+                <SourceCtrl xPos="-66" yPos="0"/>
+                <TargetCtrl xPos="66" yPos="0"/>
+            </EEdge>
+            <Node id="N5" name="IdleState" comment="">
+                <Commands></Commands>
+                <CEdge target="N6" source="N5" targetdock="13" sourcedock="12">
+                    <SourceCtrl xPos="52" yPos="21"/>
+                    <TargetCtrl xPos="-52" yPos="-21"/>
+                    <Condition>lastDA() &gt;= #{waitFor}(top)</Condition>
+                </CEdge>
+                <Position xPos="483" yPos="230"/>
+                <TEdge timeout="2000" target="N26" source="N5" targetdock="12" sourcedock="1">
+                    <SourceCtrl xPos="22" yPos="-79"/>
+                    <TargetCtrl xPos="277" yPos="-38"/>
+                    <Commands></Commands>
+                    <Commands/>
+                </TEdge>
+            </Node>
+            <Node id="N6" name="StartPlayingQuiz" comment="">
+                <Commands>logger.info("Next: {}", waitFor);
+lastDAprocessed();</Commands>
+                <Position xPos="717" yPos="392"/>
+            </Node>
+            <Node id="N10" name="Quit" comment="">
+                <Commands></Commands>
+                <Position xPos="393" yPos="410"/>
+            </Node>
+            <Node id="N11" name="ResetToIdle" comment="">
+                <Commands>status = StatE.idle;</Commands>
+                <Position xPos="303" yPos="50"/>
+                <EEdge target="N21" source="N11" targetdock="1" sourcedock="0">
+                    <SourceCtrl xPos="0" yPos="40"/>
+                    <TargetCtrl xPos="0" yPos="-40"/>
+                </EEdge>
+            </Node>
+            <Node id="N17" name="ChangeStatus" comment="">
+                <Commands>status = StatE.shuttingDown;</Commands>
+                <Position xPos="123" yPos="410"/>
+                <EEdge target="N10" source="N17" targetdock="3" sourcedock="2">
+                    <SourceCtrl xPos="54" yPos="0"/>
+                    <TargetCtrl xPos="-54" yPos="0"/>
+                </EEdge>
+            </Node>
+            <Node id="N18" name="CheckShutDown" comment="">
+                <Commands></Commands>
+                <CEdge target="N17" source="N18" targetdock="1" sourcedock="0">
+                    <SourceCtrl xPos="0" yPos="40"/>
+                    <TargetCtrl xPos="0" yPos="-40"/>
+                    <Condition>shutDownRequested == true</Condition>
+                </CEdge>
+                <Position xPos="123" yPos="230"/>
+                <EEdge target="N21" source="N18" targetdock="3" sourcedock="18">
+                    <SourceCtrl xPos="39" yPos="-7"/>
+                    <TargetCtrl xPos="-40" yPos="0"/>
+                </EEdge>
+            </Node>
+            <Node id="N21" name="CheckStopped" comment="">
+                <Commands></Commands>
+                <CEdge target="N11" source="N21" targetdock="31" sourcedock="17">
+                    <SourceCtrl xPos="-7" yPos="-39"/>
+                    <TargetCtrl xPos="-7" yPos="39"/>
+                    <Condition>status == StatE.stopped</Condition>
+                </CEdge>
+                <Position xPos="303" yPos="230"/>
+                <EEdge target="N5" source="N21" targetdock="3" sourcedock="2">
+                    <SourceCtrl xPos="40" yPos="0"/>
+                    <TargetCtrl xPos="-40" yPos="0"/>
+                </EEdge>
+            </Node>
+            <Node id="N26" name="Start" comment="">
+                <Commands></Commands>
+                <Position xPos="123" yPos="50"/>
+                <EEdge target="N18" source="N26" targetdock="1" sourcedock="0">
+                    <SourceCtrl xPos="0" yPos="40"/>
+                    <TargetCtrl xPos="0" yPos="-40"/>
+                </EEdge>
+            </Node>
+            <Definitions>import de.dfki.introduction.IntroAgent.StatE;</Definitions>
+        </SuperNode>
+        <Definitions>import de.dfki.introduction.IntroAgent.StatE;
+String waitFor;</Definitions>
+    </SuperNode>
+    <Definitions>DialogueAct retDA;
+boolean shutDownRequested;
+
+Signal lastSignal;
+StatE status;
+SE situation;</Definitions>
+    <ClassPath/>
+</SceneFlow>

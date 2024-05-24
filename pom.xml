@@ -17,20 +17,25 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <junit.version>4.13.2</junit.version>
-    <slf4j.version>2.0.5</slf4j.version>
-    <logback.version>1.4.14</logback.version>
+    <slf4j.version>2.0.9</slf4j.version>
   </properties>
 
   <licenses>
     <license>
-      <name>LGPL 3 or later</name>
-      <url>http://www.gnu.org/licenses/lgpl.html</url>
+      <name>Apache 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
 
   <modules>
     <module>model</module>
+    <!-- the grave2vonda compiler -->
+    <module>compiler</module>
+    <!-- only to test generated code -->
+    <module>interrupt</module>
+    <module>introduction</module>
+    <!-- the main editor -->
     <module>editor</module>
   </modules>
 

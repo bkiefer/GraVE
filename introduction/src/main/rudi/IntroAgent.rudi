@@ -1,0 +1,4 @@
+void sysCall(String what, String where);
+Signal getSystemSignal();
+boolean setEyeColor();
+User user;

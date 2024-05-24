@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <appender name="stderr" class="ch.qos.logback.core.ConsoleAppender">
+    <target>System.err</target>
+    <encoder>
+      <pattern>%-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <logger name="de.dfki.lt.hfc" level="warn"/>
+  <logger name="de.dfki.mlt" level="info"/>
+  <logger name="de.dfki.mlt.rudimant.agent.Timeouts" level="debug"/>
+  <logger name="de.dfki.introduction" level="info"/>
+  <logger name="de.dfki.mlt.compiler" level="warn"/>
+  <root level="info">
+    <appender-ref ref="stderr"/>
+  </root>
+</configuration>

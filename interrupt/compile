@@ -1,0 +1,11 @@
+#!/bin/bash
+script_dir=`dirname $0`
+# Automaton --> rudi
+cd "$script_dir"
+pushd .. ; mvn install; popd
+../run_g2v "./gravesrc/sceneflow.xml" . &&
+./ntcreate.sh &&
+# rudi --> java
+vondac -c "config.yml" "$@" &&
+# compile java project
+mvn -U clean install

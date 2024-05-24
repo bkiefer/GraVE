@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<grammar xmlns="http://www.w3.org/2001/06/grammar" xml:lang="en-US"
+         mode="voice" root="ROOT" tag-format="semantics/1.0" version="1.0">
+  <rule id="ROOT" scope="public">
+    <one-of>
+
+      <item>
+        <one-of>
+          <item>Hello</item>
+          <item>Hi</item>
+		  <item>hello</item>
+		  <item>hi</item>
+        </one-of>
+        <item repeat="0-1">Cat</item>
+        <tag> out.da="InitialGreeting" ; out.prop="Greet" </tag>
+      </item>
+
+      <item>
+		<one-of>
+		  <item repeat="0-1">I'm</item>	
+		  <item repeat="0-1">I feel</item>
+        </one-of>    
+		<one-of>
+          <item>fine</item>
+		  <item>Fine</item>
+          <item>good</item>
+		  <item>Good</item>
+        </one-of>
+        <tag> out.da="Inform" ; out.prop="Mood" ; out.what="positive" </tag>
+	  </item>
+     
+	  <item>
+		<one-of>
+		  <item repeat="0-1">I'm</item>	
+		  <item repeat="0-1">I feel</item>
+        </one-of> 
+		<one-of>
+			<item>
+				<one-of> 
+				  <item>not</item> 
+				  <item>Not</item> 
+				</one-of> 
+				<item repeat="0-1">so</item>  
+				<one-of>
+			      <item>fine</item>
+				  <item>Fine</item>
+			      <item>good</item>
+				  <item>Good</item>
+			    </one-of>
+			</item>
+			<item>bad</item>
+			<item>Bad</item>
+		</one-of>
+        <tag> out.da="Inform" ; out.prop="Mood" ; out.what="negative" </tag>
+	  </item>
+
+	<item>
+		<one-of>
+			<item>How</item> 
+			<item>how</item>
+		</one-of>
+		<one-of>
+          <item>are you</item>
+		  <item>do you feel</item>
+          <item>is it going</item>
+        </one-of>
+		<item repeat="0-1">today</item> 
+		<item repeat="0-1">?</item> 
+        <tag> out.da="Question" ; out.prop="Mood"</tag>
+	  </item>
+
+	<item>
+		<one-of>
+          <item>Bye</item>
+		  <item>Goodbye</item>
+          <item>Have a nice day</item>
+		  <item>See you</item>
+        </one-of>
+        <tag> out.da="InitialGoodbye" ; out.prop="Bye"</tag>
+	  </item>
+
+	<item>
+		<one-of>
+          <item>Yes</item>
+		  <item>yes</item>
+          <item>yeah</item>
+        </one-of>
+        <tag> out.da="Confirm" ; out.prop="MoreTalking"</tag>
+	  </item>
+
+	<item>
+		<one-of>
+          <item>No</item>
+		  <item>no</item>
+          <item>Not really</item>
+		  <item>not really</item>
+        </one-of>
+        <tag> out.da="Disconfirm" ; out.prop="MoreTalking"</tag>
+	  </item>
+
+	<item>
+		<one-of>
+          <item>I changed my mind</item>
+		  <item>i changed my mind</item>
+          <item>i forgot</item>
+		  <item>nevermind</item>
+		  <item>Nevermind</item>
+		  <item>not now</item>
+          <item>i don't want to</item>
+		  <item>forget it</item>
+        </one-of>
+        <tag> out.da="DeclineSuggestion" ; out.prop="MoreTalking"</tag>
+	  </item>
+
+    </one-of>
+  </rule>
+</grammar>

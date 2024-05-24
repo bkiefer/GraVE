@@ -1,0 +1,8 @@
+src/main/rudi/S*.rudi
+src/main/rudi/introduction.rudi
+src/main/rudi/introduction.yml
+src/main/resources/ontology/automaton.nt
+src/main/resources/ontology/dialogue.nt
+src/main/resources/ontology/domain.nt
+src/main/resources/ontology/introduction.nt
+src/main/resources/ontology/toplevel.nt

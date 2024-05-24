@@ -72,13 +72,6 @@
       <artifactId>slf4j-api</artifactId>
       <type>jar</type>
     </dependency>
-
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>${logback.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>

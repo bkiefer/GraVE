@@ -1,0 +1,35 @@
+ontologyFile:       src/main/resources/ontology/introduction.yml
+
+# compile configuration settings
+inputFile:          src/main/rudi/introduction.rudi
+outputDirectory:    src/main/gen-java
+agentBase:          de.dfki.introduction.IntroAgent
+typeDef:            IntroAgent.rudi
+failOnError:        false
+rootPackage:        de.dfki.introduction
+persistentVars:     true
+
+# configuration for debugger/GUI
+customCompileCommands:
+  mvncompile: ./compile
+  mvncleancmp: mvn clean install
+  compile: vondac -c config.yml
+  vcompile: vondac -v -c config.yml
+defaultCompileCommand: compile
+
+# run configuration: NLP components
+NLG:
+  en_EN:
+    class: de.dfki.mlt.rudimant.agent.nlp.LanguageGenerator
+    mapperProject: src/main/resources/grammars/cplanner/allrules-mapper
+    generationProject: src/main/resources/grammars/cplanner/allrules
+NLU:
+  en_EN:
+    class: de.dfki.mlt.rudimant.agent.nlp.SrgsParser
+    grammar: src/main/resources/grammars/srgs/IntroAgent.xml
+    converter: src/main/resources/grammars/cplanner/srgsconv
+    tokenizer:
+      class: de.dfki.mlt.rudimant.agent.nlp.TrivialTokenizer
+      toLower: false
+      removePunctuation: true
+#debugPort: 9777

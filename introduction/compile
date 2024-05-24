@@ -1,0 +1,10 @@
+#!/bin/bash
+script_dir=`dirname $0`
+# Automaton --> rudi
+pushd ..
+mvn install
+popd
+# rudi --> java
+vondac -c "$script_dir/config.yml" "$@"
+# compile java project
+mvn -U clean install

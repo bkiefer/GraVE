@@ -1,0 +1,1212 @@
+&id001 !!de.dfki.mlt.rudimant.common.IncludeInfo
+children:
+- !!de.dfki.mlt.rudimant.common.RuleInfo
+  baseterms:
+  - isActive(nodes[1])
+  children: []
+  expression:
+  - 0
+  id: 0
+  label: N1_Done
+  line: 166
+  parent: *id001
+- !!de.dfki.mlt.rudimant.common.RuleInfo
+  baseterms:
+  - isActive(nodes[2])
+  children: []
+  expression:
+  - 0
+  id: 1
+  label: N9_ShutDownPreparations
+  line: 177
+  parent: *id001
+- !!de.dfki.mlt.rudimant.common.RuleInfo
+  baseterms:
+  - isActive(nodes[3])
+  children: []
+  expression:
+  - 0
+  id: 2
+  label: N16_Initialize
+  line: 188
+  parent: *id001
+- &id003 !!de.dfki.mlt.rudimant.common.IncludeInfo
+  children:
+  - &id002 !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[4])
+    children:
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - canBeLeft(nodes[4])
+      children: []
+      expression:
+      - 0
+      id: 4
+      label: S10_ListenToOutsideWorld_out
+      line: 10
+      parent: *id002
+    expression:
+    - 0
+    id: 3
+    label: setup_S10_ListenToOutsideWorld
+    line: 3
+    parent: *id003
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[5])
+    children: []
+    expression:
+    - 0
+    id: 5
+    label: N2_Listen
+    line: 21
+    parent: *id003
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[6])
+    children: []
+    expression:
+    - 0
+    id: 6
+    label: N3_DecideIfListen
+    line: 39
+    parent: *id003
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[7])
+    children: []
+    expression:
+    - 0
+    id: 7
+    label: N8_Done
+    line: 54
+    parent: *id003
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[8])
+    children: []
+    expression:
+    - 0
+    id: 8
+    label: N41_DisposeOfUnusedInput
+    line: 60
+    parent: *id003
+  errors: []
+  label: S10_ListenToOutsideWorld
+  line: 198
+  parent: *id001
+  relativePath: []
+- &id005 !!de.dfki.mlt.rudimant.common.IncludeInfo
+  children:
+  - &id004 !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[9])
+    children:
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - canBeLeft(nodes[9])
+      children: []
+      expression:
+      - 0
+      id: 10
+      label: S11_ReactToSystemSignalsAndInterrupts_out
+      line: 12
+      parent: *id004
+    expression:
+    - 0
+    id: 9
+    label: setup_S11_ReactToSystemSignalsAndInterrupts
+    line: 5
+    parent: *id005
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[10])
+    children: []
+    expression:
+    - 0
+    id: 11
+    label: N13_ConsumeLastReaction
+    line: 23
+    parent: *id005
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[11])
+    children: []
+    expression:
+    - 0
+    id: 12
+    label: N14_WaitForSignalOrInterrupt
+    line: 34
+    parent: *id005
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[12])
+    children: []
+    expression:
+    - 0
+    id: 13
+    label: N15_Done
+    line: 65
+    parent: *id005
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[13])
+    children: []
+    expression:
+    - 0
+    id: 14
+    label: N82_ChangeStatus
+    line: 71
+    parent: *id005
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[14])
+    children: []
+    expression:
+    - 0
+    id: 15
+    label: N70_RaiseFlag
+    line: 82
+    parent: *id005
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[15])
+    children: []
+    expression:
+    - 0
+    id: 16
+    label: N71_ConsumeLastSignal
+    line: 93
+    parent: *id005
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[16])
+    children: []
+    expression:
+    - 0
+    id: 17
+    label: N89_ConsumeLastSignal
+    line: 104
+    parent: *id005
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[17])
+    children: []
+    expression:
+    - 0
+    id: 18
+    label: N90_ReturnToWait
+    line: 115
+    parent: *id005
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[18])
+    children: []
+    expression:
+    - 0
+    id: 19
+    label: N96_N96
+    line: 121
+    parent: *id005
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[19])
+    children: []
+    expression:
+    - 0
+    id: 20
+    label: N24_N96
+    line: 133
+    parent: *id005
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[20])
+    children: []
+    expression:
+    - 0
+    id: 21
+    label: N25_N97
+    line: 144
+    parent: *id005
+  errors: []
+  label: S11_ReactToSystemSignalsAndInterrupts
+  line: 199
+  parent: *id001
+  relativePath: []
+- &id007 !!de.dfki.mlt.rudimant.common.IncludeInfo
+  children:
+  - &id006 !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[21])
+    children:
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - canBeLeft(nodes[21])
+      children: []
+      expression:
+      - 0
+      id: 23
+      label: S8_Idle_out
+      line: 11
+      parent: *id006
+    expression:
+    - 0
+    id: 22
+    label: setup_S8_Idle
+    line: 4
+    parent: *id007
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[22])
+    children: []
+    expression:
+    - 0
+    id: 24
+    label: N64_IdleState
+    line: 26
+    parent: *id007
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[23])
+    children: []
+    expression:
+    - 0
+    id: 25
+    label: N66_StartIntroduction
+    line: 37
+    parent: *id007
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[24])
+    children: []
+    expression:
+    - 0
+    id: 26
+    label: N81_Quit
+    line: 49
+    parent: *id007
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[25])
+    children: []
+    expression:
+    - 0
+    id: 27
+    label: N91_ResetToIdle
+    line: 55
+    parent: *id007
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[26])
+    children: []
+    expression:
+    - 0
+    id: 28
+    label: N92_ChangeStatus
+    line: 67
+    parent: *id007
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[27])
+    children: []
+    expression:
+    - 0
+    id: 29
+    label: N93_CheckShutDown
+    line: 78
+    parent: *id007
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[28])
+    children: []
+    expression:
+    - 0
+    id: 30
+    label: N94_CheckStopped
+    line: 88
+    parent: *id007
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[29])
+    children: []
+    expression:
+    - 0
+    id: 31
+    label: N95_Start
+    line: 98
+    parent: *id007
+  errors: []
+  label: S8_Idle
+  line: 200
+  parent: *id001
+  relativePath: []
+- &id009 !!de.dfki.mlt.rudimant.common.IncludeInfo
+  children:
+  - &id008 !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[30])
+    children:
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - canBeLeft(nodes[30])
+      children: []
+      expression:
+      - 0
+      id: 33
+      label: S14_ListenToSystemSignals_out
+      line: 10
+      parent: *id008
+    expression:
+    - 0
+    id: 32
+    label: setup_S14_ListenToSystemSignals
+    line: 3
+    parent: *id009
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[31])
+    children: []
+    expression:
+    - 0
+    id: 34
+    label: N69_DecideIfListen
+    line: 21
+    parent: *id009
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[32])
+    children: []
+    expression:
+    - 0
+    id: 35
+    label: N87_Listen
+    line: 36
+    parent: *id009
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[33])
+    children: []
+    expression:
+    - 0
+    id: 36
+    label: N88_Done
+    line: 58
+    parent: *id009
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[34])
+    children: []
+    expression:
+    - 0
+    id: 37
+    label: N68_DisposeOfUnusedInput
+    line: 64
+    parent: *id009
+  errors: []
+  label: S14_ListenToSystemSignals
+  line: 201
+  parent: *id001
+  relativePath: []
+- &id011 !!de.dfki.mlt.rudimant.common.IncludeInfo
+  children:
+  - &id010 !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[35])
+    children:
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - canBeLeft(nodes[35])
+      children: []
+      expression:
+      - 0
+      id: 39
+      label: S19_DoIntroduction_out
+      line: 12
+      parent: *id010
+    expression:
+    - 0
+    id: 38
+    label: setup_S19_DoIntroduction
+    line: 4
+    parent: *id011
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[36])
+    children: []
+    expression:
+    - 0
+    id: 40
+    label: N65_Start_introduction
+    line: 23
+    parent: *id011
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[37])
+    children: []
+    expression:
+    - 0
+    id: 41
+    label: N204_Done
+    line: 29
+    parent: *id011
+  - !!de.dfki.mlt.rudimant.common.RuleInfo
+    baseterms:
+    - isActive(nodes[38])
+    children: []
+    expression:
+    - 0
+    id: 42
+    label: N30_AskToPlay
+    line: 40
+    parent: *id011
+  - &id013 !!de.dfki.mlt.rudimant.common.IncludeInfo
+    children:
+    - &id012 !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - isActive(nodes[39])
+      children:
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - canBeLeft(nodes[39])
+        children: []
+        expression:
+        - 0
+        id: 44
+        label: S2_AskForParameters_out
+        line: 11
+        parent: *id012
+      expression:
+      - 0
+      id: 43
+      label: setup_S2_AskForParameters
+      line: 4
+      parent: *id013
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - isActive(nodes[40])
+      children: []
+      expression:
+      - 0
+      id: 45
+      label: N181_Done
+      line: 22
+      parent: *id013
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - isActive(nodes[41])
+      children: []
+      expression:
+      - 0
+      id: 46
+      label: N182_Start
+      line: 33
+      parent: *id013
+    - &id015 !!de.dfki.mlt.rudimant.common.IncludeInfo
+      children:
+      - &id014 !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[42])
+        children:
+        - !!de.dfki.mlt.rudimant.common.RuleInfo
+          baseterms:
+          - canBeLeft(nodes[42])
+          children: []
+          expression:
+          - 0
+          id: 48
+          label: S3_DoGreeting_out
+          line: 10
+          parent: *id014
+        expression:
+        - 0
+        id: 47
+        label: setup_S3_DoGreeting
+        line: 3
+        parent: *id015
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[43])
+        children: []
+        expression:
+        - 0
+        id: 49
+        label: N29_TestNameGiven
+        line: 21
+        parent: *id015
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[44])
+        children: []
+        expression:
+        - 0
+        id: 50
+        label: N39_Done
+        line: 31
+        parent: *id015
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[45])
+        children: []
+        expression:
+        - 0
+        id: 51
+        label: N37_AskName
+        line: 42
+        parent: *id015
+      errors: []
+      label: S3_DoGreeting
+      line: 43
+      parent: *id013
+      relativePath: []
+    - &id017 !!de.dfki.mlt.rudimant.common.IncludeInfo
+      children:
+      - &id016 !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[46])
+        children:
+        - !!de.dfki.mlt.rudimant.common.RuleInfo
+          baseterms:
+          - canBeLeft(nodes[46])
+          children: []
+          expression:
+          - 0
+          id: 53
+          label: S4_TestAskAgain_out
+          line: 10
+          parent: *id016
+        expression:
+        - 0
+        id: 52
+        label: setup_S4_TestAskAgain
+        line: 3
+        parent: *id017
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[47])
+        children: []
+        expression:
+        - 0
+        id: 54
+        label: N43_N129
+        line: 21
+        parent: *id017
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[48])
+        children: []
+        expression:
+        - 0
+        id: 55
+        label: N44_NameAgain
+        line: 43
+        parent: *id017
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[49])
+        children: []
+        expression:
+        - 0
+        id: 56
+        label: N45_AgeAgain
+        line: 54
+        parent: *id017
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[50])
+        children: []
+        expression:
+        - 0
+        id: 57
+        label: N51_HobbyAgain
+        line: 65
+        parent: *id017
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[51])
+        children: []
+        expression:
+        - 0
+        id: 58
+        label: N52_ColorAgain
+        line: 76
+        parent: *id017
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[52])
+        children: []
+        expression:
+        - 0
+        id: 59
+        label: N53_N105
+        line: 87
+        parent: *id017
+      errors: []
+      label: S4_TestAskAgain
+      line: 44
+      parent: *id013
+      relativePath: []
+    - &id019 !!de.dfki.mlt.rudimant.common.IncludeInfo
+      children:
+      - &id018 !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[53])
+        children:
+        - !!de.dfki.mlt.rudimant.common.RuleInfo
+          baseterms:
+          - canBeLeft(nodes[53])
+          children: []
+          expression:
+          - 0
+          id: 61
+          label: S31_WaitToContinue_out
+          line: 27
+          parent: *id018
+        expression:
+        - 0
+        id: 60
+        label: setup_S31_WaitToContinue
+        line: 19
+        parent: *id019
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[54])
+        children: []
+        expression:
+        - 0
+        id: 62
+        label: N174_InformReceived
+        line: 38
+        parent: *id019
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[55])
+        children: []
+        expression:
+        - 0
+        id: 63
+        label: N175_Quit
+        line: 49
+        parent: *id019
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[56])
+        children: []
+        expression:
+        - 0
+        id: 64
+        label: N176_ResetToIdle
+        line: 55
+        parent: *id019
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[57])
+        children: []
+        expression:
+        - 0
+        id: 65
+        label: N177_ChangeStatus
+        line: 66
+        parent: *id019
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[58])
+        children: []
+        expression:
+        - 0
+        id: 66
+        label: N178_WaitForInput
+        line: 77
+        parent: *id019
+      errors: []
+      label: S31_WaitToContinue
+      line: 45
+      parent: *id013
+      relativePath: []
+    - &id021 !!de.dfki.mlt.rudimant.common.IncludeInfo
+      children:
+      - &id020 !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[59])
+        children:
+        - !!de.dfki.mlt.rudimant.common.RuleInfo
+          baseterms:
+          - canBeLeft(nodes[59])
+          children: []
+          expression:
+          - 0
+          id: 68
+          label: S32_TestAnswerFits_out
+          line: 10
+          parent: *id020
+        expression:
+        - 0
+        id: 67
+        label: setup_S32_TestAnswerFits
+        line: 3
+        parent: *id021
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[60])
+        children: []
+        expression:
+        - 0
+        id: 69
+        label: N184_N129
+        line: 25
+        parent: *id021
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[61])
+        children: []
+        expression:
+        - 0
+        id: 70
+        label: N185_N130
+        line: 53
+        parent: *id021
+      errors: []
+      label: S32_TestAnswerFits
+      line: 46
+      parent: *id013
+      relativePath: []
+    - &id023 !!de.dfki.mlt.rudimant.common.IncludeInfo
+      children:
+      - &id022 !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[62])
+        children:
+        - !!de.dfki.mlt.rudimant.common.RuleInfo
+          baseterms:
+          - canBeLeft(nodes[62])
+          children: []
+          expression:
+          - 0
+          id: 72
+          label: S5_TestToSendConfirm_out
+          line: 9
+          parent: *id022
+        expression:
+        - 0
+        id: 71
+        label: setup_S5_TestToSendConfirm
+        line: 2
+        parent: *id023
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[63])
+        children: []
+        expression:
+        - 0
+        id: 73
+        label: N20_TestIfSend
+        line: 20
+        parent: *id023
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[64])
+        children: []
+        expression:
+        - 0
+        id: 74
+        label: N31_WaitToEndSpeak
+        line: 30
+        parent: *id023
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[65])
+        children: []
+        expression:
+        - 0
+        id: 75
+        label: N35_N28
+        line: 41
+        parent: *id023
+      errors: []
+      label: S5_TestToSendConfirm
+      line: 47
+      parent: *id013
+      relativePath: []
+    - &id025 !!de.dfki.mlt.rudimant.common.IncludeInfo
+      children:
+      - &id024 !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[66])
+        children:
+        - !!de.dfki.mlt.rudimant.common.RuleInfo
+          baseterms:
+          - canBeLeft(nodes[66])
+          children: []
+          expression:
+          - 0
+          id: 77
+          label: S9_AskOther_out
+          line: 11
+          parent: *id024
+        expression:
+        - 0
+        id: 76
+        label: setup_S9_AskOther
+        line: 4
+        parent: *id025
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[67])
+        children: []
+        expression:
+        - 0
+        id: 78
+        label: N40_N4
+        line: 26
+        parent: *id025
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[68])
+        children: []
+        expression:
+        - 0
+        id: 79
+        label: N46_N5
+        line: 45
+        parent: *id025
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[69])
+        children: []
+        expression:
+        - 0
+        id: 80
+        label: N47_N6
+        line: 55
+        parent: *id025
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[70])
+        children: []
+        expression:
+        - 0
+        id: 81
+        label: N48_AskOther_Done
+        line: 66
+        parent: *id025
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[71])
+        children: []
+        expression:
+        - 0
+        id: 82
+        label: N49_N11
+        line: 79
+        parent: *id025
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[72])
+        children: []
+        expression:
+        - 0
+        id: 83
+        label: N50_N17
+        line: 89
+        parent: *id025
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[73])
+        children: []
+        expression:
+        - 0
+        id: 84
+        label: N58_N18
+        line: 100
+        parent: *id025
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[74])
+        children: []
+        expression:
+        - 0
+        id: 85
+        label: N62_N21
+        line: 110
+        parent: *id025
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[75])
+        children: []
+        expression:
+        - 0
+        id: 86
+        label: N72_N27
+        line: 121
+        parent: *id025
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[76])
+        children: []
+        expression:
+        - 0
+        id: 87
+        label: N77_N36
+        line: 131
+        parent: *id025
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[77])
+        children: []
+        expression:
+        - 0
+        id: 88
+        label: N86_AskOther_Start
+        line: 142
+        parent: *id025
+      errors: []
+      label: S9_AskOther
+      line: 48
+      parent: *id013
+      relativePath: []
+    - &id027 !!de.dfki.mlt.rudimant.common.IncludeInfo
+      children:
+      - &id026 !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[78])
+        children:
+        - !!de.dfki.mlt.rudimant.common.RuleInfo
+          baseterms:
+          - canBeLeft(nodes[78])
+          children: []
+          expression:
+          - 0
+          id: 90
+          label: S6_HasEyeColor_out
+          line: 9
+          parent: *id026
+        expression:
+        - 0
+        id: 89
+        label: setup_S6_HasEyeColor
+        line: 2
+        parent: *id027
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[79])
+        children: []
+        expression:
+        - 0
+        id: 91
+        label: N36_N34
+        line: 20
+        parent: *id027
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[80])
+        children: []
+        expression:
+        - 0
+        id: 92
+        label: N54_Done
+        line: 34
+        parent: *id027
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[81])
+        children: []
+        expression:
+        - 0
+        id: 93
+        label: N27_N27
+        line: 40
+        parent: *id027
+      errors: []
+      label: S6_HasEyeColor
+      line: 49
+      parent: *id013
+      relativePath: []
+    - &id029 !!de.dfki.mlt.rudimant.common.IncludeInfo
+      children:
+      - &id028 !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[82])
+        children:
+        - !!de.dfki.mlt.rudimant.common.RuleInfo
+          baseterms:
+          - canBeLeft(nodes[82])
+          children: []
+          expression:
+          - 0
+          id: 95
+          label: S7_HasEyeColor_out
+          line: 9
+          parent: *id028
+        expression:
+        - 0
+        id: 94
+        label: setup_S7_HasEyeColor
+        line: 2
+        parent: *id029
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[83])
+        children: []
+        expression:
+        - 0
+        id: 96
+        label: N33_N34
+        line: 20
+        parent: *id029
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[84])
+        children: []
+        expression:
+        - 0
+        id: 97
+        label: N34_Done
+        line: 39
+        parent: *id029
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[85])
+        children: []
+        expression:
+        - 0
+        id: 98
+        label: N56_N28
+        line: 50
+        parent: *id029
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - isActive(nodes[86])
+        children: []
+        expression:
+        - 0
+        id: 99
+        label: N57_N27
+        line: 61
+        parent: *id029
+      errors: []
+      label: S7_HasEyeColor
+      line: 50
+      parent: *id013
+      relativePath: []
+    errors: []
+    label: S2_AskForParameters
+    line: 52
+    parent: *id011
+    relativePath: []
+  - &id031 !!de.dfki.mlt.rudimant.common.IncludeInfo
+    children:
+    - &id030 !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - isActive(nodes[87])
+      children:
+      - !!de.dfki.mlt.rudimant.common.RuleInfo
+        baseterms:
+        - canBeLeft(nodes[87])
+        children: []
+        expression:
+        - 0
+        id: 101
+        label: S1_WaitToContinue_out
+        line: 11
+        parent: *id030
+      expression:
+      - 0
+      id: 100
+      label: setup_S1_WaitToContinue
+      line: 3
+      parent: *id031
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - isActive(nodes[88])
+      children: []
+      expression:
+      - 0
+      id: 102
+      label: N5_IdleState
+      line: 22
+      parent: *id031
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - isActive(nodes[89])
+      children: []
+      expression:
+      - 0
+      id: 103
+      label: N6_StartPlayingQuiz
+      line: 33
+      parent: *id031
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - isActive(nodes[90])
+      children: []
+      expression:
+      - 0
+      id: 104
+      label: N10_Quit
+      line: 45
+      parent: *id031
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - isActive(nodes[91])
+      children: []
+      expression:
+      - 0
+      id: 105
+      label: N11_ResetToIdle
+      line: 51
+      parent: *id031
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - isActive(nodes[92])
+      children: []
+      expression:
+      - 0
+      id: 106
+      label: N17_ChangeStatus
+      line: 62
+      parent: *id031
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - isActive(nodes[93])
+      children: []
+      expression:
+      - 0
+      id: 107
+      label: N18_CheckShutDown
+      line: 73
+      parent: *id031
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - isActive(nodes[94])
+      children: []
+      expression:
+      - 0
+      id: 108
+      label: N21_CheckStopped
+      line: 83
+      parent: *id031
+    - !!de.dfki.mlt.rudimant.common.RuleInfo
+      baseterms:
+      - isActive(nodes[95])
+      children: []
+      expression:
+      - 0
+      id: 109
+      label: N26_Start
+      line: 93
+      parent: *id031
+    errors: []
+    label: S1_WaitToContinue
+    line: 53
+    parent: *id011
+    relativePath: []
+  errors: []
+  label: S19_DoIntroduction
+  line: 202
+  parent: *id001
+  relativePath: []
+errors: []
+label: introduction
+line: -1
+parent: null
+relativePath: []

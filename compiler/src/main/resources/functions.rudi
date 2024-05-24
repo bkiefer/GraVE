@@ -1,0 +1,151 @@
+List<Object> query(String s);
+
+Supernode[] nodes;
+
+void init_nodes() {
+  if (nodes == null) {
+    List<Object> nlist = query("select ?n where ?n <rdf:type> <autm:Basicnode> ?_");
+    nodes = new Supernode[nlist.size()];
+    for (Object o : nlist) {
+      Basicnode n = isa(Rdf, o); n.state = 0;
+      int id = n.id;
+      nodes[id] = n;
+    }
+  }
+}
+
+void print(String s) {
+  System.out.print(s);
+}
+
+void print_active(Supernode s, String pref) {
+  print(pref);
+  print(s.name);
+  for (int c: s.children) {
+    node = nodes[c];
+    if (! (node <= Supernode)) {
+      print(" " + node.name);
+    }
+  }
+  print("\n");
+  for (int c: s.children) {
+    node = nodes[c];
+    if (node <= Supernode && node != s) {
+      print_active(node, pref + " ");
+    }
+  }
+}
+
+void print_active() {
+  if (nodes[0].children.contains(0)) print_active(nodes[0], "");
+}
+
+boolean needsInit(Basicnode node) {
+  return (node.state & 4) != 0;
+}
+
+void setNeedsInit(Basicnode node) {
+  node.state = node.state | 4;
+}
+
+void setIsInitiated(Basicnode node) {
+  node.state = node.state & 0xfb;
+}
+
+boolean canBeLeft(Basicnode node) {
+  if ((node.state & 2) != 0) {
+  	if (isa(Supernode, node).children.size() != 0) {
+  	  logger.error("Leaving active supernode: {}", node.id);
+  	}
+  	return true;
+  }
+  return false;
+}
+
+void setCanBeLeft(Basicnode node) {
+  node.state = node.state | 2;
+}
+
+void setHasBeenLeft(Basicnode node) {
+  node.state = node.state & 0xfd;
+}
+
+boolean isActive(Basicnode node) {
+  return node.parent.children.contains(node.id);
+}
+
+void setInactive(Basicnode node) {
+  node.parent.children -= node.id;
+  setHasBeenLeft(node);
+}
+
+void setActive(Basicnode node) {
+  node.parent.children += node.id;
+}
+
+void initNode(Basicnode newNode) {
+  setNeedsInit(newNode);
+  setActive(newNode);
+}
+
+void transition(Basicnode source_a, Basicnode target_b) {
+  // for Basicnode, that's the sign it's active, for Supernode, the redundant
+  // active should be true, should that be asserted??
+  if (isActive(source_a)) {
+    // first stop all activity on source_a
+    logger.info("{} --> {}", source_a.name, target_b.name);
+    cancelTimeout(source_a.name);
+    setInactive(source_a);
+    if (needsInit(source_a)) {
+      setIsInitiated(source_a);
+    }
+    // now start activity on target node (what if it's already active?)
+    initNode(target_b);
+    newData();
+    print_active();
+  } else {
+    logger.warn("No {} --> {}, source not active", source_a.name, target_b.name);
+  }
+}
+
+void super_out_transition(Basicnode a, Basicnode b) {
+  if (isActive(a) && !hasActiveTimeout(a.name)) {
+    // transition a --> b
+    setInactive(a);
+    setCanBeLeft(b);
+  }
+}
+
+void timeout_transition(Basicnode node_a, Basicnode node_b, int duration) {
+  if (! hasActiveTimeout(node_a.name)) {
+    timeout(node_a.name, duration) {
+      transition(node_a, node_b);
+    }
+  }
+}
+
+void probability_transition(Basicnode node_a, Basicnode node_b, int probability) {
+  propose_id = "propose_" + node_a.name + "_" + probability;
+  propose(propose_id) {
+    transition(node_a, node_b);
+  }
+}
+
+// recursively inactivate all child nodes of m and m itself
+void force_inactive(Supernode m) {
+  for (int x : m.children) {
+    Basicnode sup = nodes[x];
+    if (sup <= Supernode) {
+      force_inactive(sup);
+    } else {
+      removeTimeout(sup.name);
+    }
+  }
+
+  m.children={};
+}
+
+void interruptive_transition(Supernode m, Basicnode target_node) {
+  force_inactive(m);
+  initNode(target_node);
+}

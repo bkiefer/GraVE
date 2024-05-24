@@ -5,7 +5,11 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>GraVE</artifactId>
+  <artifactId>grave2vonda-compiler</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0</version>
+
+  <inceptionYear>2020</inceptionYear>
 
   <parent>
     <groupId>de.dfki.mlt</groupId>
@@ -14,15 +18,24 @@
     <relativePath>..</relativePath>
   </parent>
 
-  <inceptionYear>2018</inceptionYear>
-
-  <licenses>
-    <license>
-      <name>LGPL 3 or later</name>
-      <url>http://www.gnu.org/licenses/lgpl.html</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+  <dependencies>
+    <dependency>
+      <groupId>net.sf.jopt-simple</groupId>
+      <artifactId>jopt-simple</artifactId>
+      <version>5.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>de.dfki.mlt</groupId>
+      <artifactId>grave-model</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>de.dfki.mlt</groupId>
+      <artifactId>vonda-3.0-compiler</artifactId>
+      <version>[3.2,)</version>
+      <type>jar</type>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
@@ -30,11 +43,11 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.5.3</version>
         <configuration>
-          <finalName>GraVE</finalName>
+          <finalName>Grave2Vonda</finalName>
           <appendAssemblyId>false</appendAssemblyId>
           <archive>
             <manifest>
-              <mainClass>de.dfki.grave.app.MainGrave</mainClass>
+              <mainClass>de.dfki.mlt.g2v.Main</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
@@ -52,7 +65,7 @@
         </executions>
       </plugin>
 
-      <plugin>
+      <!--<plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.3</version>
@@ -97,7 +110,7 @@
         <configuration>
           <failOnError>false</failOnError>
         </configuration>
-      </plugin>
+      </plugin>-->
       <plugin>
         <!-- explicitly define maven-deploy-plugin after other to force exec order -->
         <artifactId>maven-deploy-plugin</artifactId>
@@ -115,36 +128,10 @@
     </plugins>
   </build>
 
-  <dependencies>
-    <dependency>
-      <groupId>de.dfki.mlt</groupId>
-      <artifactId>grave2vonda-compiler</artifactId>
-      <version>[1.0,)</version>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fifesoft</groupId>
-      <artifactId>rsyntaxtextarea</artifactId>
-      <version>2.6.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.glassfish.jaxb</groupId>
-      <artifactId>jaxb-runtime</artifactId>
-      <version>2.3.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>say.swing</groupId>
-      <artifactId>jfontchooser</artifactId>
-      <version>1.0.7</version>
-    </dependency>
-  </dependencies>
-
+  <repositories>
+    <repository>
+      <id>github</id>
+      <url>https://raw.githubusercontent.com/DFKI-MLT/Maven-Repository/main</url>
+    </repository>
+  </repositories>
 </project>

@@ -1,0 +1,130 @@
+// test grammar to check if working with grammar works
+// should greet back:
+
+(raw:InitialGreeting ^ Greet) | (raw:salutation ^ greeting)
+->
+# =  :canned ^ <string>"Hello fellow human!".
+
+raw:Valediction ^ Bye
+->
+# =  :canned ^ <string>"Goodbye".
+
+raw:Inform ^ Mood
+->
+# =  :canned ^ <string>"I feel great, thanks".
+
+raw:ChoiceQuestion ^ Mood
+->
+# =  :canned ^ <string>"How do you feel today?".
+
+raw:Encouragement ^ Joke
+->
+# =  :canned ^ <string>"Best Joke Ever".
+
+raw:Encouragement ^ Tomorrow
+->
+# =  :canned ^ <string>"Tomorrow will be a happy day again!".
+
+raw:Connecting ^ Sorry
+->
+# =  :canned ^ <string>"I am so sorry!".
+
+raw:Connecting ^ NegativeFeeling
+->
+# =  :canned ^ <string>"Oh no!".
+
+raw:InitialGoodbye ^ Leave
+->
+# =  :canned ^ <string>"I have to go now".
+
+raw:Connecting ^ PositiveFeeling
+->
+# =  :canned ^ <string>"Cool".
+
+raw:Connecting ^ Enthusiastic
+->
+# =  :canned ^ <string>"Great!".
+
+raw:WHQuestion ^ PositiveMood
+->
+# =  :canned ^ <string>"Why are you so happy today?".
+
+raw:Suggestion ^ MoreTalking
+->
+# =  :canned ^ <string>"Alright, please tell me what is on your mind".
+
+raw:Thanking ^ Sharing
+->
+# =  :canned ^ <string>"Thank you for sharing this with me".
+
+raw:SocialFunction ^ NoTrust
+->
+# =  :canned ^ <string>"I see. You probably don't trust me yet".
+
+raw:InitialGoodbye ^ Nice
+->
+# =  :canned ^ <string>"Ok, see you next time! It was nice talking with you".
+
+raw:InitialGoodbye ^ Mean
+->
+# =  :canned ^ <string>"I cannot stand talking to you any longer anyways".
+
+raw:Urge ^ Answer
+->
+# =  :canned ^ <string>"Please give me an answer this time".
+
+raw:Question ^ MoreTalking
+->
+# =  :canned ^ <string>"Is there anything else you want to talk about?".
+
+raw:request ^ play
+->
+# = :canned ^ <string>"Would you now play with me?".
+
+raw:apologize ^ color
+->
+# = :canned ^ <string>"I didn't get it, could you repeat, please?".
+
+raw:apologize ^ hobby
+->
+# = :canned ^ <string>"Could you repeat this, please?".
+
+raw:apologize ^ name
+->
+# = :canned ^ <string>"Could you repeat your name please?".
+
+raw:acknowledgement ^ color
+->
+# = :canned ^ <string>"I like this color too.".
+
+raw:acknowledgement ^ hobby
+->
+# = :canned ^ <string>"A very interesting hobby.".
+
+raw:acknowledgement ^ name
+->
+# = :canned ^ <string>"That's a nice name.".
+
+raw:acknowledgement ^ age
+->
+# = :canned ^ <string>"I don't even know how old i am.".
+
+raw:request ^ color
+->
+# = :canned ^ <string>"What's your favourite color?".
+
+raw:request ^ hobby
+->
+# = :canned ^ <string>"What's your favourite hobby?".
+
+raw:request ^ name
+->
+# = :canned ^ <string>"What's your name?".
+
+raw:request ^ age
+->
+# = :canned ^ <string>"How old are you?".
+
+raw:acknowledgement ^ eyecolorset
+->
+# = :canned ^ <string>"I've changed my eye color for you! I hope you like it.".
