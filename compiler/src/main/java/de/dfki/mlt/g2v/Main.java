@@ -1,8 +1,7 @@
 package de.dfki.mlt.g2v;
 
 import static de.dfki.mlt.g2v.Generator.generateAll;
-import static de.dfki.mlt.rudimant.common.Constants.CFG_CONFIG_DIRECTORY;
-import static de.dfki.mlt.rudimant.common.Constants.CFG_INPUT_FILE;
+import static de.dfki.mlt.rudimant.common.Constants.*;
 import static de.dfki.mlt.rudimant.compiler.CompilerMain.readConfig;
 import static de.dfki.mlt.rudimant.compiler.RudimantCompiler.process;
 
@@ -26,6 +25,7 @@ import de.dfki.lt.hfc.WrongFormatException;
 import de.dfki.mlt.rudimant.common.BasicInfo;
 import de.dfki.mlt.rudimant.common.ErrorInfo;
 import de.dfki.mlt.rudimant.common.IncludeInfo;
+import de.dfki.mlt.rudimant.compiler.CompilerMain;
 
 public class Main {
 
@@ -98,6 +98,7 @@ public class Main {
       }
     }
     IncludeInfo info = process(confDir, configs);
+    CompilerMain.dumpToYaml(confDir, info);
     // IncludeInfo structure
     // label: name of the file (without extension)
     // relativePath: the whole relative path from the root (dir of topmost rudi)
@@ -127,6 +128,9 @@ public class Main {
 
     if (pathToSceneflowFile.equals("-c")) {
       Map<String, Object> conf = readConfig(pathToVondaProject);
+      if (! conf.containsKey(CFG_PRINT_ERRORS)) {
+        conf.put(CFG_PRINT_ERRORS, true);
+      }
       List<CodeBlock> errors = compileAll(conf);
       dumpYaml(errors, new File(CODE_INFO_FILE));
     } else {

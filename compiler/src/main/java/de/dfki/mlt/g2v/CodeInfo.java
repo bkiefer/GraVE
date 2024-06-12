@@ -58,7 +58,9 @@ public class CodeInfo {
   public CodeBlock addError(ErrorInfo err, String node) {
     int errBegin = err.getLocation().getBegin().getLine();
     CodeBlock cb = getBlock(node, errBegin);
-    cb.errors.add(err);
+    if (cb != null) {
+      cb.errors.add(err);
+    }
     return cb;
   }
 }

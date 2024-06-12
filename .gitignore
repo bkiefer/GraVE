@@ -10,3 +10,7 @@ dialogueflow
 Aufbewahrung
 **/.projectile
 **/*~
+**/RuleLoc.yml
+**/gen-java
+**/catalog-*.xml
+**/target

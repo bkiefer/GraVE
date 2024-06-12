@@ -1,5 +1,3 @@
-List<Object> query(String s);
-
 Supernode[] nodes;
 
 void init_nodes() {
