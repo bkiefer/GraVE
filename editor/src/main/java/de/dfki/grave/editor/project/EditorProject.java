@@ -25,13 +25,13 @@ public class EditorProject {
 
   // The editor configuration
   private EditorConfig mEditorConfig;
-  
+
   private boolean mChanged, mDefinitelyChanged;
 
   public static boolean isProjectDirectory(File f) {
     return (f.isDirectory() && (new File(f, SCENEFLOW_NAME)).exists());
   }
-  
+
   private EditorProject(File path, String name, EditorConfig ec, SceneFlow sc) {
     mProjectPath = path;
     mProjectName = name;
@@ -39,9 +39,9 @@ public class EditorProject {
     mEditorConfig = ec;
     mSceneFlow = sc;
     // TODO: DO SOMETHING MEANINGFUL HERE, BUT ALWAYS BE ON THE SAFE SIDE
-    mChanged = mDefinitelyChanged = true; 
+    mChanged = mDefinitelyChanged = true;
   }
-  
+
   /** Create a new EditorProject: this is a completely new project, with an
    *  yet unknown project directory.
    *
@@ -90,7 +90,7 @@ public class EditorProject {
     }
     return new EditorProject(base, name, ec, sc);
   }
-  
+
   // Get the path of the project (added PG 11.4.2016)
   public final File getProjectPath() {
     return mProjectPath;
@@ -99,7 +99,7 @@ public class EditorProject {
   public boolean isNew() {
     return mProjectPath == null;
   }
-  
+
   // Get the name of the project's configuration
   public final String getProjectName() {
     return mProjectName;
@@ -109,7 +109,7 @@ public class EditorProject {
   public final void setProjectName(final String name) {
     mProjectName = name;
   }
-  
+
   // Get the sceneflow of the project
   public final SceneFlow getSceneFlow() {
     return mSceneFlow;
@@ -119,7 +119,7 @@ public class EditorProject {
   public final EditorConfig getEditorConfig() {
     return mEditorConfig;
   }
-  
+
   /** Set the editor configuration of this project: to enable cancelling
    *  of changes
    */
@@ -132,10 +132,10 @@ public class EditorProject {
     if (mProjectPath == null) return false;
     return writeProjectConfig(mProjectPath);
   }
-  
+
   /** return true if sth in the project was edited */
   public boolean hasChanged() {
-    return mDefinitelyChanged || mChanged;
+    return true || mDefinitelyChanged || mChanged;
   }
 
   /** Write project configuration file into the directory base.
@@ -161,7 +161,7 @@ public class EditorProject {
     return mSceneFlow.save(file);
   }
 
-  /** Save a *new* project file, i.e., where the base directory is not yet 
+  /** Save a *new* project file, i.e., where the base directory is not yet
    *  specified, and now put into parentDirectory. Can also be used for
    *  "Save As"
    * @param parentDirectory
@@ -186,16 +186,16 @@ public class EditorProject {
   /** Save a project file that was loaded from file */
   public boolean saveProject() {
     assert(mProjectPath != null);
-    return writeProjectConfig(mProjectPath) && writeSceneFlow(mProjectPath); 
+    return writeProjectConfig(mProjectPath) && writeSceneFlow(mProjectPath);
   }
 
   /** This project definitely changed, no doubt about it */
   public void setDefinitelyChanged() {
-    mDefinitelyChanged = true;    
+    mDefinitelyChanged = true;
   }
-  
+
   public void setChanged(boolean value) {
-    mChanged = value;    
+    mChanged = value;
   }
 
 }

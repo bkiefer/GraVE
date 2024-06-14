@@ -1,13 +1,21 @@
 package de.dfki.grave.app;
 
 //import static de.dfki.grave.Icons.*;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +23,6 @@ import org.slf4j.LoggerFactory;
 import de.dfki.grave.editor.project.EditorConfig;
 import de.dfki.grave.editor.project.FontConfig;
 import de.dfki.grave.util.JaxbUtilities;
-
-import java.io.File;
 
 /**
  * @author Gregor Mehlmann
@@ -31,8 +37,8 @@ public final class Preferences {
   private static final Logger mLogger = LoggerFactory.getLogger(Preferences.class);
 
   // The global preferences and settings file
-  private static final String CONFIG_FILE = System.getProperty("user.home")
-      + System.getProperty("file.separator") + ".grave";
+  private static final String CONFIG_FILE = Path.of(System.getProperty("user.home")
+      + "/.local/share/GraVE/preferences.xml").toAbsolutePath().toString();
 
   public static boolean DEBUG_COMPONENT_BOUNDARIES = false;
   public static boolean DEBUG_MOUSE_LOCATIONS = false;
@@ -120,8 +126,14 @@ public final class Preferences {
 
 
   public static synchronized void savePrefs() {
+    File cfile = new File(CONFIG_FILE);
+    if (! cfile.getParentFile().exists() && ! cfile.getParentFile().mkdirs()) {
+      mLogger.error("directory for preferences file can not be created: {}",
+          cfile.getAbsolutePath());
+      return;
+    }
     // write the Preferences file
-    JaxbUtilities.marshal(new File(CONFIG_FILE), getPrefs(),
+    JaxbUtilities.marshal(cfile, getPrefs(),
             Preferences.class, EditorConfig.class, FontConfig.class);
   }
 

@@ -318,10 +318,11 @@ public final class AppFrame extends JFrame implements ChangeListener {
     @Override
     public boolean accept(File f) {
       if (f.isDirectory()) {
-        if (EditorProject.isProjectDirectory(f)) return true;
-        for (File g : f.listFiles()) {
-          if (accept(g)) return true;
-        }
+        //if (EditorProject.isProjectDirectory(f))
+        return true;
+        //for (File g : f.listFiles()) {
+        //  if (accept(g)) return true;
+        //}
       }
       return false;
     }

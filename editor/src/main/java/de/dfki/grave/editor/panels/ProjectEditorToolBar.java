@@ -121,7 +121,7 @@ public class ProjectEditorToolBar extends JToolBar {
       @Override
       public void actionPerformed(ActionEvent e) {
         AppFrame.getInstance().save();
-        mSaveProject.setEnabled(false);
+        mSaveProject.setEnabled(mEditor.getEditorProject().hasChanged());
         //mProjectSettings.setEnabled(true);
       }
     });
