@@ -19,6 +19,10 @@ public class DefinitionsPanel extends JPanel {
     add(s, BorderLayout.CENTER);
   }
 
+  public void endEdit() {
+    mTextArea.okAction();
+  }
+
   public void setSuperNode(SuperNode s) {
     mTextArea.setSuperNode(s);
   }

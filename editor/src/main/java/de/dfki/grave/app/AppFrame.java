@@ -439,6 +439,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
   public final boolean save(final ProjectEditor editor) {
     // Check if the editor is valid
     if (editor != null) {
+      editor.okToEverything();
       // Get the selected editor project
       final EditorProject project = editor.getEditorProject();
       // Check if the project is pending

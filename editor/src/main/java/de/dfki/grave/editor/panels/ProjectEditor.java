@@ -131,6 +131,14 @@ public final class ProjectEditor extends JSplitPane implements EventListener {
     return mEditorProject;
   }
 
+  /** This is called when the project is saved to ensure that all active edits
+   *  are saved beforehand
+   */
+  public void okToEverything() {
+    endEdit();
+    mDefinitionsEditor.endEdit();
+  }
+
   // Clean up the editor component
   public final void close() {
     // Remove from event dispatcher
