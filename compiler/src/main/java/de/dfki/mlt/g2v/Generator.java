@@ -63,7 +63,10 @@ public class Generator implements AutoCloseable {
   private <T extends AbstractEdge> void getConditionalEdgeCode(Iterable<T> edges) {
     for (AbstractEdge a : edges) {
       GuardedEdge e = (GuardedEdge)a;
-      blocks.addBlock(o.getNodeName(e.getSourceNode()), f.getCurrentLineNo());
+      String sourceName = o.getNodeName(e.getSourceNode());
+      String targetName = o.getNodeName(e.getTargetNode());
+      blocks.addBlock(sourceName, f.getCurrentLineNo());
+      f.ruleLabel(sourceName +"_to_" + targetName + "_condition", 0, 0);
       f.ifOpen(e.getContent(), 0, 0);
       blocks.endBlock(f.getCurrentLineNo());
       getRudiEdgeCode(e);
@@ -188,55 +191,71 @@ public class Generator implements AutoCloseable {
 
 
   /**
-   * Creates the VOnDA-code fragment that sets up the {@code SceneMakerAutomaton}.
-   * @return A String containing the VOnDA-code fragment that sets up the {@code SceneMakerAutomaton}
+   * Creates the VOnDA-code fragment that sets up the {@code SceneMakerAutomaton}
+   * and the code for leaving it, in case it terminates
    */
-  private void getSceneFlowSetupCode(SceneFlow m) {
-    blocks.addBlock(o.getNodeName(m), f.getCurrentLineNo());
-    getDefinitions(m);
+  private void getSceneFlowSetupCode(SceneFlow sc) {
+    String name = o.getNodeName(sc);
+    blocks.addBlock(name, f.getCurrentLineNo());
+    getDefinitions(sc);
     blocks.endBlock(f.getCurrentLineNo());
 
     // add global transition etc. automaton functions
     f.transferResource("functions.rudi");
 
-    blocks.addBlock(o.getNodeName(m), f.getCurrentLineNo());
-    f.raw(m.getContent(), 0, 1);
+    blocks.addBlock(name, f.getCurrentLineNo());
+    f.raw(sc.getContent(), 0, 1);
     blocks.endBlock(f.getCurrentLineNo());
 
     f.defOpen("void start(){", 0, 0);
-    f.statement("init_nodes()", 0, 0);
-    f.ifOpen("!" + fetchNode(m) + ".children", 0, 0);
+    f.statement("if (nodes == null) init_nodes()", 0, 0);
+    f.ifOpen("!" + fetchNode(sc) + ".children", 0, 0);
 
-    f.statement(fetchNode(m) + ".children += " + o.getId(m), 0, 0);
+    f.statement(fetchNode(sc) + ".children += " + o.getId(sc), 0, 0);
     // now initialise the start node of the top-level node
-    BasicNode start = m.getStartNode();
+    BasicNode start = sc.getStartNode();
     initNode(fetchNode(start));
 
     f.close(0, 0); // if
-    f.close(0, 1); // def
+    f.close(0, 1); // def of start()
+
+    // make sure we're not running an uninitialized automaton
+    f.raw("if (nodes == null) cancel;", 0, 1);
+
+    // this rule is called when we leave this sceneflow node
+    //getSuperOutCode(m);
+    f.ruleLabel(name + "_out", 0, 0);
+    f.ifOpen("canBeLeft(" + fetchNode(sc) + ")", 0, 0);
+    // todo: maybe force leaving the topmost node??
+    f.statement("node = " + fetchNode(sc), 0, 1);
+    f.ifOpen("node.children.size() == 1", 0, 0);
+    f.statement("setHasBeenLeft(node)", 0, 0);
+    f.statement("node.children -= node.id", 0, 0);
+    f.close(0, 0); // end test no children and initiated
+    f.close(0, 0); // end out rule if
   }
 
   /**
    * Creates the VOnDA-code fragment that initializes the variables belonging to
-   * this {@code Supernode}. THIS IS NOT FOR THE SCENEFLOW (TOPMOST NODE)
+   * this {@code Supernode}, and the code for leaving it, in case it terminates
    *
-   * @return A String containing the VOnDA-code fragment that initializes the
-   *         variables of this {@code Supernode}.
+   * THIS IS NOT FOR THE SCENEFLOW (TOPMOST NODE), see above
    */
   private void getSuperSetupCode(SuperNode s) {
-    blocks.addBlock(o.getNodeName(s), f.getCurrentLineNo());
+    String name = o.getNodeName(s);
+    blocks.addBlock(name, f.getCurrentLineNo());
     getDefinitions(s);
     blocks.endBlock(f.getCurrentLineNo());
 
     // first of all, print the code fragment that is associated with
     // this supernode, if any
-    f.ruleLabel("setup_" + o.getNodeName(s), 1, 0);
+    f.ruleLabel("setup_" + name, 1, 0);
     f.ifOpen("isActive(" + fetchNode(s) + ")", 0, 0);
 
     f.ifOpen("needsInit(" + fetchNode(s) + ")", 0, 0);
     // This is executed once we enter the super node, then, control is
     // passed to the inner nodes
-    blocks.addBlock(o.getNodeName(s), f.getCurrentLineNo());
+    blocks.addBlock(name, f.getCurrentLineNo());
     f.raw(s.getContent(), 0, 0);
     blocks.endBlock(f.getCurrentLineNo());
 
@@ -248,7 +267,11 @@ public class Generator implements AutoCloseable {
     f.close(0, 0); // end needsInit
 
     // this must be executed before we set the current supernode inactive!
-    getSuperOutCode(s);
+    // this rule is called when we leave this super node
+    f.ruleLabel(name + "_out", 1, 0);
+    f.ifOpen("canBeLeft(" + fetchNode(s) + ")", 0, 0);
+    getCommonEdgesCode(s);
+    f.close(0, 0); // end out check if
 
     // check if SuperNode became inactive because running out of children
     f.ifOpen("! " + fetchNode(s) + ".children", 0, 0);
@@ -291,39 +314,6 @@ public class Generator implements AutoCloseable {
 
       index += 1;
     }
-  }
-
-  /**
-   * Creates the VOnDA-code fragment that imitates leaving the
-   * {@code Supernode}.
-   *
-   * @return the VOnDA-code fragment that imitates leaving the {@code Supernode}
-   *         as a String.
-   *
-   * This is very very very similar to getNodeCode(BasicNode), try to unify it
-   * at some point.
-   * This is obvious, since leaving a Supernode means considering the outgoing
-   * transitions, as is the case in a Basicnode always.
-   */
-  private void getSuperOutCode(SuperNode s) {
-    String name = o.getNodeName(s);
-    // this parameterizes the SceneFlow and SuperNode in one out function!!
-
-    f.ruleLabel(name + "_out", 1, 0);
-    f.ifOpen("canBeLeft(" + fetchNode(s) + ")", 0, 0);
-
-    if (s.getParentNode() != null) {
-      // not the SceneFlow, ordinary Supernode
-      getCommonEdgesCode(s);
-    } else {
-      f.statement("node = " + fetchNode(s), 0, 1);
-      f.ifOpen("node.children.size() == 1", 0, 0);
-      f.statement("setInactive(node)", 0, 0);
-      f.statement("node.children -= node.id", 0, 0);
-      f.close(0, 0); // end test no children and initiated
-    }
-
-    f.close(0, 0); // end rule if
   }
 
   /**

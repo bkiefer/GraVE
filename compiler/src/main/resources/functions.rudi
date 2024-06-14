@@ -1,15 +1,14 @@
 Supernode[] nodes;
 
-void init_nodes() {
-  if (nodes == null) {
-    List<Object> nlist = query("select ?n where ?n <rdf:type> <autm:Basicnode> ?_");
-    nodes = new Supernode[nlist.size()];
-    for (Object o : nlist) {
-      Basicnode n = isa(Rdf, o); n.state = 0;
-      int id = n.id;
-      nodes[id] = n;
-    }
+Supernode[] init_nodes() {
+  List<Object> nlist = query("select ?n where ?n <rdf:type> <http://www.dfki.de/beki/ontologies/2023/7/automaton#Basicnode> ?_");
+  nodes = new Supernode[nlist.size()];
+  for (Object o : nlist) {
+    Basicnode n = isa(Rdf, o); n.state = 0;
+    int id = n.id;
+    nodes[id] = n;
   }
+  return nodes;
 }
 
 void print(String s) {
