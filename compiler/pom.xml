@@ -32,7 +32,7 @@
     <dependency>
       <groupId>de.dfki.mlt</groupId>
       <artifactId>vonda-3.0-compiler</artifactId>
-      <version>[3.2,)</version>
+      <version>[3.4.2,)</version>
       <type>jar</type>
     </dependency>
   </dependencies>

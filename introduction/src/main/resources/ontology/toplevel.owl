@@ -10,7 +10,7 @@
      xmlns:toplevel="http://www.semanticweb.org/example/2023/10/toplevel#">
 
   <owl:Ontology rdf:about="http://www.semanticweb.org/example/2023/10/toplevel">
-    <owl:imports rdf:resource="http://www.dfki.de/lt/onto/common/dialogue.owl"/>
+    <owl:imports rdf:resource="http://www.dfki.de/lt/onto/common/domaindial.owl"/>
     <owl:imports rdf:resource="http://www.semanticweb.org/example/2023/10/domain"/>
   </owl:Ontology>
 

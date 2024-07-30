@@ -27,7 +27,8 @@ tupleFiles:
   - default.eqred.nt
 
   # essential ontologies
-  - dialogue.nt
+  - dialogue/dialogue.nt
+  - domaindial.nt
   - automaton.nt
   - domain.nt
   - toplevel.nt
