@@ -1,8 +1,7 @@
 package de.dfki.mlt.g2v;
 
 import static de.dfki.mlt.g2v.Generator.generateAll;
-import static de.dfki.mlt.rudimant.common.Constants.*;
-import static de.dfki.mlt.rudimant.compiler.CompilerMain.readConfig;
+import static de.dfki.mlt.rudimant.common.Configs.*;
 import static de.dfki.mlt.rudimant.compiler.RudimantCompiler.process;
 
 import java.io.File;
