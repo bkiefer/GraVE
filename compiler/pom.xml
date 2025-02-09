@@ -18,6 +18,10 @@
     <relativePath>..</relativePath>
   </parent>
 
+  <properties>
+    <exec.mainClass>de.dfki.mlt.g2v.Main</exec.mainClass>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>net.sf.jopt-simple</groupId>
@@ -32,7 +36,7 @@
     <dependency>
       <groupId>de.dfki.mlt</groupId>
       <artifactId>vonda-3.0-compiler</artifactId>
-      <version>[3.4.2,)</version>
+      <version>[3.5.0,)</version>
       <type>jar</type>
     </dependency>
   </dependencies>
@@ -43,11 +47,11 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.5.3</version>
         <configuration>
-          <finalName>Grave2Vonda</finalName>
           <appendAssemblyId>false</appendAssemblyId>
+          <classifier>final</classifier>
           <archive>
             <manifest>
-              <mainClass>de.dfki.mlt.g2v.Main</mainClass>
+              <mainClass>${exec.mainClass}</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
