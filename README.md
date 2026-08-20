@@ -1,12 +1,6 @@
 # Graphical VOnDA Editor
 
-This is a stripped down and massively reworked fork of the [Visual Scene
-Maker](https://github.com/SceneMaker/VisualSceneMaker) github repository. It
-only keeps the project's graphical editor with modified functionality to use it
-together with an automaton compiler that produces
-[VOnDA](https://github.com/bkiefer/vonda) source code. The goal is to provide
-simple graphical modelling facilities for dialogue management similar to Visual Scene Maker and
-[DialogOS](https://github.com/dialogos-project/dialogos) based on hierarchical state machines, which can be blended seamlessly with VOnDA's rule based approch.
+This is a stripped down and massively reworked fork of the [Visual Scene Maker](https://github.com/SceneMaker/VisualSceneMaker) github repository. It only keeps the project's graphical editor with modified functionality to use it together with an automaton compiler that produces [VOnDA](https://github.com/bkiefer/vonda) source code. The goal is to provide simple graphical modelling facilities for dialogue management similar to Visual Scene Maker and [DialogOS](https://github.com/dialogos-project/dialogos) based on hierarchical state machines, which can be blended seamlessly with VOnDA's rule based approch.
 
 The editor and compiler are still work in progress. The compiler is a result of
 the WS17/18 software project at the Universität des Saarlandes, implemented by
@@ -16,3 +10,7 @@ The compiler is mostly functional, but integration with the rest of the VOnDA ru
 
 The project includes two working projects which are used for testing the compile and runtime functionality, `introduction` and `interrupt`. These can be used as starting points to develop new functionality.
 <!-- Furthermore, there is a project in active development [gcs-dialog](https://github.com/bkiefer/gcs_dialog) using this module. -->
+
+# Installation
+
+After cloning the repository, run `./install.sh`, which should do all necessary steps.

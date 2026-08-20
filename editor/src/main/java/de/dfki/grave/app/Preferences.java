@@ -36,9 +36,14 @@ import de.dfki.grave.util.JaxbUtilities;
 public final class Preferences {
   private static final Logger mLogger = LoggerFactory.getLogger(Preferences.class);
 
+  // path from user home to config file
+  private static final String CONFIG_PATH = ".local/share/GraVE/preferences.xml";
+
   // The global preferences and settings file
-  private static final String CONFIG_FILE = Path.of(System.getProperty("user.home")
-      + "/.local/share/GraVE/preferences.xml").toAbsolutePath().toString();
+  private static final String CONFIG_FILE =
+      Path.of(System.getProperty("user.home"), CONFIG_PATH)
+          .toAbsolutePath()
+          .toString();
 
   public static boolean DEBUG_COMPONENT_BOUNDARIES = false;
   public static boolean DEBUG_MOUSE_LOCATIONS = false;

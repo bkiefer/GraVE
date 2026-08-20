@@ -1,0 +1,3 @@
+[submodule "compiler/vonda"]
+	path = compiler/vonda
+	url = https://github.com/bkiefer/vonda.git

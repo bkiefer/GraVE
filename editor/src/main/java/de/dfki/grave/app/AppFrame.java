@@ -664,7 +664,7 @@ public final class AppFrame extends JFrame implements ChangeListener {
 
   public static KeyStroke getAccelMask(int code, int mask) {
     return KeyStroke.getKeyStroke(code,
-        mask | Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+        mask | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
   }
 
   public static KeyStroke getAccel(int code) {
