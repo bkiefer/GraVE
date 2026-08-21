@@ -14,3 +14,5 @@ The project includes two working projects which are used for testing the compile
 # Installation
 
 After cloning the repository, run `./install.sh`, which should do all necessary steps.
+
+Two test projects are build during installation, but that will only succeed if you have some version of the `raptor` tools installed to convert OWL files into th N-triples format (e.g., with `sudo apt install raptor2-utils` in Debian/Ubuntu). This is not required, you can skip building the test projects calling the install script with the `-n` argument.

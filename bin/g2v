@@ -1,7 +1,6 @@
 #!/bin/sh
 #set -x
-script_dir=`dirname $0`
-here=`pwd`
+
 if test -f "$script_dir/logback.xml"; then
     silent="$silent -Dlogback.configurationFile=$script_dir/logback.xml "
 else
@@ -50,17 +49,11 @@ pom_version() {
     mvn help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null
 }
 
-if test -z "$jardir"; then
-    script_dir=`realpath "$0"`
-    script_dir=`dirname "$script_dir"`
-    cd $script_dir
-    cd ../compiler/target
-    jardir=`pwd`
-    cd $here
-fi
-
-JARIMAGE=$(find $jardir -name grave2vonda-compiler-$(pom_version compiler).jar | head -1)
-if test -z "$JARIMAGE"; then
+here=`pwd`
+g2v_root=$(dirname $(dirname $(realpath $0)))
+compiler_version=$(pom_version ${g2v_root}/compiler)
+JARIMAGE=${g2v_root}/compiler/target/grave2vonda-compiler-$compiler_version.jar
+if \! test -f "$JARIMAGE"; then
     echo "No compiler image found"
     exit 1
 fi
