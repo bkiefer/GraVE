@@ -1,5 +1,6 @@
 #!/bin/sh
 #set -x
+. $(dirname $0)/utils.sh
 
 if test -f "$script_dir/logback.xml"; then
     silent="$silent -Dlogback.configurationFile=$script_dir/logback.xml "
@@ -18,42 +19,11 @@ silent="${silent}--add-modules=ALL-SYSTEM \
 --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
 --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED "
 
-if realpath . > /dev/null 2>&1 ; then
-    :
-else
-    # does not exist on Mac OSX
-    realpath() {
-        target=$1
-
-        cd `dirname $target`
-        target=`basename $target`
-
-        # Iterate down a (possible) chain of symlinks
-        while [ -L "$target" ]
-        do
-            target=`readlink $target`
-            cd `dirname $target`
-            target=`basename $target`
-        done
-
-        # Compute the canonicalized name by finding the physical path
-        # for the directory we're in and appending the target file.
-        phys_dir=`pwd -P`
-        echo "$phys_dir/$target"
-    }
-fi
-
-pom_version() {
-    if test -n "$1"; then cd "$1"; fi
-    # There are deprecation warnings under the hood!
-    mvn help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null
-}
-
 here=`pwd`
-g2v_root=$(dirname $(dirname $(realpath $0)))
+g2v_root=$(dirname $script_dir)
 compiler_version=$(pom_version ${g2v_root}/compiler)
 JARIMAGE=${g2v_root}/compiler/target/grave2vonda-compiler-$compiler_version.jar
-if \! test -f "$JARIMAGE"; then
+if test \! -f "$JARIMAGE"; then
     echo "No compiler image found"
     exit 1
 fi
